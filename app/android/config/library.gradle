@@ -1,0 +1,3 @@
+gradle.ext.library = [
+  framework_cmake: "$rootDir/../../tools/build/cmake/CMakeLists.txt",
+]
