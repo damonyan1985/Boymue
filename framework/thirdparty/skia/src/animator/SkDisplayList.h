@@ -1,35 +1,25 @@
-/* libs/graphics/animator/SkDisplayList.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #ifndef SkDisplayList_DEFINED
 #define SkDisplayList_DEFINED
 
 #include "SkOperand.h"
 #include "SkIntArray.h"
-#include "SkBounder.h"
 #include "SkRect.h"
+#include "SkRefCnt.h"
 
 class SkAnimateMaker;
 class SkActive;
 class SkApply;
-class SkDrawable;
+class SkADrawable;
 class SkGroup;
 
-class SkDisplayList : public SkBounder {
+class SkDisplayList : public SkRefCnt {
 public:
     SkDisplayList();
     virtual ~SkDisplayList();
@@ -43,9 +33,9 @@ public:
     static int fIndent;
     static int fDumpIndex;
 #endif
-    int findGroup(SkDrawable* match, SkTDDrawableArray** list, 
-        SkGroup** parent, SkGroup** found, SkTDDrawableArray** grandList); 
-    SkDrawable* get(int index) { return fDrawList[index]; }
+    int findGroup(SkADrawable* match, SkTDDrawableArray** list,
+        SkGroup** parent, SkGroup** found, SkTDDrawableArray** grandList);
+    SkADrawable* get(int index) { return fDrawList[index]; }
     SkMSec getTime() { return fInTime; }
     SkTDDrawableArray* getDrawList() { return &fDrawList; }
     void hardReset();
@@ -57,10 +47,10 @@ public:
 #else
     void validate() {}
 #endif
-    static int SearchForMatch(SkDrawable* match, SkTDDrawableArray** list,
+    static int SearchForMatch(SkADrawable* match, SkTDDrawableArray** list,
         SkGroup** parent, SkGroup** found, SkTDDrawableArray**grandList);
-    static bool SearchGroupForMatch(SkDrawable* draw, SkDrawable* match, 
-        SkTDDrawableArray** list, SkGroup** parent, SkGroup** found, SkTDDrawableArray** grandList, 
+    static bool SearchGroupForMatch(SkADrawable* draw, SkADrawable* match,
+        SkTDDrawableArray** list, SkGroup** parent, SkGroup** found, SkTDDrawableArray** grandList,
         int &index);
 public:
     SkIRect fBounds;
@@ -76,4 +66,3 @@ private:
 };
 
 #endif // SkDisplayList_DEFINED
-

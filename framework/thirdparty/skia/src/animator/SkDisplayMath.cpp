@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayMath.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayMath.h"
 
@@ -29,7 +21,6 @@ enum SkDisplayMath_Properties {
 };
 
 const SkScalar SkDisplayMath::gConstants[] = {
-#ifdef SK_SCALAR_IS_FLOAT
     2.718281828f,   // E
     2.302585093f,   // LN10
     0.693147181f,   // LN2
@@ -37,17 +28,7 @@ const SkScalar SkDisplayMath::gConstants[] = {
     1.442695041f,   // LOG2E
     3.141592654f,   // PI
     0.707106781f,   // SQRT1_2
-    1.414213562f        // SQRT2 
-#else
-    0x2B7E1,    // E
-    0x24D76,    // LN10
-    0xB172,     // LN2
-    0x6F2E,     // LOG10E
-    0x17154,    // LOG2E
-    0x3243F,    // PI
-    0xB505,     // SQRT1_2
-    0x16A0A // SQRT2
-#endif
+    1.414213562f        // SQRT2
 };
 
 enum SkDisplayMath_Functions {
@@ -147,7 +128,7 @@ const SkMemberInfo SkDisplayMath::fInfo[] = {
 
 DEFINE_GET_MEMBER(SkDisplayMath);
 
-void SkDisplayMath::executeFunction(SkDisplayable* target, int index, 
+void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
         SkTDArray<SkScriptValue>& parameters, SkDisplayTypes type,
         SkScriptValue* scriptValue) {
     if (scriptValue == NULL)
@@ -159,7 +140,7 @@ void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
     SkScalar scalarResult;
     switch (index) {
         case SK_FUNCTION(abs):
-            scalarResult = SkScalarAbs(input); 
+            scalarResult = SkScalarAbs(input);
             break;
         case SK_FUNCTION(acos):
             scalarResult = SkScalarACos(input);
@@ -174,7 +155,7 @@ void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
             scalarResult = SkScalarATan2(input, parameters[1].fOperand.fScalar);
             break;
         case SK_FUNCTION(ceil):
-            scalarResult = SkIntToScalar(SkScalarCeil(input)); 
+            scalarResult = SkScalarCeilToScalar(input);
             break;
         case SK_FUNCTION(cos):
             scalarResult = SkScalarCos(input);
@@ -183,7 +164,7 @@ void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
             scalarResult = SkScalarExp(input);
             break;
         case SK_FUNCTION(floor):
-            scalarResult = SkIntToScalar(SkScalarFloor(input)); 
+            scalarResult = SkScalarFloorToScalar(input);
             break;
         case SK_FUNCTION(log):
             scalarResult = SkScalarLog(input);
@@ -212,7 +193,7 @@ void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
             scalarResult = fRandom.nextUScalar1();
             break;
         case SK_FUNCTION(round):
-            scalarResult = SkIntToScalar(SkScalarRound(input)); 
+            scalarResult = SkScalarRoundToScalar(input);
             break;
         case SK_FUNCTION(sin):
             scalarResult = SkScalarSin(input);
@@ -220,7 +201,7 @@ void SkDisplayMath::executeFunction(SkDisplayable* target, int index,
         case SK_FUNCTION(sqrt): {
             SkASSERT(parameters.count() == 1);
             SkASSERT(type == SkType_Float);
-            scalarResult = SkScalarSqrt(input); 
+            scalarResult = SkScalarSqrt(input);
             } break;
         case SK_FUNCTION(tan):
             scalarResult = SkScalarTan(input);

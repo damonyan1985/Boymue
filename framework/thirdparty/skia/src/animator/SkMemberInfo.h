@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkMemberInfo.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkMemberInfo_DEFINED
 #define SkMemberInfo_DEFINED
@@ -91,15 +83,15 @@ struct SkMemberInfo {
     }
     void setString(SkDisplayable* , SkString* ) const;
     void setValue(SkDisplayable* , const SkOperand values[], int count) const;
-    bool setValue(SkAnimateMaker& , SkTDOperandArray* storage, 
-        int storageOffset, int maxStorage, SkDisplayable* , 
+    bool setValue(SkAnimateMaker& , SkTDOperandArray* storage,
+        int storageOffset, int maxStorage, SkDisplayable* ,
         SkDisplayTypes outType, const char value[], size_t len) const;
-    bool setValue(SkAnimateMaker& , SkTDOperandArray* storage, 
-        int storageOffset, int maxStorage, SkDisplayable* , 
+    bool setValue(SkAnimateMaker& , SkTDOperandArray* storage,
+        int storageOffset, int maxStorage, SkDisplayable* ,
         SkDisplayTypes outType, SkString& str) const;
 //  void setValue(SkDisplayable* , const char value[], const char name[]) const;
-    bool writeValue(SkDisplayable* displayable, SkTDOperandArray* arrayStorage, 
-        int storageOffset, int maxStorage, void* untypedStorage, SkDisplayTypes outType, 
+    bool writeValue(SkDisplayable* displayable, SkTDOperandArray* arrayStorage,
+        int storageOffset, int maxStorage, void* untypedStorage, SkDisplayTypes outType,
         SkScriptValue& scriptValue) const;
 #if SK_USE_CONDENSED_INFO == 0
     static const SkMemberInfo* Find(const SkMemberInfo [], int count, int* index);
@@ -127,7 +119,7 @@ struct SkMemberInfo {
 #define SK_MEMBER_INHERITED \
     { (const char*) INHERITED::fInfo, 0, SkType_BaseClassInfo, INHERITED::fInfoCount }
 
-// #define SK_MEMBER_KEY_TYPE(_member, _type) 
+// #define SK_MEMBER_KEY_TYPE(_member, _type)
 //  {#_member, (size_t) -1, SkType_##_type, 0}
 
 #define SK_FUNCTION(_member) \
@@ -158,49 +150,49 @@ struct SkMemberInfo {
 public: \
     static const SkMemberInfo fInfo[]; \
     static const int fInfoCount; \
-    virtual const SkMemberInfo* getMember(int index); \
-    virtual const SkMemberInfo* getMember(const char name[]); \
+    const SkMemberInfo* getMember(int index) override; \
+    const SkMemberInfo* getMember(const char name[]) override; \
     typedef Sk##_type BASE_CLASS
 
 #define DECLARE_MEMBER_INFO(_type) \
 public: \
     static const SkMemberInfo fInfo[]; \
     static const int fInfoCount; \
-    virtual const SkMemberInfo* getMember(int index); \
-    virtual const SkMemberInfo* getMember(const char name[]); \
-    virtual SkDisplayTypes getType() const { return SkType_##_type; } \
+    const SkMemberInfo* getMember(int index) override; \
+    const SkMemberInfo* getMember(const char name[]) override; \
+    SkDisplayTypes getType() const override { return SkType_##_type; } \
     typedef Sk##_type BASE_CLASS
 
 #define DECLARE_DRAW_MEMBER_INFO(_type) \
 public: \
     static const SkMemberInfo fInfo[]; \
     static const int fInfoCount; \
-    virtual const SkMemberInfo* getMember(int index); \
-    virtual const SkMemberInfo* getMember(const char name[]); \
-    virtual SkDisplayTypes getType() const { return SkType_##_type; } \
+    const SkMemberInfo* getMember(int index) override; \
+    const SkMemberInfo* getMember(const char name[]) override; \
+    SkDisplayTypes getType() const override { return SkType_##_type; } \
     typedef SkDraw##_type BASE_CLASS
 
 #define DECLARE_DISPLAY_MEMBER_INFO(_type) \
 public: \
     static const SkMemberInfo fInfo[]; \
     static const int fInfoCount; \
-    virtual const SkMemberInfo* getMember(int index); \
-    virtual const SkMemberInfo* getMember(const char name[]); \
-    virtual SkDisplayTypes getType() const { return SkType_##_type; } \
+    const SkMemberInfo* getMember(int index) override; \
+    const SkMemberInfo* getMember(const char name[]) override; \
+    SkDisplayTypes getType() const override { return SkType_##_type; } \
     typedef SkDisplay##_type BASE_CLASS
 
 #define DECLARE_EMPTY_MEMBER_INFO(_type) \
 public: \
-    virtual SkDisplayTypes getType() const { return SkType_##_type; }
-    
+    SkDisplayTypes getType() const override { return SkType_##_type; }
+
 #define DECLARE_EXTRAS_MEMBER_INFO(_type) \
 public: \
     static const SkMemberInfo fInfo[]; \
     static const int fInfoCount; \
-    virtual const SkMemberInfo* getMember(int index); \
-    virtual const SkMemberInfo* getMember(const char name[]); \
+    const SkMemberInfo* getMember(int index) override; \
+    const SkMemberInfo* getMember(const char name[]) override; \
     SkDisplayTypes fType; \
-    virtual SkDisplayTypes getType() const { return fType; } \
+    SkDisplayTypes getType() const override { return fType; } \
     typedef _type BASE_CLASS
 
 #define DECLARE_NO_VIRTUALS_MEMBER_INFO(_type) \
@@ -276,4 +268,3 @@ public: \
 #endif
 
 #endif // SkMemberInfo_DEFINED
-

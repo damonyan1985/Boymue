@@ -1,18 +1,11 @@
-/**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkImageDecoder.h"
 #include "SkColor.h"
@@ -24,12 +17,15 @@
 
 class SkWBMPImageDecoder : public SkImageDecoder {
 public:
-    virtual Format getFormat() const {
+    Format getFormat() const override {
         return kWBMP_Format;
     }
-    
+
 protected:
-    virtual bool onDecode(SkStream* stream, SkBitmap* bm, Mode);
+    Result onDecode(SkStream* stream, SkBitmap* bm, Mode) override;
+
+private:
+    typedef SkImageDecoder INHERITED;
 };
 
 static bool read_byte(SkStream* stream, uint8_t* data)
@@ -47,7 +43,7 @@ static bool read_mbf(SkStream* stream, int* value)
         }
         n = (n << 7) | (data & 0x7F);
     } while (data & 0x80);
-    
+
     *value = n;
     return true;
 }
@@ -55,11 +51,11 @@ static bool read_mbf(SkStream* stream, int* value)
 struct wbmp_head {
     int fWidth;
     int fHeight;
-    
+
     bool init(SkStream* stream)
     {
         uint8_t data;
-        
+
         if (!read_byte(stream, &data) || data != 0) { // unknown type
             return false;
         }
@@ -75,11 +71,11 @@ struct wbmp_head {
         return fWidth != 0 && fHeight != 0;
     }
 };
-    
+
 static void expand_bits_to_bytes(uint8_t dst[], const uint8_t src[], int bits)
 {
     int bytes = bits >> 3;
-    
+
     for (int i = 0; i < bytes; i++) {
         unsigned mask = *src++;
         dst[0] = (mask >> 7) & 1;
@@ -92,44 +88,42 @@ static void expand_bits_to_bytes(uint8_t dst[], const uint8_t src[], int bits)
         dst[7] = (mask >> 0) & 1;
         dst += 8;
     }
-    
+
     bits &= 7;
     if (bits > 0) {
         unsigned mask = *src;
         do {
-            *dst++ = (mask >> 7) & 1;;
+            *dst++ = (mask >> 7) & 1;
             mask <<= 1;
-        } while (--bits != 0);    
+        } while (--bits != 0);
     }
 }
 
-#define SkAlign8(x)     (((x) + 7) & ~7)
-
-bool SkWBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* decodedBitmap,
-                                  Mode mode)
+SkImageDecoder::Result SkWBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* decodedBitmap,
+                                                    Mode mode)
 {
     wbmp_head   head;
-    
+
     if (!head.init(stream)) {
-        return false;
+        return kFailure;
     }
-        
+
     int width = head.fWidth;
     int height = head.fHeight;
-    
-    // assign these directly, in case we return kDimensions_Result
-    decodedBitmap->setConfig(SkBitmap::kIndex8_Config, width, height);
-    decodedBitmap->setIsOpaque(true);
-    
-    if (SkImageDecoder::kDecodeBounds_Mode == mode)
-        return true;
-    
+
+    decodedBitmap->setInfo(SkImageInfo::Make(width, height,
+                                             kIndex_8_SkColorType, kOpaque_SkAlphaType));
+
+    if (SkImageDecoder::kDecodeBounds_Mode == mode) {
+        return kSuccess;
+    }
+
     const SkPMColor colors[] = { SK_ColorBLACK, SK_ColorWHITE };
     SkColorTable* ct = SkNEW_ARGS(SkColorTable, (colors, 2));
     SkAutoUnref   aur(ct);
 
     if (!this->allocPixelRef(decodedBitmap, ct)) {
-        return false;
+        return kFailure;
     }
 
     SkAutoLockPixels alp(*decodedBitmap);
@@ -141,7 +135,7 @@ bool SkWBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* decodedBitmap,
     size_t srcSize = height * srcRB;
     uint8_t* src = dst + decodedBitmap->getSize() - srcSize;
     if (stream->read(src, srcSize) != srcSize) {
-        return false;
+        return kFailure;
     }
 
     for (int y = 0; y < height; y++)
@@ -151,14 +145,14 @@ bool SkWBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* decodedBitmap,
         src += srcRB;
     }
 
-    return true;
+    return kSuccess;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+DEFINE_DECODER_CREATOR(WBMPImageDecoder);
+///////////////////////////////////////////////////////////////////////////////
 
-#include "SkTRegistry.h"
-
-static SkImageDecoder* Factory(SkStream* stream) {
+static SkImageDecoder* sk_wbmp_dfactory(SkStreamRewindable* stream) {
     wbmp_head   head;
 
     if (head.init(stream)) {
@@ -167,5 +161,13 @@ static SkImageDecoder* Factory(SkStream* stream) {
     return NULL;
 }
 
-static SkTRegistry<SkImageDecoder*, SkStream*> gReg(Factory);
+static SkImageDecoder::Format get_format_wbmp(SkStreamRewindable* stream) {
+    wbmp_head head;
+    if (head.init(stream)) {
+        return SkImageDecoder::kWBMP_Format;
+    }
+    return SkImageDecoder::kUnknown_Format;
+}
 
+static SkImageDecoder_DecodeReg gDReg(sk_wbmp_dfactory);
+static SkImageDecoder_FormatReg gFormatReg(get_format_wbmp);

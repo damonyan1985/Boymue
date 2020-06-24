@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "gm.h"
 #include "SkRandom.h"
 
@@ -5,29 +12,30 @@ namespace skiagm {
 
 class PointsGM : public GM {
 public:
-	PointsGM() {}
+    PointsGM() {}
 
 protected:
-    virtual SkString onShortName() {
+
+    SkString onShortName() override {
         return SkString("points");
     }
 
-	virtual SkISize onISize() {
-        return make_isize(640, 490);
-    }
-
-    void drawBG(SkCanvas* canvas) {
-        canvas->drawColor(SK_ColorWHITE);
+    SkISize onISize() override {
+        return SkISize::Make(640, 490);
     }
 
     static void fill_pts(SkPoint pts[], size_t n, SkRandom* rand) {
-        for (size_t i = 0; i < n; i++)
-            pts[i].set(rand->nextUScalar1() * 640, rand->nextUScalar1() * 480);
+        for (size_t i = 0; i < n; i++) {
+            // Compute these independently and store in variables, rather
+            // than in the parameter-passing expression, to get consistent
+            // evaluation order across compilers.
+            SkScalar y = rand->nextUScalar1() * 480;
+            SkScalar x = rand->nextUScalar1() * 640;
+            pts[i].set(x, y);
+        }
     }
 
-    virtual void onDraw(SkCanvas* canvas) {
-        this->drawBG(canvas);
-
+    void onDraw(SkCanvas* canvas) override {
         canvas->translate(SK_Scalar1, SK_Scalar1);
 
         SkRandom rand;
@@ -64,4 +72,3 @@ static GM* MyFactory(void*) { return new PointsGM; }
 static GMRegistry reg(MyFactory);
 
 }
-

@@ -1,25 +1,17 @@
-/* libs/graphics/animator/SkDisplayAdd.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayAdd.h"
 #include "SkAnimateMaker.h"
 #include "SkDisplayApply.h"
 #include "SkDisplayList.h"
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 #include "SkDrawGroup.h"
 
 #if SK_USE_CONDENSED_INFO == 0
@@ -41,13 +33,13 @@ const SkMemberInfo SkAdd::fInfo[] = {
 
 DEFINE_GET_MEMBER(SkAdd);
 
-SkAdd::SkAdd() : mode(kMode_indirect), 
+SkAdd::SkAdd() : mode(kMode_indirect),
     offset(SK_MaxS32), use(NULL), where(NULL) {
 }
 
 SkDisplayable* SkAdd::deepCopy(SkAnimateMaker* maker) {
-    SkDrawable* saveUse = use;
-    SkDrawable* saveWhere = where;
+    SkADrawable* saveUse = use;
+    SkADrawable* saveWhere = where;
     use = NULL;
     where = NULL;
     SkAdd* copy = (SkAdd*) INHERITED::deepCopy(maker);
@@ -127,7 +119,7 @@ bool SkAdd::enable(SkAnimateMaker& maker ) {
                                 parentGroup->markCopySet(index);
                                 useParentList->begin()[index] = use;
                                 break;
-                            }                               
+                            }
                         }
                         *parentList->append() = use;
                     }
@@ -251,4 +243,3 @@ const SkMemberInfo SkReplace::fInfo[] = {
 #endif
 
 DEFINE_GET_MEMBER(SkReplace);
-

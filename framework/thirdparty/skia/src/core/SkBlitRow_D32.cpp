@@ -1,4 +1,12 @@
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 #include "SkBlitRow.h"
+#include "SkBlitMask.h"
 #include "SkColorPriv.h"
 #include "SkUtils.h"
 
@@ -8,7 +16,7 @@ static void S32_Opaque_BlitRow32(SkPMColor* SK_RESTRICT dst,
                                  const SkPMColor* SK_RESTRICT src,
                                  int count, U8CPU alpha) {
     SkASSERT(255 == alpha);
-    memcpy(dst, src, count * sizeof(SkPMColor));
+    sk_memcpy32(dst, src, count);
 }
 
 static void S32_Blend_BlitRow32(SkPMColor* SK_RESTRICT dst,
@@ -43,8 +51,6 @@ static void S32_Blend_BlitRow32(SkPMColor* SK_RESTRICT dst,
     }
 }
 
-//#define TEST_SRC_ALPHA
-
 static void S32A_Opaque_BlitRow32(SkPMColor* SK_RESTRICT dst,
                                   const SkPMColor* SK_RESTRICT src,
                                   int count, U8CPU alpha) {
@@ -66,19 +72,7 @@ static void S32A_Opaque_BlitRow32(SkPMColor* SK_RESTRICT dst,
         }
 #else
         do {
-#ifdef TEST_SRC_ALPHA
-            SkPMColor sc = *src;
-            if (sc) {
-                unsigned srcA = SkGetPackedA32(sc);
-                SkPMColor result = sc;
-                if (srcA != 255) {
-                    result = SkPMSrcOver(sc, *dst);
-                }
-                *dst = result;
-            }
-#else
             *dst = SkPMSrcOver(*src, *dst);
-#endif
             src += 1;
             dst += 1;
         } while (--count > 0);
@@ -137,115 +131,27 @@ SkBlitRow::Proc32 SkBlitRow::Factory32(unsigned flags) {
     return proc;
 }
 
-SkBlitRow::Proc32 SkBlitRow::ColorProcFactory() {
-    SkBlitRow::ColorProc proc = PlatformColorProc();
-    if (NULL == proc) {
-        proc = Color32;
+#include "Sk4px.h"
+
+// Color32 uses the blend_256_round_alt algorithm from tests/BlendTest.cpp.
+// It's not quite perfect, but it's never wrong in the interesting edge cases,
+// and it's quite a bit faster than blend_perfect.
+//
+// blend_256_round_alt is our currently blessed algorithm.  Please use it or an analogous one.
+void SkBlitRow::Color32(SkPMColor dst[], const SkPMColor src[], int count, SkPMColor color) {
+    switch (SkGetPackedA32(color)) {
+        case   0: memmove(dst, src, count * sizeof(SkPMColor)); return;
+        case 255: sk_memset32(dst, color, count);               return;
     }
-    SkASSERT(proc);
-    return proc;
+
+    unsigned invA = 255 - SkGetPackedA32(color);
+    invA += invA >> 7;
+    SkASSERT(invA < 256);  // We've already handled alpha == 0 above.
+
+    Sk16h colorHighAndRound = Sk4px(color).widenHi() + Sk16h(128);
+    Sk16b invA_16x(invA);
+
+    Sk4px::MapSrc(count, dst, src, [&](const Sk4px& src4) -> Sk4px {
+        return src4.mulWiden(invA_16x).addNarrowHi(colorHighAndRound);
+    });
 }
-
-void SkBlitRow::Color32(SkPMColor dst[], const SkPMColor src[],
-                        int count, SkPMColor color) {
-    if (count > 0) {
-        if (0 == color) {
-            if (src != dst) {
-                memcpy(dst, src, count * sizeof(SkPMColor));
-            }
-        }
-        unsigned colorA = SkGetPackedA32(color);
-        if (255 == colorA) {
-            sk_memset32(dst, color, count);
-        } else {
-            unsigned scale = 256 - SkAlpha255To256(colorA);
-            do {
-                *dst = color + SkAlphaMulQ(*src, scale);
-                src += 1;
-                dst += 1;
-            } while (--count);
-        }
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-static void D32_Mask_Color(void* dst, size_t dstRB, SkBitmap::Config,
-                           const uint8_t* mask, size_t maskRB, SkColor color,
-                           int width, int height) {
-    SkPMColor pmc = SkPreMultiplyColor(color);
-    size_t dstOffset = dstRB - (width << 2);
-    size_t maskOffset = maskRB - width;
-    SkPMColor *device = (SkPMColor *)dst;
-    do {
-        int w = width;
-        do {
-            unsigned aa = *mask++;
-            *device = SkBlendARGB32(pmc, *device, aa);
-            device += 1;
-        } while (--w != 0);
-        device = (uint32_t*)((char*)device + dstOffset);
-        mask += maskOffset;
-    } while (--height != 0);
-}
-
-static void D32_Mask_Opaque(void* dst, size_t dstRB, SkBitmap::Config,
-                            const uint8_t* mask, size_t maskRB, SkColor color,
-                            int width, int height) {
-    SkPMColor pmc = SkPreMultiplyColor(color);
-    uint32_t* device = (uint32_t*)dst;
-
-    maskRB -= width;
-    dstRB -= (width << 2);
-    do {
-        int w = width;
-        do {
-            unsigned aa = *mask++;
-            *device = SkAlphaMulQ(pmc, SkAlpha255To256(aa)) + SkAlphaMulQ(*device, SkAlpha255To256(255 - aa));
-            device += 1;
-        } while (--w != 0);
-        device = (uint32_t*)((char*)device + dstRB);
-        mask += maskRB;
-    } while (--height != 0);
-}
-
-static void D32_Mask_Black(void* dst, size_t dstRB, SkBitmap::Config,
-                           const uint8_t* mask, size_t maskRB, SkColor,
-                           int width, int height) {
-    uint32_t* device = (uint32_t*)dst;
-
-    maskRB -= width;
-    dstRB -= (width << 2);
-    do {
-        int w = width;
-        do {
-            unsigned aa = *mask++;
-            *device = (aa << SK_A32_SHIFT) + SkAlphaMulQ(*device, SkAlpha255To256(255 - aa));
-            device += 1;
-        } while (--w != 0);
-        device = (uint32_t*)((char*)device + dstRB);
-        mask += maskRB;
-    } while (--height != 0);
-}
-
-SkBlitMask::Proc SkBlitMask::Factory(SkBitmap::Config config, SkColor color) {
-    SkBlitMask::Proc proc = PlatformProcs(config, color);
-    proc = NULL;
-    if (NULL == proc) {
-        switch (config) {
-            case SkBitmap::kARGB_8888_Config:
-                if (SK_ColorBLACK == color) {
-                    proc = D32_Mask_Black;
-                } else if (0xFF == SkColorGetA(color)) {
-                    proc = D32_Mask_Opaque;
-                } else {
-                    proc = D32_Mask_Color;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    return proc;
-}
-

@@ -1,11 +1,36 @@
-#include "SkBenchmark.h"
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#include "Benchmark.h"
+#include "Resources.h"
 #include "SkCanvas.h"
-#include "SkFontHost.h"
 #include "SkPaint.h"
 #include "SkRandom.h"
-#include "SkSfntUtils.h"
+#include "SkStream.h"
 #include "SkString.h"
 #include "SkTemplates.h"
+#include "SkTypeface.h"
+
+enum FontQuality {
+    kBW,
+    kAA,
+    kLCD,
+};
+
+static const char* fontQualityName(const SkPaint& paint) {
+    if (!paint.isAntiAlias()) {
+        return "BW";
+    }
+    if (paint.isLCDRenderText()) {
+        return "LCD";
+    }
+    return "AA";
+}
 
 /*  Some considerations for performance:
         short -vs- long strings (measuring overhead)
@@ -16,36 +41,45 @@
         textencoding?
         text -vs- postext - pathtext
  */
-class TextBench : public SkBenchmark {
+class TextBench : public Benchmark {
     SkPaint     fPaint;
-    int         fCount;
-    SkPoint*    fPos;
     SkString    fText;
     SkString    fName;
-    enum { N = 600 };
+    FontQuality fFQ;
+    bool        fDoPos;
+    bool        fDoColorEmoji;
+    SkAutoTUnref<SkTypeface> fColorEmojiTypeface;
+    SkPoint*    fPos;
 public:
-    TextBench(void* param, const char text[], int ps, bool linearText,
-              bool posText, SkColor color = SK_ColorBLACK) : INHERITED(param) {
+    TextBench(const char text[], int ps,
+              SkColor color, FontQuality fq, bool doColorEmoji = false, bool doPos = false)  {
+        fPos = NULL;
+        fFQ = fq;
+        fDoPos = doPos;
+        fDoColorEmoji = doColorEmoji;
         fText.set(text);
 
-        fPaint.setAntiAlias(true);
+        fPaint.setAntiAlias(kBW != fq);
+        fPaint.setLCDRenderText(kLCD == fq);
         fPaint.setTextSize(SkIntToScalar(ps));
-        fPaint.setLinearText(linearText);
         fPaint.setColor(color);
 
-        if (posText) {
-            SkAutoTArray<SkScalar> storage(fText.size());
-            SkScalar* widths = storage.get();
-            fCount = fPaint.getTextWidths(fText.c_str(), fText.size(), widths);
-            fPos = new SkPoint[fCount];
+        if (doColorEmoji) {
+            SkASSERT(kBW == fFQ);
+            fColorEmojiTypeface.reset(GetResourceAsTypeface("/fonts/Funkster.ttf"));
+        }
+
+        if (doPos) {
+            size_t len = strlen(text);
+            SkScalar* adv = new SkScalar[len];
+            fPaint.getTextWidths(text, len, adv);
+            fPos = new SkPoint[len];
             SkScalar x = 0;
-            for (int i = 0; i < fCount; i++) {
-                fPos[i].set(x, 0);
-                x += widths[i];
+            for (size_t i = 0; i < len; ++i) {
+                fPos[i].set(x, SkIntToScalar(50));
+                x += adv[i];
             }
-        } else {
-            fCount = 0;
-            fPos = NULL;
+            delete[] adv;
         }
     }
 
@@ -56,80 +90,81 @@ public:
 protected:
     virtual const char* onGetName() {
         fName.printf("text_%g", SkScalarToFloat(fPaint.getTextSize()));
-        if (fPaint.isLinearText()) {
-            fName.append("_linear");
-        }
-        if (fPos) {
+        if (fDoPos) {
             fName.append("_pos");
         }
-
+        fName.appendf("_%s", fontQualityName(fPaint));
         if (SK_ColorBLACK != fPaint.getColor()) {
             fName.appendf("_%02X", fPaint.getAlpha());
+        } else {
+            fName.append("_BK");
         }
+
+        if (fDoColorEmoji && fColorEmojiTypeface) {
+            fName.append("_ColorEmoji");
+        }
+
         return fName.c_str();
     }
 
-    virtual void onDraw(SkCanvas* canvas) {
+    virtual void onDraw(const int loops, SkCanvas* canvas) {
         const SkIPoint dim = this->getSize();
         SkRandom rand;
 
         SkPaint paint(fPaint);
         this->setupPaint(&paint);
-        paint.setColor(fPaint.getColor());  // need our specified color
+        // explicitly need these
+        paint.setColor(fPaint.getColor());
+        paint.setAntiAlias(kBW != fFQ);
+        paint.setLCDRenderText(kLCD == fFQ);
+
+        if (fDoColorEmoji && fColorEmojiTypeface) {
+            paint.setTypeface(fColorEmojiTypeface);
+        }
 
         const SkScalar x0 = SkIntToScalar(-10);
         const SkScalar y0 = SkIntToScalar(-10);
 
-        for (int i = 0; i < N; i++) {
-            SkScalar x = x0 + rand.nextUScalar1() * dim.fX;
-            SkScalar y = y0 + rand.nextUScalar1() * dim.fY;
-            if (fPos) {
-                canvas->save(SkCanvas::kMatrix_SaveFlag);
-                canvas->translate(x, y);
+        if (fDoPos) {
+            // realistically, the matrix is often at least translated, so we
+            // do that since it exercises different code in drawPosText.
+            canvas->translate(SK_Scalar1, SK_Scalar1);
+        }
+
+        for (int i = 0; i < loops; i++) {
+            if (fDoPos) {
                 canvas->drawPosText(fText.c_str(), fText.size(), fPos, paint);
-                canvas->restore();
             } else {
+                SkScalar x = x0 + rand.nextUScalar1() * dim.fX;
+                SkScalar y = y0 + rand.nextUScalar1() * dim.fY;
                 canvas->drawText(fText.c_str(), fText.size(), x, y, paint);
             }
         }
     }
 
 private:
-    typedef SkBenchmark INHERITED;
+    typedef Benchmark INHERITED;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 #define STR     "Hamburgefons"
-#define SMALL   9
-#define BIG     48
 
-static SkBenchmark* Fact0(void* p) { return new TextBench(p, STR, SMALL, false, false); }
-static SkBenchmark* Fact01(void* p) { return new TextBench(p, STR, SMALL, false, false, 0xFFFF0000); }
-static SkBenchmark* Fact02(void* p) { return new TextBench(p, STR, SMALL, false, false, 0x88FF0000); }
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kBW); )
+DEF_BENCH( return new TextBench(STR, 16, 0xFFFF0000, kBW); )
+DEF_BENCH( return new TextBench(STR, 16, 0x88FF0000, kBW); )
 
-static SkBenchmark* Fact1(void* p) { return new TextBench(p, STR, SMALL, false, true); }
-static SkBenchmark* Fact2(void* p) { return new TextBench(p, STR, SMALL, true, false); }
-static SkBenchmark* Fact3(void* p) { return new TextBench(p, STR, SMALL, true, true); }
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kAA); )
+DEF_BENCH( return new TextBench(STR, 16, 0xFFFF0000, kAA); )
+DEF_BENCH( return new TextBench(STR, 16, 0x88FF0000, kAA); )
 
-static SkBenchmark* Fact4(void* p) { return new TextBench(p, STR, BIG, false, false); }
-static SkBenchmark* Fact41(void* p) { return new TextBench(p, STR, BIG, false, false, 0xFFFF0000); }
-static SkBenchmark* Fact42(void* p) { return new TextBench(p, STR, BIG, false, false, 0x88FF0000); }
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kLCD); )
+DEF_BENCH( return new TextBench(STR, 16, 0xFFFF0000, kLCD); )
+DEF_BENCH( return new TextBench(STR, 16, 0x88FF0000, kLCD); )
 
-static SkBenchmark* Fact5(void* p) { return new TextBench(p, STR, BIG, false, true); }
-static SkBenchmark* Fact6(void* p) { return new TextBench(p, STR, BIG, true, false); }
-static SkBenchmark* Fact7(void* p) { return new TextBench(p, STR, BIG, true, true); }
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kBW, true); )
+DEF_BENCH( return new TextBench(STR, 16, 0xFFFF0000, kBW, true); )
+DEF_BENCH( return new TextBench(STR, 16, 0x88FF0000, kBW, true); )
 
-static BenchRegistry gReg0(Fact0);
-static BenchRegistry gReg01(Fact01);
-static BenchRegistry gReg02(Fact02);
-static BenchRegistry gReg1(Fact1);
-static BenchRegistry gReg2(Fact2);
-static BenchRegistry gReg3(Fact3);
-static BenchRegistry gReg4(Fact4);
-static BenchRegistry gReg41(Fact41);
-static BenchRegistry gReg42(Fact42);
-static BenchRegistry gReg5(Fact5);
-static BenchRegistry gReg6(Fact6);
-static BenchRegistry gReg7(Fact7);
-
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kBW, true, true); )
+DEF_BENCH( return new TextBench(STR, 16, 0xFF000000, kAA, false, true); )

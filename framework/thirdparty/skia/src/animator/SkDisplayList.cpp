@@ -1,26 +1,18 @@
-/* libs/graphics/animator/SkDisplayList.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayList.h"
 #include "SkAnimateActive.h"
 #include "SkAnimateBase.h"
 #include "SkAnimateMaker.h"
 #include "SkDisplayApply.h"
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 #include "SkDrawGroup.h"
 #include "SkDrawMatrix.h"
 #include "SkInterpolator.h"
@@ -47,7 +39,7 @@ bool SkDisplayList::draw(SkAnimateMaker& maker, SkMSec inTime) {
             active->reset();
         }
         for (int index = 0; index < fDrawList.count(); index++) {
-            SkDrawable* draw = fDrawList[index];
+            SkADrawable* draw = fDrawList[index];
             draw->initialize(); // allow matrices to reset themselves
             SkASSERT(draw->isDrawable());
             validate();
@@ -58,8 +50,8 @@ bool SkDisplayList::draw(SkAnimateMaker& maker, SkMSec inTime) {
     return result;
 }
 
-int SkDisplayList::findGroup(SkDrawable* match, SkTDDrawableArray** list,
-        SkGroup** parent, SkGroup** found, SkTDDrawableArray**grandList) { 
+int SkDisplayList::findGroup(SkADrawable* match, SkTDDrawableArray** list,
+        SkGroup** parent, SkGroup** found, SkTDDrawableArray**grandList) {
     *parent = NULL;
     *list = &fDrawList;
     *grandList = &fDrawList;
@@ -76,11 +68,11 @@ bool SkDisplayList::onIRect(const SkIRect& r) {
     return fDrawBounds;
 }
 
-int SkDisplayList::SearchForMatch(SkDrawable* match, SkTDDrawableArray** list,
-        SkGroup** parent, SkGroup** found, SkTDDrawableArray**grandList) { 
+int SkDisplayList::SearchForMatch(SkADrawable* match, SkTDDrawableArray** list,
+        SkGroup** parent, SkGroup** found, SkTDDrawableArray**grandList) {
     *found = NULL;
     for (int index = 0; index < (*list)->count(); index++) {
-        SkDrawable* draw = (**list)[index];
+        SkADrawable* draw = (**list)[index];
         if (draw == match)
             return index;
         if (draw->isApply()) {
@@ -90,22 +82,22 @@ int SkDisplayList::SearchForMatch(SkDrawable* match, SkTDDrawableArray** list,
             if (apply->scope->isGroup() && SearchGroupForMatch(apply->scope, match, list, parent, found, grandList, index))
                 return index;
             if (apply->mode == SkApply::kMode_create) {
-                for (SkDrawable** ptr = apply->fScopes.begin(); ptr < apply->fScopes.end(); ptr++) {
-                    SkDrawable* scope = *ptr;
+                for (SkADrawable** ptr = apply->fScopes.begin(); ptr < apply->fScopes.end(); ptr++) {
+                    SkADrawable* scope = *ptr;
                     if (scope == match)
                         return index;
                     //perhaps should call SearchGroupForMatch here as well (on scope)
                 }
-            } 
+            }
         }
-        if (draw->isGroup() && SearchGroupForMatch(draw, match, list, parent, found, grandList, index)) 
+        if (draw->isGroup() && SearchGroupForMatch(draw, match, list, parent, found, grandList, index))
             return index;
-        
+
     }
     return -1;
 }
 
-bool SkDisplayList::SearchGroupForMatch(SkDrawable* draw, SkDrawable* match, SkTDDrawableArray** list,
+bool SkDisplayList::SearchGroupForMatch(SkADrawable* draw, SkADrawable* match, SkTDDrawableArray** list,
         SkGroup** parent, SkGroup** found, SkTDDrawableArray** grandList, int &index) {
             SkGroup* group = (SkGroup*) draw;
             if (group->getOriginal() == match)
@@ -123,12 +115,12 @@ bool SkDisplayList::SearchGroupForMatch(SkDrawable* draw, SkDrawable* match, SkT
 
 void SkDisplayList::reset() {
     for (int index = 0; index < fDrawList.count(); index++) {
-        SkDrawable* draw = fDrawList[index];
+        SkADrawable* draw = fDrawList[index];
         if (draw->isApply() == false)
             continue;
         SkApply* apply = (SkApply*) draw;
         apply->reset();
-    }           
+    }
 }
 
 void SkDisplayList::remove(SkActive* active) {
@@ -159,10 +151,8 @@ void SkDisplayList::dumpInner(SkAnimateMaker* maker) {
 #ifdef SK_DEBUG
 void SkDisplayList::validate() {
     for (int index = 0; index < fDrawList.count(); index++) {
-        SkDrawable* draw = fDrawList[index];
+        SkADrawable* draw = fDrawList[index];
         draw->validate();
     }
 }
 #endif
-
-

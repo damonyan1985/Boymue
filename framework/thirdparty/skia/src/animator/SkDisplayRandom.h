@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayRandom.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDisplayRandom_DEFINED
 #define SkDisplayRandom_DEFINED
@@ -34,10 +26,10 @@ class SkDisplayRandom : public SkDisplayable {
     DECLARE_DISPLAY_MEMBER_INFO(Random);
     SkDisplayRandom();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
-    virtual bool getProperty(int index, SkScriptValue* value) const;
-    virtual bool setProperty(int index, SkScriptValue& );
+    bool getProperty(int index, SkScriptValue* value) const override;
+    bool setProperty(int index, SkScriptValue& ) override;
 private:
     SkScalar blend;
     SkScalar min;
@@ -46,4 +38,3 @@ private:
 };
 
 #endif // SkDisplayRandom_DEFINED
-

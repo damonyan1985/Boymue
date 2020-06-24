@@ -1,109 +1,136 @@
-/* libs/graphics/sgl/SkColorFilter.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #include "SkColorFilter.h"
-#include "SkShader.h"
-#include "SkUnPreMultiply.h"
+#include "SkReadBuffer.h"
+#include "SkString.h"
+#include "SkWriteBuffer.h"
 
-bool SkColorFilter::asColorMode(SkColor* color, SkXfermode::Mode* mode) {
+bool SkColorFilter::asColorMode(SkColor* color, SkXfermode::Mode* mode) const {
     return false;
 }
 
-void SkColorFilter::filterSpan16(const uint16_t s[], int count, uint16_t d[]) {
-    SkASSERT(this->getFlags() & SkColorFilter::kHasFilter16_Flag);
-    SkASSERT(!"missing implementation of SkColorFilter::filterSpan16");
-
-    if (d != s) {
-        memcpy(d, s, count * sizeof(uint16_t));
-    }
+bool SkColorFilter::asColorMatrix(SkScalar matrix[20]) const {
+    return false;
 }
 
-SkColor SkColorFilter::filterColor(SkColor c) {
+bool SkColorFilter::asComponentTable(SkBitmap*) const {
+    return false;
+}
+
+SkColor SkColorFilter::filterColor(SkColor c) const {
     SkPMColor dst, src = SkPreMultiplyColor(c);
     this->filterSpan(&src, 1, &dst);
     return SkUnPreMultiply::PMColorToColor(dst);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-SkFilterShader::SkFilterShader(SkShader* shader, SkColorFilter* filter) {
-    fShader = shader;   shader->ref();
-    fFilter = filter;   filter->ref();
-}
+/*
+ *  Since colorfilters may be used on the GPU backend, and in that case we may string together
+ *  many GrFragmentProcessors, we might exceed some internal instruction/resource limit.
+ *
+ *  Since we don't yet know *what* those limits might be when we construct the final shader,
+ *  we just set an arbitrary limit during construction. If later we find smarter ways to know what
+ *  the limnits are, we can change this constant (or remove it).
+ */
+#define SK_MAX_COMPOSE_COLORFILTER_COUNT    4
 
-SkFilterShader::SkFilterShader(SkFlattenableReadBuffer& buffer) :
-        INHERITED(buffer) {
-    fShader = static_cast<SkShader*>(buffer.readFlattenable());
-    fFilter = static_cast<SkColorFilter*>(buffer.readFlattenable());
-}
-
-SkFilterShader::~SkFilterShader() {
-    fFilter->unref();
-    fShader->unref();
-}
-
-void SkFilterShader::beginSession() {
-    this->INHERITED::beginSession();
-    fShader->beginSession();
-}
-
-void SkFilterShader::endSession() {
-    fShader->endSession();
-    this->INHERITED::endSession();
-}
-
-void SkFilterShader::flatten(SkFlattenableWriteBuffer& buffer) {
-    this->INHERITED::flatten(buffer);
-    buffer.writeFlattenable(fShader);
-    buffer.writeFlattenable(fFilter);
-}
-
-uint32_t SkFilterShader::getFlags() {
-    uint32_t shaderF = fShader->getFlags();
-    uint32_t filterF = fFilter->getFlags();
+class SkComposeColorFilter : public SkColorFilter {
+public:
+    uint32_t getFlags() const override {
+        // Can only claim alphaunchanged and 16bit support if both our proxys do.
+        return fOuter->getFlags() & fInner->getFlags();
+    }
     
-    // if the filter doesn't support 16bit, clear the matching bit in the shader
-    if (!(filterF & SkColorFilter::kHasFilter16_Flag)) {
-        shaderF &= ~SkShader::kHasSpan16_Flag;
+    void filterSpan(const SkPMColor shader[], int count, SkPMColor result[]) const override {
+        fInner->filterSpan(shader, count, result);
+        fOuter->filterSpan(result, count, result);
     }
-    // if the filter might change alpha, clear the opaque flag in the shader
-    if (!(filterF & SkColorFilter::kAlphaUnchanged_Flag)) {
-        shaderF &= ~(SkShader::kOpaqueAlpha_Flag | SkShader::kHasSpan16_Flag);
+    
+#ifndef SK_IGNORE_TO_STRING
+    void toString(SkString* str) const override {
+        SkString outerS, innerS;
+        fOuter->toString(&outerS);
+        fInner->toString(&innerS);
+        str->appendf("SkComposeColorFilter: outer(%s) inner(%s)", outerS.c_str(), innerS.c_str());
     }
-    return shaderF;
+#endif
+
+#if SK_SUPPORT_GPU
+    bool asFragmentProcessors(GrContext* context,
+                              SkTDArray<GrFragmentProcessor*>* array) const override {
+        bool hasFrags = fInner->asFragmentProcessors(context, array);
+        hasFrags |= fOuter->asFragmentProcessors(context, array);
+        return hasFrags;
+    }
+#endif
+
+    SK_DECLARE_PUBLIC_FLATTENABLE_DESERIALIZATION_PROCS(SkComposeColorFilter)
+    
+protected:
+    void flatten(SkWriteBuffer& buffer) const override {
+        buffer.writeFlattenable(fOuter);
+        buffer.writeFlattenable(fInner);
+    }
+    
+private:
+    SkComposeColorFilter(SkColorFilter* outer, SkColorFilter* inner, int composedFilterCount)
+        : fOuter(SkRef(outer))
+        , fInner(SkRef(inner))
+        , fComposedFilterCount(composedFilterCount)
+    {
+        SkASSERT(composedFilterCount >= 2);
+        SkASSERT(composedFilterCount <= SK_MAX_COMPOSE_COLORFILTER_COUNT);
+    }
+
+    int privateComposedFilterCount() const override {
+        return fComposedFilterCount;
+    }
+
+    SkAutoTUnref<SkColorFilter> fOuter;
+    SkAutoTUnref<SkColorFilter> fInner;
+    const int                   fComposedFilterCount;
+
+    friend class SkColorFilter;
+
+    typedef SkColorFilter INHERITED;
+};
+
+SkFlattenable* SkComposeColorFilter::CreateProc(SkReadBuffer& buffer) {
+    SkAutoTUnref<SkColorFilter> outer(buffer.readColorFilter());
+    SkAutoTUnref<SkColorFilter> inner(buffer.readColorFilter());
+    return CreateComposeFilter(outer, inner);
 }
 
-bool SkFilterShader::setContext(const SkBitmap& device,
-                                const SkPaint& paint,
-                                const SkMatrix& matrix) {
-    return  this->INHERITED::setContext(device, paint, matrix) &&
-            fShader->setContext(device, paint, matrix);
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+SkColorFilter* SkColorFilter::CreateComposeFilter(SkColorFilter* outer, SkColorFilter* inner) {
+    if (!outer) {
+        return SkSafeRef(inner);
+    }
+    if (!inner) {
+        return SkSafeRef(outer);
+    }
+
+    // Give the subclass a shot at a more optimal composition...
+    SkColorFilter* composition = outer->newComposed(inner);
+    if (composition) {
+        return composition;
+    }
+
+    int count = inner->privateComposedFilterCount() + outer->privateComposedFilterCount();
+    if (count > SK_MAX_COMPOSE_COLORFILTER_COUNT) {
+        return NULL;
+    }
+    return SkNEW_ARGS(SkComposeColorFilter, (outer, inner, count));
 }
 
-void SkFilterShader::shadeSpan(int x, int y, SkPMColor result[], int count) {
-    fShader->shadeSpan(x, y, result, count);
-    fFilter->filterSpan(result, count, result);
-}
-
-void SkFilterShader::shadeSpan16(int x, int y, uint16_t result[], int count) {
-    SkASSERT(fShader->getFlags() & SkShader::kHasSpan16_Flag);
-    SkASSERT(fFilter->getFlags() & SkColorFilter::kHasFilter16_Flag);
-
-    fShader->shadeSpan16(x, y, result, count);
-    fFilter->filterSpan16(result, count, result);
-}
+SK_DEFINE_FLATTENABLE_REGISTRAR_GROUP_START(SkColorFilter)
+SK_DEFINE_FLATTENABLE_REGISTRAR_ENTRY(SkComposeColorFilter)
+SK_DEFINE_FLATTENABLE_REGISTRAR_GROUP_END
 

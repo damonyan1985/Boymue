@@ -1,75 +1,34 @@
-/* libs/graphics/effects/SkDashPathEffect.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #include "SkDashPathEffect.h"
-#include "SkBuffer.h"
-#include "SkPathMeasure.h"
 
-static inline int is_even(int x) {
-    return (~x) << 31;
-}
+#include "SkDashPathPriv.h"
+#include "SkReadBuffer.h"
+#include "SkWriteBuffer.h"
 
-static SkScalar FindFirstInterval(const SkScalar intervals[], SkScalar phase,
-                                  int32_t* index) {
-    int i;
-
-    for (i = 0; phase > intervals[i]; i++) {
-        phase -= intervals[i];
-    }
-    *index = i;
-    return intervals[i] - phase;
-}
-
-SkDashPathEffect::SkDashPathEffect(const SkScalar intervals[], int count,
-                                   SkScalar phase, bool scaleToFit)
-        : fScaleToFit(scaleToFit) {
+SkDashPathEffect::SkDashPathEffect(const SkScalar intervals[], int count, SkScalar phase)
+        : fPhase(0)
+        , fInitialDashLength(0)
+        , fInitialDashIndex(0)
+        , fIntervalLength(0) {
     SkASSERT(intervals);
     SkASSERT(count > 1 && SkAlign2(count) == count);
 
     fIntervals = (SkScalar*)sk_malloc_throw(sizeof(SkScalar) * count);
     fCount = count;
-
-    SkScalar len = 0;
     for (int i = 0; i < count; i++) {
         SkASSERT(intervals[i] >= 0);
         fIntervals[i] = intervals[i];
-        len += intervals[i];
     }
-    fIntervalLength = len;
 
-    if (len > 0) {  // we don't handle 0 length dash arrays
-        if (phase < 0) {
-            phase = -phase;
-            if (phase > len) {
-                phase = SkScalarMod(phase, len);
-            }
-            phase = len - phase;
-        } else if (phase >= len) {
-            phase = SkScalarMod(phase, len);
-        }
-
-        SkASSERT(phase >= 0 && phase < len);
-        fInitialDashLength = FindFirstInterval(intervals, phase, &fInitialDashIndex);
-
-        SkASSERT(fInitialDashLength >= 0);
-        SkASSERT(fInitialDashIndex >= 0 && fInitialDashIndex < fCount);
-    } else {
-        fInitialDashLength = -1;    // signal bad dash intervals
-    }
+    // set the internal data members
+    SkDashPath::CalcDashParameters(phase, fIntervals, fCount,
+            &fInitialDashLength, &fInitialDashIndex, &fIntervalLength, &fPhase);
 }
 
 SkDashPathEffect::~SkDashPathEffect() {
@@ -77,95 +36,350 @@ SkDashPathEffect::~SkDashPathEffect() {
 }
 
 bool SkDashPathEffect::filterPath(SkPath* dst, const SkPath& src,
-                                  SkScalar* width) {
-    // we do nothing if the src wants to be filled, or if our dashlength is 0
-    if (*width < 0 || fInitialDashLength < 0) {
+                              SkStrokeRec* rec, const SkRect* cullRect) const {
+    return SkDashPath::FilterDashPath(dst, src, rec, cullRect, fIntervals, fCount,
+                                      fInitialDashLength, fInitialDashIndex, fIntervalLength);
+}
+
+static void outset_for_stroke(SkRect* rect, const SkStrokeRec& rec) {
+    SkScalar radius = SkScalarHalf(rec.getWidth());
+    if (0 == radius) {
+        radius = SK_Scalar1;    // hairlines
+    }
+    if (SkPaint::kMiter_Join == rec.getJoin()) {
+        radius = SkScalarMul(radius, rec.getMiter());
+    }
+    rect->outset(radius, radius);
+}
+
+// Attempt to trim the line to minimally cover the cull rect (currently
+// only works for horizontal and vertical lines).
+// Return true if processing should continue; false otherwise.
+static bool cull_line(SkPoint* pts, const SkStrokeRec& rec,
+                      const SkMatrix& ctm, const SkRect* cullRect,
+                      const SkScalar intervalLength) {
+    if (NULL == cullRect) {
+        SkASSERT(false); // Shouldn't ever occur in practice
         return false;
     }
 
-    SkPathMeasure   meas(src, false);
-    const SkScalar* intervals = fIntervals;
+    SkScalar dx = pts[1].x() - pts[0].x();
+    SkScalar dy = pts[1].y() - pts[0].y();
 
-    do {
-        bool        skipFirstSegment = meas.isClosed();
-        bool        addedSegment = false;
-        SkScalar    length = meas.getLength();
-        int         index = fInitialDashIndex;
-        SkScalar    scale = SK_Scalar1;
+    if ((dx && dy) || (!dx && !dy)) {
+        return false;
+    }
 
-        if (fScaleToFit) {
-            if (fIntervalLength >= length) {
-                scale = SkScalarDiv(length, fIntervalLength);
-            } else {
-                SkScalar div = SkScalarDiv(length, fIntervalLength);
-                int n = SkScalarFloor(div);
-                scale = SkScalarDiv(length, n * fIntervalLength);
-            }
+    SkRect bounds = *cullRect;
+    outset_for_stroke(&bounds, rec);
+
+    // cullRect is in device space while pts are in the local coordinate system
+    // defined by the ctm. We want our answer in the local coordinate system.
+
+    SkASSERT(ctm.rectStaysRect());
+    SkMatrix inv;
+    if (!ctm.invert(&inv)) {
+        return false;
+    }
+
+    inv.mapRect(&bounds);
+
+    if (dx) {
+        SkASSERT(dx && !dy);
+        SkScalar minX = pts[0].fX;
+        SkScalar maxX = pts[1].fX;
+
+        if (dx < 0) {
+            SkTSwap(minX, maxX);
         }
 
-        SkScalar    distance = 0;
-        SkScalar    dlen = SkScalarMul(fInitialDashLength, scale);
-
-        while (distance < length) {
-            SkASSERT(dlen >= 0);
-            addedSegment = false;
-            if (is_even(index) && dlen > 0 && !skipFirstSegment) {
-                addedSegment = true;
-                meas.getSegment(distance, distance + dlen, dst, true);
-            }
-            distance += dlen;
-
-            // clear this so we only respect it the first time around
-            skipFirstSegment = false;
-
-            // wrap around our intervals array if necessary
-            index += 1;
-            SkASSERT(index <= fCount);
-            if (index == fCount) {
-                index = 0;
-            }
-
-            // fetch our next dlen
-            dlen = SkScalarMul(intervals[index], scale);
+        SkASSERT(minX < maxX);
+        if (maxX <= bounds.fLeft || minX >= bounds.fRight) {
+            return false;
         }
 
-        // extend if we ended on a segment and we need to join up with the (skipped) initial segment
-        if (meas.isClosed() && is_even(fInitialDashIndex) &&
-                fInitialDashLength > 0) {
-            meas.getSegment(0, SkScalarMul(fInitialDashLength, scale), dst, !addedSegment);
+        // Now we actually perform the chop, removing the excess to the left and
+        // right of the bounds (keeping our new line "in phase" with the dash,
+        // hence the (mod intervalLength).
+
+        if (minX < bounds.fLeft) {
+            minX = bounds.fLeft - SkScalarMod(bounds.fLeft - minX, intervalLength);
         }
-    } while (meas.nextContour());
+        if (maxX > bounds.fRight) {
+            maxX = bounds.fRight + SkScalarMod(maxX - bounds.fRight, intervalLength);
+        }
+
+        SkASSERT(maxX > minX);
+        if (dx < 0) {
+            SkTSwap(minX, maxX);
+        }
+        pts[0].fX = minX;
+        pts[1].fX = maxX;
+    } else {
+        SkASSERT(dy && !dx);
+        SkScalar minY = pts[0].fY;
+        SkScalar maxY = pts[1].fY;
+
+        if (dy < 0) {
+            SkTSwap(minY, maxY);
+        }
+
+        SkASSERT(minY < maxY);
+        if (maxY <= bounds.fTop || minY >= bounds.fBottom) {
+            return false;
+        }
+
+        // Now we actually perform the chop, removing the excess to the top and
+        // bottom of the bounds (keeping our new line "in phase" with the dash,
+        // hence the (mod intervalLength).
+
+        if (minY < bounds.fTop) {
+            minY = bounds.fTop - SkScalarMod(bounds.fTop - minY, intervalLength);
+        }
+        if (maxY > bounds.fBottom) {
+            maxY = bounds.fBottom + SkScalarMod(maxY - bounds.fBottom, intervalLength);
+        }
+
+        SkASSERT(maxY > minY);
+        if (dy < 0) {
+            SkTSwap(minY, maxY);
+        }
+        pts[0].fY = minY;
+        pts[1].fY = maxY;
+    }
+
     return true;
 }
 
-SkFlattenable::Factory SkDashPathEffect::getFactory() {
-    return fInitialDashLength < 0 ? NULL : CreateProc;
+// Currently asPoints is more restrictive then it needs to be. In the future
+// we need to:
+//      allow kRound_Cap capping (could allow rotations in the matrix with this)
+//      allow paths to be returned
+bool SkDashPathEffect::asPoints(PointData* results,
+                                const SkPath& src,
+                                const SkStrokeRec& rec,
+                                const SkMatrix& matrix,
+                                const SkRect* cullRect) const {
+    // width < 0 -> fill && width == 0 -> hairline so requiring width > 0 rules both out
+    if (fInitialDashLength < 0 || 0 >= rec.getWidth()) {
+        return false;
+    }
+
+    // TODO: this next test could be eased up. We could allow any number of
+    // intervals as long as all the ons match and all the offs match.
+    // Additionally, they do not necessarily need to be integers.
+    // We cannot allow arbitrary intervals since we want the returned points
+    // to be uniformly sized.
+    if (fCount != 2 ||
+        !SkScalarNearlyEqual(fIntervals[0], fIntervals[1]) ||
+        !SkScalarIsInt(fIntervals[0]) ||
+        !SkScalarIsInt(fIntervals[1])) {
+        return false;
+    }
+
+    SkPoint pts[2];
+
+    if (!src.isLine(pts)) {
+        return false;
+    }
+
+    // TODO: this test could be eased up to allow circles
+    if (SkPaint::kButt_Cap != rec.getCap()) {
+        return false;
+    }
+
+    // TODO: this test could be eased up for circles. Rotations could be allowed.
+    if (!matrix.rectStaysRect()) {
+        return false;
+    }
+
+    // See if the line can be limited to something plausible.
+    if (!cull_line(pts, rec, matrix, cullRect, fIntervalLength)) {
+        return false;
+    }
+
+    SkScalar length = SkPoint::Distance(pts[1], pts[0]);
+
+    SkVector tangent = pts[1] - pts[0];
+    if (tangent.isZero()) {
+        return false;
+    }
+
+    tangent.scale(SkScalarInvert(length));
+
+    // TODO: make this test for horizontal & vertical lines more robust
+    bool isXAxis = true;
+    if (SkScalarNearlyEqual(SK_Scalar1, tangent.fX) ||
+        SkScalarNearlyEqual(-SK_Scalar1, tangent.fX)) {
+        results->fSize.set(SkScalarHalf(fIntervals[0]), SkScalarHalf(rec.getWidth()));
+    } else if (SkScalarNearlyEqual(SK_Scalar1, tangent.fY) ||
+               SkScalarNearlyEqual(-SK_Scalar1, tangent.fY)) {
+        results->fSize.set(SkScalarHalf(rec.getWidth()), SkScalarHalf(fIntervals[0]));
+        isXAxis = false;
+    } else if (SkPaint::kRound_Cap != rec.getCap()) {
+        // Angled lines don't have axis-aligned boxes.
+        return false;
+    }
+
+    if (results) {
+        results->fFlags = 0;
+        SkScalar clampedInitialDashLength = SkMinScalar(length, fInitialDashLength);
+
+        if (SkPaint::kRound_Cap == rec.getCap()) {
+            results->fFlags |= PointData::kCircles_PointFlag;
+        }
+
+        results->fNumPoints = 0;
+        SkScalar len2 = length;
+        if (clampedInitialDashLength > 0 || 0 == fInitialDashIndex) {
+            SkASSERT(len2 >= clampedInitialDashLength);
+            if (0 == fInitialDashIndex) {
+                if (clampedInitialDashLength > 0) {
+                    if (clampedInitialDashLength >= fIntervals[0]) {
+                        ++results->fNumPoints;  // partial first dash
+                    }
+                    len2 -= clampedInitialDashLength;
+                }
+                len2 -= fIntervals[1];  // also skip first space
+                if (len2 < 0) {
+                    len2 = 0;
+                }
+            } else {
+                len2 -= clampedInitialDashLength; // skip initial partial empty
+            }
+        }
+        int numMidPoints = SkScalarFloorToInt(len2 / fIntervalLength);
+        results->fNumPoints += numMidPoints;
+        len2 -= numMidPoints * fIntervalLength;
+        bool partialLast = false;
+        if (len2 > 0) {
+            if (len2 < fIntervals[0]) {
+                partialLast = true;
+            } else {
+                ++numMidPoints;
+                ++results->fNumPoints;
+            }
+        }
+
+        results->fPoints = new SkPoint[results->fNumPoints];
+
+        SkScalar    distance = 0;
+        int         curPt = 0;
+
+        if (clampedInitialDashLength > 0 || 0 == fInitialDashIndex) {
+            SkASSERT(clampedInitialDashLength <= length);
+
+            if (0 == fInitialDashIndex) {
+                if (clampedInitialDashLength > 0) {
+                    // partial first block
+                    SkASSERT(SkPaint::kRound_Cap != rec.getCap()); // can't handle partial circles
+                    SkScalar x = pts[0].fX + SkScalarMul(tangent.fX, SkScalarHalf(clampedInitialDashLength));
+                    SkScalar y = pts[0].fY + SkScalarMul(tangent.fY, SkScalarHalf(clampedInitialDashLength));
+                    SkScalar halfWidth, halfHeight;
+                    if (isXAxis) {
+                        halfWidth = SkScalarHalf(clampedInitialDashLength);
+                        halfHeight = SkScalarHalf(rec.getWidth());
+                    } else {
+                        halfWidth = SkScalarHalf(rec.getWidth());
+                        halfHeight = SkScalarHalf(clampedInitialDashLength);
+                    }
+                    if (clampedInitialDashLength < fIntervals[0]) {
+                        // This one will not be like the others
+                        results->fFirst.addRect(x - halfWidth, y - halfHeight,
+                                                x + halfWidth, y + halfHeight);
+                    } else {
+                        SkASSERT(curPt < results->fNumPoints);
+                        results->fPoints[curPt].set(x, y);
+                        ++curPt;
+                    }
+
+                    distance += clampedInitialDashLength;
+                }
+
+                distance += fIntervals[1];  // skip over the next blank block too
+            } else {
+                distance += clampedInitialDashLength;
+            }
+        }
+
+        if (0 != numMidPoints) {
+            distance += SkScalarHalf(fIntervals[0]);
+
+            for (int i = 0; i < numMidPoints; ++i) {
+                SkScalar x = pts[0].fX + SkScalarMul(tangent.fX, distance);
+                SkScalar y = pts[0].fY + SkScalarMul(tangent.fY, distance);
+
+                SkASSERT(curPt < results->fNumPoints);
+                results->fPoints[curPt].set(x, y);
+                ++curPt;
+
+                distance += fIntervalLength;
+            }
+
+            distance -= SkScalarHalf(fIntervals[0]);
+        }
+
+        if (partialLast) {
+            // partial final block
+            SkASSERT(SkPaint::kRound_Cap != rec.getCap()); // can't handle partial circles
+            SkScalar temp = length - distance;
+            SkASSERT(temp < fIntervals[0]);
+            SkScalar x = pts[0].fX + SkScalarMul(tangent.fX, distance + SkScalarHalf(temp));
+            SkScalar y = pts[0].fY + SkScalarMul(tangent.fY, distance + SkScalarHalf(temp));
+            SkScalar halfWidth, halfHeight;
+            if (isXAxis) {
+                halfWidth = SkScalarHalf(temp);
+                halfHeight = SkScalarHalf(rec.getWidth());
+            } else {
+                halfWidth = SkScalarHalf(rec.getWidth());
+                halfHeight = SkScalarHalf(temp);
+            }
+            results->fLast.addRect(x - halfWidth, y - halfHeight,
+                                   x + halfWidth, y + halfHeight);
+        }
+
+        SkASSERT(curPt == results->fNumPoints);
+    }
+
+    return true;
 }
 
-void SkDashPathEffect::flatten(SkFlattenableWriteBuffer& buffer) {
-    SkASSERT(fInitialDashLength >= 0);
-
-    buffer.write32(fCount);
-    buffer.write32(fInitialDashIndex);
-    buffer.writeScalar(fInitialDashLength);
-    buffer.writeScalar(fIntervalLength);
-    buffer.write32(fScaleToFit);
-    buffer.writeMul4(fIntervals, fCount * sizeof(fIntervals[0]));
+SkPathEffect::DashType SkDashPathEffect::asADash(DashInfo* info) const {
+    if (info) {
+        if (info->fCount >= fCount && info->fIntervals) {
+            memcpy(info->fIntervals, fIntervals, fCount * sizeof(SkScalar));
+        }
+        info->fCount = fCount;
+        info->fPhase = fPhase;
+    }
+    return kDash_DashType;
 }
 
-SkFlattenable* SkDashPathEffect::CreateProc(SkFlattenableReadBuffer& buffer) {
-    return SkNEW_ARGS(SkDashPathEffect, (buffer));
+void SkDashPathEffect::flatten(SkWriteBuffer& buffer) const {
+    buffer.writeScalar(fPhase);
+    buffer.writeScalarArray(fIntervals, fCount);
 }
 
-SkDashPathEffect::SkDashPathEffect(SkFlattenableReadBuffer& buffer) {
-    fCount = buffer.readS32();
-    fInitialDashIndex = buffer.readS32();
-    fInitialDashLength = buffer.readScalar();
-    fIntervalLength = buffer.readScalar();
-    fScaleToFit = (buffer.readS32() != 0);
-    
-    fIntervals = (SkScalar*)sk_malloc_throw(sizeof(SkScalar) * fCount);
-    buffer.read(fIntervals, fCount * sizeof(fIntervals[0]));
+SkFlattenable* SkDashPathEffect::CreateProc(SkReadBuffer& buffer) {
+    const SkScalar phase = buffer.readScalar();
+    uint32_t count = buffer.getArrayCount();
+    SkAutoSTArray<32, SkScalar> intervals(count);
+    if (buffer.readScalarArray(intervals.get(), count)) {
+        return Create(intervals.get(), SkToInt(count), phase);
+    }
+    return NULL;
 }
 
-
+#ifndef SK_IGNORE_TO_STRING
+void SkDashPathEffect::toString(SkString* str) const {
+    str->appendf("SkDashPathEffect: (");
+    str->appendf("count: %d phase %.2f intervals: (", fCount, fPhase);
+    for (int i = 0; i < fCount; ++i) {
+        str->appendf("%.2f", fIntervals[i]);
+        if (i < fCount-1) {
+            str->appendf(", ");
+        }
+    }
+    str->appendf("))");
+}
+#endif

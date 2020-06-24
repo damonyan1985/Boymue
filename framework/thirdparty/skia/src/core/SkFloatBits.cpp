@@ -1,5 +1,12 @@
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 #include "SkFloatBits.h"
-#include "SkMath.h"
+#include "SkMathPriv.h"
 
 /******************************************************************************
     SkFloatBits_toInt[Floor, Round, Ceil] are identical except for what they
@@ -38,7 +45,7 @@ static inline int unpack_matissa_dirty(uint32_t packed) {
 int32_t SkFloatBits_toIntCast(int32_t packed) {
     int exp = unpack_exp(packed) - EXP_BIAS;
     int value = unpack_matissa_dirty(packed) | MATISSA_MAGIC_BIG;
-    
+
     if (exp >= 0) {
         if (exp > 7) {    // overflow
             value = SK_MaxS32;
@@ -61,7 +68,7 @@ int32_t SkFloatBits_toIntFloor(int32_t packed) {
     if ((packed << 1) == 0) {
         return 0;
     }
-    
+
     int exp = unpack_exp(packed) - EXP_BIAS;
     int value = unpack_matissa_dirty(packed) | MATISSA_MAGIC_BIG;
 
@@ -78,7 +85,16 @@ int32_t SkFloatBits_toIntFloor(int32_t packed) {
         value = SkApplySign(value, SkExtractSign(packed));
         exp = -exp;
         if (exp > 25) {   // underflow
+#ifdef SK_DISCARD_DENORMALIZED_FOR_SPEED
+        // The iOS ARM processor discards small denormalized numbers to go faster.
+        // The comparision below empirically causes the result to agree with the
+        // tests in MathTest test_float_floor
+            if (exp > 149) {
+                return 0;
+            }
+#else
             exp = 25;
+#endif
         }
         // int add = 0;
         return value >> exp;
@@ -91,10 +107,10 @@ int32_t SkFloatBits_toIntRound(int32_t packed) {
     if ((packed << 1) == 0) {
         return 0;
     }
-    
+
     int exp = unpack_exp(packed) - EXP_BIAS;
     int value = unpack_matissa_dirty(packed) | MATISSA_MAGIC_BIG;
-    
+
     if (exp >= 0) {
         if (exp > 7) {    // overflow
             value = SK_MaxS32;
@@ -121,10 +137,10 @@ int32_t SkFloatBits_toIntCeil(int32_t packed) {
     if ((packed << 1) == 0) {
         return 0;
     }
-    
+
     int exp = unpack_exp(packed) - EXP_BIAS;
     int value = unpack_matissa_dirty(packed) | MATISSA_MAGIC_BIG;
-    
+
     if (exp >= 0) {
         if (exp > 7) {    // overflow
             value = SK_MaxS32;
@@ -138,14 +154,22 @@ int32_t SkFloatBits_toIntCeil(int32_t packed) {
         value = SkApplySign(value, SkExtractSign(packed));
         exp = -exp;
         if (exp > 25) {   // underflow
+#ifdef SK_DISCARD_DENORMALIZED_FOR_SPEED
+        // The iOS ARM processor discards small denormalized numbers to go faster.
+        // The comparision below empirically causes the result to agree with the
+        // tests in MathTest test_float_ceil
+            if (exp > 149) {
+                return 0;
+            }
+            return 0 < value;
+#else
             exp = 25;
+#endif
         }
         int add = (1 << exp) - 1;
         return (value + add) >> exp;
     }
 }
-
-#ifdef SK_CAN_USE_FLOAT
 
 float SkIntToFloatCast(int32_t value) {
     if (0 == value) {
@@ -153,11 +177,11 @@ float SkIntToFloatCast(int32_t value) {
     }
 
     int shift = EXP_BIAS;
-    
+
     // record the sign and make value positive
     int sign = SkExtractSign(value);
     value = SkApplySign(value, sign);
-    
+
     if (value >> 24) {    // value is too big (has more than 24 bits set)
         int bias = 8 - SkCLZ(value);
         SkDebugf("value = %d, bias = %d\n", value, bias);
@@ -170,34 +194,12 @@ float SkIntToFloatCast(int32_t value) {
         value <<= zeros;
         shift -= zeros;
     }
-    
+
     // now value is left-aligned to 24 bits
     SkASSERT((value >> 23) == 1);
     SkASSERT(shift >= 0 && shift <= 255);
-    
+
     SkFloatIntUnion data;
     data.fSignBitInt = (sign << 31) | (shift << 23) | (value & ~MATISSA_MAGIC_BIG);
     return data.fFloat;
 }
-
-float SkIntToFloatCast_NoOverflowCheck(int32_t value) {
-    if (0 == value) {
-        return 0;
-    }
-
-    int shift = EXP_BIAS;
-    
-    // record the sign and make value positive
-    int sign = SkExtractSign(value);
-    value = SkApplySign(value, sign);
-    
-    int zeros = SkCLZ(value << 8);
-    value <<= zeros;
-    shift -= zeros;
-    
-    SkFloatIntUnion data;
-    data.fSignBitInt = (sign << 31) | (shift << 23) | (value & ~MATISSA_MAGIC_BIG);
-    return data.fFloat;
-}
-
-#endif

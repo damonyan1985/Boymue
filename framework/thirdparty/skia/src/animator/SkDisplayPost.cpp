@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayPost.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayPost.h"
 #include "SkAnimateMaker.h"
@@ -51,23 +43,23 @@ SkPost::SkPost() : delay(0), /*initialized(SkBool(-1)), */ mode(kImmediate), fMa
 }
 
 SkPost::~SkPost() {
-    for (SkData** part = fParts.begin(); part < fParts.end();  part++)
+    for (SkDataInput** part = fParts.begin(); part < fParts.end();  part++)
         delete *part;
 }
 
-bool SkPost::add(SkAnimateMaker& , SkDisplayable* child) {
-    SkASSERT(child && child->isData());
-    SkData* part = (SkData*) child;
+bool SkPost::addChild(SkAnimateMaker& , SkDisplayable* child) {
+    SkASSERT(child && child->isDataInput());
+    SkDataInput* part = (SkDataInput*) child;
     *fParts.append() = part;
     return true;
 }
 
-bool SkPost::childrenNeedDisposing() const { 
-    return false; 
+bool SkPost::childrenNeedDisposing() const {
+    return false;
 }
 
-void SkPost::dirty() { 
-    fDirty = true; 
+void SkPost::dirty() {
+    fDirty = true;
 }
 
 #ifdef SK_DUMP_ENABLED
@@ -82,13 +74,9 @@ void SkPost::dump(SkAnimateMaker* maker) {
     else
         SkDebugf("type=\"%s\" ", eventType->c_str());
     delete eventType;
-    
+
     if (delay > 0) {
-#ifdef SK_CAN_USE_FLOAT
-        SkDebugf("delay=\"%g\" ", SkScalarToFloat(SkScalarDiv(delay, 1000)));
-#else
-        SkDebugf("delay=\"%x\" ", SkScalarDiv(delay, 1000));
-#endif
+        SkDebugf("delay=\"%g\" ", delay * 0.001);
     }
 //  if (initialized == false)
 //      SkDebugf("(uninitialized) ");
@@ -111,10 +99,10 @@ void SkPost::dump(SkAnimateMaker* maker) {
     SkDisplayList::fIndent += 4;
     //this seems to work, but kinda hacky
     //for some reason the last part is id, which i don't want
-    //and the parts seem to be in the reverse order from the one in which we find the 
+    //and the parts seem to be in the reverse order from the one in which we find the
     //data itself
-    //SkData** ptr = fParts.end();
-    //SkData* data;
+    //SkDataInput** ptr = fParts.end();
+    //SkDataInput* data;
     //const char* ID;
     while ((name = iter.next(&type, &number)) != NULL) {
         //ptr--;
@@ -139,11 +127,7 @@ void SkPost::dump(SkAnimateMaker* maker) {
             case SkMetaData::kScalar_Type: {
                 SkScalar scalar;
                 meta.findScalar(name, &scalar);
-#ifdef SK_CAN_USE_FLOAT
                 SkDebugf("float=\"%g\" ", SkScalarToFloat(scalar));
-#else
-                SkDebugf("float=\"%x\" ", scalar);
-#endif
                 } break;
             case SkMetaData::kString_Type:
                 SkDebugf("string=\"%s\" ", meta.findString(name));
@@ -190,7 +174,7 @@ bool SkPost::enable(SkAnimateMaker& maker ) {
             fEvent.getMetaData().reset();
             if (preserveID.size() > 0)
                 fEvent.setString("id", preserveID);
-            for (SkData** part = fParts.begin(); part < fParts.end();  part++) {
+            for (SkDataInput** part = fParts.begin(); part < fParts.end();  part++) {
                 if ((*part)->add())
                     maker.setErrorCode(SkDisplayXMLParserError::kErrorAddingDataToPost);
             }
@@ -227,7 +211,7 @@ bool SkPost::enable(SkAnimateMaker& maker ) {
     SkAnimator* anim = maker.getAnimator();
     if (targetID == 0) {
         isAnimatorEvent = fEvent.findString("id") != NULL;
-        if (isAnimatorEvent) 
+        if (isAnimatorEvent)
             targetID = anim->getSinkID();
         else if (maker.fHostEventSinkID)
             targetID = maker.fHostEventSinkID;
@@ -251,7 +235,7 @@ void SkPost::findSinkID() {
     const char* ch = sink.c_str();
     do {
         const char* end = strchr(ch, '.');
-        size_t len = end ? end - ch : strlen(ch);
+        size_t len = end ? (size_t) (end - ch) : strlen(ch);
         SkDisplayable* displayable = NULL;
         if (SK_LITERAL_STR_EQUAL("parent", ch, len)) {
             if (fTargetMaker->fParentMaker)
@@ -276,7 +260,7 @@ void SkPost::findSinkID() {
     SkAnimator* anim = fTargetMaker->getAnimator();
     fSinkID = anim->getSinkID();
 }
- 
+
 bool SkPost::hasEnable() const {
     return true;
 }
@@ -284,14 +268,14 @@ bool SkPost::hasEnable() const {
 void SkPost::onEndElement(SkAnimateMaker& maker) {
     fTargetMaker = fMaker = &maker;
     if (fChildHasID == false) {
-        for (SkData** part = fParts.begin(); part < fParts.end();  part++)
+        for (SkDataInput** part = fParts.begin(); part < fParts.end();  part++)
             delete *part;
         fParts.reset();
     }
 }
 
-void SkPost::setChildHasID() { 
-    fChildHasID = true; 
+void SkPost::setChildHasID() {
+    fChildHasID = true;
 }
 
 bool SkPost::setProperty(int index, SkScriptValue& value) {
@@ -312,4 +296,3 @@ bool SkPost::setProperty(int index, SkScriptValue& value) {
     }
     return true;
 }
-

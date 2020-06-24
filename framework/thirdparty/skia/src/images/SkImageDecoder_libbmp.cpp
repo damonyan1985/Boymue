@@ -1,54 +1,66 @@
+
 /*
- * Copyright 2007, The Android Open Source Project
+ * Copyright 2007 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *     http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
- 
+
+
 #include "bmpdecoderhelper.h"
+#include "SkColorPriv.h"
 #include "SkImageDecoder.h"
 #include "SkScaledBitmapSampler.h"
 #include "SkStream.h"
-#include "SkColorPriv.h"
+#include "SkStreamPriv.h"
 #include "SkTDArray.h"
-#include "SkTRegistry.h"
 
 class SkBMPImageDecoder : public SkImageDecoder {
 public:
     SkBMPImageDecoder() {}
-    
-    virtual Format getFormat() const {
+
+    Format getFormat() const override {
         return kBMP_Format;
     }
 
 protected:
-    virtual bool onDecode(SkStream* stream, SkBitmap* bm, Mode mode);
+    Result onDecode(SkStream* stream, SkBitmap* bm, Mode mode) override;
+
+private:
+    typedef SkImageDecoder INHERITED;
 };
 
-static SkImageDecoder* Factory(SkStream* stream) {
+///////////////////////////////////////////////////////////////////////////////
+DEFINE_DECODER_CREATOR(BMPImageDecoder);
+///////////////////////////////////////////////////////////////////////////////
+
+static bool is_bmp(SkStreamRewindable* stream) {
     static const char kBmpMagic[] = { 'B', 'M' };
-    
-    size_t len = stream->getLength();
+
+
     char buffer[sizeof(kBmpMagic)];
-    
-    if (len > sizeof(kBmpMagic) &&
-            stream->read(buffer, sizeof(kBmpMagic)) == sizeof(kBmpMagic) &&
-            !memcmp(buffer, kBmpMagic, sizeof(kBmpMagic))) {
+
+    return stream->read(buffer, sizeof(kBmpMagic)) == sizeof(kBmpMagic) &&
+        !memcmp(buffer, kBmpMagic, sizeof(kBmpMagic));
+}
+
+static SkImageDecoder* sk_libbmp_dfactory(SkStreamRewindable* stream) {
+    if (is_bmp(stream)) {
         return SkNEW(SkBMPImageDecoder);
     }
     return NULL;
 }
 
-static SkTRegistry<SkImageDecoder*, SkStream*> gReg(Factory);
+static SkImageDecoder_DecodeReg gReg(sk_libbmp_dfactory);
+
+static SkImageDecoder::Format get_format_bmp(SkStreamRewindable* stream) {
+    if (is_bmp(stream)) {
+        return SkImageDecoder::kBMP_Format;
+    }
+    return SkImageDecoder::kUnknown_Format;
+}
+
+static SkImageDecoder_FormatReg gFormatReg(get_format_bmp);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -64,14 +76,14 @@ public:
         if (fJustBounds) {
             return NULL;
         }
-        
+
         fRGB.setCount(width * height * 3);  // 3 == r, g, b
         return fRGB.begin();
     }
 
     int width() const { return fWidth; }
     int height() const { return fHeight; }
-    uint8_t* rgb() const { return fRGB.begin(); }
+    const uint8_t* rgb() const { return fRGB.begin(); }
 
 private:
     SkTDArray<uint8_t> fRGB;
@@ -80,15 +92,18 @@ private:
     bool fJustBounds;
 };
 
-bool SkBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* bm, Mode mode) {
+SkImageDecoder::Result SkBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* bm, Mode mode) {
+    // First read the entire stream, so that all of the data can be passed to
+    // the BmpDecoderHelper.
 
-    size_t length = stream->getLength();
-    SkAutoMalloc storage(length);
-    
-    if (stream->read(storage.get(), length) != length) {
-        return false;
+    // Allocated space used to hold the data.
+    SkAutoMalloc storage;
+    // Byte length of all of the data.
+    const size_t length = SkCopyStreamToStorage(&storage, stream);
+    if (0 == length) {
+        return kFailure;
     }
-    
+
     const bool justBounds = SkImageDecoder::kDecodeBounds_Mode == mode;
     SkBmpDecoderCallback callback(justBounds);
 
@@ -98,50 +113,50 @@ bool SkBMPImageDecoder::onDecode(SkStream* stream, SkBitmap* bm, Mode mode) {
         const int max_pixels = 16383*16383; // max width*height
         if (!helper.DecodeImage((const char*)storage.get(), length,
                                 max_pixels, &callback)) {
-            return false;
+            return kFailure;
         }
     }
-    
+
     // we don't need this anymore, so free it now (before we try to allocate
     // the bitmap's pixels) rather than waiting for its destructor
     storage.free();
-    
+
     int width = callback.width();
     int height = callback.height();
-    SkBitmap::Config config = this->getPrefConfig(k32Bit_SrcDepth, false);
+    SkColorType colorType = this->getPrefColorType(k32Bit_SrcDepth, false);
 
     // only accept prefConfig if it makes sense for us
-    if (SkBitmap::kARGB_4444_Config != config &&
-            SkBitmap::kRGB_565_Config != config) {
-        config = SkBitmap::kARGB_8888_Config;
+    if (kARGB_4444_SkColorType != colorType && kRGB_565_SkColorType != colorType) {
+        colorType = kN32_SkColorType;
     }
 
     SkScaledBitmapSampler sampler(width, height, getSampleSize());
 
-    bm->setConfig(config, sampler.scaledWidth(), sampler.scaledHeight());
-    bm->setIsOpaque(true);
+    bm->setInfo(SkImageInfo::Make(sampler.scaledWidth(), sampler.scaledHeight(),
+                                  colorType, kOpaque_SkAlphaType));
+
     if (justBounds) {
-        return true;
+        return kSuccess;
     }
 
     if (!this->allocPixelRef(bm, NULL)) {
-        return false;
+        return kFailure;
     }
-    
+
     SkAutoLockPixels alp(*bm);
-    
-    if (!sampler.begin(bm, SkScaledBitmapSampler::kRGB, getDitherImage())) {
-        return false;
+
+    if (!sampler.begin(bm, SkScaledBitmapSampler::kRGB, *this)) {
+        return kFailure;
     }
 
     const int srcRowBytes = width * 3;
     const int dstHeight = sampler.scaledHeight();
     const uint8_t* srcRow = callback.rgb();
-    
+
     srcRow += sampler.srcY0() * srcRowBytes;
     for (int y = 0; y < dstHeight; y++) {
         sampler.next(srcRow);
         srcRow += sampler.srcDY() * srcRowBytes;
     }
-    return true;
+    return kSuccess;
 }

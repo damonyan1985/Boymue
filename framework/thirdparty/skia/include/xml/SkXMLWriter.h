@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkXMLWriter_DEFINED
@@ -34,6 +25,7 @@ public:
     void    addAttributeLen(const char name[], const char value[], size_t length);
     void    addHexAttribute(const char name[], uint32_t value, int minDigits = 0);
     void    addScalarAttribute(const char name[], SkScalar value);
+    void    addText(const char text[], size_t length);
     void    endElement() { this->onEndElement(); }
     void    startElement(const char elem[]);
     void    startElementLen(const char elem[], size_t length);
@@ -44,11 +36,18 @@ public:
 protected:
     virtual void onStartElementLen(const char elem[], size_t length) = 0;
     virtual void onAddAttributeLen(const char name[], const char value[], size_t length) = 0;
+    virtual void onAddText(const char text[], size_t length) = 0;
     virtual void onEndElement() = 0;
 
     struct Elem {
+        Elem(const char name[], size_t len)
+            : fName(name, len)
+            , fHasChildren(false)
+            , fHasText(false) {}
+
         SkString    fName;
         bool        fHasChildren;
+        bool        fHasText;
     };
     void doEnd(Elem* elem);
     bool doStart(const char name[], size_t length);
@@ -68,10 +67,13 @@ public:
     virtual ~SkXMLStreamWriter();
     virtual void    writeHeader();
     SkDEBUGCODE(static void UnitTest();)
+
 protected:
-    virtual void onStartElementLen(const char elem[], size_t length);
-    virtual void onEndElement();
-    virtual void onAddAttributeLen(const char name[], const char value[], size_t length);
+    void onStartElementLen(const char elem[], size_t length) override;
+    void onEndElement() override;
+    void onAddAttributeLen(const char name[], const char value[], size_t length) override;
+    void onAddText(const char text[], size_t length) override;
+
 private:
     SkWStream&      fStream;
 };
@@ -84,10 +86,10 @@ protected:
     virtual void onStartElementLen(const char elem[], size_t length);
     virtual void onEndElement();
     virtual void onAddAttributeLen(const char name[], const char value[], size_t length);
+    virtual void onAddText(const char text[], size_t length) override;
 private:
     SkXMLParser&        fParser;
 };
 
 
 #endif
-

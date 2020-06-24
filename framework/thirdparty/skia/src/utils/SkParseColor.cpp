@@ -1,25 +1,18 @@
-/* libs/graphics/xml/SkParseColor.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkParse.h"
 
 #ifdef SK_DEBUG
 #include "SkString.h"
 
+#ifdef SK_SUPPORT_UNITTEST
     // compress names 6 chars per long (packed 5 bits/char )
         // note: little advantage to splitting chars across longs, since 3 longs at 2 unused bits each
         // allow for one additional split char (vs. the 18 unsplit chars in the three longs)
@@ -183,9 +176,8 @@ static const struct SkNameRGB {
     { "yellowgreen",          0x9ACD32 }
 };
 
-int colorNamesSize = sizeof(colorNames) / sizeof(colorNames[0]);
+int colorNamesSize = SK_ARRAY_COUNT(colorNames);
 
-#ifdef SK_SUPPORT_UNITTEST
 static void CreateTable() {
     SkString comment;
     size_t originalSize = 0;
@@ -495,8 +487,8 @@ const char* SkParse::FindColor(const char* value, SkColor* colorPtr) {
 //      if (end == NULL)
 //          return NULL;
         // !!! range check for errors?
-//      *colorPtr = SkColorSetARGB(SkScalarRound(array[0]), SkScalarRound(array[1]),
-//          SkScalarRound(array[2]), SkScalarRound(array[3]));
+//      *colorPtr = SkColorSetARGB(SkScalarRoundToInt(array[0]), SkScalarRoundToInt(array[1]),
+//          SkScalarRoundToInt(array[2]), SkScalarRoundToInt(array[3]));
 //      return end;
     } else
         return FindNamedColor(value, strlen(value), colorPtr);
@@ -521,9 +513,9 @@ void SkParse::TestColor() {
         size_t len = strlen(nameRGB.name);
         memcpy(bad, nameRGB.name, len);
         bad[len - 1] -= 1;
-        SkASSERT(FindColor(bad, &result) == false);
+        SkASSERT(FindColor(bad, &result) == NULL);
         bad[len - 1] += 2;
-        SkASSERT(FindColor(bad, &result) == false);
+        SkASSERT(FindColor(bad, &result) == NULL);
     }
     result = SK_ColorBLACK;
     SkASSERT(FindColor("lightGrey", &result));
@@ -545,4 +537,3 @@ void SkParse::TestColor() {
 //  SkASSERT(result == ((0xFF << 24) | (71 << 16) | (162 << 8) | (253 << 0)));
 }
 #endif
-

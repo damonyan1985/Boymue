@@ -1,18 +1,11 @@
+
 /*
-    Copyright 2010 Google Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ * Copyright 2010 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 
 #include "SkTouchGesture.h"
@@ -21,9 +14,9 @@
 
 #define DISCRETIZE_TRANSLATE_TO_AVOID_FLICKER   true
 
-static const float MAX_FLING_SPEED = 1500;
+static const SkScalar MAX_FLING_SPEED = SkIntToScalar(1500);
 
-static float pin_max_fling(float speed) {
+static SkScalar pin_max_fling(SkScalar speed) {
     if (speed > MAX_FLING_SPEED) {
         speed = MAX_FLING_SPEED;
     }
@@ -35,8 +28,8 @@ static double getseconds() {
 }
 
 // returns +1 or -1, depending on the sign of x
-// returns +1 if x is zero
-static SkScalar SkScalarSign(SkScalar x) {
+// returns +1 if z is zero
+static SkScalar SkScalarSignNonZero(SkScalar x) {
     SkScalar sign = SK_Scalar1;
     if (x < 0) {
         sign = -sign;
@@ -48,9 +41,9 @@ static void unit_axis_align(SkVector* unit) {
     const SkScalar TOLERANCE = SkDoubleToScalar(0.15);
     if (SkScalarAbs(unit->fX) < TOLERANCE) {
         unit->fX = 0;
-        unit->fY = SkScalarSign(unit->fY);
+        unit->fY = SkScalarSignNonZero(unit->fY);
     } else if (SkScalarAbs(unit->fY) < TOLERANCE) {
-        unit->fX = SkScalarSign(unit->fX);
+        unit->fX = SkScalarSignNonZero(unit->fX);
         unit->fY = 0;
     }
 }
@@ -149,7 +142,7 @@ void SkTouchGesture::appendNewRec(void* owner, float x, float y) {
 }
 
 void SkTouchGesture::touchBegin(void* owner, float x, float y) {
-//    GrPrintf("--- %d touchBegin %p %g %g\n", fTouches.count(), owner, x, y);
+//    SkDebugf("--- %d touchBegin %p %g %g\n", fTouches.count(), owner, x, y);
 
     int index = this->findRec(owner);
     if (index >= 0) {
@@ -188,7 +181,7 @@ int SkTouchGesture::findRec(void* owner) const {
     return -1;
 }
 
-static float center(float pos0, float pos1) {
+static SkScalar center(float pos0, float pos1) {
     return (pos0 + pos1) * 0.5f;
 }
 
@@ -197,8 +190,8 @@ static const float MIN_ZOOM_SCALE = 0.25f;
 
 float SkTouchGesture::limitTotalZoom(float scale) const {
     // this query works 'cause we know that we're square-scale w/ no skew/rotation
-    const float curr = fGlobalM[0];
-    
+    const float curr = SkScalarToFloat(fGlobalM[0]);
+
     if (scale > 1 && curr * scale > MAX_ZOOM_SCALE) {
         scale = MAX_ZOOM_SCALE / curr;
     } else if (scale < 1 && curr * scale < MIN_ZOOM_SCALE) {
@@ -208,9 +201,11 @@ float SkTouchGesture::limitTotalZoom(float scale) const {
 }
 
 void SkTouchGesture::touchMoved(void* owner, float x, float y) {
-//    GrPrintf("--- %d touchMoved %p %g %g\n", fTouches.count(), owner, x, y);
+//    SkDebugf("--- %d touchMoved %p %g %g\n", fTouches.count(), owner, x, y);
 
-    SkASSERT(kEmpty_State != fState);
+    if (kEmpty_State == fState) {
+        return;
+    }
 
     int index = this->findRec(owner);
     if (index < 0) {
@@ -225,7 +220,7 @@ void SkTouchGesture::touchMoved(void* owner, float x, float y) {
     // not sure how valuable this is
     if (fTouches.count() == 2) {
         if (close_enough_for_jitter(rec.fLastX, rec.fLastY, x, y)) {
-//            GrPrintf("--- drop touchMove, withing jitter tolerance %g %g\n", rec.fLastX - x, rec.fLastY - y);
+//            SkDebugf("--- drop touchMove, withing jitter tolerance %g %g\n", rec.fLastX - x, rec.fLastY - y);
             return;
         }
     }
@@ -246,7 +241,7 @@ void SkTouchGesture::touchMoved(void* owner, float x, float y) {
             SkASSERT(kZoom_State == fState);
             const Rec& rec0 = fTouches[0];
             const Rec& rec1 = fTouches[1];
-            
+
             float scale = this->computePinch(rec0, rec1);
             scale = this->limitTotalZoom(scale);
 
@@ -262,7 +257,7 @@ void SkTouchGesture::touchMoved(void* owner, float x, float y) {
 }
 
 void SkTouchGesture::touchEnd(void* owner) {
-//    GrPrintf("--- %d touchEnd   %p\n", fTouches.count(), owner);
+//    SkDebugf("--- %d touchEnd   %p\n", fTouches.count(), owner);
 
     int index = this->findRec(owner);
     if (index < 0) {
@@ -332,5 +327,3 @@ bool SkTouchGesture::handleDblTap(float x, float y) {
     fLastUpP.set(x, y);
     return found;
 }
-
-

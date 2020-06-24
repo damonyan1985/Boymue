@@ -1,18 +1,11 @@
+
 /*
- * Copyright 2007, The Android Open Source Project
+ * Copyright 2007 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *     http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef IMAGE_CODEC_BMPDECODERHELPER_H__
 #define IMAGE_CODEC_BMPDECODERHELPER_H__
@@ -39,14 +32,14 @@ public:
   ~scoped_array() {
     delete[] ptr_;
   }
-  
+
   void reset(T* p = 0) {
     if (p != ptr_) {
       delete[] ptr_;
       ptr_ = p;
     }
   }
-  
+
   T& operator[](int i) const {
     return ptr_[i];
   }
@@ -60,7 +53,7 @@ class BmpDecoderCallback {
  public:
   BmpDecoderCallback() { }
   virtual ~BmpDecoderCallback() {}
-  
+
   /**
    * This is called once for an image. It is passed the width and height and
    * should return the address of a buffer that is large enough to store
@@ -69,7 +62,7 @@ class BmpDecoderCallback {
    * valid dimensions.
    */
   virtual uint8* SetSize(int width, int height) = 0;
-   
+
  private:
   DISALLOW_EVIL_CONSTRUCTORS(BmpDecoderCallback);
 };
@@ -79,7 +72,7 @@ class BmpDecoderHelper {
   BmpDecoderHelper() { }
   ~BmpDecoderHelper() { }
   bool DecodeImage(const char* data,
-                   int len,
+                   size_t len,
                    int max_pixels,
                    BmpDecoderCallback* callback);
 
@@ -97,8 +90,8 @@ class BmpDecoderHelper {
   int CalcShiftLeft(uint32 mask);
 
   const uint8* data_;
-  int pos_;
-  int len_;
+  size_t pos_;
+  size_t len_;
   int width_;
   int height_;
   int bpp_;
@@ -117,7 +110,7 @@ class BmpDecoderHelper {
   uint8* output_;
   bool inverted_;
 };
-  
+
 } // namespace
 
 #endif

@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "SkParse.h"
 #include "SkParsePath.h"
 
@@ -51,7 +58,7 @@ static const char* find_points(const char str[], SkPoint value[], int count,
     return str;
 }
 
-static const char* find_scalar(const char str[], SkScalar* value, 
+static const char* find_scalar(const char str[], SkScalar* value,
                                bool isRelative, SkScalar relative) {
     str = SkParse::FindScalar(str, value);
     if (isRelative) {
@@ -79,6 +86,8 @@ bool SkParsePath::FromSVGString(const char data[], SkPath* result) {
             if (op == '\0') {
                 return false;
             }
+        } else if (is_sep(ch)) {
+            data = skip_sep(data);
         } else {
             op = ch;
             relative = false;
@@ -96,7 +105,7 @@ bool SkParsePath::FromSVGString(const char data[], SkPath* result) {
                 op = 'L';
                 c = points[0];
                 break;
-            case 'L': 
+            case 'L':
                 data = find_points(data, points, 1, relative, &c);
                 path.lineTo(points[0]);
                 c = points[0];
@@ -113,10 +122,10 @@ bool SkParsePath::FromSVGString(const char data[], SkPath* result) {
                 path.lineTo(c.fX, y);
                 c.fY = y;
             } break;
-            case 'C': 
+            case 'C':
                 data = find_points(data, points, 3, relative, &c);
                 goto cubicCommon;
-            case 'S': 
+            case 'S':
                 data = find_points(data, &points[1], 2, relative, &c);
                 points[0] = c;
                 if (previousOp == 'C' || previousOp == 'S') {
@@ -177,22 +186,18 @@ bool SkParsePath::FromSVGString(const char data[], SkPath* result) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "SkGeometry.h"
 #include "SkString.h"
 #include "SkStream.h"
 
 static void write_scalar(SkWStream* stream, SkScalar value) {
-#ifdef SK_SCALAR_IS_FLOAT
     char buffer[64];
 #ifdef SK_BUILD_FOR_WIN32
-	int len = _snprintf(buffer, sizeof(buffer), "%g", value);
+    int len = _snprintf(buffer, sizeof(buffer), "%g", value);
 #else
     int len = snprintf(buffer, sizeof(buffer), "%g", value);
 #endif
     char* stop = buffer + len;
-#else
-    char    buffer[SkStrAppendScalar_MaxSize];
-    char*   stop = SkStrAppendScalar(buffer, value);
-#endif
     stream->write(buffer, stop - buffer);
 }
 
@@ -213,8 +218,16 @@ void SkParsePath::ToSVGString(const SkPath& path, SkString* str) {
     SkPoint         pts[4];
 
     for (;;) {
-        switch (iter.next(pts)) {
-            case SkPath::kMove_Verb:
+        switch (iter.next(pts, false)) {
+            case SkPath::kConic_Verb: {
+                const SkScalar tol = SK_Scalar1 / 1024; // how close to a quad
+                SkAutoConicToQuads quadder;
+                const SkPoint* quadPts = quadder.computeQuads(pts, iter.conicWeight(), tol);
+                for (int i = 0; i < quadder.countQuads(); ++i) {
+                    append_scalars(&stream, 'Q', &quadPts[i*2 + 1].fX, 4);
+                }
+            } break;
+           case SkPath::kMove_Verb:
                 append_scalars(&stream, 'M', &pts[0].fX, 2);
                 break;
             case SkPath::kLine_Verb:
@@ -236,4 +249,3 @@ void SkParsePath::ToSVGString(const SkPath& path, SkString* str) {
         }
     }
 }
-

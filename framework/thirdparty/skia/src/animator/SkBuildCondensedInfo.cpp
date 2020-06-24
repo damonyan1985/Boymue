@@ -1,24 +1,16 @@
-/* libs/graphics/animator/SkBuildCondensedInfo.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkTypes.h"
 #if defined SK_BUILD_CONDENSED
 #include "SkMemberInfo.h"
-#if SK_USE_CONDENSED_INFO == 1 
+#if SK_USE_CONDENSED_INFO == 1
 #error "SK_USE_CONDENSED_INFO must be zero to build condensed info"
 #endif
 #if !defined SK_BUILD_FOR_WIN32
@@ -123,7 +115,7 @@ void SkDisplayType::BuildCondensedInfo(SkAnimateMaker* maker) {
             continue;
         AddInfo(gTypeNames[index].fType, info, infoCount);
     }
-    const SkMemberInfo* extraInfo = 
+    const SkMemberInfo* extraInfo =
         SkDisplayType::GetMembers(maker, SkType_3D_Point, &infoCount);
     AddInfo(SkType_Point, extraInfo, infoCount);
     AddInfo(SkType_3D_Point, extraInfo, infoCount);
@@ -247,7 +239,7 @@ void SkDisplayType::BuildCondensedInfo(SkAnimateMaker* maker) {
             Get3DName(scratch, gTypeNames[typeNameIndex].fName);
         } else
             sprintf(scratch, "Unknown%d", unknown++);
-        fprintf(condensed, "%d%c // %s\n\t", index, 
+        fprintf(condensed, "%d%c // %s\n\t", index,
             index < gInfosCounts.count() ? ',' : ' ', scratch);
     }
     fprintf(condensed, "\n};\n\n");
@@ -288,5 +280,3 @@ void SkDisplayType::BuildCondensedInfo(SkAnimateMaker* maker) {
 #include "SkDisplayType.h"
 void SkDisplayType::BuildCondensedInfo(SkAnimateMaker* ) {}
 #endif
-
-

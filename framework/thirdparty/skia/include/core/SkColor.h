@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkColor_DEFINED
 #define SkColor_DEFINED
@@ -80,18 +73,23 @@ static inline SkColor SkColorSetA(SkColor c, U8CPU a) {
 
 // common colors
 
-#define SK_ColorBLACK   0xFF000000  //!< black SkColor value
-#define SK_ColorDKGRAY  0xFF444444  //!< dark gray SkColor value
-#define SK_ColorGRAY    0xFF888888  //!< gray SkColor value
-#define SK_ColorLTGRAY  0xFFCCCCCC  //!< light gray SkColor value
-#define SK_ColorWHITE   0xFFFFFFFF  //!< white SkColor value
+#define SK_AlphaTRANSPARENT 0x00        //!< transparent SkAlpha value
+#define SK_AlphaOPAQUE      0xFF        //!< opaque SkAlpha value
 
-#define SK_ColorRED     0xFFFF0000  //!< red SkColor value
-#define SK_ColorGREEN   0xFF00FF00  //!< green SkColor value
-#define SK_ColorBLUE    0xFF0000FF  //!< blue SkColor value
-#define SK_ColorYELLOW  0xFFFFFF00  //!< yellow SkColor value
-#define SK_ColorCYAN    0xFF00FFFF  //!< cyan SkColor value
-#define SK_ColorMAGENTA 0xFFFF00FF  //!< magenta SkColor value
+#define SK_ColorTRANSPARENT 0x00000000  //!< transparent SkColor value
+
+#define SK_ColorBLACK       0xFF000000  //!< black SkColor value
+#define SK_ColorDKGRAY      0xFF444444  //!< dark gray SkColor value
+#define SK_ColorGRAY        0xFF888888  //!< gray SkColor value
+#define SK_ColorLTGRAY      0xFFCCCCCC  //!< light gray SkColor value
+#define SK_ColorWHITE       0xFFFFFFFF  //!< white SkColor value
+
+#define SK_ColorRED         0xFFFF0000  //!< red SkColor value
+#define SK_ColorGREEN       0xFF00FF00  //!< green SkColor value
+#define SK_ColorBLUE        0xFF0000FF  //!< blue SkColor value
+#define SK_ColorYELLOW      0xFFFFFF00  //!< yellow SkColor value
+#define SK_ColorCYAN        0xFF00FFFF  //!< cyan SkColor value
+#define SK_ColorMAGENTA     0xFFFF00FF  //!< magenta SkColor value
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -169,4 +167,3 @@ typedef SkPMColor (*SkXfermodeProc)(SkPMColor src, SkPMColor dst);
 typedef uint16_t (*SkXfermodeProc16)(SkPMColor src, uint16_t dst);
 
 #endif
-

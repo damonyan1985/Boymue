@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkComposeShader_DEFINED
 #define SkComposeShader_DEFINED
@@ -24,14 +17,14 @@ class SkXfermode;
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 /** \class SkComposeShader
-    This subclass of shader returns the coposition of two other shaders, combined by
+    This subclass of shader returns the composition of two other shaders, combined by
     a xfermode.
 */
 class SK_API SkComposeShader : public SkShader {
 public:
     /** Create a new compose shader, given shaders A, B, and a combining xfermode mode.
         When the xfermode is called, it will be given the result from shader A as its
-        "dst", and the result of from shader B as its "src".
+        "dst", and the result from shader B as its "src".
         mode->xfer32(sA_result, sB_result, ...)
         @param shaderA  The colors from this shader are seen as the "dst" by the xfermode
         @param shaderB  The colors from this shader are seen as the "src" by the xfermode
@@ -40,22 +33,46 @@ public:
     */
     SkComposeShader(SkShader* sA, SkShader* sB, SkXfermode* mode = NULL);
     virtual ~SkComposeShader();
-    
-    // override
-    virtual bool setContext(const SkBitmap& device, const SkPaint& paint, const SkMatrix& matrix);
-    virtual void shadeSpan(int x, int y, SkPMColor result[], int count);
-    virtual void beginSession();
-    virtual void endSession();
+
+    size_t contextSize() const override;
+
+    class ComposeShaderContext : public SkShader::Context {
+    public:
+        // When this object gets destroyed, it will call contextA and contextB's destructor
+        // but it will NOT free the memory.
+        ComposeShaderContext(const SkComposeShader&, const ContextRec&,
+                             SkShader::Context* contextA, SkShader::Context* contextB);
+
+        SkShader::Context* getShaderContextA() const { return fShaderContextA; }
+        SkShader::Context* getShaderContextB() const { return fShaderContextB; }
+
+        virtual ~ComposeShaderContext();
+
+        void shadeSpan(int x, int y, SkPMColor[], int count) override;
+
+    private:
+        SkShader::Context* fShaderContextA;
+        SkShader::Context* fShaderContextB;
+
+        typedef SkShader::Context INHERITED;
+    };
+
+#ifdef SK_DEBUG
+    SkShader* getShaderA() { return fShaderA; }
+    SkShader* getShaderB() { return fShaderB; }
+#endif
+
+    bool asACompose(ComposeRec* rec) const override;
+
+    SK_TO_STRING_OVERRIDE()
+    SK_DECLARE_PUBLIC_FLATTENABLE_DESERIALIZATION_PROCS(SkComposeShader)
 
 protected:
-    SkComposeShader(SkFlattenableReadBuffer& );
-    virtual void flatten(SkFlattenableWriteBuffer& );
-    virtual Factory getFactory() { return CreateProc; }
+    SkComposeShader(SkReadBuffer& );
+    void flatten(SkWriteBuffer&) const override;
+    Context* onCreateContext(const ContextRec&, void*) const override;
 
 private:
-    static SkFlattenable* CreateProc(SkFlattenableReadBuffer& buffer) { 
-        return SkNEW_ARGS(SkComposeShader, (buffer)); }
-
     SkShader*   fShaderA;
     SkShader*   fShaderB;
     SkXfermode* fMode;

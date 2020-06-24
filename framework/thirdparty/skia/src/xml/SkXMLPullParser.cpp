@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "SkXMLParser.h"
 #include "SkStream.h"
 
@@ -19,7 +26,7 @@ SkXMLPullParser::SkXMLPullParser(SkStream* stream) : fStream(NULL)
 {
     fCurr.fEventType = ERROR;
     fDepth = 0;
-    
+
     this->setStream(stream);
 }
 
@@ -58,12 +65,12 @@ SkXMLPullParser::EventType SkXMLPullParser::nextToken()
     case END_TAG:
         fDepth -= 1;
         // fall through
-    default:        
+    default:
         reset(&fCurr);
         fCurr.fEventType = this->onNextToken();
         break;
     }
-    
+
     switch (fCurr.fEventType) {
     case START_TAG:
         fDepth += 1;
@@ -118,15 +125,14 @@ int SkXMLPullParser::getAttributeCount()
 void SkXMLPullParser::getAttributeInfo(int index, AttrInfo* info)
 {
     SkASSERT((unsigned)index < (unsigned)fCurr.fAttrInfoCount);
-    
+
     if (info)
         *info = fCurr.fAttrInfos[index];
 }
-    
+
 bool SkXMLPullParser::onEntityReplacement(const char name[],
                                           SkString* replacement)
 {
     // TODO: std 5 entities here
     return false;
 }
-

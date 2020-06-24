@@ -1,29 +1,27 @@
+
 /*
-    Copyright 2011 Google Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
+#include "SkMathPriv.h"
 
 #define SCALE_FILTER_NAME       MAKENAME(_filter_DX_shaderproc)
 
-static void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
-                              DSTTYPE* SK_RESTRICT colors, int count) {
+// Can't be static in the general case because some of these implementations
+// will be defined and referenced in different object files.
+void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
+                       DSTTYPE* SK_RESTRICT colors, int count);
+
+void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
+                       DSTTYPE* SK_RESTRICT colors, int count) {
     SkASSERT((s.fInvType & ~(SkMatrix::kTranslate_Mask |
                              SkMatrix::kScale_Mask)) == 0);
     SkASSERT(s.fInvKy == 0);
     SkASSERT(count > 0 && colors != NULL);
-    SkASSERT(s.fDoFilter);
+    SkASSERT(s.fFilterLevel != kNone_SkFilterQuality);
     SkDEBUGCODE(CHECKSTATE(s);)
 
     const unsigned maxX = s.fBitmap->width() - 1;
@@ -36,7 +34,7 @@ static void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
 
     {
         SkPoint pt;
-        s.fInvProc(*s.fInvMatrix, SkIntToScalar(x) + SK_ScalarHalf,
+        s.fInvProc(s.fInvMatrix, SkIntToScalar(x) + SK_ScalarHalf,
                    SkIntToScalar(y) + SK_ScalarHalf, &pt);
         SkFixed fy = SkScalarToFixed(pt.fY) - (s.fFilterOneY >> 1);
         const unsigned maxY = s.fBitmap->height() - 1;
@@ -46,7 +44,7 @@ static void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
         int y1 = TILEY_PROCF((fy + s.fFilterOneY), maxY);
 
         const char* SK_RESTRICT srcAddr = (const char*)s.fBitmap->getPixels();
-        unsigned rb = s.fBitmap->rowBytes();
+        size_t rb = s.fBitmap->rowBytes();
         row0 = (const SRCTYPE*)(srcAddr + y0 * rb);
         row1 = (const SRCTYPE*)(srcAddr + y1 * rb);
         // now initialize fx
@@ -56,7 +54,7 @@ static void SCALE_FILTER_NAME(const SkBitmapProcState& s, int x, int y,
 #ifdef PREAMBLE
     PREAMBLE(s);
 #endif
-    
+
     do {
         unsigned subX = TILEX_LOW_BITS(fx, maxX);
         unsigned x0 = TILEX_PROCF(fx, maxX);

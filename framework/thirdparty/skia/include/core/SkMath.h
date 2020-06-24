@@ -1,86 +1,115 @@
+
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkMath_DEFINED
 #define SkMath_DEFINED
 
 #include "SkTypes.h"
 
-//! Returns the number of leading zero bits (0...32)
-int SkCLZ_portable(uint32_t);
+// 64bit -> 32bit utilities
 
-/** Computes the 64bit product of a * b, and then shifts the answer down by
-    shift bits, returning the low 32bits. shift must be [0..63]
-    e.g. to perform a fixedmul, call SkMulShift(a, b, 16)
-*/
-int32_t SkMulShift(int32_t a, int32_t b, unsigned shift);
+/**
+ *  Return true iff the 64bit value can exactly be represented in signed 32bits
+ */
+static inline bool sk_64_isS32(int64_t value) {
+    return (int32_t)value == value;
+}
 
-/** Computes numer1 * numer2 / denom in full 64 intermediate precision.
-    It is an error for denom to be 0. There is no special handling if
-    the result overflows 32bits.
-*/
-int32_t SkMulDiv(int32_t numer1, int32_t numer2, int32_t denom);
+/**
+ *  Return the 64bit argument as signed 32bits, asserting in debug that the arg
+ *  exactly fits in signed 32bits. In the release build, no checks are preformed
+ *  and the return value if the arg does not fit is undefined.
+ */
+static inline int32_t sk_64_asS32(int64_t value) {
+    SkASSERT(sk_64_isS32(value));
+    return (int32_t)value;
+}
 
-/** Computes (numer1 << shift) / denom in full 64 intermediate precision.
-    It is an error for denom to be 0. There is no special handling if
-    the result overflows 32bits.
-*/
+// Handy util that can be passed two ints, and will automatically promote to
+// 64bits before the multiply, so the caller doesn't have to remember to cast
+// e.g. (int64_t)a * b;
+static inline int64_t sk_64_mul(int64_t a, int64_t b) {
+    return a * b;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+/**
+ *  Computes numer1 * numer2 / denom in full 64 intermediate precision.
+ *  It is an error for denom to be 0. There is no special handling if
+ *  the result overflows 32bits.
+ */
+static inline int32_t SkMulDiv(int32_t numer1, int32_t numer2, int32_t denom) {
+    SkASSERT(denom);
+
+    int64_t tmp = sk_64_mul(numer1, numer2) / denom;
+    return sk_64_asS32(tmp);
+}
+
+/**
+ *  Computes (numer1 << shift) / denom in full 64 intermediate precision.
+ *  It is an error for denom to be 0. There is no special handling if
+ *  the result overflows 32bits.
+ */
 int32_t SkDivBits(int32_t numer, int32_t denom, int shift);
 
-/** Return the integer square root of value, with a bias of bitBias
-*/
+/**
+ *  Return the integer square root of value, with a bias of bitBias
+ */
 int32_t SkSqrtBits(int32_t value, int bitBias);
 
 /** Return the integer square root of n, treated as a SkFixed (16.16)
-*/
+ */
 #define SkSqrt32(n)         SkSqrtBits(n, 15)
 
-/** Return the integer cube root of value, with a bias of bitBias
+//! Returns the number of leading zero bits (0...32)
+int SkCLZ_portable(uint32_t);
+
+#ifndef SkCLZ
+    #if defined(_MSC_VER) && _MSC_VER >= 1400
+        #include <intrin.h>
+
+        static inline int SkCLZ(uint32_t mask) {
+            if (mask) {
+                DWORD index;
+                _BitScanReverse(&index, mask);
+                // Suppress this bogus /analyze warning. The check for non-zero
+                // guarantees that _BitScanReverse will succeed.
+#pragma warning(suppress : 6102) // Using 'index' from failed function call
+                return index ^ 0x1F;
+            } else {
+                return 32;
+            }
+        }
+    #elif defined(SK_CPU_ARM32) || defined(__GNUC__) || defined(__clang__)
+        static inline int SkCLZ(uint32_t mask) {
+            // __builtin_clz(0) is undefined, so we have to detect that case.
+            return mask ? __builtin_clz(mask) : 32;
+        }
+    #else
+        #define SkCLZ(x)    SkCLZ_portable(x)
+    #endif
+#endif
+
+/**
+ *  Returns (value < 0 ? 0 : value) efficiently (i.e. no compares or branches)
  */
-int32_t SkCubeRootBits(int32_t value, int bitBias);
-
-/** Returns -1 if n < 0, else returns 0
-*/
-#define SkExtractSign(n)    ((int32_t)(n) >> 31)
-
-/** If sign == -1, returns -n, else sign must be 0, and returns n.
-    Typically used in conjunction with SkExtractSign().
-*/
-static inline int32_t SkApplySign(int32_t n, int32_t sign) {
-    SkASSERT(sign == 0 || sign == -1);
-    return (n ^ sign) - sign;
-}
-
-/** Return x with the sign of y */
-static inline int32_t SkCopySign32(int32_t x, int32_t y) {
-    return SkApplySign(x, SkExtractSign(x ^ y));
-}
-
-/** Returns (value < 0 ? 0 : value) efficiently (i.e. no compares or branches)
-*/
 static inline int SkClampPos(int value) {
     return value & ~(value >> 31);
 }
 
 /** Given an integer and a positive (max) integer, return the value
-    pinned against 0 and max, inclusive.
-    @param value    The value we want returned pinned between [0...max]
-    @param max      The positive max value
-    @return 0 if value < 0, max if value > max, else value
-*/
+ *  pinned against 0 and max, inclusive.
+ *  @param value    The value we want returned pinned between [0...max]
+ *  @param max      The positive max value
+ *  @return 0 if value < 0, max if value > max, else value
+ */
 static inline int SkClampMax(int value, int max) {
     // ensure that max is positive
     SkASSERT(max >= 0);
@@ -93,62 +122,33 @@ static inline int SkClampMax(int value, int max) {
     return value;
 }
 
-/** Given a positive value and a positive max, return the value
-    pinned against max.
-    Note: only works as long as max - value doesn't wrap around
-    @return max if value >= max, else value
-*/
-static inline unsigned SkClampUMax(unsigned value, unsigned max) {
-#ifdef SK_CPU_HAS_CONDITIONAL_INSTR
-    if (value > max) {
-        value = max;
-    }
-    return value;
-#else
-    int diff = max - value;
-    // clear diff if diff is positive
-    diff &= diff >> 31;
-
-    return value + diff;
-#endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-#if defined(__arm__)
-    #define SkCLZ(x)    __builtin_clz(x)
-#endif
-
-#ifndef SkCLZ
-    #define SkCLZ(x)    SkCLZ_portable(x)
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-
-/** Returns the smallest power-of-2 that is >= the specified value. If value
-    is already a power of 2, then it is returned unchanged. It is undefined
-    if value is <= 0.
-*/
+/**
+ *  Returns the smallest power-of-2 that is >= the specified value. If value
+ *  is already a power of 2, then it is returned unchanged. It is undefined
+ *  if value is <= 0.
+ */
 static inline int SkNextPow2(int value) {
     SkASSERT(value > 0);
     return 1 << (32 - SkCLZ(value - 1));
 }
 
-/** Returns the log2 of the specified value, were that value to be rounded up
-    to the next power of 2. It is undefined to pass 0. Examples:
-         SkNextLog2(1) -> 0
-         SkNextLog2(2) -> 1
-         SkNextLog2(3) -> 2
-         SkNextLog2(4) -> 2
-         SkNextLog2(5) -> 3
-*/
+/**
+ *  Returns the log2 of the specified value, were that value to be rounded up
+ *  to the next power of 2. It is undefined to pass 0. Examples:
+ *  SkNextLog2(1) -> 0
+ *  SkNextLog2(2) -> 1
+ *  SkNextLog2(3) -> 2
+ *  SkNextLog2(4) -> 2
+ *  SkNextLog2(5) -> 3
+ */
 static inline int SkNextLog2(uint32_t value) {
     SkASSERT(value != 0);
     return 32 - SkCLZ(value - 1);
 }
 
-/** Returns true if value is a power of 2. Does not explicitly check for
-    value <= 0.
+/**
+ *  Returns true if value is a power of 2. Does not explicitly check for
+ *  value <= 0.
  */
 static inline bool SkIsPow2(int value) {
     return (value & (value - 1)) == 0;
@@ -156,14 +156,12 @@ static inline bool SkIsPow2(int value) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/** SkMulS16(a, b) multiplies a * b, but requires that a and b are both int16_t.
-    With this requirement, we can generate faster instructions on some
-    architectures.
-*/
-#if defined(__arm__) \
-  && !defined(__thumb__) \
-  && !defined(__ARM_ARCH_4T__) \
-  && !defined(__ARM_ARCH_5T__)
+/**
+ *  SkMulS16(a, b) multiplies a * b, but requires that a and b are both int16_t.
+ *  With this requirement, we can generate faster instructions on some
+ *  architectures.
+ */
+#ifdef SK_ARM_HAS_EDSP
     static inline int32_t SkMulS16(S16CPU x, S16CPU y) {
         SkASSERT((int16_t)x == x);
         SkASSERT((int16_t)y == y);
@@ -186,40 +184,11 @@ static inline bool SkIsPow2(int value) {
     #endif
 #endif
 
-/** Return a*b/255, truncating away any fractional bits. Only valid if both
-    a and b are 0..255
-*/
-static inline U8CPU SkMulDiv255Trunc(U8CPU a, U8CPU b) {
-    SkASSERT((uint8_t)a == a);
-    SkASSERT((uint8_t)b == b);
-    unsigned prod = SkMulS16(a, b) + 1;
-    return (prod + (prod >> 8)) >> 8;
-}
-
-/** Return a*b/255, rounding any fractional bits. Only valid if both
-    a and b are 0..255
+/**
+ *  Return a*b/((1 << shift) - 1), rounding any fractional bits.
+ *  Only valid if a and b are unsigned and <= 32767 and shift is > 0 and <= 8
  */
-static inline U8CPU SkMulDiv255Round(U8CPU a, U8CPU b) {
-    SkASSERT((uint8_t)a == a);
-    SkASSERT((uint8_t)b == b);
-    unsigned prod = SkMulS16(a, b) + 128;
-    return (prod + (prod >> 8)) >> 8;
-}
-
-/** Return (a*b)/255, taking the ceiling of any fractional bits. Only valid if
-    both a and b are 0..255. The expected result equals (a * b + 254) / 255.
- */
-static inline U8CPU SkMulDiv255Ceiling(U8CPU a, U8CPU b) {
-    SkASSERT((uint8_t)a == a);
-    SkASSERT((uint8_t)b == b);
-    unsigned prod = SkMulS16(a, b) + 255;
-    return (prod + (prod >> 8)) >> 8;
-}
-
-/** Return a*b/((1 << shift) - 1), rounding any fractional bits.
-    Only valid if a and b are unsigned and <= 32767 and shift is > 0 and <= 8
-*/
-static inline unsigned SkMul16ShiftRound(unsigned a, unsigned b, int shift) {
+static inline unsigned SkMul16ShiftRound(U16CPU a, U16CPU b, int shift) {
     SkASSERT(a <= 32767);
     SkASSERT(b <= 32767);
     SkASSERT(shift > 0 && shift <= 8);
@@ -227,12 +196,37 @@ static inline unsigned SkMul16ShiftRound(unsigned a, unsigned b, int shift) {
     return (prod + (prod >> shift)) >> shift;
 }
 
-/** Just the rounding step in SkDiv255Round: round(value / 255)
+/**
+ *  Return a*b/255, rounding any fractional bits.
+ *  Only valid if a and b are unsigned and <= 32767.
  */
-static inline unsigned SkDiv255Round(unsigned prod) {
-    prod += 128;
+static inline U8CPU SkMulDiv255Round(U16CPU a, U16CPU b) {
+    SkASSERT(a <= 32767);
+    SkASSERT(b <= 32767);
+    unsigned prod = SkMulS16(a, b) + 128;
     return (prod + (prod >> 8)) >> 8;
 }
 
+/**
+ * Stores numer/denom and numer%denom into div and mod respectively.
+ */
+template <typename In, typename Out>
+inline void SkTDivMod(In numer, In denom, Out* div, Out* mod) {
+#ifdef SK_CPU_ARM32
+    // If we wrote this as in the else branch, GCC won't fuse the two into one
+    // divmod call, but rather a div call followed by a divmod.  Silly!  This
+    // version is just as fast as calling __aeabi_[u]idivmod manually, but with
+    // prettier code.
+    //
+    // This benches as around 2x faster than the code in the else branch.
+    const In d = numer/denom;
+    *div = static_cast<Out>(d);
+    *mod = static_cast<Out>(numer-d*denom);
+#else
+    // On x86 this will just be a single idiv.
+    *div = static_cast<Out>(numer/denom);
+    *mod = static_cast<Out>(numer%denom);
 #endif
+}
 
+#endif

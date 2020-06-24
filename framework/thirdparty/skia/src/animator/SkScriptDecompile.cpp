@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkScriptDecompile.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkScript2.h"
 
@@ -107,7 +99,7 @@ static const struct OperName {
     OperandName(kString),
     OperandName(kArray),
     OperandName(kObject)
-};  
+};
 
 static size_t gOperandNamesSize = sizeof(gOperandNames) / sizeof(gOperandNames[0]);
 
@@ -143,7 +135,7 @@ void SkScriptEngine2::decompile(const unsigned char* start, size_t length) {
             opCode += sizeof(index);
             SkDebugf(" index: %d", index);
             } break;
-        case SkScriptEngine2::kFunctionCall: 
+        case SkScriptEngine2::kFunctionCall:
         case SkScriptEngine2::kMemberOp:
         case SkScriptEngine2::kPropertyOp: {
             size_t ref;
@@ -163,11 +155,7 @@ void SkScriptEngine2::decompile(const unsigned char* start, size_t length) {
             SkScalar scalar;
             memcpy(&scalar, opCode, sizeof(scalar));
             opCode += sizeof(SkScalar);
-#ifdef SK_CAN_USE_FLOAT
             SkDebugf(" scalar: %g", SkScalarToFloat(scalar));
-#else
-            SkDebugf(" scalar: %x", scalar);
-#endif
             } break;
         case SkScriptEngine2::kStringAccumulator:
         case SkScriptEngine2::kStringOperand: {

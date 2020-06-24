@@ -1,107 +1,131 @@
-/* libs/graphics/ports/SkImageDecoder_Factory.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
 
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#include "SkBitmap.h"
+#include "SkImage.h"
 #include "SkImageDecoder.h"
+#include "SkImageEncoder.h"
 #include "SkMovie.h"
 #include "SkStream.h"
 
-extern SkImageDecoder* SkImageDecoder_GIF_Factory(SkStream*);
-extern SkImageDecoder* SkImageDecoder_BMP_Factory(SkStream*);
-extern SkImageDecoder* SkImageDecoder_ICO_Factory(SkStream*);
-extern SkImageDecoder* SkImageDecoder_PNG_Factory(SkStream*);
-extern SkImageDecoder* SkImageDecoder_WBMP_Factory(SkStream*);
-extern SkImageDecoder* SkImageDecoder_JPEG_Factory(SkStream*);
+class SkColorTable;
 
-typedef SkImageDecoder* (*SkImageDecoderFactoryProc)(SkStream*);
+// Empty implementations for SkImageDecoder.
 
-struct CodecFormat {
-    SkImageDecoderFactoryProc   fProc;
-    SkImageDecoder::Format      fFormat;
-};
+SkImageDecoder::SkImageDecoder() {}
 
-static const CodecFormat gPairs[] = {
-#if 0
-    { SkImageDecoder_GIF_Factory,   SkImageDecoder::kGIF_Format },
-    { SkImageDecoder_PNG_Factory,   SkImageDecoder::kPNG_Format },
-    { SkImageDecoder_ICO_Factory,   SkImageDecoder::kICO_Format },
-    { SkImageDecoder_WBMP_Factory,  SkImageDecoder::kWBMP_Format },
-    { SkImageDecoder_BMP_Factory,   SkImageDecoder::kBMP_Format },
-    { SkImageDecoder_JPEG_Factory,  SkImageDecoder::kJPEG_Format }
-#endif
-};
+SkImageDecoder::~SkImageDecoder() {}
 
-SkImageDecoder* SkImageDecoder::Factory(SkStream* stream) {
-    for (size_t i = 0; i < SK_ARRAY_COUNT(gPairs); i++) {
-        SkImageDecoder* codec = gPairs[i].fProc(stream);
-        stream->rewind();
-        if (NULL != codec) {
-            return codec;
-        }
-    }
+SkImageDecoder* SkImageDecoder::Factory(SkStreamRewindable*) {
     return NULL;
 }
 
-bool SkImageDecoder::SupportsFormat(Format format) {
-    for (size_t i = 0; i < SK_ARRAY_COUNT(gPairs); i++) {
-        if (gPairs[i].fFormat == format) {
-            return true;
-        }
-    }
+void SkImageDecoder::copyFieldsToOther(SkImageDecoder* ) {}
+
+bool SkImageDecoder::DecodeFile(const char[], SkBitmap*, SkColorType, Mode, Format*) {
+    return false;
+}
+
+SkImageDecoder::Result SkImageDecoder::decode(SkStream*, SkBitmap*, SkColorType, Mode) {
+    return kFailure;
+}
+
+bool SkImageDecoder::DecodeStream(SkStreamRewindable*, SkBitmap*, SkColorType, Mode, Format*) {
+    return false;
+}
+
+bool SkImageDecoder::DecodeMemory(const void*, size_t, SkBitmap*, SkColorType, Mode, Format*) {
+    return false;
+}
+
+bool SkImageDecoder::buildTileIndex(SkStreamRewindable*, int *width, int *height) {
+    return false;
+}
+
+bool SkImageDecoder::onBuildTileIndex(SkStreamRewindable* stream,
+                                      int* /*width*/, int* /*height*/) {
+    SkDELETE(stream);
+    return false;
+}
+
+
+bool SkImageDecoder::decodeSubset(SkBitmap*, const SkIRect&, SkColorType) {
+    return false;
+}
+
+SkImageDecoder::Format SkImageDecoder::getFormat() const {
+    return kUnknown_Format;
+}
+
+SkImageDecoder::Format SkImageDecoder::GetStreamFormat(SkStreamRewindable*) {
+    return kUnknown_Format;
+}
+
+const char* SkImageDecoder::GetFormatName(Format) {
+    return NULL;
+}
+
+SkImageDecoder::Peeker* SkImageDecoder::setPeeker(Peeker*) {
+    return NULL;
+}
+
+SkBitmap::Allocator* SkImageDecoder::setAllocator(SkBitmap::Allocator*) {
+    return NULL;
+}
+
+void SkImageDecoder::setSampleSize(int) {}
+
+bool SkImageDecoder::cropBitmap(SkBitmap*, SkBitmap*, int, int, int, int, int,
+                    int, int) {
+    return false;
+}
+
+bool SkImageDecoder::allocPixelRef(SkBitmap*, SkColorTable*) const {
     return false;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-typedef SkMovie* (*SkMovieFactoryProc)(SkStream*);
+// Empty implementation for SkMovie.
 
-extern SkMovie* SkMovie_GIF_Factory(SkStream*);
-
-static const SkMovieFactoryProc gMovieProcs[] = {
-#if 0
-    SkMovie_GIF_Factory
-#endif
-};
-
-SkMovie* SkMovie::DecodeStream(SkStream* stream) {
-    for (unsigned i = 0; i < SK_ARRAY_COUNT(gMovieProcs); i++) {
-        SkMovie* movie = gMovieProcs[i](stream);
-        if (NULL != movie) {
-            return movie;
-        }
-        stream->rewind();
-    }
+SkMovie* SkMovie::DecodeStream(SkStreamRewindable* stream) {
     return NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-extern SkImageEncoder* SkImageEncoder_JPEG_Factory();
-extern SkImageEncoder* SkImageEncoder_PNG_Factory();
+// Empty implementations for SkImageEncoder.
 
 SkImageEncoder* SkImageEncoder::Create(Type t) {
-    switch (t) {
-#if 0
-        case kJPEG_Type:
-            return SkImageEncoder_JPEG_Factory();
-        case kPNG_Type:
-            return SkImageEncoder_PNG_Factory();
-#endif
-        default:
-            return NULL;
-    }
+    return NULL;
 }
 
+bool SkImageEncoder::EncodeFile(const char file[], const SkBitmap&, Type, int quality) {
+    return false;
+}
+
+bool SkImageEncoder::EncodeStream(SkWStream*, const SkBitmap&, SkImageEncoder::Type, int) {
+    return false;
+}
+
+SkData* SkImageEncoder::EncodeData(const SkBitmap&, Type, int quality) {
+    return NULL;
+}
+
+bool SkImageEncoder::encodeStream(SkWStream*, const SkBitmap&, int) {
+    return false;
+}
+
+SkData* SkImageEncoder::encodeData(const SkBitmap&, int) {
+    return NULL;
+}
+
+bool SkImageEncoder::encodeFile(const char file[], const SkBitmap& bm, int quality) {
+    return false;
+}
+/////////////////////////////////////////////////////////////////////////

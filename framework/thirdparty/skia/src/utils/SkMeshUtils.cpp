@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "SkMeshUtils.h"
 #include "SkCanvas.h"
 #include "SkPaint.h"
@@ -48,11 +55,11 @@ bool SkMeshIndices::init(SkPoint tex[], uint16_t indices[],
                 *idx++ = index;
                 *idx++ = index + rows + 1;
                 *idx++ = index + 1;
-                
+
                 *idx++ = index + 1;
                 *idx++ = index + rows + 1;
                 *idx++ = index + rows + 2;
-                
+
                 index += 1;
             }
             index += 1;
@@ -82,7 +89,7 @@ void SkMeshUtils::Draw(SkCanvas* canvas, const SkBitmap& bitmap,
                        int rows, int cols, const SkPoint verts[],
                        const SkColor colors[], const SkPaint& paint) {
     SkMeshIndices idx;
-    
+
     if (idx.init(bitmap.width(), bitmap.height(), rows, cols)) {
         SkPaint p(paint);
         p.setShader(SkShader::CreateBitmapShader(bitmap,
@@ -93,4 +100,3 @@ void SkMeshUtils::Draw(SkCanvas* canvas, const SkBitmap& bitmap,
                              idx.indices(), idx.indexCount(), p);
     }
 }
-

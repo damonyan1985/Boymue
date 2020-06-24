@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDraw3D.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDraw3D.h"
 #include "SkAnimateMaker.h"
@@ -33,7 +25,7 @@ const SkMemberInfo Sk3D_Point::fInfo[] = {
 DEFINE_NO_VIRTUALS_GET_MEMBER(Sk3D_Point);
 
 Sk3D_Point::Sk3D_Point() {
-    fPoint.set(0, 0, 0);    
+    fPoint.set(0, 0, 0);
 }
 
 #if SK_USE_CONDENSED_INFO == 0
@@ -93,7 +85,7 @@ const SkMemberInfo Sk3D_Patch::fInfo[] = {
 
 DEFINE_GET_MEMBER(Sk3D_Patch);
 
-void Sk3D_Patch::executeFunction(SkDisplayable* target, int index, 
+void Sk3D_Patch::executeFunction(SkDisplayable* target, int index,
         SkTDArray<SkScriptValue>& parameters, SkDisplayTypes type,
         SkScriptValue* ) {
     SkASSERT(target == this);
@@ -101,7 +93,7 @@ void Sk3D_Patch::executeFunction(SkDisplayable* target, int index,
         case SK_FUNCTION(rotateDegrees):
             SkASSERT(parameters.count() == 3);
             SkASSERT(type == SkType_Float);
-            fPatch.rotateDegrees(parameters[0].fOperand.fScalar, 
+            fPatch.rotateDegrees(parameters[0].fOperand.fScalar,
                 parameters[1].fOperand.fScalar, parameters[2].fOperand.fScalar);
             break;
         default:
@@ -112,6 +104,3 @@ void Sk3D_Patch::executeFunction(SkDisplayable* target, int index,
 const SkFunctionParamType* Sk3D_Patch::getFunctionsParameters() {
     return fFunctionParameters;
 }
-
-
-

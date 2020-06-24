@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDrawMatrix.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDrawMatrix.h"
 #include "SkAnimateMaker.h"
@@ -59,9 +51,9 @@ const SkMemberInfo SkDrawMatrix::fInfo[] = {
 
 DEFINE_GET_MEMBER(SkDrawMatrix);
 
-SkDrawMatrix::SkDrawMatrix() : fChildHasID(false), fDirty(false) { 
+SkDrawMatrix::SkDrawMatrix() : fChildHasID(false), fDirty(false) {
     fConcat.reset();
-    fMatrix.reset(); 
+    fMatrix.reset();
 }
 
 SkDrawMatrix::~SkDrawMatrix() {
@@ -69,16 +61,16 @@ SkDrawMatrix::~SkDrawMatrix() {
         delete *part;
 }
 
-bool SkDrawMatrix::add(SkAnimateMaker& maker, SkDisplayable* child) {
+bool SkDrawMatrix::addChild(SkAnimateMaker& maker, SkDisplayable* child) {
     SkASSERT(child && child->isMatrixPart());
     SkMatrixPart* part = (SkMatrixPart*) child;
     *fParts.append() = part;
     if (part->add())
-        maker.setErrorCode(SkDisplayXMLParserError::kErrorAddingToMatrix); 
+        maker.setErrorCode(SkDisplayXMLParserError::kErrorAddingToMatrix);
     return true;
 }
 
-bool SkDrawMatrix::childrenNeedDisposing() const { 
+bool SkDrawMatrix::childrenNeedDisposing() const {
     return false;
 }
 
@@ -91,8 +83,8 @@ SkDisplayable* SkDrawMatrix::deepCopy(SkAnimateMaker* maker) {
     return copy;
 }
 
-void SkDrawMatrix::dirty() { 
-    fDirty = true; 
+void SkDrawMatrix::dirty() {
+    fDirty = true;
 }
 
 bool SkDrawMatrix::draw(SkAnimateMaker& maker) {
@@ -198,13 +190,8 @@ void SkDrawMatrix::onEndElement(SkAnimateMaker& ) {
         fMatrix.setSkewY(vals[3]);
         fMatrix.setScaleY(vals[4]);
         fMatrix.setTranslateY(vals[5]);
-#ifdef SK_SCALAR_IS_FIXED
-        fMatrix.setPerspX(SkFixedToFract(vals[6]));
-        fMatrix.setPerspY(SkFixedToFract(vals[7]));
-#else
         fMatrix.setPerspX(vals[6]);
         fMatrix.setPerspY(vals[7]);
-#endif
 //      fMatrix.setPerspW(vals[8]);
         goto setConcat;
     }
@@ -220,8 +207,8 @@ setConcat:
     }
 }
 
-void SkDrawMatrix::setChildHasID() { 
-    fChildHasID = true; 
+void SkDrawMatrix::setChildHasID() {
+    fChildHasID = true;
 }
 
 bool SkDrawMatrix::setProperty(int index, SkScriptValue& scriptValue) {
@@ -237,18 +224,10 @@ bool SkDrawMatrix::setProperty(int index, SkScriptValue& scriptValue) {
             fMatrix.setTranslateY((*scriptValue.fOperand.fArray)[1].fScalar);
             return true;
         case SK_PROPERTY(perspectX):
-#ifdef SK_SCALAR_IS_FIXED
-            fMatrix.setPerspX(SkFixedToFract(number));
-#else
             fMatrix.setPerspX(number);
-#endif  
             break;
         case SK_PROPERTY(perspectY):
-#ifdef SK_SCALAR_IS_FIXED
-            fMatrix.setPerspY(SkFixedToFract(number));
-#else
             fMatrix.setPerspY(number);
-#endif  
             break;
         case SK_PROPERTY(rotate): {
             SkMatrix temp;
@@ -287,4 +266,3 @@ bool SkDrawMatrix::setProperty(int index, SkScriptValue& scriptValue) {
     fConcat = fMatrix;
     return true;
 }
-

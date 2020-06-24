@@ -1,18 +1,10 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright 2008 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkMallocPixelRef_DEFINED
 #define SkMallocPixelRef_DEFINED
@@ -22,41 +14,98 @@
 /** We explicitly use the same allocator for our pixels that SkMask does,
     so that we can freely assign memory allocated by one class to the other.
 */
-class SkMallocPixelRef : public SkPixelRef {
+class SK_API SkMallocPixelRef : public SkPixelRef {
 public:
-    /** Allocate the specified buffer for pixels. The memory is freed when the
-        last owner of this pixelref is gone. If addr is NULL, sk_malloc_throw()
-        is called to allocate it.
+    SK_DECLARE_INST_COUNT(SkMallocPixelRef)
+    /**
+     *  Return a new SkMallocPixelRef with the provided pixel storage, rowBytes,
+     *  and optional colortable. The caller is responsible for managing the
+     *  lifetime of the pixel storage buffer, as this pixelref will not try
+     *  to delete it.
+     *
+     *  The pixelref will ref() the colortable (if not NULL).
+     *
+     *  Returns NULL on failure.
      */
-    SkMallocPixelRef(void* addr, size_t size, SkColorTable* ctable);
-    virtual ~SkMallocPixelRef();
-    
-    //! Return the allocation size for the pixels
-    size_t getSize() const { return fSize; }
+    static SkMallocPixelRef* NewDirect(const SkImageInfo&, void* addr,
+                                       size_t rowBytes, SkColorTable*);
+
+    /**
+     *  Return a new SkMallocPixelRef, automatically allocating storage for the
+     *  pixels. If rowBytes are 0, an optimal value will be chosen automatically.
+     *  If rowBytes is > 0, then it will be respected, or NULL will be returned
+     *  if rowBytes is invalid for the specified info.
+     *
+     *  This pixelref will ref() the specified colortable (if not NULL).
+     *
+     *  Returns NULL on failure.
+     */
+    static SkMallocPixelRef* NewAllocate(const SkImageInfo& info,
+                                         size_t rowBytes, SkColorTable*);
+
+    /**
+     *  Return a new SkMallocPixelRef with the provided pixel storage,
+     *  rowBytes, and optional colortable. On destruction, ReleaseProc
+     *  will be called.
+     *
+     *  This pixelref will ref() the specified colortable (if not NULL).
+     *
+     *  If ReleaseProc is NULL, the pixels will never be released. This
+     *  can be useful if the pixels were stack allocated. However, such an
+     *  SkMallocPixelRef must not live beyond its pixels (e.g. by copying
+     *  an SkBitmap pointing to it, or drawing to an SkPicture).
+     *
+     *  Returns NULL on failure.
+     */
+    typedef void (*ReleaseProc)(void* addr, void* context);
+    static SkMallocPixelRef* NewWithProc(const SkImageInfo& info,
+                                         size_t rowBytes, SkColorTable*,
+                                         void* addr, ReleaseProc proc,
+                                         void* context);
+
+    /**
+     *  Return a new SkMallocPixelRef that will use the provided
+     *  SkData, rowBytes, and optional colortable as pixel storage.
+     *  The SkData will be ref()ed and on destruction of the PielRef,
+     *  the SkData will be unref()ed.
+     *
+     *  This pixelref will ref() the specified colortable (if not NULL).
+     *
+     *  Returns NULL on failure.
+     */
+    static SkMallocPixelRef* NewWithData(const SkImageInfo& info,
+                                         size_t rowBytes,
+                                         SkColorTable* ctable,
+                                         SkData* data);
+
     void* getAddr() const { return fStorage; }
 
-    // overrides from SkPixelRef
-    virtual void flatten(SkFlattenableWriteBuffer&) const;
-    virtual Factory getFactory() const {
-        return Create;
-    }
-    static SkPixelRef* Create(SkFlattenableReadBuffer& buffer) {
-        return SkNEW_ARGS(SkMallocPixelRef, (buffer));
-    }
+    class PRFactory : public SkPixelRefFactory {
+    public:
+        virtual SkPixelRef* create(const SkImageInfo&,
+                                   size_t rowBytes,
+                                   SkColorTable*) override;
+    };
 
 protected:
-    // overrides from SkPixelRef
-    virtual void* onLockPixels(SkColorTable**);
-    virtual void onUnlockPixels();
+    // The ownPixels version of this constructor is deprecated.
+    SkMallocPixelRef(const SkImageInfo&, void* addr, size_t rb, SkColorTable*,
+                     bool ownPixels);
+    virtual ~SkMallocPixelRef();
 
-    SkMallocPixelRef(SkFlattenableReadBuffer& buffer);
-
-    void*           fStorage;
+    bool onNewLockPixels(LockRec*) override;
+    void onUnlockPixels() override;
+    size_t getAllocatedSizeInBytes() const override;
 
 private:
-
-    size_t          fSize;
+    void*           fStorage;
     SkColorTable*   fCTable;
+    size_t          fRB;
+    ReleaseProc     fReleaseProc;
+    void*           fReleaseProcContext;
+
+    SkMallocPixelRef(const SkImageInfo&, void* addr, size_t rb, SkColorTable*,
+                     ReleaseProc proc, void* context);
 
     typedef SkPixelRef INHERITED;
 };

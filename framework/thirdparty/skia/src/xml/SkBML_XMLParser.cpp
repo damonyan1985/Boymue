@@ -1,19 +1,11 @@
-/* libs/graphics/xml/SkBML_XMLParser.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkBML_XMLParser.h"
 #include "SkBML_Verbs.h"
@@ -23,7 +15,7 @@
 static uint8_t rbyte(SkStream& s)
 {
     uint8_t b;
-    size_t size = s.read(&b, 1);
+    SkDEBUGCODE(size_t size = ) s.read(&b, 1);
     SkASSERT(size == 1);
     return b;
 }
@@ -120,7 +112,7 @@ static void rattr(unsigned verb, SkStream& s, BMLW& rec, SkXMLWriter& writer)
         valueIndex = rbyte(s);
         break;
     default:
-        SkASSERT(!"bad verb");
+        SkDEBUGFAIL("bad verb");
         return;
     }
     writer.addAttribute(rec.fNames[nameIndex], rec.fValues[valueIndex]);
@@ -164,7 +156,7 @@ static void relem(unsigned verb, SkStream& s, BMLW& rec, SkXMLWriter& writer)
             writer.endElement();
             return;
         default:
-            SkASSERT(!"bad verb");
+            SkDEBUGFAIL("bad verb");
         }
     }
 }
@@ -187,6 +179,3 @@ void BML_XMLParser::Read(SkStream& s, SkXMLParser& output)
     SkXMLParserWriter writer(&output);
     Read(s, writer);
 }
-
-
-

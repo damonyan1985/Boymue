@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimateSet.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimateSet.h"
 #include "SkAnimateMaker.h"
@@ -40,18 +32,14 @@ const SkMemberInfo SkSet::fInfo[] = {
 DEFINE_GET_MEMBER(SkSet);
 
 SkSet::SkSet() {
-    dur = 1; 
+    dur = 1;
 }
 
 #ifdef SK_DUMP_ENABLED
 void SkSet::dump(SkAnimateMaker* maker) {
     INHERITED::dump(maker);
     if (dur != 1) {
-#ifdef SK_CAN_USE_FLOAT
-        SkDebugf("dur=\"%g\" ", SkScalarToFloat(SkScalarDiv(dur,1000)));
-#else
-        SkDebugf("dur=\"%x\" ", SkScalarDiv(dur,1000));
-#endif
+        SkDebugf("dur=\"%g\" ", dur * 0.001);
     }
     //don't want double />\n's
     SkDebugf("/>\n");
@@ -60,7 +48,7 @@ void SkSet::dump(SkAnimateMaker* maker) {
 #endif
 
 void SkSet::refresh(SkAnimateMaker& maker) {
-    fFieldInfo->setValue(maker, &fValues, 0, fFieldInfo->fCount, NULL, 
+    fFieldInfo->setValue(maker, &fValues, 0, fFieldInfo->fCount, NULL,
         fFieldInfo->getType(), to);
 }
 
@@ -74,7 +62,7 @@ void SkSet::onEndElement(SkAnimateMaker& maker) {
     fReset = dur != 1;
     SkDisplayTypes outType = fFieldInfo->getType();
     int comps = outType == SkType_String || outType == SkType_DynamicString ? 1 :
-        fFieldInfo->getSize((const SkDisplayable*) fTarget) / sizeof(int);
+        (int)fFieldInfo->getSize((const SkDisplayable*) fTarget) / sizeof(int);
     if (fValues.getType() == SkType_Unknown) {
         fValues.setType(outType);
         fValues.setCount(comps);
@@ -86,8 +74,9 @@ void SkSet::onEndElement(SkAnimateMaker& maker) {
         SkASSERT(fValues.getType() == outType);
         if (fFieldInfo->fType == SkType_Array)
             comps = fValues.count();
-        else
+        else {
             SkASSERT(fValues.count() == comps);
+        }
     }
     if (formula.size() > 0) {
         comps = 1;

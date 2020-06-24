@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright 2011 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkDrawFilter_DEFINED
 #define SkDrawFilter_DEFINED
@@ -28,23 +21,35 @@ class SkPaint;
  *  used for the actual drawing. Note: this modification only lasts for the
  *  current draw, as a temporary copy of the paint is used.
  */
-class SkDrawFilter : public SkRefCnt {
+class SK_API SkDrawFilter : public SkRefCnt {
 public:
+    SK_DECLARE_INST_COUNT(SkDrawFilter)
+
     enum Type {
         kPaint_Type,
         kPoint_Type,
         kLine_Type,
         kBitmap_Type,
         kRect_Type,
+        kRRect_Type,
+        kOval_Type,
         kPath_Type,
-        kText_Type
+        kText_Type,
+    };
+
+    enum {
+        kTypeCount = kText_Type + 1
     };
 
     /**
      *  Called with the paint that will be used to draw the specified type.
-     *  The implementation may modify the paint as they wish.
+     *  The implementation may modify the paint as they wish. If filter()
+     *  returns false, the draw will be skipped.
      */
-    virtual void filter(SkPaint*, Type) {}
+    virtual bool filter(SkPaint*, Type) = 0;
+
+private:
+    typedef SkRefCnt INHERITED;
 };
 
 #endif
