@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "gm.h"
 
 namespace skiagm {
@@ -5,24 +12,30 @@ namespace skiagm {
 class FillTypeGM : public GM {
     SkPath fPath;
 public:
-	FillTypeGM() {
-        const SkScalar radius = SkIntToScalar(45);
-        fPath.addCircle(SkIntToScalar(50), SkIntToScalar(50), radius);
-        fPath.addCircle(SkIntToScalar(100), SkIntToScalar(100), radius);
+    FillTypeGM() {
+        this->setBGColor(0xFFDDDDDD);
     }
-    
+
+    void makePath() {
+        if (fPath.isEmpty()) {
+            const SkScalar radius = SkIntToScalar(45);
+            fPath.addCircle(SkIntToScalar(50), SkIntToScalar(50), radius);
+            fPath.addCircle(SkIntToScalar(100), SkIntToScalar(100), radius);
+        }
+    }
+
 protected:
-    virtual SkString onShortName() {
+
+    SkString onShortName() override {
         return SkString("filltypes");
     }
 
-	virtual SkISize onISize() {
-        return make_isize(835, 840);
+    SkISize onISize() override {
+        return SkISize::Make(835, 840);
     }
 
     void showPath(SkCanvas* canvas, int x, int y, SkPath::FillType ft,
                   SkScalar scale, const SkPaint& paint) {
-
         const SkRect r = { 0, 0, SkIntToScalar(150), SkIntToScalar(150) };
 
         canvas->save();
@@ -48,11 +61,11 @@ protected:
                  scale, paint);
     }
 
-    virtual void onDraw(SkCanvas* canvas) {
-        canvas->drawColor(0xFFDDDDDD);
-        
+    void onDraw(SkCanvas* canvas) override {
+        this->makePath();
+
         canvas->translate(SkIntToScalar(20), SkIntToScalar(20));
-        
+
         SkPaint paint;
         const SkScalar scale = SkIntToScalar(5)/4;
 
@@ -69,7 +82,7 @@ protected:
         canvas->translate(SkIntToScalar(450), 0);
         showFour(canvas, scale, paint);
     }
-    
+
 private:
     typedef GM INHERITED;
 };
@@ -80,4 +93,3 @@ static GM* MyFactory(void*) { return new FillTypeGM; }
 static GMRegistry reg(MyFactory);
 
 }
-

@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #ifndef SkTouchGesture_DEFINED
 #define SkTouchGesture_DEFINED
 
@@ -6,13 +13,13 @@
 
 struct SkFlingState {
     SkFlingState() : fActive(false) {}
-    
+
     bool isActive() const { return fActive; }
     void stop() { fActive = false; }
-    
+
     void reset(float sx, float sy);
     bool evaluateMatrix(SkMatrix* matrix);
-    
+
 private:
     SkPoint     fDirection;
     SkScalar    fSpeed0;
@@ -68,5 +75,3 @@ private:
 };
 
 #endif
-
-

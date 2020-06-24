@@ -1,23 +1,14 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkFixed_DEFINED
 #define SkFixed_DEFINED
 
-#include "SkMath.h"
+#include "SkTypes.h"
 
 /** \file SkFixed.h
 
@@ -37,8 +28,7 @@ typedef int32_t             SkFixed;
 #define SK_FixedTanPIOver8  (0x6A0A)
 #define SK_FixedRoot2Over2  (0xB505)
 
-#ifdef SK_CAN_USE_FLOAT
-    #define SkFixedToFloat(x)   ((x) * 1.5258789e-5f)
+#define SkFixedToFloat(x)   ((x) * 1.52587890625e-5f)
 #if 1
     #define SkFloatToFixed(x)   ((SkFixed)((x) * SK_Fixed1))
 #else
@@ -49,21 +39,19 @@ typedef int32_t             SkFixed;
     }
 #endif
 
-    #define SkFixedToDouble(x)  ((x) * 1.5258789e-5)
-    #define SkDoubleToFixed(x)  ((SkFixed)((x) * SK_Fixed1))
+#ifdef SK_DEBUG
+    static inline SkFixed SkFloatToFixed_Check(float x) {
+        int64_t n64 = (int64_t)(x * SK_Fixed1);
+        SkFixed n32 = (SkFixed)n64;
+        SkASSERT(n64 == n32);
+        return n32;
+    }
+#else
+    #define SkFloatToFixed_Check(x) SkFloatToFixed(x)
 #endif
 
-/** 32 bit signed integer used to represent fractions values with 30 bits to the right of the decimal point
-*/
-typedef int32_t             SkFract;
-#define SK_Fract1           (1 << 30)
-#define Sk_FracHalf         (1 << 29)
-#define SK_FractPIOver180   (0x11DF46A)
-
-#ifdef SK_CAN_USE_FLOAT
-    #define SkFractToFloat(x)   ((float)(x) * 0.00000000093132257f)
-    #define SkFloatToFract(x)   ((SkFract)((x) * SK_Fract1))
-#endif
+#define SkFixedToDouble(x)  ((x) * 1.52587890625e-5)
+#define SkDoubleToFixed(x)  ((SkFixed)((x) * SK_Fixed1))
 
 /** Converts an integer to a SkFixed, asserting that the result does not overflow
     a 32 bit signed integer
@@ -79,124 +67,43 @@ typedef int32_t             SkFract;
     #define SkIntToFixed(n)     (SkFixed)((n) << 16)
 #endif
 
-/** Converts a SkFixed to a SkFract, asserting that the result does not overflow
-    a 32 bit signed integer
-*/
-#ifdef SK_DEBUG
-    inline SkFract SkFixedToFract(SkFixed x)
-    {
-        SkASSERT(x >= (-2 << 16) && x <= (2 << 16) - 1);
-        return x << 14;
-    }
-#else
-    #define SkFixedToFract(x)   ((x) << 14)
-#endif
+#define SkFixedRoundToInt(x)    (((x) + SK_FixedHalf) >> 16)
+#define SkFixedCeilToInt(x)     (((x) + SK_Fixed1 - 1) >> 16)
+#define SkFixedFloorToInt(x)    ((x) >> 16)
 
-/** Returns the signed fraction of a SkFixed
-*/
-inline SkFixed SkFixedFraction(SkFixed x)
-{
-    SkFixed mask = x >> 31 << 16;
-    return (x & 0xFFFF) | mask;
-}
+#define SkFixedRoundToFixed(x)  (((x) + SK_FixedHalf) & 0xFFFF0000)
+#define SkFixedCeilToFixed(x)   (((x) + SK_Fixed1 - 1) & 0xFFFF0000)
+#define SkFixedFloorToFixed(x)  ((x) & 0xFFFF0000)
 
-/** Converts a SkFract to a SkFixed
-*/
-#define SkFractToFixed(x)   ((x) >> 14)
-/** Round a SkFixed to an integer
-*/
-#define SkFixedRound(x)     (((x) + SK_FixedHalf) >> 16)
-#define SkFixedCeil(x)      (((x) + SK_Fixed1 - 1) >> 16)
-#define SkFixedFloor(x)     ((x) >> 16)
 #define SkFixedAbs(x)       SkAbs32(x)
 #define SkFixedAve(a, b)    (((a) + (b)) >> 1)
 
-// The same as SkIntToFixed(SkFixedFloor(x))
-#define SkFixedFloorToFixed(x)  ((x) & ~0xFFFF)
-
-SkFixed SkFixedMul_portable(SkFixed, SkFixed);
-SkFract SkFractMul_portable(SkFract, SkFract);
-inline SkFixed SkFixedSquare_portable(SkFixed value)
-{
-    uint32_t a = SkAbs32(value);
-    uint32_t ah = a >> 16;
-    uint32_t al = a & 0xFFFF;
-    SkFixed result = ah * a + al * ah + (al * al >> 16);
-    if (result >= 0)
-        return result;
-    else // Overflow.
-        return SK_FixedMax;
-}
-
 #define SkFixedDiv(numer, denom)    SkDivBits(numer, denom, 16)
-SkFixed SkFixedDivInt(int32_t numer, int32_t denom);
-SkFixed SkFixedMod(SkFixed numer, SkFixed denom);
-#define SkFixedInvert(n)            SkDivBits(SK_Fixed1, n, 16)
-SkFixed SkFixedFastInvert(SkFixed n);
-#define SkFixedSqrt(n)              SkSqrtBits(n, 23)
-SkFixed SkFixedMean(SkFixed a, SkFixed b);  //*< returns sqrt(x*y)
-int SkFixedMulCommon(SkFixed, int , int bias);  // internal used by SkFixedMulFloor, SkFixedMulCeil, SkFixedMulRound
-
-#define SkFractDiv(numer, denom)    SkDivBits(numer, denom, 30)
-#define SkFractSqrt(n)              SkSqrtBits(n, 30)
-
-SkFixed SkFixedSinCos(SkFixed radians, SkFixed* cosValueOrNull);
-#define SkFixedSin(radians)         SkFixedSinCos(radians, NULL)
-inline SkFixed SkFixedCos(SkFixed radians)
-{
-    SkFixed cosValue;
-    (void)SkFixedSinCos(radians, &cosValue);
-    return cosValue;
-}
-SkFixed SkFixedTan(SkFixed radians);
-SkFixed SkFixedASin(SkFixed);
-SkFixed SkFixedACos(SkFixed);
-SkFixed SkFixedATan2(SkFixed y, SkFixed x);
-SkFixed SkFixedExp(SkFixed);
-SkFixed SkFixedLog(SkFixed);
-
-#define SK_FixedNearlyZero          (SK_Fixed1 >> 12)
-
-inline bool SkFixedNearlyZero(SkFixed x, SkFixed tolerance = SK_FixedNearlyZero)
-{
-    SkASSERT(tolerance > 0);
-    return SkAbs32(x) < tolerance;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Now look for ASM overrides for our portable versions (should consider putting this in its own file)
 
-#ifdef SkLONGLONG
-    inline SkFixed SkFixedMul_longlong(SkFixed a, SkFixed b)
-    {
-        return (SkFixed)((SkLONGLONG)a * b >> 16);
-    }
-    inline SkFract SkFractMul_longlong(SkFract a, SkFract b)
-    {
-        return (SkFixed)((SkLONGLONG)a * b >> 30);
-    }
-    inline SkFixed SkFixedSquare_longlong(SkFixed value)
-    {
-        return (SkFixed)((SkLONGLONG)value * value >> 16);
-    }
-    #define SkFixedMul(a,b)     SkFixedMul_longlong(a,b)
-    #define SkFractMul(a,b)     SkFractMul_longlong(a,b)
-    #define SkFixedSquare(a)    SkFixedSquare_longlong(a)
-#endif
+inline SkFixed SkFixedMul_longlong(SkFixed a, SkFixed b) {
+    return (SkFixed)((int64_t)a * b >> 16);
+}
+#define SkFixedMul(a,b)     SkFixedMul_longlong(a,b)
 
-#if defined(__arm__) && !defined(__thumb__)
+
+#if defined(SK_CPU_ARM32)
     /* This guy does not handle NaN or other obscurities, but is faster than
-       than (int)(x*65536) when we only have software floats
+       than (int)(x*65536).  When built on Android with -Os, needs forcing
+       to inline or we lose the speed benefit.
     */
-    inline SkFixed SkFloatToFixed_arm(float x)
+    SK_ALWAYS_INLINE SkFixed SkFloatToFixed_arm(float x)
     {
-        register int32_t y, z;
+        int32_t y, z;
         asm("movs    %1, %3, lsl #1         \n"
             "mov     %2, #0x8E              \n"
             "sub     %1, %2, %1, lsr #24    \n"
             "mov     %2, %3, lsl #8         \n"
             "orr     %2, %2, #0x80000000    \n"
             "mov     %1, %2, lsr %1         \n"
+            "it cs                          \n"
             "rsbcs   %1, %1, #0             \n"
             : "=r"(x), "=&r"(y), "=&r"(z)
             : "r"(x)
@@ -206,7 +113,7 @@ inline bool SkFixedNearlyZero(SkFixed x, SkFixed tolerance = SK_FixedNearlyZero)
     }
     inline SkFixed SkFixedMul_arm(SkFixed x, SkFixed y)
     {
-        register int32_t t;
+        int32_t t;
         asm("smull  %0, %2, %1, %3          \n"
             "mov    %0, %0, lsr #16         \n"
             "orr    %0, %0, %2, lsl #16     \n"
@@ -216,53 +123,38 @@ inline bool SkFixedNearlyZero(SkFixed x, SkFixed tolerance = SK_FixedNearlyZero)
             );
         return x;
     }
-    inline SkFixed SkFixedMulAdd_arm(SkFixed x, SkFixed y, SkFixed a)
-    {
-        register int32_t t;
-        asm("smull  %0, %3, %1, %4          \n"
-            "add    %0, %2, %0, lsr #16     \n"
-            "add    %0, %0, %3, lsl #16     \n"
-            : "=r"(x), "=&r"(y), "=&r"(a), "=r"(t)
-            : "%r"(x), "1"(y), "2"(a)
-            :
-            );
-        return x;
-    }
-    inline SkFixed SkFractMul_arm(SkFixed x, SkFixed y)
-    {
-        register int32_t t;
-        asm("smull  %0, %2, %1, %3          \n"
-            "mov    %0, %0, lsr #30         \n"
-            "orr    %0, %0, %2, lsl #2      \n"
-            : "=r"(x), "=&r"(y), "=r"(t)
-            : "r"(x), "1"(y)
-            :
-            );
-        return x;
-    }
     #undef SkFixedMul
-    #undef SkFractMul
     #define SkFixedMul(x, y)        SkFixedMul_arm(x, y)
-    #define SkFractMul(x, y)        SkFractMul_arm(x, y)
-    #define SkFixedMulAdd(x, y, a)  SkFixedMulAdd_arm(x, y, a)
 
     #undef SkFloatToFixed
     #define SkFloatToFixed(x)  SkFloatToFixed_arm(x)
 #endif
 
-/////////////////////// Now define our macros to the portable versions if they weren't overridden
+///////////////////////////////////////////////////////////////////////////////
 
-#ifndef SkFixedSquare
-    #define SkFixedSquare(x)    SkFixedSquare_portable(x)
-#endif
-#ifndef SkFixedMul
-    #define SkFixedMul(x, y)    SkFixedMul_portable(x, y)
-#endif
-#ifndef SkFractMul
-    #define SkFractMul(x, y)    SkFractMul_portable(x, y)
-#endif
-#ifndef SkFixedMulAdd
-    #define SkFixedMulAdd(x, y, a)  (SkFixedMul(x, y) + (a))
-#endif
+typedef int64_t SkFixed3232;   // 32.32
+
+#define SkIntToFixed3232(x)       ((SkFixed3232)(x) << 32)
+#define SkFixed3232ToInt(x)       ((int)((x) >> 32))
+#define SkFixedToFixed3232(x)     ((SkFixed3232)(x) << 16)
+#define SkFixed3232ToFixed(x)     ((SkFixed)((x) >> 16))
+#define SkFloatToFixed3232(x)     ((SkFixed3232)((x) * (65536.0f * 65536.0f)))
+
+#define SkScalarToFixed3232(x)    SkFloatToFixed3232(x)
+
+///////////////////////////////////////////////////////////////////////////////
+
+// 64bits wide, with a 16bit bias. Useful when accumulating lots of 16.16 so
+// we don't overflow along the way
+typedef int64_t Sk48Dot16;
+
+#define Sk48Dot16FloorToInt(x)    static_cast<int>((x) >> 16)
+
+static inline float Sk48Dot16ToScalar(Sk48Dot16 x) {
+    return static_cast<float>(x * 1.5258789e-5);  // x * (1.0f / (1 << 16))
+}
+#define SkFloatTo48Dot16(x)       (static_cast<Sk48Dot16>((x) * (1 << 16)))
+
+#define SkScalarTo48Dot16(x)      SkFloatTo48Dot16(x)
 
 #endif

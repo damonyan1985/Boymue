@@ -1,20 +1,16 @@
+
 /*
-    Copyright 2011 Google Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
+
 #include "SkTableMaskFilter.h"
+#include "SkReadBuffer.h"
+#include "SkWriteBuffer.h"
+#include "SkString.h"
 
 SkTableMaskFilter::SkTableMaskFilter() {
     for (int i = 0; i < 256; i++) {
@@ -23,17 +19,13 @@ SkTableMaskFilter::SkTableMaskFilter() {
 }
 
 SkTableMaskFilter::SkTableMaskFilter(const uint8_t table[256]) {
-    this->setTable(table);
+    memcpy(fTable, table, sizeof(fTable));
 }
 
 SkTableMaskFilter::~SkTableMaskFilter() {}
 
-void SkTableMaskFilter::setTable(const uint8_t table[256]) {
-    memcpy(fTable, table, 256);
-}
-
 bool SkTableMaskFilter::filterMask(SkMask* dst, const SkMask& src,
-                                 const SkMatrix&, SkIPoint* margin) {
+                                 const SkMatrix&, SkIPoint* margin) const {
     if (src.fFormat != SkMask::kA8_Format) {
         return false;
     }
@@ -42,16 +34,16 @@ bool SkTableMaskFilter::filterMask(SkMask* dst, const SkMask& src,
     dst->fRowBytes = SkAlign4(dst->fBounds.width());
     dst->fFormat = SkMask::kA8_Format;
     dst->fImage = NULL;
-    
+
     if (src.fImage) {
         dst->fImage = SkMask::AllocImage(dst->computeImageSize());
-        
+
         const uint8_t* srcP = src.fImage;
         uint8_t* dstP = dst->fImage;
         const uint8_t* table = fTable;
         int dstWidth = dst->fBounds.width();
         int extraZeros = dst->fRowBytes - dstWidth;
-        
+
         for (int y = dst->fBounds.height() - 1; y >= 0; --y) {
             for (int x = dstWidth - 1; x >= 0; --x) {
                 dstP[x] = table[srcP[x]];
@@ -74,35 +66,32 @@ bool SkTableMaskFilter::filterMask(SkMask* dst, const SkMask& src,
     return true;
 }
 
-SkMask::Format SkTableMaskFilter::getFormat() {
+SkMask::Format SkTableMaskFilter::getFormat() const {
     return SkMask::kA8_Format;
 }
 
-void SkTableMaskFilter::flatten(SkFlattenableWriteBuffer& wb) {
-    this->INHERITED::flatten(wb);
-    wb.writePad(fTable, 256);
+void SkTableMaskFilter::flatten(SkWriteBuffer& wb) const {
+    wb.writeByteArray(fTable, 256);
 }
 
-SkTableMaskFilter::SkTableMaskFilter(SkFlattenableReadBuffer& rb)
-        : INHERITED(rb) {
-    rb.read(fTable, 256);
-}
-
-SkFlattenable* SkTableMaskFilter::Factory(SkFlattenableReadBuffer& rb) {
-    return SkNEW_ARGS(SkTableMaskFilter, (rb));
-}
-
-SkFlattenable::Factory SkTableMaskFilter::getFactory() {
-    return SkTableMaskFilter::Factory;
+SkFlattenable* SkTableMaskFilter::CreateProc(SkReadBuffer& buffer) {
+    uint8_t table[256];
+    if (!buffer.readByteArray(table, 256)) {
+        return NULL;
+    }
+    return Create(table);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void SkTableMaskFilter::MakeGammaTable(uint8_t table[256], SkScalar gamma) {
-    float x = 0;
     const float dx = 1 / 255.0f;
+    const float g = SkScalarToFloat(gamma);
+
+    float x = 0;
     for (int i = 0; i < 256; i++) {
-        table[i] = SkPin32(SkScalarRound(powf(x, gamma) * 255), 0, 255);
+     // float ee = powf(x, g) * 255;
+        table[i] = SkPin32(sk_float_round2int(powf(x, g) * 255), 0, 255);
         x += dx;
     }
 }
@@ -120,7 +109,7 @@ void SkTableMaskFilter::MakeClipTable(uint8_t table[256], uint8_t min,
     SkFixed scale = (1 << 16) * 255 / (max - min);
     memset(table, 0, min + 1);
     for (int i = min + 1; i < max; i++) {
-        int value = SkFixedRound(scale * (i - min));
+        int value = SkFixedRoundToInt(scale * (i - min));
         SkASSERT(value <= 255);
         table[i] = value;
     }
@@ -141,3 +130,16 @@ void SkTableMaskFilter::MakeClipTable(uint8_t table[256], uint8_t min,
 #endif
 }
 
+#ifndef SK_IGNORE_TO_STRING
+void SkTableMaskFilter::toString(SkString* str) const {
+    str->append("SkTableMaskFilter: (");
+
+    str->append("table: ");
+    for (int i = 0; i < 255; ++i) {
+        str->appendf("%d, ", fTable[i]);
+    }
+    str->appendf("%d", fTable[255]);
+
+    str->append(")");
+}
+#endif

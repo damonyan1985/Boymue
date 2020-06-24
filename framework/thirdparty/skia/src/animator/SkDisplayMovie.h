@@ -1,49 +1,41 @@
-/* libs/graphics/animator/SkDisplayMovie.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDisplayMovie_DEFINED
 #define SkDisplayMovie_DEFINED
 
 #include "SkAnimator.h"
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 #include "SkMemberInfo.h"
 
 struct SkEventState;
 
-class SkDisplayMovie : public SkDrawable {
+class SkDisplayMovie : public SkADrawable {
     DECLARE_DISPLAY_MEMBER_INFO(Movie);
     SkDisplayMovie();
     virtual ~SkDisplayMovie();
     void buildMovie();
-    virtual SkDisplayable* deepCopy(SkAnimateMaker* );
-    virtual void dirty();
+    SkDisplayable* deepCopy(SkAnimateMaker* ) override;
+    void dirty() override;
     bool doEvent(const SkEvent& evt) {
         return fLoaded && fMovie.doEvent(evt);
     }
-    virtual bool doEvent(SkDisplayEvent::Kind , SkEventState* state );
-    virtual bool draw(SkAnimateMaker& );
+    bool doEvent(SkDisplayEvent::Kind , SkEventState* state ) override;
+    bool draw(SkAnimateMaker& ) override;
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
-    virtual void dumpEvents();
+    void dump(SkAnimateMaker* ) override;
+    void dumpEvents() override;
 #endif
-    virtual bool enable(SkAnimateMaker& );
+    bool enable(SkAnimateMaker& ) override;
     const SkAnimator* getAnimator() const { return &fMovie; }
-    virtual bool hasEnable() const;
-    virtual void onEndElement(SkAnimateMaker& );
+    bool hasEnable() const override;
+    void onEndElement(SkAnimateMaker& ) override;
 protected:
     SkString src;
     SkAnimator fMovie;
@@ -53,8 +45,7 @@ protected:
     friend class SkAnimateMaker;
     friend class SkPost;
 private:
-    typedef SkDrawable INHERITED;
+    typedef SkADrawable INHERITED;
 };
 
 #endif // SkDisplayMovie_DEFINED
-

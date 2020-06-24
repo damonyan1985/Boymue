@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkSnapshot.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkTypes.h"
 
@@ -49,6 +41,10 @@ bool SkSnapshot::draw(SkAnimateMaker& maker) {
     SkASSERT(type >= 0);
     SkASSERT(filename.size() > 0);
     SkImageEncoder* encoder = SkImageEncoder::Create((SkImageEncoder::Type) type);
+    if (!encoder) {
+        return false;
+    }
+    SkAutoTDelete<SkImageEncoder> ad(encoder);
 
     SkString name(filename);
     if (sequence) {
@@ -64,9 +60,10 @@ bool SkSnapshot::draw(SkAnimateMaker& maker) {
         name.append(".jpg");
     else if (type == SkImageEncoder::kPNG_Type)
         name.append(".png");
-    encoder->encodeFile(name.c_str(),
-                        maker.fCanvas->getDevice()->accessBitmap(false),
-                        SkScalarFloor(quality));
+
+    SkBitmap pixels;
+    pixels.allocPixels(maker.fCanvas->imageInfo());
+    maker.fCanvas->readPixels(&pixels, 0, 0);
+    encoder->encodeFile(name.c_str(), pixels, SkScalarFloorToInt(quality));
     return false;
 }
-

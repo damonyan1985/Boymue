@@ -1,23 +1,15 @@
-/* libs/graphics/animator/SkAnimateField.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimate.h"
 #include "SkAnimateMaker.h"
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 #include "SkParse.h"
 
 #if SK_USE_CONDENSED_INFO == 0
@@ -36,8 +28,8 @@ SkAnimate::SkAnimate() : fComponents(0) {
 SkAnimate::~SkAnimate() {
 }
 
-int SkAnimate::components() { 
-    return fComponents; 
+int SkAnimate::components() {
+    return fComponents;
 }
 
 #ifdef SK_DUMP_ENABLED
@@ -49,29 +41,19 @@ void SkAnimate::dump(SkAnimateMaker* maker) {
             SkDebugf("mirror=\"true\" ");
         if (fReset)
             SkDebugf("reset=\"true\" ");
-#ifdef SK_CAN_USE_FLOAT
-        SkDebugf("dur=\"%g\" ", SkScalarToFloat(SkScalarDiv(dur,1000)));
+        SkDebugf("dur=\"%g\" ", dur * 0.001);
         if (repeat != SK_Scalar1)
             SkDebugf("repeat=\"%g\" ", SkScalarToFloat(repeat));
-#else
-        SkDebugf("dur=\"%x\" ", SkScalarDiv(dur,1000));
-        if (repeat != SK_Scalar1)
-            SkDebugf("repeat=\"%x\" ", repeat);
-#endif
         //if (fHasValues)
         //    SkDebugf("values=\"%s\" ", values);
         if (blend.count() != 1 || blend[0] != SK_Scalar1) {
             SkDebugf("blend=\"[");
             bool firstElem = true;
             for (int i = 0; i < blend.count(); i++) {
-                if (!firstElem) 
+                if (!firstElem)
                     SkDebugf(",");
                 firstElem = false;
-#ifdef SK_CAN_USE_FLOAT
                 SkDebugf("%g", SkScalarToFloat(blend[i]));
-#else
-                SkDebugf("%x", blend[i]);
-#endif
             }
             SkDebugf("]\" ");
         }
@@ -100,7 +82,7 @@ void SkAnimate::onEndElement(SkAnimateMaker& maker) {
         SkASSERT(to.size() > 0);
         fFieldInfo->setValue(maker, &fValues, 0, 0, NULL, outType, to);
         SkASSERT(0);
-        // !!! this needs to set fComponents 
+        // !!! this needs to set fComponents
         return;
     }
     fComponents = fFieldInfo->getCount();
@@ -127,4 +109,3 @@ void SkAnimate::onEndElement(SkAnimateMaker& maker) {
     fFieldInfo->setValue(maker, &fValues, fFieldOffset, max, this, outType, from);
     fFieldInfo->setValue(maker, &fValues, fComponents + fFieldOffset, max, this, outType, to);
 }
-

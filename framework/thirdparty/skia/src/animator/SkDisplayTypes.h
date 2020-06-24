@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayTypes.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDisplayTypes_DEFINED
 #define SkDisplayTypes_DEFINED
@@ -42,7 +34,7 @@ class SkDisplayBoolean : public SkDisplayDepend {
     DECLARE_DISPLAY_MEMBER_INFO(Boolean);
     SkDisplayBoolean();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
     SkBool value;
     friend class SkAnimatorScript;
@@ -55,7 +47,7 @@ class SkDisplayInt : public SkDisplayDepend {
     DECLARE_DISPLAY_MEMBER_INFO(Int);
     SkDisplayInt();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
 private:
     int32_t value;
@@ -69,7 +61,7 @@ class SkDisplayFloat : public SkDisplayDepend {
     DECLARE_DISPLAY_MEMBER_INFO(Float);
     SkDisplayFloat();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
 private:
     SkScalar value;
@@ -83,11 +75,11 @@ class SkDisplayString : public SkDisplayDepend {
     DECLARE_DISPLAY_MEMBER_INFO(String);
     SkDisplayString();
     SkDisplayString(SkString& );
-    virtual void executeFunction(SkDisplayable* , int index, 
+    void executeFunction(SkDisplayable* , int index,
         SkTDArray<SkScriptValue>& parameters, SkDisplayTypes type,
-        SkScriptValue* );
-    virtual const SkFunctionParamType* getFunctionsParameters();
-    virtual bool getProperty(int index, SkScriptValue* ) const;
+        SkScriptValue* ) override;
+    const SkFunctionParamType* getFunctionsParameters() override;
+    bool getProperty(int index, SkScriptValue* ) const override;
     SkString value;
 private:
     static const SkFunctionParamType fFunctionParameters[];
@@ -99,7 +91,7 @@ class SkDisplayArray : public SkDisplayDepend {
     SkDisplayArray(SkTypedArray& );
     SkDisplayArray(SkOpArray& ); // compiled script experiment
     virtual ~SkDisplayArray();
-    virtual bool getProperty(int index, SkScriptValue* ) const;
+    bool getProperty(int index, SkScriptValue* ) const override;
 private:
     SkTypedArray values;
     friend class SkAnimator;
@@ -112,4 +104,3 @@ private:
 };
 
 #endif // SkDisplayTypes_DEFINED
-

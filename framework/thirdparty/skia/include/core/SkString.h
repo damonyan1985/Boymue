@@ -1,34 +1,89 @@
+
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkString_DEFINED
 #define SkString_DEFINED
 
 #include "SkScalar.h"
+#include "SkTArray.h"
+
+#include <stdarg.h>
 
 /*  Some helper functions for C strings
 */
 
-bool SkStrStartsWith(const char string[], const char prefix[]);
-bool SkStrEndsWith(const char string[], const char suffix[]);
+static bool SkStrStartsWith(const char string[], const char prefixStr[]) {
+    SkASSERT(string);
+    SkASSERT(prefixStr);
+    return !strncmp(string, prefixStr, strlen(prefixStr));
+}
+static bool SkStrStartsWith(const char string[], const char prefixChar) {
+    SkASSERT(string);
+    return (prefixChar == *string);
+}
+
+bool SkStrEndsWith(const char string[], const char suffixStr[]);
+bool SkStrEndsWith(const char string[], const char suffixChar);
+
 int SkStrStartsWithOneOf(const char string[], const char prefixes[]);
 
-#define SkStrAppendS32_MaxSize  11
+static int SkStrFind(const char string[], const char substring[]) {
+    const char *first = strstr(string, substring);
+    if (NULL == first) return -1;
+    return SkToS32(first - &string[0]);
+}
+
+static bool SkStrContains(const char string[], const char substring[]) {
+    SkASSERT(string);
+    SkASSERT(substring);
+    return (-1 != SkStrFind(string, substring));
+}
+static bool SkStrContains(const char string[], const char subchar) {
+    SkASSERT(string);
+    char tmp[2];
+    tmp[0] = subchar;
+    tmp[1] = '\0';
+    return (-1 != SkStrFind(string, tmp));
+}
+
+static inline char *SkStrDup(const char string[]) {
+    char *ret = (char *) sk_malloc_throw(strlen(string)+1);
+    memcpy(ret,string,strlen(string)+1);
+    return ret;
+}
+
+/*
+ *  The SkStrAppend... methods will write into the provided buffer, assuming it is large enough.
+ *  Each method has an associated const (e.g. SkStrAppendU32_MaxSize) which will be the largest
+ *  value needed for that method's buffer.
+ *
+ *  char storage[SkStrAppendU32_MaxSize];
+ *  SkStrAppendU32(storage, value);
+ *
+ *  Note : none of the SkStrAppend... methods write a terminating 0 to their buffers. Instead,
+ *  the methods return the ptr to the end of the written part of the buffer. This can be used
+ *  to compute the length, and/or know where to write a 0 if that is desired.
+ *
+ *  char storage[SkStrAppendU32_MaxSize + 1];
+ *  char* stop = SkStrAppendU32(storage, value);
+ *  size_t len = stop - storage;
+ *  *stop = 0;   // valid, since storage was 1 byte larger than the max.
+ */
+
+#define SkStrAppendU32_MaxSize  10
+char*   SkStrAppendU32(char buffer[], uint32_t);
+#define SkStrAppendU64_MaxSize  20
+char*   SkStrAppendU64(char buffer[], uint64_t, int minDigits);
+
+#define SkStrAppendS32_MaxSize  (SkStrAppendU32_MaxSize + 1)
 char*   SkStrAppendS32(char buffer[], int32_t);
-#define SkStrAppendS64_MaxSize  20
+#define SkStrAppendS64_MaxSize  (SkStrAppendU64_MaxSize + 1)
 char*   SkStrAppendS64(char buffer[], int64_t, int minDigits);
 
 /**
@@ -47,15 +102,9 @@ char*   SkStrAppendS64(char buffer[], int64_t, int minDigits);
  *  Thus if the caller wants to add a 0 at the end, buffer must be at least
  *  SkStrAppendScalar_MaxSize + 1 bytes large.
  */
-#ifdef SK_SCALAR_IS_FLOAT
-    #define SkStrAppendScalar SkStrAppendFloat
-#else
-    #define SkStrAppendScalar SkStrAppendFixed
-#endif
+#define SkStrAppendScalar SkStrAppendFloat
 
-#ifdef SK_CAN_USE_FLOAT
 char* SkStrAppendFloat(char buffer[], float);
-#endif
 char* SkStrAppendFixed(char buffer[], SkFixed);
 
 /** \class SkString
@@ -64,7 +113,7 @@ char* SkStrAppendFixed(char buffer[], SkFixed);
     counting to make string assignments and copies very fast
     with no extra RAM cost. Assumes UTF8 encoding.
 */
-class SkString {
+class SK_API SkString {
 public:
                 SkString();
     explicit    SkString(size_t len);
@@ -73,7 +122,7 @@ public:
                 SkString(const SkString&);
                 ~SkString();
 
-    bool        isEmpty() const { return fRec->fLength == 0; }
+    bool        isEmpty() const { return 0 == fRec->fLength; }
     size_t      size() const { return (size_t) fRec->fLength; }
     const char* c_str() const { return fRec->data(); }
     char operator[](size_t n) const { return this->c_str()[n]; }
@@ -82,26 +131,41 @@ public:
     bool equals(const char text[]) const;
     bool equals(const char text[], size_t len) const;
 
-    bool startsWith(const char prefix[]) const {
-        return SkStrStartsWith(fRec->data(), prefix);
+    bool startsWith(const char prefixStr[]) const {
+        return SkStrStartsWith(fRec->data(), prefixStr);
     }
-    bool endsWith(const char suffix[]) const {
-        return SkStrEndsWith(fRec->data(), suffix);
+    bool startsWith(const char prefixChar) const {
+        return SkStrStartsWith(fRec->data(), prefixChar);
+    }
+    bool endsWith(const char suffixStr[]) const {
+        return SkStrEndsWith(fRec->data(), suffixStr);
+    }
+    bool endsWith(const char suffixChar) const {
+        return SkStrEndsWith(fRec->data(), suffixChar);
+    }
+    bool contains(const char substring[]) const {
+        return SkStrContains(fRec->data(), substring);
+    }
+    bool contains(const char subchar) const {
+        return SkStrContains(fRec->data(), subchar);
+    }
+    int find(const char substring[]) const {
+        return SkStrFind(fRec->data(), substring);
     }
 
-    friend int operator==(const SkString& a, const SkString& b) {
+    friend bool operator==(const SkString& a, const SkString& b) {
         return a.equals(b);
     }
-    friend int operator!=(const SkString& a, const SkString& b) {
+    friend bool operator!=(const SkString& a, const SkString& b) {
         return !a.equals(b);
     }
 
     // these methods edit the string
 
-    SkString&   operator=(const SkString&);
-    SkString&   operator=(const char text[]);
+    SkString& operator=(const SkString&);
+    SkString& operator=(const char text[]);
 
-    char*   writable_str();
+    char* writable_str();
     char& operator[](size_t n) { return this->writable_str()[n]; }
 
     void reset();
@@ -118,6 +182,8 @@ public:
     void insertUnichar(size_t offset, SkUnichar);
     void insertS32(size_t offset, int32_t value);
     void insertS64(size_t offset, int64_t value, int minDigits = 0);
+    void insertU32(size_t offset, uint32_t value);
+    void insertU64(size_t offset, uint64_t value, int minDigits = 0);
     void insertHex(size_t offset, uint32_t value, int minDigits = 0);
     void insertScalar(size_t offset, SkScalar);
 
@@ -127,6 +193,8 @@ public:
     void appendUnichar(SkUnichar uni) { this->insertUnichar((size_t)-1, uni); }
     void appendS32(int32_t value) { this->insertS32((size_t)-1, value); }
     void appendS64(int64_t value, int minDigits = 0) { this->insertS64((size_t)-1, value, minDigits); }
+    void appendU32(uint32_t value) { this->insertU32((size_t)-1, value); }
+    void appendU64(uint64_t value, int minDigits = 0) { this->insertU64((size_t)-1, value, minDigits); }
     void appendHex(uint32_t value, int minDigits = 0) { this->insertHex((size_t)-1, value, minDigits); }
     void appendScalar(SkScalar value) { this->insertScalar((size_t)-1, value); }
 
@@ -139,9 +207,11 @@ public:
     void prependHex(uint32_t value, int minDigits = 0) { this->insertHex(0, value, minDigits); }
     void prependScalar(SkScalar value) { this->insertScalar((size_t)-1, value); }
 
-    void printf(const char format[], ...);
-    void appendf(const char format[], ...);
-    void prependf(const char format[], ...);
+    void printf(const char format[], ...) SK_PRINTF_LIKE(2, 3);
+    void appendf(const char format[], ...) SK_PRINTF_LIKE(2, 3);
+    void appendVAList(const char format[], va_list);
+    void prependf(const char format[], ...) SK_PRINTF_LIKE(2, 3);
+    void prependVAList(const char format[], va_list);
 
     void remove(size_t offset, size_t length);
 
@@ -158,8 +228,8 @@ public:
 private:
     struct Rec {
     public:
-        uint16_t    fLength;
-        uint16_t    fRefCnt;
+        uint32_t    fLength; // logically size_t, but we want it to stay 32bits
+        int32_t     fRefCnt;
         char        fBeginningOfData;
 
         char* data() { return &fBeginningOfData; }
@@ -168,33 +238,26 @@ private:
     Rec* fRec;
 
 #ifdef SK_DEBUG
-    const char* fStr;
     void validate() const;
 #else
     void validate() const {}
 #endif
 
     static const Rec gEmptyRec;
-    static Rec* AllocRec(const char text[], U16CPU len);
+    static Rec* AllocRec(const char text[], size_t len);
     static Rec* RefRec(Rec*);
 };
 
-class SkAutoUCS2 {
-public:
-    SkAutoUCS2(const char utf8[]);
-    ~SkAutoUCS2();
+/// Creates a new string and writes into it using a printf()-style format.
+SkString SkStringPrintf(const char* format, ...);
 
-    /** This returns the number of ucs2 characters
-    */
-    int count() const { return fCount; }
+// Specialized to take advantage of SkString's fast swap path. The unspecialized function is
+// declared in SkTypes.h and called by SkTSort.
+template <> inline void SkTSwap(SkString& a, SkString& b) {
+    a.swap(b);
+}
 
-    /** This returns a null terminated ucs2 string
-    */
-    const uint16_t* getUCS2() const { return fUCS2; }
-
-private:
-    int         fCount;
-    uint16_t*   fUCS2;
-};
+// Split str on any characters in delimiters into out.  (Think, strtok with a sane API.)
+void SkStrSplit(const char* str, const char* delimiters, SkTArray<SkString>* out);
 
 #endif

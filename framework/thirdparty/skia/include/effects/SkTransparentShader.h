@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkTransparentShader_DEFINED
@@ -19,35 +10,38 @@
 
 #include "SkShader.h"
 
-class SkTransparentShader : public SkShader {
+class SK_API SkTransparentShader : public SkShader {
 public:
     SkTransparentShader() {}
-    virtual uint32_t getFlags();
-    virtual bool    setContext( const SkBitmap& device,
-                                const SkPaint& paint,
-                                const SkMatrix& matrix);
-    virtual void    shadeSpan(int x, int y, SkPMColor[], int count);
-    virtual void    shadeSpan16(int x, int y, uint16_t span[], int count);
 
-    // overrides for SkFlattenable
-    virtual Factory getFactory() { return Create; }
-    virtual void flatten(SkFlattenableWriteBuffer& buffer) {
-        this->INHERITED::flatten(buffer);
-    }
-        
+    size_t contextSize() const override;
+
+    class TransparentShaderContext : public SkShader::Context {
+    public:
+        TransparentShaderContext(const SkTransparentShader& shader, const ContextRec&);
+        virtual ~TransparentShaderContext();
+
+        uint32_t getFlags() const override;
+        void shadeSpan(int x, int y, SkPMColor[], int count) override;
+        void shadeSpan16(int x, int y, uint16_t span[], int count) override;
+
+    private:
+        const SkBitmap* fDevice;
+
+        typedef SkShader::Context INHERITED;
+    };
+
+    SK_TO_STRING_OVERRIDE()
+    SK_DECLARE_PUBLIC_FLATTENABLE_DESERIALIZATION_PROCS(SkTransparentShader)
+
+protected:
+    Context* onCreateContext(const ContextRec&, void* storage) const override;
+
+    // we don't need to flatten anything at all
+    void flatten(SkWriteBuffer&) const override {}
+
 private:
-    // these are a cache from the call to setContext()
-    const SkBitmap* fDevice;
-    uint8_t         fAlpha;
-
-    SkTransparentShader(SkFlattenableReadBuffer& buffer) : INHERITED(buffer) {}
-    
-    static SkFlattenable* Create(SkFlattenableReadBuffer& buffer) {
-        return SkNEW_ARGS(SkTransparentShader, (buffer));
-    }
-
     typedef SkShader INHERITED;
 };
 
 #endif
-

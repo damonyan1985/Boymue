@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkOperandIterpolator.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkOperandInterpolator.h"
 #include "SkScript.h"
@@ -23,7 +15,7 @@ SkOperandInterpolator::SkOperandInterpolator() {
     fType = SkType_Unknown;
 }
 
-SkOperandInterpolator::SkOperandInterpolator(int elemCount, int frameCount, 
+SkOperandInterpolator::SkOperandInterpolator(int elemCount, int frameCount,
                                              SkDisplayTypes type)
 {
     this->reset(elemCount, frameCount, type);
@@ -89,7 +81,7 @@ SkInterpolatorBase::Result SkOperandInterpolator::timeToValues(SkMSec time, SkOp
                 for (int i = fElemCount - 1; i >= 0; --i) {
                     int32_t a = prevSrc[i].fS32;
                     int32_t b = nextSrc[i].fS32;
-                    values[i].fS32 = a + SkScalarRound((b - a) * T);
+                    values[i].fS32 = a + SkScalarRoundToInt((b - a) * T);
                 }
             } else
                 memcpy(values, prevSrc, sizeof(SkOperand) * fElemCount);
@@ -155,5 +147,3 @@ void SkOperandInterpolator::UnitTest()
 }
 
 #endif
-
-

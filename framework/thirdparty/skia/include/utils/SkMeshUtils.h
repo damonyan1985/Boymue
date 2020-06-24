@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #ifndef SkMeshUtils_DEFINED
 #define SkMeshUtils_DEFINED
 
@@ -12,7 +19,7 @@ class SkMeshIndices {
 public:
     SkMeshIndices();
     ~SkMeshIndices();
-    
+
     bool init(int texW, int texH, int rows, int cols) {
         return this->init(NULL, NULL, texW, texH, rows, cols);
     }
@@ -20,14 +27,14 @@ public:
     bool init(SkPoint tex[], uint16_t indices[],
               int texW, int texH, int rows, int cols);
 
-    size_t          indexCount() const { return fIndexCount; }
+    int             indexCount() const { return fIndexCount; }
     const uint16_t* indices() const { return fIndices; }
 
     size_t          texCount() const { return fTexCount; }
     const SkPoint*  tex() const { return fTex; }
 
 private:
-    size_t      fIndexCount, fTexCount;
+    int         fIndexCount, fTexCount;
     SkPoint*    fTex;
     uint16_t*   fIndices;
     void*       fStorage; // may be null

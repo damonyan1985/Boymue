@@ -1,18 +1,11 @@
+
 /*
-    Copyright 2011 Google Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 
 #ifndef SkGPipePriv_DEFINED
@@ -26,6 +19,7 @@
 enum PaintFlats {
     kColorFilter_PaintFlat,
     kDrawLooper_PaintFlat,
+    kImageFilter_PaintFlat,
     kMaskFilter_PaintFlat,
     kPathEffect_PaintFlat,
     kRasterizer_PaintFlat,
@@ -43,22 +37,27 @@ enum DrawOps {
     kClipPath_DrawOp,
     kClipRegion_DrawOp,
     kClipRect_DrawOp,
+    kClipRRect_DrawOp,
     kConcat_DrawOp,
     kDrawBitmap_DrawOp,
-    kDrawBitmapMatrix_DrawOp,
-    kDrawBitmapRect_DrawOp,
-    kDrawClear_DrawOp,
-    kDrawData_DrawOp,
+    kDrawBitmapNine_DrawOp,
+    kDrawBitmapRectToRect_DrawOp,
+    kDrawDRRect_DrawOp,
+    kDrawImage_DrawOp,
+    kDrawImageRect_DrawOp,
+    kDrawOval_DrawOp,
     kDrawPaint_DrawOp,
+    kDrawPatch_DrawOp,
     kDrawPath_DrawOp,
     kDrawPicture_DrawOp,
     kDrawPoints_DrawOp,
     kDrawPosText_DrawOp,
     kDrawPosTextH_DrawOp,
     kDrawRect_DrawOp,
-    kDrawShape_DrawOp,
+    kDrawRRect_DrawOp,
     kDrawSprite_DrawOp,
     kDrawText_DrawOp,
+    kDrawTextBlob_DrawOp,
     kDrawTextOnPath_DrawOp,
     kDrawVertices_DrawOp,
     kRestore_DrawOp,
@@ -71,13 +70,18 @@ enum DrawOps {
     kTranslate_DrawOp,
 
     kPaintOp_DrawOp,
+    kSetTypeface_DrawOp,
+    kSetAnnotation_DrawOp,
 
     kDef_Typeface_DrawOp,
     kDef_Flattenable_DrawOp,
-
-    kName_Flattenable_DrawOp,   // index <--> name
+    kDef_Bitmap_DrawOp,
+    kDef_Factory_DrawOp,
 
     // these are signals to playback, not drawing verbs
+    kReportFlags_DrawOp,
+    kShareBitmapHeap_DrawOp,
+    kShareImageHeap_DrawOp,
     kDone_DrawOp,
 };
 
@@ -102,24 +106,24 @@ enum DrawOps {
 #define DRAWOPS_FLAG_MASK   ((1 << DRAWOPS_FLAG_BITS) - 1)
 #define DRAWOPS_DATA_MASK   ((1 << DRAWOPS_DATA_BITS) - 1)
 
-static unsigned DrawOp_unpackOp(uint32_t op32) {
+static inline unsigned DrawOp_unpackOp(uint32_t op32) {
     return (op32 >> (DRAWOPS_FLAG_BITS + DRAWOPS_DATA_BITS));
 }
 
-static unsigned DrawOp_unpackFlags(uint32_t op32) {
+static inline unsigned DrawOp_unpackFlags(uint32_t op32) {
     return (op32 >> DRAWOPS_DATA_BITS) & DRAWOPS_FLAG_MASK;
 }
 
-static unsigned DrawOp_unpackData(uint32_t op32) {
+static inline unsigned DrawOp_unpackData(uint32_t op32) {
     return op32 & DRAWOPS_DATA_MASK;
 }
 
-static uint32_t DrawOp_packOpFlagData(DrawOps op, unsigned flags, unsigned data) {
+static inline uint32_t DrawOp_packOpFlagData(DrawOps op, unsigned flags, unsigned data) {
     SkASSERT(0 == (op & ~DRAWOPS_OP_MASK));
     SkASSERT(0 == (flags & ~DRAWOPS_FLAG_MASK));
     SkASSERT(0 == (data & ~DRAWOPS_DATA_MASK));
 
-    return (op << DRAWOPS_FLAG_BITS + DRAWOPS_DATA_BITS) |
+    return (op << (DRAWOPS_FLAG_BITS + DRAWOPS_DATA_BITS)) |
            (flags << DRAWOPS_DATA_BITS) |
             data;
 }
@@ -132,30 +136,117 @@ enum {
     kSaveLayer_HasPaint_DrawOpFlag = 1 << 1,
 };
 enum {
-    kClear_HasColor_DrawOpFlag  = 1 << 0
-};
-enum {
     kDrawTextOnPath_HasMatrix_DrawOpFlag = 1 << 0
 };
 enum {
     kDrawVertices_HasTexs_DrawOpFlag     = 1 << 0,
     kDrawVertices_HasColors_DrawOpFlag   = 1 << 1,
     kDrawVertices_HasIndices_DrawOpFlag  = 1 << 2,
+    kDrawVertices_HasXfermode_DrawOpFlag = 1 << 3,
+};
+// These are shared between drawbitmap and drawimage
+enum {
+    kDrawBitmap_HasPaint_DrawOpFlag   = 1 << 0,
+    // Specific to drawBitmapRect, but needs to be different from HasPaint,
+    // which is used for all drawBitmap calls, so include it here.
+    kDrawBitmap_HasSrcRect_DrawOpFlag = 1 << 1,
+    // SkCanvas::DrawBitmapRectFlags::kBleed_DrawBitmapRectFlag is
+    // converted into and out of this flag to save space
+    kDrawBitmap_Bleed_DrawOpFlag      = 1 << 2,
+};
+enum {
+    kClip_HasAntiAlias_DrawOpFlag = 1 << 0,
+};
+///////////////////////////////////////////////////////////////////////////////
+
+class BitmapInfo : SkNoncopyable {
+public:
+    BitmapInfo(SkBitmap* bitmap, uint32_t genID, int toBeDrawnCount)
+        : fBitmap(bitmap)
+        , fGenID(genID)
+        , fBytesAllocated(0)
+        , fMoreRecentlyUsed(NULL)
+        , fLessRecentlyUsed(NULL)
+        , fToBeDrawnCount(toBeDrawnCount)
+    {}
+
+    ~BitmapInfo() {
+        SkASSERT(0 == fToBeDrawnCount);
+        SkDELETE(fBitmap);
+    }
+
+    void addDraws(int drawsToAdd) {
+        if (0 == fToBeDrawnCount) {
+            // The readers will only ever decrement the count, so once the
+            // count is zero, the writer will be the only one modifying it,
+            // so it does not need to be an atomic operation.
+            fToBeDrawnCount = drawsToAdd;
+        } else {
+            sk_atomic_add(&fToBeDrawnCount, drawsToAdd);
+        }
+    }
+
+    void decDraws() {
+        sk_atomic_dec(&fToBeDrawnCount);
+    }
+
+    int drawCount() const {
+        return fToBeDrawnCount;
+    }
+
+    SkBitmap* fBitmap;
+    // Store the generation ID of the original bitmap, since copying does
+    // not copy this field, so fBitmap's generation ID will not be useful
+    // for comparing.
+    // FIXME: Is it reasonable to make copying a bitmap/pixelref copy the
+    // generation ID?
+    uint32_t fGenID;
+    // Keep track of the bytes allocated for this bitmap. When replacing the
+    // bitmap or removing this BitmapInfo we know how much memory has been
+    // reclaimed.
+    size_t fBytesAllocated;
+    // TODO: Generalize the LRU caching mechanism
+    BitmapInfo* fMoreRecentlyUsed;
+    BitmapInfo* fLessRecentlyUsed;
+private:
+    int      fToBeDrawnCount;
+};
+
+static inline bool shouldFlattenBitmaps(uint32_t flags) {
+    return SkToBool(flags & SkGPipeWriter::kCrossProcess_Flag
+            && !(flags & SkGPipeWriter::kSharedAddressSpace_Flag));
+}
+
+class SkImageHeap : public SkRefCnt {
+public:
+    SkImageHeap();
+    virtual ~SkImageHeap();
+
+    // slot must be "valid" -- 0 is never valid
+    const SkImage* get(int32_t slot) const;
+    // returns 0 if not found, else returns slot
+    int32_t find(const SkImage*) const;
+    // returns non-zero value for where the image was stored
+    int32_t insert(const SkImage*);
+
+private:
+    SkTDArray<const SkImage*> fArray;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
 enum PaintOps {
     kReset_PaintOp,     // no arg
-    
+
     kFlags_PaintOp,     // arg inline
     kColor_PaintOp,     // arg 32
+    kFilterLevel_PaintOp,   // arg inline
     kStyle_PaintOp,     // arg inline
     kJoin_PaintOp,      // arg inline
     kCap_PaintOp,       // arg inline
     kWidth_PaintOp,     // arg scalar
-    kMiter_PaintOp,// arg scalar
-    
+    kMiter_PaintOp,     // arg scalar
+
     kEncoding_PaintOp,  // arg inline - text
     kHinting_PaintOp,   // arg inline - text
     kAlign_PaintOp,     // arg inline - text
@@ -175,37 +266,37 @@ enum PaintOps {
 #define PAINTOPS_FLAG_MASK   ((1 << PAINTOPS_FLAG_BITS) - 1)
 #define PAINTOPS_DATA_MASK   ((1 << PAINTOPS_DATA_BITS) - 1)
 
-static unsigned PaintOp_unpackOp(uint32_t op32) {
+static inline unsigned PaintOp_unpackOp(uint32_t op32) {
     return (op32 >> (PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS));
 }
 
-static unsigned PaintOp_unpackFlags(uint32_t op32) {
+static inline unsigned PaintOp_unpackFlags(uint32_t op32) {
     return (op32 >> PAINTOPS_DATA_BITS) & PAINTOPS_FLAG_MASK;
 }
 
-static unsigned PaintOp_unpackData(uint32_t op32) {
+static inline unsigned PaintOp_unpackData(uint32_t op32) {
     return op32 & PAINTOPS_DATA_MASK;
 }
 
-static uint32_t PaintOp_packOp(PaintOps op) {
+static inline uint32_t PaintOp_packOp(PaintOps op) {
     SkASSERT(0 == (op & ~PAINTOPS_OP_MASK));
-    
-    return (op << PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS);
+
+    return op << (PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS);
 }
 
-static uint32_t PaintOp_packOpData(PaintOps op, unsigned data) {
+static inline uint32_t PaintOp_packOpData(PaintOps op, unsigned data) {
     SkASSERT(0 == (op & ~PAINTOPS_OP_MASK));
     SkASSERT(0 == (data & ~PAINTOPS_DATA_MASK));
-    
-    return (op << PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS) | data;
+
+    return (op << (PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS)) | data;
 }
 
-static uint32_t PaintOp_packOpFlagData(PaintOps op, unsigned flags, unsigned data) {
+static inline uint32_t PaintOp_packOpFlagData(PaintOps op, unsigned flags, unsigned data) {
     SkASSERT(0 == (op & ~PAINTOPS_OP_MASK));
     SkASSERT(0 == (flags & ~PAINTOPS_FLAG_MASK));
     SkASSERT(0 == (data & ~PAINTOPS_DATA_MASK));
-    
-    return (op << PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS) |
+
+    return (op << (PAINTOPS_FLAG_BITS + PAINTOPS_DATA_BITS)) |
     (flags << PAINTOPS_DATA_BITS) |
     data;
 }

@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkMatrixParts.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkMatrixParts_DEFINED
 #define SkMatrixParts_DEFINED
@@ -47,7 +39,7 @@ class SkRotate : public SkMatrixPart {
     DECLARE_MEMBER_INFO(Rotate);
     SkRotate();
 protected:
-    virtual bool add();
+    bool add() override;
     SkScalar degrees;
     SkPoint center;
 };
@@ -56,7 +48,7 @@ class SkScale : public SkMatrixPart {
     DECLARE_MEMBER_INFO(Scale);
     SkScale();
 protected:
-    virtual bool add();
+    bool add() override;
     SkScalar x;
     SkScalar y;
     SkPoint center;
@@ -66,7 +58,7 @@ class SkSkew : public SkMatrixPart {
     DECLARE_MEMBER_INFO(Skew);
     SkSkew();
 protected:
-    virtual bool add();
+    bool add() override;
     SkScalar x;
     SkScalar y;
     SkPoint center;
@@ -76,7 +68,7 @@ class SkTranslate : public SkMatrixPart {
     DECLARE_MEMBER_INFO(Translate);
     SkTranslate();
 protected:
-    virtual bool add();
+    bool add() override;
     SkScalar x;
     SkScalar y;
 };
@@ -86,7 +78,7 @@ class SkFromPath : public SkMatrixPart {
     SkFromPath();
     virtual ~SkFromPath();
 protected:
-    virtual bool add();
+    bool add() override;
     int32_t mode;
     SkScalar offset;
     SkDrawPath* path;
@@ -98,11 +90,11 @@ class SkRectToRect : public SkMatrixPart {
     SkRectToRect();
     virtual ~SkRectToRect();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
-    virtual const SkMemberInfo* preferredChild(SkDisplayTypes type);
+    const SkMemberInfo* preferredChild(SkDisplayTypes type) override;
 protected:
-    virtual bool add();
+    bool add() override;
     SkDrawRect* source;
     SkDrawRect* destination;
 };
@@ -112,16 +104,16 @@ class SkPolyToPoly : public SkMatrixPart {
     SkPolyToPoly();
     virtual ~SkPolyToPoly();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
-    virtual void onEndElement(SkAnimateMaker& );
-    virtual const SkMemberInfo* preferredChild(SkDisplayTypes type);
+    void onEndElement(SkAnimateMaker& ) override;
+    const SkMemberInfo* preferredChild(SkDisplayTypes type) override;
 protected:
-    virtual bool add();
+    bool add() override;
     SkPolygon* source;
     SkPolygon* destination;
 };
 
-// !!! add concat matrix ? 
+// !!! add concat matrix ?
 
 #endif // SkMatrixParts_DEFINED

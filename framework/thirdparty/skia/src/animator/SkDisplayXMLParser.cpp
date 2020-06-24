@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayXMLParser.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayXMLParser.h"
 #include "SkAnimateMaker.h"
@@ -42,7 +34,7 @@ static char const* const gErrorStrings[] = {
     "last offset in gradient must be one",
     "offsets in gradient must be increasing",
     "first offset in gradient must be zero",
-    "gradient attribute \"points\" must have length of four", 
+    "gradient attribute \"points\" must have length of four",
     "in include ",
     "in movie ",
     "include name unknown or missing ",
@@ -78,7 +70,7 @@ void SkDisplayXMLParserError::setInnerError(SkAnimateMaker* parent, const SkStri
 
 
 SkDisplayXMLParser::SkDisplayXMLParser(SkAnimateMaker& maker)
-    : INHERITED(&maker.fError), fMaker(maker), fInInclude(maker.fInInclude), 
+    : INHERITED(&maker.fError), fMaker(maker), fInInclude(maker.fInInclude),
         fInSkia(maker.fInInclude), fCurrDisplayable(NULL)
 {
 }
@@ -102,7 +94,7 @@ bool SkDisplayXMLParser::onAddAttribute(const char name[], const char value[]) {
     return onAddAttributeLen(name, value, strlen(value));
 }
 
-bool SkDisplayXMLParser::onAddAttributeLen(const char attrName[], const char attrValue[], 
+bool SkDisplayXMLParser::onAddAttributeLen(const char attrName[], const char attrValue[],
                                         size_t attrValueLen)
 {
     if (fCurrDisplayable == NULL)    // this signals we should ignore attributes for this element
@@ -165,8 +157,8 @@ bool SkDisplayXMLParser::onAddAttributeLen(const char attrName[], const char att
 }
 
 #if defined(SK_BUILD_FOR_WIN32)
-    #define SK_strcasecmp   stricmp
-    #define SK_strncasecmp  strnicmp
+    #define SK_strcasecmp   _stricmp
+    #define SK_strncasecmp  _strnicmp
 #else
     #define SK_strcasecmp   strcasecmp
     #define SK_strncasecmp  strncasecmp
@@ -180,16 +172,16 @@ bool SkDisplayXMLParser::onEndElement(const char elem[])
         SkDisplayable* displayable = container.fDisplayable;
         fMaker.fEndDepth = parentIndex;
         displayable->onEndElement(fMaker);
-        if (fMaker.fError.hasError()) 
+        if (fMaker.fError.hasError())
             return true;
         if (parentIndex > 0) {
             SkDisplayable* parent = fParents[parentIndex - 1].fDisplayable;
-            bool result = parent->add(fMaker, displayable);
-            if (fMaker.hasError()) 
+            bool result = parent->addChild(fMaker, displayable);
+            if (fMaker.hasError())
                 return true;
             if (result == false) {
                 int infoCount;
-                const SkMemberInfo* info = 
+                const SkMemberInfo* info =
                     SkDisplayType::GetMembers(&fMaker, fParents[parentIndex - 1].fType, &infoCount);
                 const SkMemberInfo* foundInfo;
                 if ((foundInfo = searchContainer(info, infoCount)) != NULL) {
@@ -221,7 +213,7 @@ bool SkDisplayXMLParser::onEndElement(const char elem[])
             SkDebugf("%s\n", debugOut.c_str());
 #endif
             fMaker.fEvents.doEvent(fMaker, SkDisplayEvent::kOnload, NULL);
-            if (fMaker.fError.hasError()) 
+            if (fMaker.fError.hasError())
                 return true;
             fMaker.fEvents.removeEvent(SkDisplayEvent::kOnload, NULL);
 
@@ -289,7 +281,7 @@ const SkMemberInfo* SkDisplayXMLParser::searchContainer(const SkMemberInfo* info
         }
         Parent* container = fParents.end() - 1;
         SkDisplayTypes type = (SkDisplayTypes) info->fType;
-        if (type == SkType_MemberProperty) 
+        if (type == SkType_MemberProperty)
             type = info->propertyType();
         SkDisplayTypes containerType = container->fType;
         if (type == containerType && (type == SkType_Rect || type == SkType_Polygon ||
@@ -304,7 +296,7 @@ const SkMemberInfo* SkDisplayXMLParser::searchContainer(const SkMemberInfo* info
         }
         return info;
 next:
-        if (type == SkType_Drawable || (type == SkType_Displayable && 
+        if (type == SkType_Drawable || (type == SkType_Displayable &&
             container->fDisplayable->isDrawable())) {
 rectNext:
             if (fParents.count() > 1) {
@@ -322,5 +314,3 @@ rectNext:
         return lastResort;
     return NULL;
 }
-
-

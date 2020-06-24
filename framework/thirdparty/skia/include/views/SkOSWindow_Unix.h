@@ -1,27 +1,18 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkOSWindow_Unix_DEFINED
 #define SkOSWindow_Unix_DEFINED
 
-#include "SkWindow.h"
-#include <X11/Xlib.h>
 #include <GL/glx.h>
+#include <X11/Xlib.h>
 
-class SkBitmap;
+#include "SkWindow.h"
+
 class SkEvent;
 
 struct SkUnixWindow {
@@ -30,7 +21,6 @@ struct SkUnixWindow {
   size_t fOSWin;
   GC fGc;
   GLXContext fGLContext;
-  bool fGLCreated;
 };
 
 class SkOSWindow : public SkWindow {
@@ -42,36 +32,46 @@ public:
     void* getDisplay() const { return (void*)fUnixWindow.fDisplay; }
     void* getUnixWindow() const { return (void*)&fUnixWindow; }
     void loop();
-    void post_linuxevent();
-    bool attachGL();
-    void detachGL();
-    void presentGL();
+
+    enum SkBackEndTypes {
+        kNone_BackEndType,
+        kNativeGL_BackEndType,
+    };
+
+    bool attach(SkBackEndTypes attachType, int msaaSampleCount, AttachmentInfo*);
+    void detach();
+    void present();
+
+    int getMSAASampleCount() const { return fMSAASampleCount; }
 
     //static bool PostEvent(SkEvent* evt, SkEventSinkID, SkMSec delay);
 
-    //static bool WndProc(SkUnixWindow* w,  XEvent &e);
-
 protected:
-    // overrides from SkWindow
-    virtual bool onEvent(const SkEvent&);
-    virtual void onHandleInval(const SkIRect&);
-    virtual bool onHandleChar(SkUnichar);
-    virtual bool onHandleKey(SkKey);
-    virtual bool onHandleKeyUp(SkKey);
-    virtual void onSetTitle(const char title[]);
+    // Overridden from from SkWindow:
+    void onSetTitle(const char title[]) override;
 
 private:
-    SkUnixWindow  fUnixWindow;
-    bool fGLAttached;
+    enum NextXEventResult {
+        kContinue_NextXEventResult,
+        kQuitRequest_NextXEventResult,
+        kPaintRequest_NextXEventResult
+    };
+
+    NextXEventResult nextXEvent();
+    void doPaint();
+    void mapWindowAndWait();
+
+    void closeWindow();
+    void initWindow(int newMSAASampleCount, AttachmentInfo* info);
+
+    SkUnixWindow fUnixWindow;
 
     // Needed for GL
     XVisualInfo* fVi;
-
-    void    doPaint();
-    void    mapWindowAndWait();
+    // we recreate the underlying xwindow if this changes
+    int fMSAASampleCount;
 
     typedef SkWindow INHERITED;
 };
 
 #endif
-

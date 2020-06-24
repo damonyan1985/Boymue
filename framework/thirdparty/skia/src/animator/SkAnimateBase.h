@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimateBase.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkAnimateBase_DEFINED
 #define SkAnimateBase_DEFINED
@@ -24,7 +16,7 @@
 #include "SkTypedArray.h"
 
 class SkApply;
-class SkDrawable;
+class SkADrawable;
 
 class SkAnimateBase : public SkDisplayable {
 public:
@@ -32,26 +24,26 @@ public:
     SkAnimateBase();
     virtual ~SkAnimateBase();
     virtual int components();
-    virtual SkDisplayable* deepCopy(SkAnimateMaker* );
-    virtual void dirty();
+    SkDisplayable* deepCopy(SkAnimateMaker* ) override;
+    void dirty() override;
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
     int entries() { return fValues.count() / components(); }
     virtual bool hasExecute() const;
     bool isDynamic() const { return SkToBool(fDynamic); }
-    virtual SkDisplayable* getParent() const;
-    virtual bool getProperty(int index, SkScriptValue* value) const;
+    SkDisplayable* getParent() const override;
+    bool getProperty(int index, SkScriptValue* value) const override;
     SkMSec getStart() const { return fStart; }
     SkOperand* getValues() { return fValues.begin(); }
     SkDisplayTypes getValuesType() { return fValues.getType(); }
-    virtual void onEndElement(SkAnimateMaker& );
+    void onEndElement(SkAnimateMaker& ) override;
     void packARGB(SkScalar [], int count, SkTDOperandArray* );
     virtual void refresh(SkAnimateMaker& );
     void setChanged(bool changed) { fChanged = changed; }
     void setHasEndEvent() { fHasEndEvent = true; }
-    virtual bool setParent(SkDisplayable* );
-    virtual bool setProperty(int index, SkScriptValue& value);
+    bool setParent(SkDisplayable* ) override;
+    bool setProperty(int index, SkScriptValue& value) override;
     void setTarget(SkAnimateMaker& );
     virtual bool targetNeedsInitialization() const;
 protected:
@@ -70,7 +62,7 @@ protected:
     const SkMemberInfo* fFieldInfo;
     int fFieldOffset;
     SkMSec fStart;  // corrected time when this apply was enabled
-    SkDrawable* fTarget;
+    SkADrawable* fTarget;
     SkTypedArray fValues;
     unsigned fChanged : 1; // true when value referenced by script has changed
     unsigned fDelayed : 1;  // enabled, but undrawn pending delay

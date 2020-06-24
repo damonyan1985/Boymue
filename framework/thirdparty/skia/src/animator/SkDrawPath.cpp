@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDrawPath.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDrawPath.h"
 #include "SkAnimateMaker.h"
@@ -53,22 +45,22 @@ SkDrawPath::~SkDrawPath() {
         delete *part;
 }
 
-bool SkDrawPath::add(SkAnimateMaker& maker, SkDisplayable* child) {
+bool SkDrawPath::addChild(SkAnimateMaker& maker, SkDisplayable* child) {
     SkASSERT(child && child->isPathPart());
     SkPathPart* part = (SkPathPart*) child;
     *fParts.append() = part;
     if (part->add())
-        maker.setErrorCode(SkDisplayXMLParserError::kErrorAddingToPath); 
+        maker.setErrorCode(SkDisplayXMLParserError::kErrorAddingToPath);
     fDirty = false;
     return true;
 }
 
-bool SkDrawPath::childrenNeedDisposing() const { 
-    return false; 
+bool SkDrawPath::childrenNeedDisposing() const {
+    return false;
 }
 
-void SkDrawPath::dirty() { 
-    fDirty = true; 
+void SkDrawPath::dirty() {
+    fDirty = true;
     fLength = SK_ScalarNaN;
     if (fParent)
         fParent->dirty();
@@ -123,7 +115,7 @@ SkPath& SkDrawPath::getPath() {
     fDirty = false;
     return fPath;
 }
-    
+
 void SkDrawPath::onEndElement(SkAnimateMaker& ) {
     if (d.size() > 0) {
         parseSVG();
@@ -161,8 +153,8 @@ bool SkDrawPath::getProperty(int index, SkScriptValue* value) const {
     return true;
 }
 
-void SkDrawPath::setChildHasID() { 
-    fChildHasID = true; 
+void SkDrawPath::setChildHasID() {
+    fChildHasID = true;
 }
 
 bool SkDrawPath::setParent(SkDisplayable* parent) {
@@ -196,8 +188,8 @@ const SkMemberInfo SkPolyline::fInfo[] = {
 
 DEFINE_GET_MEMBER(SkPolyline);
 
-bool SkPolyline::add(SkAnimateMaker& , SkDisplayable*) const {
-    return false; 
+bool SkPolyline::addChild(SkAnimateMaker& , SkDisplayable*) {
+    return false;
 }
 
 void SkPolyline::onEndElement(SkAnimateMaker& maker) {
@@ -226,4 +218,3 @@ void SkPolygon::onEndElement(SkAnimateMaker& maker) {
     INHERITED::onEndElement(maker);
     fPath.close();
 }
-

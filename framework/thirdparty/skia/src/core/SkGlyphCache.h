@@ -1,39 +1,37 @@
-/* libs/graphics/sgl/SkGlyphCache.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
-*/
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #ifndef SkGlyphCache_DEFINED
 #define SkGlyphCache_DEFINED
 
 #include "SkBitmap.h"
+#include "SkChecksum.h"
 #include "SkChunkAlloc.h"
 #include "SkDescriptor.h"
+#include "SkGlyph.h"
 #include "SkScalerContext.h"
 #include "SkTemplates.h"
+#include "SkTDArray.h"
 
+struct SkDeviceProperties;
 class SkPaint;
 
 class SkGlyphCache_Globals;
+
+// Enable this locally to add stats for hash-table hit rates. It also extends the dump()
+// output to show those stats.
+//#define SK_GLYPHCACHE_TRACK_HASH_STATS
 
 /** \class SkGlyphCache
 
     This class represents a strike: a specific combination of typeface, size,
     matrix, etc., and holds the glyphs for that strike. Calling any of the
     getUnichar.../getGlyphID... methods will return the requested glyph,
-    either instantly if it is already cahced, or by first generating it and then
+    either instantly if it is already cached, or by first generating it and then
     adding it to the strike.
 
     The strikes are held in a global list, available to all threads. To interact
@@ -92,8 +90,8 @@ public:
 
     /** Return the vertical metrics for this strike.
     */
-    const SkPaint::FontMetrics& getFontMetricsY() const {
-        return fFontMetricsY;
+    const SkPaint::FontMetrics& getFontMetrics() const {
+        return fFontMetrics;
     }
 
     const SkDescriptor& getDescriptor() const { return *fDesc; }
@@ -101,6 +99,12 @@ public:
     SkMask::Format getMaskFormat() const {
         return fScalerContext->getMaskFormat();
     }
+
+    bool isSubpixel() const {
+        return fScalerContext->isSubpixel();
+    }
+
+    void dump() const;
 
     /*  AuxProc/Data allow a client to associate data with this cache entry.
         Multiple clients can use this, as their data is keyed with a function
@@ -115,21 +119,14 @@ public:
     bool getAuxProcData(void (*auxProc)(void*), void** dataPtr) const;
     //! Add a proc/data pair to the glyphcache. proc should be non-null
     void setAuxProc(void (*auxProc)(void*), void* auxData);
-    //! If found, remove the proc/data pair from the glyphcache (does not
-    //  call the proc)
-    void removeAuxProc(void (*auxProc)(void*));
 
-    /** Call proc on all cache entries, stopping early if proc returns true.
-        The proc should not create or delete caches, since it could produce
-        deadlock.
-    */
-    static void VisitAllCaches(bool (*proc)(SkGlyphCache*, void*), void* ctx);
+    SkScalerContext* getScalerContext() const { return fScalerContext; }
 
     /** Find a matching cache entry, and call proc() with it. If none is found
         create a new one. If the proc() returns true, detach the cache and
         return it, otherwise leave it and return NULL.
     */
-    static SkGlyphCache* VisitCache(const SkDescriptor* desc,
+    static SkGlyphCache* VisitCache(SkTypeface*, const SkDescriptor* desc,
                                     bool (*proc)(const SkGlyphCache*, void*),
                                     void* context);
 
@@ -148,21 +145,12 @@ public:
         eventually get purged, and the win is that different thread will never
         block each other while a strike is being used.
     */
-    static SkGlyphCache* DetachCache(const SkDescriptor* desc) {
-        return VisitCache(desc, DetachProc, NULL);
+    static SkGlyphCache* DetachCache(SkTypeface* typeface,
+                                     const SkDescriptor* desc) {
+        return VisitCache(typeface, desc, DetachProc, NULL);
     }
 
-    /** Return the approximate number of bytes used by the font cache
-    */
-    static size_t GetCacheUsed();
-
-    /** This can be called to purge old font data, in an attempt to free
-        enough bytes such that the font cache is not using more than the
-        specified number of bytes. It is thread-safe, and may be called at
-        any time.
-        Return true if some amount of the cache was purged.
-    */
-    static bool SetCacheUsed(size_t bytesUsed);
+    static void Dump();
 
 #ifdef SK_DEBUG
     void validate() const;
@@ -190,7 +178,8 @@ public:
     };
 
 private:
-    SkGlyphCache(const SkDescriptor*);
+    // we take ownership of the scalercontext
+    SkGlyphCache(SkTypeface*, const SkDescriptor*, SkScalerContext*);
     ~SkGlyphCache();
 
     enum MetricsType {
@@ -198,67 +187,62 @@ private:
         kFull_MetricsType
     };
 
-    SkGlyph* lookupMetrics(uint32_t id, MetricsType);
+    // Return the SkGlyph* associated with MakeID. The id parameter is the combined glyph/x/y
+    // id generated by MakeID. If it is just a glyph id then x and y are assuemd to be zero.
+    SkGlyph* lookupByCombinedID(uint32_t id, MetricsType type);
+
+    // Return a SkGlyph* associated with unicode id and position x and y.
+    SkGlyph* lookupByChar(SkUnichar id, MetricsType type, SkFixed x = 0, SkFixed y = 0);
+
+    // Return the index of id in the fGlyphArray. If it does
+    // not exist, create a new one using MetricsType.
+    uint16_t lookupMetrics(uint32_t id, MetricsType type);
     static bool DetachProc(const SkGlyphCache*, void*) { return true; }
 
-    void detach(SkGlyphCache** head) {
-        if (fPrev) {
-            fPrev->fNext = fNext;
-        } else {
-            *head = fNext;
-        }
-        if (fNext) {
-            fNext->fPrev = fPrev;
-        }
-        fPrev = fNext = NULL;
-    }
-
-    void attachToHead(SkGlyphCache** head) {
-        SkASSERT(NULL == fPrev && NULL == fNext);
-        if (*head) {
-            (*head)->fPrev = this;
-            fNext = *head;
-        }
-        *head = this;
-    }
-
-    SkGlyphCache*       fNext, *fPrev;
-    SkDescriptor*       fDesc;
-    SkScalerContext*    fScalerContext;
-    SkPaint::FontMetrics fFontMetricsY;
+    SkGlyphCache*        fNext, *fPrev;
+    SkDescriptor*        fDesc;
+    SkScalerContext*     fScalerContext;
+    SkPaint::FontMetrics fFontMetrics;
 
     enum {
-        kHashBits   = 8,
-        kHashCount  = 1 << kHashBits,
-        kHashMask   = kHashCount - 1
+        kHashBits           = 8,
+        kHashCount          = 1 << kHashBits,
+        kHashMask           = kHashCount - 1
     };
-    SkGlyph*            fGlyphHash[kHashCount];
-    SkTDArray<SkGlyph*> fGlyphArray;
-    SkChunkAlloc        fGlyphAlloc;
-    SkChunkAlloc        fImageAlloc;
 
-    int fMetricsCount, fAdvanceCount;
+    // A quick lookup to avoid the binary search looking for glyphs in fGlyphArray.
+    uint16_t             fGlyphHash[kHashCount];
+    // Contains the SkGlyphs that are used by fGlyphHash and fCharToGlyphHash. The zero element
+    // is reserved for a sentinel SkGlyph that reduces the logic to check for collisions in the
+    // hash arrays. The zero element has an fID of SkGlyph::kImpossibleID which never matches
+    // any combined id generated for a char or a glyph.
+    SkTDArray<SkGlyph>   fGlyphArray;
+    SkChunkAlloc         fGlyphAlloc;
 
     struct CharGlyphRec {
         uint32_t    fID;    // unichar + subpixel
-        SkGlyph*    fGlyph;
+        uint16_t    fGlyphIndex;
     };
+
     // no reason to use the same kHashCount as fGlyphHash, but we do for now
-    CharGlyphRec    fCharToGlyphHash[kHashCount];
+    // Dynamically allocated when chars are encountered.
+    SkAutoTArray<CharGlyphRec> fCharToGlyphHash;
 
-    enum {
-        // shift so that the top bits fall into kHashBits region
-        kShiftForHashIndex = SkGlyph::kSubShift +
-                             SkGlyph::kSubBits*2 -
-                             kHashBits
-    };
+    // The id arg is a combined id generated by MakeID.
+    CharGlyphRec* getCharGlyphRec(uint32_t id);
+    void adjustCaches(int insertion_index);
 
-    static inline unsigned ID2HashIndex(uint32_t id) {
-        return (id ^ (id >> kShiftForHashIndex)) & kHashMask;
+    static inline unsigned ID2HashIndex(uint32_t h) {
+        return SkChecksum::CheapMix(h) & kHashMask;
     }
 
     // used to track (approx) how much ram is tied-up in this cache
     size_t  fMemoryUsed;
+
+#ifdef SK_GLYPHCACHE_TRACK_HASH_STATS
+    int fHashHitCount;
+    int fHashMissCount;
+#endif
 
     struct AuxProcRec {
         AuxProcRec* fNext;
@@ -268,30 +252,13 @@ private:
     AuxProcRec* fAuxProcList;
     void invokeAndRemoveAuxProcs();
 
-    // This relies on the caller to have already acquired the mutex to access the global cache
-    static size_t InternalFreeCache(SkGlyphCache_Globals*, size_t bytesNeeded);
-
     inline static SkGlyphCache* FindTail(SkGlyphCache* head);
-    static size_t ComputeMemoryUsed(const SkGlyphCache* head);
 
     friend class SkGlyphCache_Globals;
 };
 
-class SkAutoGlyphCache {
+class SkAutoGlyphCacheBase {
 public:
-    SkAutoGlyphCache(SkGlyphCache* cache) : fCache(cache) {}
-    SkAutoGlyphCache(const SkDescriptor* desc) {
-        fCache = SkGlyphCache::DetachCache(desc);
-    }
-    SkAutoGlyphCache(const SkPaint& paint, const SkMatrix* matrix) {
-        fCache = paint.detachCache(matrix);
-    }
-    ~SkAutoGlyphCache() {
-        if (fCache) {
-            SkGlyphCache::AttachCache(fCache);
-        }
-    }
-
     SkGlyphCache* getCache() const { return fCache; }
 
     void release() {
@@ -301,11 +268,63 @@ public:
         }
     }
 
-private:
+protected:
+    // Hide the constructors so we can't create one of these directly.
+    // Create SkAutoGlyphCache or SkAutoGlyphCacheNoCache instead.
+    SkAutoGlyphCacheBase(SkGlyphCache* cache) : fCache(cache) {}
+    SkAutoGlyphCacheBase(SkTypeface* typeface, const SkDescriptor* desc) {
+        fCache = SkGlyphCache::DetachCache(typeface, desc);
+    }
+    SkAutoGlyphCacheBase(const SkPaint& /*paint*/,
+                         const SkDeviceProperties* /*deviceProperties*/,
+                         const SkMatrix* /*matrix*/) {
+        fCache = NULL;
+    }
+    SkAutoGlyphCacheBase() {
+        fCache = NULL;
+    }
+    ~SkAutoGlyphCacheBase() {
+        if (fCache) {
+            SkGlyphCache::AttachCache(fCache);
+        }
+    }
+
     SkGlyphCache*   fCache;
 
+private:
     static bool DetachProc(const SkGlyphCache*, void*);
 };
 
-#endif
+class SkAutoGlyphCache : public SkAutoGlyphCacheBase {
+public:
+    SkAutoGlyphCache(SkGlyphCache* cache) : SkAutoGlyphCacheBase(cache) {}
+    SkAutoGlyphCache(SkTypeface* typeface, const SkDescriptor* desc) :
+        SkAutoGlyphCacheBase(typeface, desc) {}
+    SkAutoGlyphCache(const SkPaint& paint,
+                     const SkDeviceProperties* deviceProperties,
+                     const SkMatrix* matrix) {
+        fCache = paint.detachCache(deviceProperties, matrix, false);
+    }
 
+private:
+    SkAutoGlyphCache() : SkAutoGlyphCacheBase() {}
+};
+#define SkAutoGlyphCache(...) SK_REQUIRE_LOCAL_VAR(SkAutoGlyphCache)
+
+class SkAutoGlyphCacheNoGamma : public SkAutoGlyphCacheBase {
+public:
+    SkAutoGlyphCacheNoGamma(SkGlyphCache* cache) : SkAutoGlyphCacheBase(cache) {}
+    SkAutoGlyphCacheNoGamma(SkTypeface* typeface, const SkDescriptor* desc) :
+        SkAutoGlyphCacheBase(typeface, desc) {}
+    SkAutoGlyphCacheNoGamma(const SkPaint& paint,
+                            const SkDeviceProperties* deviceProperties,
+                            const SkMatrix* matrix) {
+        fCache = paint.detachCache(deviceProperties, matrix, true);
+    }
+
+private:
+    SkAutoGlyphCacheNoGamma() : SkAutoGlyphCacheBase() {}
+};
+#define SkAutoGlyphCacheNoGamma(...) SK_REQUIRE_LOCAL_VAR(SkAutoGlyphCacheNoGamma)
+
+#endif

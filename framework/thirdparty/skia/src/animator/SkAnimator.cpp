@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimator.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimator.h"
 #include "SkAnimateMaker.h"
@@ -27,7 +19,7 @@
 #include "SkScript2.h" //   compiled script experiment
 #include "SkSystemEventTypes.h"
 #include "SkTypedArray.h"
-#ifdef ANDROID
+#ifdef SK_BUILD_FOR_ANDROID
 #include "SkDrawExtraPathEffect.h"
 #endif
 #ifdef SK_DEBUG
@@ -42,7 +34,7 @@
     #define _static static
 #endif
 
-_static const char gMathPrimerText[] = 
+_static const char gMathPrimerText[] =
 "<screenplay>"
     "<Math id=\"Math\"/>"
     "<Number id=\"Number\"/>"
@@ -92,11 +84,13 @@ bool SkAnimator::decodeURI(const char uri[]) {
 //  SkDebugf("animator decode %s\n", uri);
 
 //    SkStream* stream = SkStream::GetURIStream(fMaker->fPrefix.c_str(), uri);
-    SkStream* stream = new SkFILEStream(uri);
-
-    SkAutoTDelete<SkStream> autoDel(stream);
-    setURIBase(uri);
-    return decodeStream(stream);
+    SkAutoTDelete<SkStream> stream(SkStream::NewFromFile(uri));
+    if (stream.get()) {
+        this->setURIBase(uri);
+        return decodeStream(stream);
+    } else {
+        return false;
+    }
 }
 
 bool SkAnimator::doCharEvent(SkUnichar code) {
@@ -116,9 +110,9 @@ bool SkAnimator::doClickEvent(int clickState, SkScalar x, SkScalar y) {
     state.fX = x;
     state.fY = y;
     fMaker->fEnableTime = fMaker->getAppTime();
-    bool result = fMaker->fEvents.doEvent(*fMaker, 
-        clickState == 0 ? SkDisplayEvent::kMouseDown : 
-        clickState == 1 ? SkDisplayEvent::kMouseDrag : 
+    bool result = fMaker->fEvents.doEvent(*fMaker,
+        clickState == 0 ? SkDisplayEvent::kMouseDown :
+        clickState == 1 ? SkDisplayEvent::kMouseDrag :
         SkDisplayEvent::kMouseUp, &state);
     fMaker->notifyInval();
     return result;
@@ -168,7 +162,7 @@ SkAnimator::DifferenceType SkAnimator::draw(SkCanvas* canvas, SkMSec time) {
     SkPaint paint;
     return draw(canvas, &paint, time);
 }
-    
+
 #ifdef SK_DEBUG
 void SkAnimator::eventDone(const SkEvent& ) {
 }
@@ -231,18 +225,18 @@ SkFieldType SkAnimator::getFieldType(const char* id, const char* fieldID) {
     return getFieldType(field);
 }
 
- static bool getArrayCommon(const SkDisplayable* ae, const SkMemberInfo* ai,
-     int index, SkOperand* operand, SkDisplayTypes type) {
+static bool getArrayCommon(const SkDisplayable* ae, const SkMemberInfo* ai,
+                           int index, SkOperand* operand) {
     const SkDisplayable* element = (const SkDisplayable*) ae;
     const SkMemberInfo* info = (const SkMemberInfo*) ai;
     SkASSERT(info->fType == SkType_Array);
     return info->getArrayValue(element, index, operand);
 }
 
-int32_t SkAnimator::getArrayInt(const SkDisplayable* ae, 
+int32_t SkAnimator::getArrayInt(const SkDisplayable* ae,
         const SkMemberInfo* ai, int index) {
     SkOperand operand;
-    bool result = getArrayCommon(ae, ai, index, &operand, SkType_Int);
+    bool result = getArrayCommon(ae, ai, index, &operand);
     return result ? operand.fS32 : SK_NaN32;
 }
 
@@ -256,10 +250,10 @@ int32_t SkAnimator::getArrayInt(const char* id, const char* fieldID, int index) 
     return getArrayInt(element, field, index);
 }
 
-SkScalar SkAnimator::getArrayScalar(const SkDisplayable* ae, 
+SkScalar SkAnimator::getArrayScalar(const SkDisplayable* ae,
         const SkMemberInfo* ai, int index) {
     SkOperand operand;
-    bool result = getArrayCommon(ae, ai, index, &operand, SkType_Float);
+    bool result = getArrayCommon(ae, ai, index, &operand);
     return result ? operand.fScalar : SK_ScalarNaN;
 }
 
@@ -273,10 +267,10 @@ SkScalar SkAnimator::getArrayScalar(const char* id, const char* fieldID, int ind
     return getArrayScalar(element, field, index);
 }
 
-const char* SkAnimator::getArrayString(const SkDisplayable* ae, 
+const char* SkAnimator::getArrayString(const SkDisplayable* ae,
         const SkMemberInfo* ai, int index) {
     SkOperand operand;
-    bool result = getArrayCommon(ae, ai, index, &operand, SkType_String);
+    bool result = getArrayCommon(ae, ai, index, &operand);
     return result ? operand.fString->c_str() : NULL;
 }
 
@@ -368,7 +362,7 @@ SkScalar SkAnimator::getScalar(const char* id, const char* fieldID) {
     return getScalar(element, field);
 }
 
-const char* SkAnimator::getString(const SkDisplayable* ae, 
+const char* SkAnimator::getString(const SkDisplayable* ae,
         const SkMemberInfo* ai) {
     const SkDisplayable* element = (const SkDisplayable*) ae;
     const SkMemberInfo* info = (const SkMemberInfo*) ai;
@@ -395,7 +389,7 @@ void SkAnimator::initialize() {
     SkDELETE(fMaker);
     fMaker = SkNEW_ARGS(SkAnimateMaker, (this, NULL, NULL));
     decodeMemory(gMathPrimer, sizeof(gMathPrimer)-1);
-#ifdef ANDROID
+#ifdef SK_BUILD_FOR_ANDROID
     InitializeSkExtraPathEffects(this);
 #endif
 }
@@ -417,9 +411,9 @@ bool SkAnimator::onEvent(const SkEvent& evt) {
 #endif
     if (evt.isType(SK_EventType_OnEnd)) {
         SkEventState eventState;
-        bool success = evt.findPtr("anim", (void**) &eventState.fDisplayable);
+        SkDEBUGCODE(bool success =) evt.findPtr("anim", (void**) &eventState.fDisplayable);
         SkASSERT(success);
-        success = evt.findS32("time", (int32_t*) &fMaker->fEnableTime);
+        SkDEBUGCODE(success =) evt.findS32("time", (int32_t*) &fMaker->fEnableTime);
         SkASSERT(success);
         fMaker->fAdjustedStart = fMaker->getAppTime() - fMaker->fEnableTime;
         fMaker->fEvents.doEvent(*fMaker, SkDisplayEvent::kOnEnd, &eventState);
@@ -487,7 +481,7 @@ void SkAnimator::onEventPost(SkEvent* evt, SkEventSinkID sinkID)
 #else
     SkASSERT(sinkID == this->getSinkID() || this->getHostEventSinkID() == sinkID);
 #endif
-    SkEvent::Post(evt, sinkID);
+    evt->setTargetID(sinkID)->post();
 }
 
 void SkAnimator::onEventPostTime(SkEvent* evt, SkEventSinkID sinkID, SkMSec time)
@@ -501,7 +495,7 @@ void SkAnimator::onEventPostTime(SkEvent* evt, SkEventSinkID sinkID, SkMSec time
 #else
     SkASSERT(sinkID == this->getSinkID() || this->getHostEventSinkID() == sinkID);
 #endif
-    SkEvent::PostTime(evt, sinkID, time);
+    evt->setTargetID(sinkID)->postTime(time);
 }
 
 void SkAnimator::reset() {
@@ -509,11 +503,11 @@ void SkAnimator::reset() {
 }
 
 SkEventSinkID SkAnimator::getHostEventSinkID() const {
-    return fMaker->fHostEventSinkID; 
+    return fMaker->fHostEventSinkID;
 }
 
 void SkAnimator::setHostEventSinkID(SkEventSinkID target) {
-    fMaker->fHostEventSinkID = target; 
+    fMaker->fHostEventSinkID = target;
 }
 
 void SkAnimator::onSetHostHandler(Handler ) {
@@ -538,7 +532,7 @@ bool SkAnimator::setArrayInt(const char* id, const char* fieldID, const int* arr
     SkTypedArray tArray(SkType_Int);
     tArray.setCount(num);
     for (int i = 0; i < num; i++) {
-        SkOperand op;   
+        SkOperand op;
         op.fS32 = array[i];
         tArray[i] = op;
     }
@@ -554,7 +548,7 @@ bool SkAnimator::setArray(SkDisplayable* element, const SkMemberInfo* info, SkTy
     SkDisplayTypes type = element->getType();
     if (type == SkType_Array) {
         SkDisplayArray* dispArray = (SkDisplayArray*) element;
-        dispArray->values = array;  
+        dispArray->values = array;
         return true;
     }
     else
@@ -622,9 +616,9 @@ bool SkAnimator::setScalar(const char* id, const char* fieldID, SkScalar scalar)
     return setScalar(element, field, scalar);
 }
 
-bool SkAnimator::setString(SkDisplayable* element, 
+bool SkAnimator::setString(SkDisplayable* element,
         const SkMemberInfo* info, const char* str) {
-    // !!! until this is fixed, can't call script with global references from here 
+    // !!! until this is fixed, can't call script with global references from here
     info->setValue(*fMaker, NULL, 0, info->fCount, element, info->getType(), str, strlen(str));
     return true;
 }
@@ -682,8 +676,8 @@ bool SkAnimator::NoLeaks() {
 #endif
 
 
-void SkAnimator::Init(bool runUnitTests) {
 #ifdef SK_SUPPORT_UNITTEST
+void SkAnimator::Init(bool runUnitTests) {
     if (runUnitTests == false)
         return;
     static const struct {
@@ -703,11 +697,10 @@ void SkAnimator::Init(bool runUnitTests) {
         gUnitTests[i].fUnitTest();
         SkDebugf("SkAnimator: End UnitTest for %s\n", gUnitTests[i].fTypeName);
     }
-#endif
 }
+#else
+void SkAnimator::Init(bool) {}
+#endif
 
 void SkAnimator::Term() {
 }
-
-
-

@@ -1,19 +1,11 @@
-/* libs/graphics/images/SkImageDecoder_libgif.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkMovie.h"
 #include "SkColor.h"
@@ -24,6 +16,10 @@
 
 #include "gif_lib.h"
 
+#if GIFLIB_MAJOR < 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR == 0)
+#define DGifCloseFile(a, b) DGifCloseFile(a)
+#endif
+
 class SkGIFMovie : public SkMovie {
 public:
     SkGIFMovie(SkStream* stream);
@@ -33,7 +29,7 @@ protected:
     virtual bool onGetInfo(Info*);
     virtual bool onSetTime(SkMSec);
     virtual bool onGetBitmap(SkBitmap*);
-    
+
 private:
     GifFileType* fGIF;
     int fCurrIndex;
@@ -48,13 +44,17 @@ static int Decode(GifFileType* fileType, GifByteType* out, int size) {
 
 SkGIFMovie::SkGIFMovie(SkStream* stream)
 {
+#if GIFLIB_MAJOR < 5
     fGIF = DGifOpen( stream, Decode );
+#else
+    fGIF = DGifOpen( stream, Decode, NULL );
+#endif
     if (NULL == fGIF)
         return;
 
     if (DGifSlurp(fGIF) != GIF_OK)
     {
-        DGifCloseFile(fGIF);
+        DGifCloseFile(fGIF, NULL);
         fGIF = NULL;
     }
     fCurrIndex = -1;
@@ -64,7 +64,7 @@ SkGIFMovie::SkGIFMovie(SkStream* stream)
 SkGIFMovie::~SkGIFMovie()
 {
     if (fGIF)
-        DGifCloseFile(fGIF);
+        DGifCloseFile(fGIF, NULL);
 }
 
 static SkMSec savedimage_duration(const SavedImage* image)
@@ -73,8 +73,7 @@ static SkMSec savedimage_duration(const SavedImage* image)
     {
         if (image->ExtensionBlocks[j].Function == GRAPHICS_EXT_FUNC_CODE)
         {
-            int size = image->ExtensionBlocks[j].ByteCount;
-            SkASSERT(size >= 4);
+            SkASSERT(image->ExtensionBlocks[j].ByteCount >= 4);
             const uint8_t* b = (const uint8_t*)image->ExtensionBlocks[j].Bytes;
             return ((b[2] << 8) | b[1]) * 10;
         }
@@ -128,6 +127,7 @@ static void copyLine(uint32_t* dst, const unsigned char* src, const ColorMapObje
     }
 }
 
+#if GIFLIB_MAJOR < 5
 static void copyInterlaceGroup(SkBitmap* bm, const unsigned char*& src,
                                const ColorMapObject* cmap, int transparent, int copyWidth,
                                int copyHeight, const GifImageDesc& imageDesc, int rowStep,
@@ -174,6 +174,7 @@ static void blitInterlace(SkBitmap* bm, const SavedImage* frame, const ColorMapO
 
     copyInterlaceGroup(bm, src, cmap, transparent, copyWidth, copyHeight, frame->ImageDesc, 2, 1);
 }
+#endif
 
 static void blitNormal(SkBitmap* bm, const SavedImage* frame, const ColorMapObject* cmap,
                        int transparent)
@@ -192,9 +193,6 @@ static void blitNormal(SkBitmap* bm, const SavedImage* frame, const ColorMapObje
         copyHeight = height - frame->ImageDesc.Top;
     }
 
-    int srcPad, dstPad;
-    dstPad = width - copyWidth;
-    srcPad = frame->ImageDesc.Width - copyWidth;
     for (; copyHeight > 0; copyHeight--) {
         copyLine(dst, src, cmap, transparent, copyWidth);
         src += frame->ImageDesc.Width;
@@ -245,15 +243,19 @@ static void drawFrame(SkBitmap* bm, const SavedImage* frame, const ColorMapObjec
     }
 
     if (cmap == NULL || cmap->ColorCount != (1 << cmap->BitsPerPixel)) {
-        SkASSERT(!"bad colortable setup");
+        SkDEBUGFAIL("bad colortable setup");
         return;
     }
 
+#if GIFLIB_MAJOR < 5
+    // before GIFLIB 5, de-interlacing wasn't done by library at load time
     if (frame->ImageDesc.Interlace) {
         blitInterlace(bm, frame, cmap, transparent);
-    } else {
-        blitNormal(bm, frame, cmap, transparent);
+        return;
     }
+#endif
+
+    blitNormal(bm, frame, cmap, transparent);
 }
 
 static bool checkIfWillBeCleared(const SavedImage* frame)
@@ -366,13 +368,11 @@ bool SkGIFMovie::onGetBitmap(SkBitmap* bm)
         startIndex = 0;
 
         // create bitmap
-        bm->setConfig(SkBitmap::kARGB_8888_Config, width, height, 0);
-        if (!bm->allocPixels(NULL)) {
+        if (!bm->tryAllocN32Pixels(width, height)) {
             return false;
         }
         // create bitmap for backup
-        fBackup.setConfig(SkBitmap::kARGB_8888_Config, width, height, 0);
-        if (!fBackup.allocPixels(NULL)) {
+        if (!fBackup.tryAllocN32Pixels(width, height)) {
             return false;
         }
     } else if (startIndex > fCurrIndex) {
@@ -434,7 +434,7 @@ bool SkGIFMovie::onGetBitmap(SkBitmap* bm)
 
 #include "SkTRegistry.h"
 
-SkMovie* Factory(SkStream* stream) {
+SkMovie* Factory(SkStreamRewindable* stream) {
     char buf[GIF_STAMP_LEN];
     if (stream->read(buf, GIF_STAMP_LEN) == GIF_STAMP_LEN) {
         if (memcmp(GIF_STAMP,   buf, GIF_STAMP_LEN) == 0 ||
@@ -448,4 +448,4 @@ SkMovie* Factory(SkStream* stream) {
     return NULL;
 }
 
-static SkTRegistry<SkMovie*, SkStream*> gReg(Factory);
+static SkTRegistry<SkMovie*(*)(SkStreamRewindable*)> gReg(Factory);

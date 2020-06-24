@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimateMaker.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkAnimateMaker_DEFINED
 #define SkAnimateMaker_DEFINED
@@ -38,7 +30,7 @@ class SkActive;
 class SkAnimate;
 class SkCanvas;
 class SkDisplayable;
-class SkDrawable;
+class SkADrawable;
 class SkDump;
 class SkEvent;
 class SkEventSink;
@@ -65,16 +57,16 @@ public:
     void dump(const char* match);
 #endif
     int dynamicProperty(SkString& nameStr, SkDisplayable**  );
-    bool find(const char* str, SkDisplayable** displayablePtr) const { 
+    bool find(const char* str, SkDisplayable** displayablePtr) const {
         return fIDs.find(str, displayablePtr);
     }
-    bool find(const char* str, size_t len, SkDisplayable** displayablePtr) const { 
+    bool find(const char* str, size_t len, SkDisplayable** displayablePtr) const {
         return fIDs.find(str, len, displayablePtr);
     }
     bool findKey(SkDisplayable* displayable, const char** string) const {
         return fIDs.findKey(displayable, string);
     }
-//  bool find(SkString& string, SkDisplayable** displayablePtr) { 
+//  bool find(SkString& string, SkDisplayable** displayablePtr) {
 //      return fIDs.find(string.c_str(), displayablePtr);
 //  }
     SkAnimator* getAnimator() { return fAnimator; }
@@ -88,7 +80,7 @@ public:
     bool hasError() { return fError.hasError(); }
     void helperAdd(SkDisplayable* trackMe);
     void helperRemove(SkDisplayable* alreadyTracked);
-    void idsSet(const char* attrValue, size_t len, SkDisplayable* displayable) { 
+    void idsSet(const char* attrValue, size_t len, SkDisplayable* displayable) {
         fIDs.set(attrValue, len, displayable); }
 //  void loadMovies();
     void notifyInval();
@@ -166,4 +158,3 @@ private:
 };
 
 #endif // SkAnimateMaker_DEFINED
-

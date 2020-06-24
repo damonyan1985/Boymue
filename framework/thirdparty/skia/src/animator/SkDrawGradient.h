@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDrawGradient.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDrawGradient_DEFINED
 #define SkDrawGradient_DEFINED
@@ -22,55 +14,51 @@
 #include "SkDrawShader.h"
 #include "SkIntArray.h"
 
-class SkUnitMapper;
-
-class SkGradient : public SkDrawShader {
-    DECLARE_PRIVATE_MEMBER_INFO(Gradient);
-    SkGradient();
-    virtual ~SkGradient();
-    virtual bool add(SkAnimateMaker& , SkDisplayable* child);
+class SkDrawGradient : public SkDrawShader {
+    DECLARE_PRIVATE_MEMBER_INFO(DrawGradient);
+    SkDrawGradient();
+    virtual ~SkDrawGradient();
+    bool addChild(SkAnimateMaker& , SkDisplayable* child) override;
 #ifdef SK_DUMP_ENABLED
     virtual void dumpRest(SkAnimateMaker*);
-#endif    
-    virtual void onEndElement(SkAnimateMaker& );
+#endif
+    void onEndElement(SkAnimateMaker& ) override;
 protected:
     SkTDScalarArray offsets;
     SkString unitMapper;
     SkTDColorArray fColors;
     SkTDDrawColorArray fDrawColors;
-    SkUnitMapper* fUnitMapper;
     int addPrelude();
 private:
     typedef SkDrawShader INHERITED;
 };
 
-class SkLinearGradient : public SkGradient {
-    DECLARE_MEMBER_INFO(LinearGradient);
-    SkLinearGradient();
-    virtual void onEndElement(SkAnimateMaker& );
+class SkDrawLinearGradient : public SkDrawGradient {
+    DECLARE_MEMBER_INFO(DrawLinearGradient);
+    SkDrawLinearGradient();
+    void onEndElement(SkAnimateMaker& ) override;
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker*);
+    void dump(SkAnimateMaker*) override;
 #endif
-    virtual SkShader* getShader();
+    SkShader* getShader() override;
 protected:
     SkTDScalarArray points;
 private:
-    typedef SkGradient INHERITED;
+    typedef SkDrawGradient INHERITED;
 };
 
-class SkRadialGradient : public SkGradient {
-    DECLARE_MEMBER_INFO(RadialGradient);
-    SkRadialGradient();
+class SkDrawRadialGradient : public SkDrawGradient {
+    DECLARE_MEMBER_INFO(DrawRadialGradient);
+    SkDrawRadialGradient();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker*);
-#endif    
-    virtual SkShader* getShader();
+    void dump(SkAnimateMaker*) override;
+#endif
+    SkShader* getShader() override;
 protected:
     SkPoint center;
     SkScalar radius;
 private:
-    typedef SkGradient INHERITED;
+    typedef SkDrawGradient INHERITED;
 };
 
 #endif // SkDrawGradient_DEFINED
-

@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDrawBitmap.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDrawBitmap_DEFINED
 #define SkDrawBitmap_DEFINED
@@ -28,7 +20,7 @@ class SkBaseBitmap : public SkBoundable {
     DECLARE_MEMBER_INFO(BaseBitmap);
     SkBaseBitmap();
     virtual ~SkBaseBitmap();
-    virtual bool draw(SkAnimateMaker& );
+    bool draw(SkAnimateMaker& ) override;
 protected:
     SkBitmap fBitmap;
     SkScalar x;
@@ -44,10 +36,10 @@ class SkDrawBitmap : public SkBaseBitmap {
     SkDrawBitmap();
     virtual ~SkDrawBitmap();
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
-    virtual void onEndElement(SkAnimateMaker& );
-    virtual bool setProperty(int index, SkScriptValue& value);
+    void onEndElement(SkAnimateMaker& ) override;
+    bool setProperty(int index, SkScriptValue& value) override;
 protected:
     int /*SkBitmap::Config*/ format;
     int32_t height;
@@ -58,22 +50,22 @@ protected:
     typedef SkBaseBitmap INHERITED;
 };
 
-class SkImage : public SkBaseBitmap {
-    DECLARE_MEMBER_INFO(Image);
-    SkImage();
-    virtual ~SkImage();
-    virtual SkDisplayable* deepCopy(SkAnimateMaker* );
-    virtual void dirty();
-    virtual bool draw(SkAnimateMaker& );
-    virtual bool getProperty(int index, SkScriptValue* value) const;
-    virtual void onEndElement(SkAnimateMaker& maker);
+class SkImageBaseBitmap : public SkBaseBitmap {
+    DECLARE_MEMBER_INFO(ImageBaseBitmap);
+    SkImageBaseBitmap();
+    virtual ~SkImageBaseBitmap();
+    SkDisplayable* deepCopy(SkAnimateMaker* ) override;
+    void dirty() override;
+    bool draw(SkAnimateMaker& ) override;
+    bool getProperty(int index, SkScriptValue* value) const override;
+    void onEndElement(SkAnimateMaker& maker) override;
 private:
-    void resolve() const { (const_cast<SkImage*>(this))->resolve(); }
+    void resolve() const { (const_cast<SkImageBaseBitmap*>(this))->resolve(); }
     void resolve();
 protected:
     SkBase64 base64;
     SkString src;
-    SkString fLast; // cache of src so that stream isn't unnecessarily decoded 
+    SkString fLast; // cache of src so that stream isn't unnecessarily decoded
     SkBool fDirty;
     const char* fUriBase;
     typedef SkBaseBitmap INHERITED;

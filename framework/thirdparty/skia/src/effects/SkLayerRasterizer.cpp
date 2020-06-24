@@ -1,28 +1,22 @@
-/* libs/graphics/effects/SkLayerRasterizer.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkLayerRasterizer.h"
-#include "SkBuffer.h"
 #include "SkDraw.h"
+#include "SkReadBuffer.h"
+#include "SkWriteBuffer.h"
 #include "SkMask.h"
 #include "SkMaskFilter.h"
 #include "SkPaint.h"
 #include "SkPath.h"
-#include "SkRegion.h"
+#include "SkPathEffect.h"
+#include "../core/SkRasterClip.h"
 #include "SkXfermode.h"
 #include <new>
 
@@ -31,24 +25,29 @@ struct SkLayerRasterizer_Rec {
     SkVector    fOffset;
 };
 
-SkLayerRasterizer::SkLayerRasterizer() : fLayers(sizeof(SkLayerRasterizer_Rec))
+SkLayerRasterizer::SkLayerRasterizer()
+    : fLayers(SkNEW_ARGS(SkDeque, (sizeof(SkLayerRasterizer_Rec))))
 {
 }
 
-SkLayerRasterizer::~SkLayerRasterizer() {
-    SkDeque::F2BIter        iter(fLayers);
+SkLayerRasterizer::SkLayerRasterizer(SkDeque* layers) : fLayers(layers)
+{
+}
+
+// Helper function to call destructors on SkPaints held by layers and delete layers.
+static void clean_up_layers(SkDeque* layers) {
+    SkDeque::F2BIter        iter(*layers);
     SkLayerRasterizer_Rec*  rec;
 
     while ((rec = (SkLayerRasterizer_Rec*)iter.next()) != NULL)
         rec->fPaint.~SkPaint();
+
+    SkDELETE(layers);
 }
 
-void SkLayerRasterizer::addLayer(const SkPaint& paint, SkScalar dx,
-                                 SkScalar dy) {
-    SkLayerRasterizer_Rec* rec = (SkLayerRasterizer_Rec*)fLayers.push_back();
-
-    new (&rec->fPaint) SkPaint(paint);
-    rec->fOffset.set(dx, dy);
+SkLayerRasterizer::~SkLayerRasterizer() {
+    SkASSERT(fLayers);
+    clean_up_layers(const_cast<SkDeque*>(fLayers));
 }
 
 static bool compute_bounds(const SkDeque& layers, const SkPath& path,
@@ -82,7 +81,8 @@ static bool compute_bounds(const SkDeque& layers, const SkPath& path,
         SkMask  mask;
         if (!SkDraw::DrawToMask(devPath, clipBounds, paint.getMaskFilter(),
                                 &matrix, &mask,
-                                SkMask::kJustComputeBounds_CreateMode)) {
+                                SkMask::kJustComputeBounds_CreateMode,
+                                SkPaint::kFill_Style)) {
             return false;
         }
 
@@ -93,13 +93,14 @@ static bool compute_bounds(const SkDeque& layers, const SkPath& path,
 
 bool SkLayerRasterizer::onRasterize(const SkPath& path, const SkMatrix& matrix,
                                     const SkIRect* clipBounds,
-                                    SkMask* mask, SkMask::CreateMode mode) {
-    if (fLayers.empty()) {
+                                    SkMask* mask, SkMask::CreateMode mode) const {
+    SkASSERT(fLayers);
+    if (fLayers->empty()) {
         return false;
     }
 
     if (SkMask::kJustRenderImage_CreateMode != mode) {
-        if (!compute_bounds(fLayers, path, matrix, clipBounds, &mask->fBounds))
+        if (!compute_bounds(*fLayers, path, matrix, clipBounds, &mask->fBounds))
             return false;
     }
 
@@ -115,28 +116,27 @@ bool SkLayerRasterizer::onRasterize(const SkPath& path, const SkMatrix& matrix,
     }
 
     if (SkMask::kJustComputeBounds_CreateMode != mode) {
-        SkBitmap device;
-        SkDraw   draw;
-        SkMatrix translatedMatrix;  // this translates us to our local pixels
-        SkMatrix drawMatrix;        // this translates the path by each layer's offset
-        SkRegion rectClip;
+        SkBitmap        device;
+        SkRasterClip    rectClip;
+        SkDraw          draw;
+        SkMatrix        translatedMatrix;  // this translates us to our local pixels
+        SkMatrix        drawMatrix;        // this translates the path by each layer's offset
 
-        rectClip.setRect(0, 0, mask->fBounds.width(), mask->fBounds.height());
+        rectClip.setRect(SkIRect::MakeWH(mask->fBounds.width(), mask->fBounds.height()));
 
         translatedMatrix = matrix;
         translatedMatrix.postTranslate(-SkIntToScalar(mask->fBounds.fLeft),
                                        -SkIntToScalar(mask->fBounds.fTop));
 
-        device.setConfig(SkBitmap::kA8_Config, mask->fBounds.width(), mask->fBounds.height(), mask->fRowBytes);
-        device.setPixels(mask->fImage);
+        device.installMaskPixels(*mask);
 
         draw.fBitmap    = &device;
         draw.fMatrix    = &drawMatrix;
-        draw.fClip      = &rectClip;
+        draw.fRC        = &rectClip;
+        draw.fClip      = &rectClip.bwRgn();
         // we set the matrixproc in the loop, as the matrix changes each time (potentially)
-        draw.fBounder   = NULL;
 
-        SkDeque::F2BIter        iter(fLayers);
+        SkDeque::F2BIter        iter(*fLayers);
         SkLayerRasterizer_Rec*  rec;
 
         while ((rec = (SkLayerRasterizer_Rec*)iter.next()) != NULL) {
@@ -148,86 +148,88 @@ bool SkLayerRasterizer::onRasterize(const SkPath& path, const SkMatrix& matrix,
     return true;
 }
 
-/////////// Routines for flattening /////////////////
-
-static void paint_read(SkPaint* paint, SkFlattenableReadBuffer& buffer) {
-    paint->setAntiAlias(buffer.readBool());
-    paint->setStyle((SkPaint::Style)buffer.readU8());
-    paint->setAlpha(buffer.readU8());
-
-    if (paint->getStyle() != SkPaint::kFill_Style) {
-        paint->setStrokeWidth(buffer.readScalar());
-        paint->setStrokeMiter(buffer.readScalar());
-        paint->setStrokeCap((SkPaint::Cap)buffer.readU8());
-        paint->setStrokeJoin((SkPaint::Join)buffer.readU8());
-    }
-
-    SkSafeUnref(paint->setMaskFilter((SkMaskFilter*)buffer.readFlattenable()));
-    SkSafeUnref(paint->setPathEffect((SkPathEffect*)buffer.readFlattenable()));
-    SkSafeUnref(paint->setRasterizer((SkRasterizer*)buffer.readFlattenable()));
-    SkSafeUnref(paint->setXfermode((SkXfermode*)buffer.readFlattenable()));
+SkFlattenable* SkLayerRasterizer::CreateProc(SkReadBuffer& buffer) {
+    return SkNEW_ARGS(SkLayerRasterizer, (ReadLayers(buffer)));
 }
 
-static void paint_write(const SkPaint& paint, SkFlattenableWriteBuffer& buffer) {
-    buffer.writeBool(paint.isAntiAlias());
-    buffer.write8(paint.getStyle());
-    buffer.write8(paint.getAlpha());
+SkDeque* SkLayerRasterizer::ReadLayers(SkReadBuffer& buffer) {
+    int count = buffer.readInt();
 
-    if (paint.getStyle() != SkPaint::kFill_Style) {
-        buffer.writeScalar(paint.getStrokeWidth());
-        buffer.writeScalar(paint.getStrokeMiter());
-        buffer.write8(paint.getStrokeCap());
-        buffer.write8(paint.getStrokeJoin());
-    }
-
-    buffer.writeFlattenable(paint.getMaskFilter());
-    buffer.writeFlattenable(paint.getPathEffect());
-    buffer.writeFlattenable(paint.getRasterizer());
-    buffer.writeFlattenable(paint.getXfermode());
-}
-
-SkLayerRasterizer::SkLayerRasterizer(SkFlattenableReadBuffer& buffer)
-    : SkRasterizer(buffer), fLayers(sizeof(SkLayerRasterizer_Rec)) {
-    int count = buffer.readS32();
-
+    SkDeque* layers = SkNEW_ARGS(SkDeque, (sizeof(SkLayerRasterizer_Rec)));
     for (int i = 0; i < count; i++) {
-        SkLayerRasterizer_Rec* rec = (SkLayerRasterizer_Rec*)fLayers.push_back();
+        SkLayerRasterizer_Rec* rec = (SkLayerRasterizer_Rec*)layers->push_back();
 
-#if 0
-        new (&rec->fPaint) SkPaint(buffer);
-#else
-        new (&rec->fPaint) SkPaint;
-        paint_read(&rec->fPaint, buffer);
-#endif
-        rec->fOffset.fX = buffer.readScalar();
-        rec->fOffset.fY = buffer.readScalar();
+        SkNEW_PLACEMENT(&rec->fPaint, SkPaint);
+        buffer.readPaint(&rec->fPaint);
+        buffer.readPoint(&rec->fOffset);
     }
+    return layers;
 }
 
-void SkLayerRasterizer::flatten(SkFlattenableWriteBuffer& buffer) {
+void SkLayerRasterizer::flatten(SkWriteBuffer& buffer) const {
     this->INHERITED::flatten(buffer);
 
-    buffer.write32(fLayers.count());
+    SkASSERT(fLayers);
+    buffer.writeInt(fLayers->count());
 
-    SkDeque::F2BIter                iter(fLayers);
+    SkDeque::F2BIter                iter(*fLayers);
     const SkLayerRasterizer_Rec*    rec;
 
     while ((rec = (const SkLayerRasterizer_Rec*)iter.next()) != NULL) {
-#if 0
-        rec->fPaint.flatten(buffer);
-#else
-        paint_write(rec->fPaint, buffer);
-#endif
-        buffer.writeScalar(rec->fOffset.fX);
-        buffer.writeScalar(rec->fOffset.fY);
+        buffer.writePaint(rec->fPaint);
+        buffer.writePoint(rec->fOffset);
     }
 }
 
-SkFlattenable* SkLayerRasterizer::CreateProc(SkFlattenableReadBuffer& buffer) {
-    return SkNEW_ARGS(SkLayerRasterizer, (buffer));
+SkLayerRasterizer::Builder::Builder()
+        : fLayers(SkNEW_ARGS(SkDeque, (sizeof(SkLayerRasterizer_Rec))))
+{
 }
 
-SkFlattenable::Factory SkLayerRasterizer::getFactory() {
-    return CreateProc;
+SkLayerRasterizer::Builder::~Builder()
+{
+    if (fLayers != NULL) {
+        clean_up_layers(fLayers);
+    }
 }
 
+void SkLayerRasterizer::Builder::addLayer(const SkPaint& paint, SkScalar dx,
+                                          SkScalar dy) {
+    SkASSERT(fLayers);
+    SkLayerRasterizer_Rec* rec = (SkLayerRasterizer_Rec*)fLayers->push_back();
+
+    SkNEW_PLACEMENT_ARGS(&rec->fPaint, SkPaint, (paint));
+    rec->fOffset.set(dx, dy);
+}
+
+SkLayerRasterizer* SkLayerRasterizer::Builder::detachRasterizer() {
+    SkLayerRasterizer* rasterizer;
+    if (0 == fLayers->count()) {
+        rasterizer = NULL;
+        SkDELETE(fLayers);
+    } else {
+        rasterizer = SkNEW_ARGS(SkLayerRasterizer, (fLayers));
+    }
+    fLayers = NULL;
+    return rasterizer;
+}
+
+SkLayerRasterizer* SkLayerRasterizer::Builder::snapshotRasterizer() const {
+    if (0 == fLayers->count()) {
+        return NULL;
+    }
+    SkDeque* layers = SkNEW_ARGS(SkDeque, (sizeof(SkLayerRasterizer_Rec), fLayers->count()));
+    SkDeque::F2BIter                iter(*fLayers);
+    const SkLayerRasterizer_Rec*    recOrig;
+    SkDEBUGCODE(int                 count = 0;)
+    while ((recOrig = static_cast<SkLayerRasterizer_Rec*>(iter.next())) != NULL) {
+        SkDEBUGCODE(count++);
+        SkLayerRasterizer_Rec* recCopy = static_cast<SkLayerRasterizer_Rec*>(layers->push_back());
+        SkNEW_PLACEMENT_ARGS(&recCopy->fPaint, SkPaint, (recOrig->fPaint));
+        recCopy->fOffset = recOrig->fOffset;
+    }
+    SkASSERT(fLayers->count() == count);
+    SkASSERT(layers->count() == count);
+    SkLayerRasterizer* rasterizer = SkNEW_ARGS(SkLayerRasterizer, (layers));
+    return rasterizer;
+}

@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkWindow_DEFINED
@@ -23,6 +14,7 @@
 #include "SkRegion.h"
 #include "SkEvent.h"
 #include "SkKey.h"
+#include "SkSurfaceProps.h"
 #include "SkTDArray.h"
 
 #ifdef SK_BUILD_FOR_WINCEx
@@ -30,38 +22,51 @@
 #endif
 //#define USE_GX_SCREEN
 
-class SkCanvas;
-
+class SkSurface;
 class SkOSMenu;
+
+#if SK_SUPPORT_GPU
+struct GrGLInterface;
+class GrContext;
+class GrRenderTarget;
+#endif
 
 class SkWindow : public SkView {
 public:
             SkWindow();
     virtual ~SkWindow();
 
+    struct AttachmentInfo {
+        int fSampleCount;
+        int fStencilBits;
+    };
+
+    SkSurfaceProps getSurfaceProps() const { return fSurfaceProps; }
+    void setSurfaceProps(const SkSurfaceProps& props) {
+        fSurfaceProps = props;
+    }
+
     const SkBitmap& getBitmap() const { return fBitmap; }
 
-    void    setConfig(SkBitmap::Config);
-    void    resize(int width, int height, SkBitmap::Config config = SkBitmap::kNo_Config);
-    void    eraseARGB(U8CPU a, U8CPU r, U8CPU g, U8CPU b);
-    void    eraseRGB(U8CPU r, U8CPU g, U8CPU b);
+    void    setColorType(SkColorType);
+    void    resize(int width, int height, SkColorType = kUnknown_SkColorType);
 
     bool    isDirty() const { return !fDirtyRgn.isEmpty(); }
-    bool    update(SkIRect* updateArea, SkCanvas* = NULL);
+    bool    update(SkIRect* updateArea);
     // does not call through to onHandleInval(), but does force the fDirtyRgn
     // to be wide open. Call before update() to ensure we redraw everything.
     void    forceInvalAll();
     // return the bounds of the dirty/inval rgn, or [0,0,0,0] if none
     const SkIRect& getDirtyBounds() const { return fDirtyRgn.getBounds(); }
 
-    bool    handleClick(int x, int y, Click::State);
+    bool    handleClick(int x, int y, Click::State, void* owner, unsigned modi = 0);
     bool    handleChar(SkUnichar);
     bool    handleKey(SkKey);
     bool    handleKeyUp(SkKey);
-    bool    handleMenu(uint32_t os_cmd);
 
     void    addMenu(SkOSMenu*);
-    
+    const SkTDArray<SkOSMenu*>* getMenus() { return &fMenus; }
+
     const char* getTitle() const { return fTitle.c_str(); }
     void    setTitle(const char title[]);
 
@@ -70,15 +75,20 @@ public:
     void    preConcat(const SkMatrix&);
     void    postConcat(const SkMatrix&);
 
+    virtual SkSurface* createSurface();
+
+    virtual void onPDFSaved(const char title[], const char desc[],
+        const char path[]) {}
 protected:
     virtual bool onEvent(const SkEvent&);
-    virtual bool onDispatchClick(int x, int y, Click::State);
+    virtual bool onDispatchClick(int x, int y, Click::State, void* owner, unsigned modi);
     // called if part of our bitmap is invalidated
     virtual void onHandleInval(const SkIRect&);
     virtual bool onHandleChar(SkUnichar);
     virtual bool onHandleKey(SkKey);
     virtual bool onHandleKeyUp(SkKey);
-    virtual void onAddMenu(const SkOSMenu*) {}
+    virtual void onAddMenu(const SkOSMenu*) {};
+    virtual void onUpdateMenu(const SkOSMenu*) {};
     virtual void onSetTitle(const char title[]) {}
 
     // overrides from SkView
@@ -86,32 +96,37 @@ protected:
     virtual bool onGetFocusView(SkView** focus) const;
     virtual bool onSetFocusView(SkView* focus);
 
+#if SK_SUPPORT_GPU
+    GrRenderTarget* renderTarget(const AttachmentInfo& attachmentInfo,
+                                 const GrGLInterface* , GrContext* grContext);
+#endif
+
 private:
-    SkBitmap::Config    fConfig;
+    SkSurfaceProps  fSurfaceProps;
+    SkColorType fColorType;
     SkBitmap    fBitmap;
     SkRegion    fDirtyRgn;
-    Click*      fClick; // to track clicks
+
+    SkTDArray<Click*>       fClicks; // to track clicks
 
     SkTDArray<SkOSMenu*>    fMenus;
 
     SkView* fFocusView;
     bool    fWaitingOnInval;
-    
+
     SkString    fTitle;
     SkMatrix    fMatrix;
 
     typedef SkView INHERITED;
 };
 
-///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-#ifdef SK_USE_WXWIDGETS
-    #include "SkOSWindow_wxwidgets.h"
-#elif defined(SK_BUILD_FOR_MAC)
+#if defined(SK_BUILD_FOR_MAC)
     #include "SkOSWindow_Mac.h"
 #elif defined(SK_BUILD_FOR_WIN)
     #include "SkOSWindow_Win.h"
-#elif defined(ANDROID)
+#elif defined(SK_BUILD_FOR_ANDROID)
     #include "SkOSWindow_Android.h"
 #elif defined(SK_BUILD_FOR_UNIX)
   #include "SkOSWindow_Unix.h"
@@ -122,4 +137,3 @@ private:
 #endif
 
 #endif
-

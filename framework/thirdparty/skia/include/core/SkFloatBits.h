@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright 2008 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkFloatBits_DEFINED
 #define SkFloatBits_DEFINED
@@ -64,8 +57,6 @@ SK_API int32_t SkFloatBits_toIntRound(int32_t floatBits);
 SK_API int32_t SkFloatBits_toIntCeil(int32_t floatBits);
 
 
-#ifdef SK_CAN_USE_FLOAT
-
 union SkFloatIntUnion {
     float   fFloat;
     int32_t fSignBitInt;
@@ -104,7 +95,6 @@ static inline float Sk2sComplimentAsFloat(int32_t x) {
 /** Return x cast to a float (i.e. (float)x)
 */
 float SkIntToFloatCast(int x);
-float SkIntToFloatCast_NoOverflowCheck(int x);
 
 /** Return the float cast to an int.
     If the value is out of range, or NaN, return +/- SK_MaxS32
@@ -134,17 +124,9 @@ static inline int32_t SkFloatToIntCeil(float x) {
     return SkFloatBits_toIntCeil(SkFloat2Bits(x));
 }
 
-#endif
-
 //  Scalar wrappers for float-bit routines
 
-#ifdef SK_SCALAR_IS_FLOAT
-    #define SkScalarAs2sCompliment(x)    SkFloatAs2sCompliment(x)
-    #define Sk2sComplimentAsScalar(x)    Sk2sComplimentAsFloat(x)
-#else
-    #define SkScalarAs2sCompliment(x)    (x)
-    #define Sk2sComplimentAsScalar(x)    (x)
-#endif
+#define SkScalarAs2sCompliment(x)    SkFloatAs2sCompliment(x)
+#define Sk2sComplimentAsScalar(x)    Sk2sComplimentAsFloat(x)
 
 #endif
-

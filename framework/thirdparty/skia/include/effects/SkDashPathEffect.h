@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkDashPathEffect_DEFINED
@@ -25,41 +16,62 @@
 */
 class SK_API SkDashPathEffect : public SkPathEffect {
 public:
-    /** The intervals array must contain an even number of entries (>=2), with the even
-        indices specifying the "on" intervals, and the odd indices specifying the "off"
-        intervals. phase is an offset into the intervals array (mod the sum of all of the
-        intervals).
-        Note: only affects framed paths
+    /** intervals: array containing an even number of entries (>=2), with
+         the even indices specifying the length of "on" intervals, and the odd
+         indices specifying the length of "off" intervals.
+        count: number of elements in the intervals array
+        phase: offset into the intervals array (mod the sum of all of the
+         intervals).
+
+        For example: if intervals[] = {10, 20}, count = 2, and phase = 25,
+         this will set up a dashed path like so:
+         5 pixels off
+         10 pixels on
+         20 pixels off
+         10 pixels on
+         20 pixels off
+         ...
+        A phase of -5, 25, 55, 85, etc. would all result in the same path,
+         because the sum of all the intervals is 30.
+
+        Note: only affects stroked paths.
     */
-    SkDashPathEffect(const SkScalar intervals[], int count, SkScalar phase, bool scaleToFit = false);
+    static SkDashPathEffect* Create(const SkScalar intervals[], int count,
+                                    SkScalar phase) {
+        return SkNEW_ARGS(SkDashPathEffect, (intervals, count, phase));
+    }
     virtual ~SkDashPathEffect();
 
-    // overrides for SkPathEffect
-    //  This method is not exported to java.
-    virtual bool filterPath(SkPath* dst, const SkPath& src, SkScalar* width);
+    virtual bool filterPath(SkPath* dst, const SkPath& src,
+                            SkStrokeRec*, const SkRect*) const override;
 
-    // overrides for SkFlattenable
-    //  This method is not exported to java.
-    virtual Factory getFactory();
-    //  This method is not exported to java.
-    virtual void flatten(SkFlattenableWriteBuffer&);
+    virtual bool asPoints(PointData* results, const SkPath& src,
+                          const SkStrokeRec&, const SkMatrix&,
+                          const SkRect*) const override;
+
+    DashType asADash(DashInfo* info) const override;
+
+    SK_TO_STRING_OVERRIDE()
+    SK_DECLARE_PUBLIC_FLATTENABLE_DESERIALIZATION_PROCS(SkDashPathEffect)
+
+#ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
+    bool exposedInAndroidJavaAPI() const override { return true; }
+#endif
 
 protected:
-    SkDashPathEffect(SkFlattenableReadBuffer&);
-    
+    SkDashPathEffect(const SkScalar intervals[], int count, SkScalar phase);
+    void flatten(SkWriteBuffer&) const override;
+
 private:
     SkScalar*   fIntervals;
     int32_t     fCount;
+    SkScalar    fPhase;
     // computed from phase
     SkScalar    fInitialDashLength;
     int32_t     fInitialDashIndex;
     SkScalar    fIntervalLength;
-    bool        fScaleToFit;
-
-    static SkFlattenable* CreateProc(SkFlattenableReadBuffer&);
 
     typedef SkPathEffect INHERITED;
 };
 
 #endif
-

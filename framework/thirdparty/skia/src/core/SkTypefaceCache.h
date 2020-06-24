@@ -1,18 +1,11 @@
+
 /*
-    Copyright 2011 Google Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 
 #ifndef SkTypefaceCache_DEFINED
@@ -30,7 +23,38 @@
 
 class SkTypefaceCache {
 public:
-    typedef bool (*FindProc)(SkTypeface*, SkTypeface::Style, void* context);
+    SkTypefaceCache();
+    ~SkTypefaceCache();
+
+    /**
+     * Callback for FindByProc. Returns true if the given typeface is a match
+     * for the given context. The passed typeface is owned by the cache and is
+     * not additionally ref()ed. The typeface may be in the disposed state.
+     */
+    typedef bool(*FindProc)(SkTypeface*, const SkFontStyle&, void* context);
+
+    /**
+     *  Add a typeface to the cache. This ref()s the typeface, so that the
+     *  cache is also an owner. Later, if we need to purge the cache, typefaces
+     *  whose refcnt is 1 (meaning only the cache is an owner) will be
+     *  unref()ed.
+     */
+    void add(SkTypeface*, const SkFontStyle& requested);
+
+    /**
+     *  Iterate through the cache, calling proc(typeface, ctx) with each
+     *  typeface. If proc returns true, then we return that typeface (this
+     *  ref()s the typeface). If it never returns true, we return NULL.
+     */
+    SkTypeface* findByProcAndRef(FindProc proc, void* ctx) const;
+
+    /**
+     *  This will unref all of the typefaces in the cache for which the cache
+     *  is the only owner. Normally this is handled automatically as needed.
+     *  This function is exposed for clients that explicitly want to purge the
+     *  cache (e.g. to look for leaks).
+     */
+    void purgeAll();
 
     /**
      *  Helper: returns a unique fontID to pass to the constructor of
@@ -38,26 +62,11 @@ public:
      */
     static SkFontID NewFontID();
 
-    /**
-     *  Add a typeface to the cache. This ref()s the typeface, so that the
-     *  cache is also an owner. Later, if we need to purge the cache, it will
-     *  unref() typefaces whose refcnt is 1 (meaning only the cache is an owner).
-     */
-    static void Add(SkTypeface*, SkTypeface::Style requested);
+    // These are static wrappers around a global instance of a cache.
 
-    /**
-     *  Search the cache for a typeface with the specified fontID (uniqueID).
-     *  If one is found, return it (its reference count is unmodified). If none
-     *  is found, return NULL.
-     */
-    static SkTypeface* FindByID(SkFontID fontID);
-
-    /**
-     *  Iterate through the cache, calling proc(typeface, ctx) with each
-     *  typeface. If proc returns true, then we return that typeface (its
-     *  reference count is unmodified). If it never returns true, we return NULL.
-     */
-    static SkTypeface* FindByProc(FindProc proc, void* ctx);
+    static void Add(SkTypeface*, const SkFontStyle& requested);
+    static SkTypeface* FindByProcAndRef(FindProc proc, void* ctx);
+    static void PurgeAll();
 
     /**
      *  Debugging only: dumps the status of the typefaces in the cache
@@ -67,14 +76,11 @@ public:
 private:
     static SkTypefaceCache& Get();
 
-    void add(SkTypeface*, SkTypeface::Style requested);
-    SkTypeface* findByID(SkFontID findID) const;
-    SkTypeface* findByProc(FindProc proc, void* ctx) const;
     void purge(int count);
 
     struct Rec {
-        SkTypeface*         fFace;
-        SkTypeface::Style   fRequestedStyle;
+        SkTypeface* fFace;
+        SkFontStyle fRequestedStyle;
     };
     SkTDArray<Rec> fArray;
 };

@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimateActive.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimateActive.h"
 #include "SkAnimateBase.h"
@@ -30,7 +22,7 @@ SkActive::SkActive(SkApply& apply, SkAnimateMaker& maker) : fApply(apply),
     fMaxTime(0), fMaker(maker), fDrawIndex(0), fDrawMax(0) {
 }
 
-void SkActive::init() 
+void SkActive::init()
 {
     fAnimators = fApply.fAnimators;
     int animators = fAnimators.count();
@@ -106,7 +98,7 @@ void SkActive::append(SkApply* apply) {
                         saveIndex -= oldCount;
                         delete[] fSaveRestore[saveIndex];
                         fSaveRestore.remove(saveIndex);
-                        delete[] fSaveInterpolators[saveIndex]; 
+                        delete[] fSaveInterpolators[saveIndex];
                         fSaveInterpolators.remove(saveIndex);
                     } while (saveIndex > 0);
                 }
@@ -135,24 +127,27 @@ void SkActive::appendSave(int oldCount) {
         SkASSERT(saveIndex >= 0);
         SkASSERT(newTotal >= 0);
         memmove(&fSaveRestore[newTotal], &fSaveRestore[saveIndex], oldCount);
-        memset(&fSaveRestore[newTotal + oldCount], 0, 
+        memset(&fSaveRestore[newTotal + oldCount], 0,
             sizeof(fSaveRestore[0]) * (newCount - oldCount));
-        memmove(&fSaveInterpolators[newTotal], 
+        memmove(&fSaveInterpolators[newTotal],
             &fSaveInterpolators[saveIndex], oldCount);
-        memset(&fSaveInterpolators[newTotal + oldCount], 0, 
+        memset(&fSaveInterpolators[newTotal + oldCount], 0,
             sizeof(fSaveRestore[0]) * (newCount - oldCount));
     } while (saveIndex > 0);
     SkASSERT(newTotal == 0);
 }
 
-void SkActive::calcDurations(int index) 
+void SkActive::calcDurations(int index)
 {
     SkAnimateBase* animate = fAnimators[index];
     SkMSec duration = animate->dur;
     SkState& state = fState[index];
-    if (state.fMode == SkApply::kMode_immediate || state.fMode == SkApply::kMode_create)
+    switch (state.fMode) {
+      case SkApply::kMode_immediate:
+      case SkApply::kMode_create:
         duration = state.fSteps ? state.fSteps * SK_MSec1 : 1;
-//  else if (state.fMode == SkApply::kMode_hold) {
+        break;
+//    case SkApply::kMode_hold: {
 //      int entries = animate->entries();
 //      SkScriptValue value;
 //      value.fOperand = animate->getValues()[entries - 1];
@@ -160,14 +155,16 @@ void SkActive::calcDurations(int index)
 //      bool result = SkScriptEngine::ConvertTo(NULL, SkType_Int, &value);
 //      SkASSERT(result);
 //      duration = value.fOperand.fS32 * SK_MSec1;
-//  }
+//      break;
+//    }
+    }
     state.fDuration = duration;
     SkMSec maxTime = state.fBegin + duration;
     if (fMaxTime < maxTime)
         fMaxTime = maxTime;
 }
 
-void SkActive::create(SkDrawable* drawable, SkMSec time) {
+void SkActive::create(SkADrawable* drawable, SkMSec time) {
     fApply.fLastTime = time;
     fApply.refresh(fMaker);
     for (int index = 0; index < fAnimators.count(); index++) {
@@ -177,7 +174,7 @@ void SkActive::create(SkDrawable* drawable, SkMSec time) {
         if (animate->formula.size() > 0) {
             SkTDOperandArray values;
             values.setCount(count);
-            bool success = animate->fFieldInfo->setValue(fMaker, &values, 0, 0, NULL, 
+            SkDEBUGCODE(bool success = ) animate->fFieldInfo->setValue(fMaker, &values, 0, 0, NULL,
                 animate->getValuesType(), animate->formula);
             SkASSERT(success);
             fApply.applyValues(index, values.begin(), count, animate->getValuesType(), time);
@@ -194,7 +191,7 @@ void SkActive::create(SkDrawable* drawable, SkMSec time) {
 bool SkActive::immediate(bool enable) {
     SkMSec time = 0;
     bool result = false;
-    SkDrawable* drawable = fApply.scope;
+    SkADrawable* drawable = fApply.scope;
     SkMSec final = fMaxTime;
     do {
         bool applied = fAnimators.count() == 0;
@@ -215,7 +212,7 @@ bool SkActive::immediate(bool enable) {
             if (animate->formula.size() > 0) {
                 SkTDOperandArray values;
                 values.setCount(count);
-                bool success = animate->fFieldInfo->setValue(fMaker, &values, 0, 0, NULL, 
+                SkDEBUGCODE(bool success = ) animate->fFieldInfo->setValue(fMaker, &values, 0, 0, NULL,
                     animate->getValuesType(), animate->formula);
                 SkASSERT(success);
                 fApply.applyValues(index, values.begin(), count, animate->getValuesType(), time);
@@ -262,7 +259,7 @@ bool SkActive::initializeSave() {
         memset(&fSaveRestore[oldCount], 0, sizeof(fSaveRestore[0]) * (activeTotal - oldCount));
         SkASSERT(fSaveInterpolators.count() == oldCount);
         fSaveInterpolators.setCount(activeTotal);
-        memset(&fSaveInterpolators[oldCount], 0, 
+        memset(&fSaveInterpolators[oldCount], 0,
             sizeof(fSaveInterpolators[0]) * (activeTotal - oldCount));
         return true;
     }
@@ -290,7 +287,7 @@ void SkActive::initState(SkApply* apply, int offset) {
         state.fStarted = false;
         state.fSteps = apply->steps;
         state.fTicks = 0;
-        state.fUnpostedEndEvent = (SkBool8) animate->fHasEndEvent; 
+        state.fUnpostedEndEvent = (SkBool8) animate->fHasEndEvent;
         calcDurations(index);
         setInterpolator(index, from);
     }
@@ -320,7 +317,7 @@ void SkActive::pickUp(SkActive* existing) {
         if (workingSum < originalSum) {
             SkScalar originalDistance = SkScalarSqrt(originalSum);
             SkScalar workingDistance = SkScalarSqrt(workingSum);
-            existing->fState[index].fDuration = (SkMSec) SkScalarMulDiv(fState[index].fDuration, 
+            existing->fState[index].fDuration = (SkMSec) SkScalarMulDiv(fState[index].fDuration,
                 workingDistance, originalDistance);
         }
         fInterpolators[index]->reset(components, 2, SkType_Float);
@@ -379,7 +376,7 @@ void SkActive::setInterpolator(int index, SkOperand* from) {
     SkMSec duration = fState[index].fDuration;
     int components = animate->components();
     SkOperandInterpolator& interpolator = *fInterpolators[index];
-    interpolator.reset(components, entries == 1 ? 2 : entries, animate->getValuesType()); 
+    interpolator.reset(components, entries == 1 ? 2 : entries, animate->getValuesType());
     interpolator.setMirror(SkToBool(animate->fMirror));
     interpolator.setReset(SkToBool(animate->fReset));
     interpolator.setRepeatCount(animate->repeat);
@@ -390,7 +387,7 @@ void SkActive::setInterpolator(int index, SkOperand* from) {
     }
     for (int entry = 0; entry < entries; entry++) {
         int blendIndex = SkMin32(animate->blend.count() - 1, entry);
-        interpolator.setKeyFrame(entry, entry * duration / (entries - 1), from, 
+        interpolator.setKeyFrame(entry, entry * duration / (entries - 1), from,
             animate->blend[blendIndex]);
         from += components;
     }
@@ -478,12 +475,12 @@ void SkActive::validate() {
 // the code below should only be bumping fSave, and there shouldn't be anything
 // it needs to be synchronized with
 
-// however, if there are two animates both operating on the same field, then 
-// when one replaces the other, it may make sense to pick up the old value as a starting 
+// however, if there are two animates both operating on the same field, then
+// when one replaces the other, it may make sense to pick up the old value as a starting
 // value for the new one somehow.
 
 //void SkActive::SkState::bumpSave() {
-//  if (fMode != SkApply::kMode_hold) 
+//  if (fMode != SkApply::kMode_hold)
 //      return;
 //  if (fTransition == SkApply::kTransition_reverse) {
 //      if (fSave > 0)
@@ -505,5 +502,3 @@ SkMSec SkActive::SkState::getRelativeTime(SkMSec time) {
     }
     return result;
 }
-
-

@@ -1,26 +1,18 @@
-/* libs/graphics/animator/SkAnimateBase.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimateBase.h"
 #include "SkAnimateMaker.h"
 #include "SkAnimateProperties.h"
 #include "SkAnimatorScript.h"
 #include "SkDisplayApply.h"
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 
 #if SK_USE_CONDENSED_INFO == 0
 
@@ -47,8 +39,8 @@ const SkMemberInfo SkAnimateBase::fInfo[] = {
 DEFINE_GET_MEMBER(SkAnimateBase);
 
 SkAnimateBase::SkAnimateBase() : begin(0), dur(1), repeat(SK_Scalar1),
-        fApply(NULL), fFieldInfo(NULL), fFieldOffset(0), fStart((SkMSec) -1), fTarget(NULL), 
-        fChanged(0), fDelayed(0), fDynamic(0), fHasEndEvent(0), fHasValues(0), 
+        fApply(NULL), fFieldInfo(NULL), fFieldOffset(0), fStart((SkMSec) -1), fTarget(NULL),
+        fChanged(0), fDelayed(0), fDynamic(0), fHasEndEvent(0), fHasValues(0),
         fMirror(0), fReset(0), fResetPending(0), fTargetIsScope(0) {
     blend.setCount(1);
     blend[0] = SK_Scalar1;
@@ -62,8 +54,8 @@ SkAnimateBase::~SkAnimateBase() {
     }
 }
 
-int SkAnimateBase::components() { 
-    return 1; 
+int SkAnimateBase::components() {
+    return 1;
 }
 
 SkDisplayable* SkAnimateBase::deepCopy(SkAnimateMaker* maker) {
@@ -99,11 +91,7 @@ void SkAnimateBase::dump(SkAnimateMaker* maker) {
         SkDebugf("to=\"%s\" ", to.c_str());
     }
     if (begin != 0) {
-#ifdef SK_CAN_USE_FLOAT
-        SkDebugf("begin=\"%g\" ", SkScalarToFloat(SkScalarDiv(begin,1000)));
-#else
-        SkDebugf("begin=\"%x\" ", SkScalarDiv(begin,1000));
-#endif
+        SkDebugf("begin=\"%g\" ", begin * 0.001);
     }
 }
 #endif
@@ -143,9 +131,9 @@ returnBool:
     return true;
 }
 
-bool SkAnimateBase::hasExecute() const 
+bool SkAnimateBase::hasExecute() const
 {
-    return false; 
+    return false;
 }
 
 void SkAnimateBase::onEndElement(SkAnimateMaker& maker) {
@@ -171,12 +159,14 @@ void SkAnimateBase::onEndElement(SkAnimateMaker& maker) {
     }
 }
 
-void SkAnimateBase::packARGB(SkScalar array[], int count, SkTDOperandArray* converted) 
-{ 
+void SkAnimateBase::packARGB(SkScalar array[], int count, SkTDOperandArray* converted)
+{
     SkASSERT(count == 4);
     converted->setCount(1);
-    SkColor color = SkColorSetARGB(SkScalarRound(array[0]), SkScalarRound(array[1]), 
-        SkScalarRound(array[2]), SkScalarRound(array[3]));
+    SkColor color = SkColorSetARGB(SkScalarRoundToInt(array[0]),
+                                   SkScalarRoundToInt(array[1]),
+                                   SkScalarRoundToInt(array[2]),
+                                   SkScalarRoundToInt(array[3]));
     (*converted)[0].fS32 = color;
 }
 
@@ -240,8 +230,6 @@ void SkAnimateBase::setTarget(SkAnimateMaker& maker) {
     }
 }
 
-bool SkAnimateBase::targetNeedsInitialization() const { 
-    return false; 
+bool SkAnimateBase::targetNeedsInitialization() const {
+    return false;
 }
-
-

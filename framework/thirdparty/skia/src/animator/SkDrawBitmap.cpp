@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDrawBitmap.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDrawBitmap.h"
 #include "SkAnimateMaker.h"
@@ -64,7 +56,7 @@ const SkMemberInfo SkDrawBitmap::fInfo[] = {
 
 DEFINE_GET_MEMBER(SkDrawBitmap);
 
-SkDrawBitmap::SkDrawBitmap() : format((SkBitmap::Config) -1), height(-1), 
+SkDrawBitmap::SkDrawBitmap() : format((SkColorType) -1), height(-1),
     rowBytes(0),    width(-1), fColor(0), fColorSet(false) {
 }
 
@@ -83,23 +75,22 @@ void SkDrawBitmap::dump(SkAnimateMaker* maker) {
     const char* formatName;
     switch (format) {
         case 0: formatName = "none"; break;
-        case 1: formatName = "A1"; break;
-        case 2: formatName = "A8"; break;
-        case 3: formatName = "Index8"; break;
-        case 4: formatName = "RGB16"; break;
-        case 5: formatName = "RGB32"; break;
+        case 1: formatName = "A8"; break;
+        case 2: formatName = "Index8"; break;
+        case 3: formatName = "RGB16"; break;
+        case 4: formatName = "RGB32"; break;
     }
     SkDebugf("format=\"%s\" />\n", formatName);
 }
 #endif
 
-void SkDrawBitmap::onEndElement(SkAnimateMaker& maker) {
-    SkASSERT(format != (SkBitmap::Config) -1);
+void SkDrawBitmap::onEndElement(SkAnimateMaker&) {
     SkASSERT(width != -1);
     SkASSERT(height != -1);
     SkASSERT(rowBytes >= 0);
-    fBitmap.setConfig((SkBitmap::Config) format, width, height, rowBytes);
-    fBitmap.allocPixels();
+    SkColorType colorType = SkColorType(format);
+    fBitmap.allocPixels(SkImageInfo::Make(width, height, colorType, kPremul_SkAlphaType),
+                        rowBytes);
     if (fColorSet)
         fBitmap.eraseColor(fColor);
 }
@@ -120,14 +111,14 @@ bool SkDrawBitmap::setProperty(int index, SkScriptValue& value)
 }
 
 
-enum SkImage_Properties {
+enum SkImageBaseBitmap_Properties {
     SK_PROPERTY(height),
     SK_PROPERTY(width)
 };
 
 #if SK_USE_CONDENSED_INFO == 0
 
-const SkMemberInfo SkImage::fInfo[] = {
+const SkMemberInfo SkImageBaseBitmap::fInfo[] = {
     SK_MEMBER_INHERITED,
     SK_MEMBER(base64, Base64),
     SK_MEMBER_PROPERTY(height, Int),
@@ -137,35 +128,35 @@ const SkMemberInfo SkImage::fInfo[] = {
 
 #endif
 
-DEFINE_GET_MEMBER(SkImage);
+DEFINE_GET_MEMBER(SkImageBaseBitmap);
 
-SkImage::SkImage() : fDirty(true), fUriBase(NULL) {
+SkImageBaseBitmap::SkImageBaseBitmap() : fDirty(true), fUriBase(NULL) {
     base64.fData = NULL;
     base64.fLength = 0;
 }
 
-SkImage::~SkImage() {
-    delete[] base64.fData; 
+SkImageBaseBitmap::~SkImageBaseBitmap() {
+    delete[] base64.fData;
 }
 
-SkDisplayable* SkImage::deepCopy(SkAnimateMaker* maker) {
+SkDisplayable* SkImageBaseBitmap::deepCopy(SkAnimateMaker* maker) {
     SkDisplayable* copy = INHERITED::deepCopy(maker);
-    ((SkImage*) copy)->fUriBase = ((SkImage*) this)->fUriBase;
+    ((SkImageBaseBitmap*) copy)->fUriBase = ((SkImageBaseBitmap*) this)->fUriBase;
     return copy;
 }
 
-void SkImage::dirty() {
+void SkImageBaseBitmap::dirty() {
     fDirty = true;
 }
 
-bool SkImage::draw(SkAnimateMaker& maker) {
-    if (fDirty) 
+bool SkImageBaseBitmap::draw(SkAnimateMaker& maker) {
+    if (fDirty)
         resolve();
     return INHERITED::draw(maker);
 }
 
-bool SkImage::getProperty(int index, SkScriptValue* value) const {
-    if (fDirty) 
+bool SkImageBaseBitmap::getProperty(int index, SkScriptValue* value) const {
+    if (fDirty)
         resolve();
     switch (index) {
         case SK_PROPERTY(height):
@@ -182,11 +173,11 @@ bool SkImage::getProperty(int index, SkScriptValue* value) const {
     return true;
 }
 
-void SkImage::onEndElement(SkAnimateMaker& maker) {
+void SkImageBaseBitmap::onEndElement(SkAnimateMaker& maker) {
     fUriBase = maker.fPrefix.c_str();
 }
 
-void SkImage::resolve() {
+void SkImageBaseBitmap::resolve() {
     fDirty = false;
     if (base64.fData) {
         fBitmap.reset();
@@ -196,11 +187,11 @@ void SkImage::resolve() {
             return;
         fLast.set(src);
         fBitmap.reset();
-        
-        //SkStream* stream = SkStream::GetURIStream(fUriBase, src.c_str());
-        SkStream* stream = new SkFILEStream(src.c_str());
 
-        SkAutoTDelete<SkStream> autoDel(stream);
-        SkImageDecoder::DecodeStream(stream, &fBitmap);
-    }   
+        //SkStream* stream = SkStream::GetURIStream(fUriBase, src.c_str());
+        SkAutoTDelete<SkStreamAsset> stream(SkStream::NewFromFile(src.c_str()));
+        if (stream.get()) {
+            SkImageDecoder::DecodeStream(stream, &fBitmap);
+        }
+    }
 }

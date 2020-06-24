@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkDiscretePathEffect_DEFINED
@@ -23,34 +14,51 @@
 
     This path effect chops a path into discrete segments, and randomly displaces them.
 */
-class SkDiscretePathEffect : public SkPathEffect {
+class SK_API SkDiscretePathEffect : public SkPathEffect {
 public:
     /** Break the path into segments of segLength length, and randomly move the endpoints
         away from the original path by a maximum of deviation.
         Note: works on filled or framed paths
+
+        @param seedAssist This is a caller-supplied seedAssist that modifies
+                          the seed value that is used to randomize the path
+                          segments' endpoints. If not supplied it defaults to 0,
+                          in which case filtering a path multiple times will
+                          result in the same set of segments (this is useful for
+                          testing). If a caller does not want this behaviour
+                          they can pass in a different seedAssist to get a
+                          different set of path segments.
     */
-    SkDiscretePathEffect(SkScalar segLength, SkScalar deviation);
+    static SkDiscretePathEffect* Create(SkScalar segLength,
+                                        SkScalar deviation,
+                                        uint32_t seedAssist=0) {
+        return SkNEW_ARGS(SkDiscretePathEffect,
+                          (segLength, deviation, seedAssist));
+    }
 
-    // overrides for SkPathEffect
-    //  This method is not exported to java.
-    virtual bool filterPath(SkPath* dst, const SkPath& src, SkScalar* width);
+    virtual bool filterPath(SkPath* dst, const SkPath& src,
+                            SkStrokeRec*, const SkRect*) const override;
 
-    // overrides for SkFlattenable
-    //  This method is not exported to java.
-    virtual Factory getFactory();
-    //  This method is not exported to java.
-    virtual void flatten(SkFlattenableWriteBuffer&);
+    SK_TO_STRING_OVERRIDE()
+    SK_DECLARE_PUBLIC_FLATTENABLE_DESERIALIZATION_PROCS(SkDiscretePathEffect)
+
+#ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
+    bool exposedInAndroidJavaAPI() const override { return true; }
+#endif
 
 protected:
-    SkDiscretePathEffect(SkFlattenableReadBuffer&);
+    SkDiscretePathEffect(SkScalar segLength,
+                         SkScalar deviation,
+                         uint32_t seedAssist);
+    void flatten(SkWriteBuffer&) const override;
 
 private:
     SkScalar fSegLength, fPerterb;
 
-    static SkFlattenable* CreateProc(SkFlattenableReadBuffer&);
-    
+    /* Caller-supplied 32 bit seed assist */
+    uint32_t fSeedAssist;
+
     typedef SkPathEffect INHERITED;
 };
 
 #endif
-

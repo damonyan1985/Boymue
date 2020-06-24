@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkDisplayEvent.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkDisplayEvent.h"
 #include "SkAnimateMaker.h"
@@ -60,9 +52,9 @@ SkDisplayEvent::~SkDisplayEvent() {
     deleteMembers();
 }
 
-bool SkDisplayEvent::add(SkAnimateMaker& , SkDisplayable* child) { 
-    *fChildren.append() = child; 
-    return true; 
+bool SkDisplayEvent::addChild(SkAnimateMaker& , SkDisplayable* child) {
+    *fChildren.append() = child;
+    return true;
 }
 
 bool SkDisplayEvent::contains(SkDisplayable* match) {
@@ -112,11 +104,7 @@ void SkDisplayEvent::dumpEvent(SkAnimateMaker* maker) {
         SkDebugf("target=\"%s\" ", fTarget->id);
     }
     if (kind >= SkDisplayEvent::kMouseDown && kind <= SkDisplayEvent::kMouseUp) {
-#ifdef SK_CAN_USE_FLOAT
         SkDebugf("x=\"%g\" y=\"%g\" ", SkScalarToFloat(x), SkScalarToFloat(y));
-#else
-        SkDebugf("x=\"%x\" y=\"%x\" ", x, y);
-#endif
     }
     if (disable)
         SkDebugf("disable=\"true\" ");
@@ -124,7 +112,7 @@ void SkDisplayEvent::dumpEvent(SkAnimateMaker* maker) {
 }
 #endif
 
-bool SkDisplayEvent::enableEvent(SkAnimateMaker& maker) 
+bool SkDisplayEvent::enableEvent(SkAnimateMaker& maker)
 {
     maker.fActiveEvent = this;
     if (fChildren.count() == 0)
@@ -142,15 +130,15 @@ bool SkDisplayEvent::enableEvent(SkAnimateMaker& maker)
         SkDisplayable* displayable = fChildren[index];
         if (displayable->isGroup()) {
             SkTDDrawableArray* parentList = displayList.getDrawList();
-            *parentList->append() = (SkDrawable*) displayable;  // make it findable before children are enabled
+            *parentList->append() = (SkADrawable*) displayable;  // make it findable before children are enabled
         }
         if (displayable->enable(maker))
             continue;
-        if (maker.hasError()) 
+        if (maker.hasError())
             return true;
         if (displayable->isDrawable() == false)
             return true;    // error
-        SkDrawable* drawable = (SkDrawable*) displayable;
+        SkADrawable* drawable = (SkADrawable*) displayable;
         SkTDDrawableArray* parentList = displayList.getDrawList();
         *parentList->append() = drawable;
     }
@@ -186,7 +174,7 @@ void SkDisplayEvent::onEndElement(SkAnimateMaker& maker)
         return;
     maker.fEvents.addEvent(this);
     if (kind == kOnEnd) {
-        bool found = maker.find(target.c_str(), &fTarget);
+        SkDEBUGCODE(bool found = ) maker.find(target.c_str(), &fTarget);
         SkASSERT(found);
         SkASSERT(fTarget && fTarget->isAnimate());
         SkAnimateBase* animate = (SkAnimateBase*) fTarget;
@@ -262,78 +250,3 @@ bool SkDisplayEvent::setProperty(int index, SkScriptValue& value) {
     }
     return true;
 }
-
-#ifdef ANDROID
-
-#include "SkMetaData.h"
-#include "SkParse.h"
-#include "SkTextBox.h"
-#include "SkXMLWriter.h"
-
-void SkMetaData::setPtr(char const*, void* ) {}
-void SkMetaData::setS32(char const*, int ) {}
-bool SkEventSink::doEvent(SkEvent const& ) { return false; }
-bool SkXMLParser::parse(SkStream& ) { return false; }
-SkXMLParserError::SkXMLParserError( ) {}
-void SkEvent::setType(char const*, unsigned long ) {}
-bool SkEvent::PostTime(SkEvent*, unsigned int, unsigned int ) { return false; }
-SkEvent::SkEvent(char const* ) {}
-SkEvent::SkEvent(SkEvent const& ) {}
-SkEvent::SkEvent( ) {}
-SkEvent::~SkEvent( ) {}
-bool SkEventSink::onQuery(SkEvent* ) { return false; }
-SkEventSink::SkEventSink( ) {}
-SkEventSink::~SkEventSink( ) {}
-bool SkXMLParser::parse(char const*, unsigned long ) { return false; }
-bool SkXMLParser::parse(SkDOM const&, SkDOMNode const* ) { return false; }
-bool SkEvent::Post(SkEvent*, unsigned int, unsigned int ) { return false; }
-void SkParse::UnitTest( ) {}
-const char* SkMetaData::findString(char const*) const {return 0;}
-bool SkMetaData::findPtr(char const*, void**) const {return false;}
-bool SkMetaData::findS32(char const*, int*) const {return false;}
-bool SkEvent::isType(char const*, unsigned long) const { return false; }
-void SkMetaData::setString(char const*, char const* ) {}
-const char* SkParse::FindNamedColor(char const*, unsigned long, unsigned int* ) {return false; }
-const char* SkMetaData::Iter::next(SkMetaData::Type*, int* ) { return false; }
-SkMetaData::Iter::Iter(SkMetaData const& ) {}
-bool SkMetaData::findScalar(char const*, int*) const {return false;}
-void SkMetaData::reset( ) {}
-void SkEvent::setType(SkString const& ) {}
-bool SkMetaData::findBool(char const*, bool*) const {return false;}
-void SkEvent::getType(SkString*) const {}
-bool SkXMLParser::endElement(char const* ) { return false; }
-bool SkXMLParser::addAttribute(char const*, char const* ) { return false;}
-bool SkXMLParser::startElement(char const* ) { return false;}
-bool SkXMLParser::text(char const*, int ) { return false;}
-bool SkXMLParser::onText(char const*, int ) { return false;}
-SkXMLParser::SkXMLParser(SkXMLParserError* ) {}
-SkXMLParser::~SkXMLParser( ) {}
-SkXMLParserError::~SkXMLParserError( ) {}
-void SkXMLParserError::getErrorString(SkString*) const {}
-void SkTextBox::setSpacing(int, int ) {}
-void SkTextBox::setSpacingAlign(SkTextBox::SpacingAlign ) {}
-void SkTextBox::draw(SkCanvas*, char const*, unsigned long, SkPaint const& ) {}
-void SkTextBox::setBox(SkRect const& ) {}
-void SkTextBox::setMode(SkTextBox::Mode ) {}
-SkTextBox::SkTextBox( ) {}
-void SkMetaData::setScalar(char const*, int ) {}
-const char* SkParse::FindScalar(char const*, int* ) {return 0; }
-const char* SkParse::FindScalars(char const*, int*, int ) {return 0; }
-const char* SkParse::FindHex(char const*, unsigned int* ) {return 0; }
-const char* SkParse::FindS32(char const*, int* ) {return 0; }
-void SkXMLWriter::addAttribute(char const*, char const* ) {}
-void SkXMLWriter::startElement(char const* ) {}
-void SkXMLWriter::doEnd(SkXMLWriter::Elem* ) {}
-SkXMLWriter::Elem* SkXMLWriter::getEnd( ) { return 0; }
-bool SkXMLWriter::doStart(char const*, unsigned long ) { return false; }
-SkXMLWriter::SkXMLWriter(bool ) {}
-SkXMLWriter::~SkXMLWriter( ) {}
-SkMetaData::SkMetaData() {}
-SkMetaData::~SkMetaData() {}
-bool SkEventSink::onEvent(SkEvent const&) {return false;}
-bool SkXMLParser::onEndElement(char const*) {return false;}
-bool SkXMLParser::onAddAttribute(char const*, char const*) {return false;}
-bool SkXMLParser::onStartElement(char const*) {return false;}
-void SkXMLWriter::writeHeader() {}
-
-#endif

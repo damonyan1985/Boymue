@@ -1,53 +1,45 @@
-/* libs/graphics/animator/SkDrawMatrix.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkDrawMatrix_DEFINED
 #define SkDrawMatrix_DEFINED
 
-#include "SkDrawable.h"
+#include "SkADrawable.h"
 #include "SkMatrix.h"
 #include "SkMemberInfo.h"
 #include "SkIntArray.h"
 
 class SkMatrixPart;
 
-class SkDrawMatrix : public SkDrawable {
+class SkDrawMatrix : public SkADrawable {
     DECLARE_DRAW_MEMBER_INFO(Matrix);
     SkDrawMatrix();
     virtual ~SkDrawMatrix();
-    virtual bool add(SkAnimateMaker& , SkDisplayable* child);
-    virtual bool childrenNeedDisposing() const;
-    virtual void dirty();
-    virtual bool draw(SkAnimateMaker& );
+    bool addChild(SkAnimateMaker& , SkDisplayable* child) override;
+    bool childrenNeedDisposing() const override;
+    void dirty() override;
+    bool draw(SkAnimateMaker& ) override;
 #ifdef SK_DUMP_ENABLED
-    virtual void dump(SkAnimateMaker* );
+    void dump(SkAnimateMaker* ) override;
 #endif
     SkMatrix& getMatrix();
-    virtual bool getProperty(int index, SkScriptValue* value) const;
-    virtual void initialize();
-    virtual void onEndElement(SkAnimateMaker& );
-    virtual void setChildHasID();
-    virtual bool setProperty(int index, SkScriptValue& );
+    bool getProperty(int index, SkScriptValue* value) const override;
+    void initialize() override;
+    void onEndElement(SkAnimateMaker& ) override;
+    void setChildHasID() override;
+    bool setProperty(int index, SkScriptValue& ) override;
 
     void concat(SkMatrix& inMatrix) {
         fConcat.preConcat(inMatrix);
     }
 
-    virtual SkDisplayable* deepCopy(SkAnimateMaker* );
+    SkDisplayable* deepCopy(SkAnimateMaker* ) override;
 
 
     void rotate(SkScalar degrees, SkPoint& center) {
@@ -76,7 +68,7 @@ private:
     SkTDMatrixPartArray fParts;
     SkBool8 fChildHasID;
     SkBool8 fDirty;
-    typedef SkDrawable INHERITED;
+    typedef SkADrawable INHERITED;
 };
 
 #endif // SkDrawMatrix_DEFINED

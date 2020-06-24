@@ -1,18 +1,11 @@
+
 /*
- * Copyright 2007, The Android Open Source Project
+ * Copyright 2007 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- *
- *     http://www.apache.org/licenses/LICENSE-2.0 
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 // Author: cevans@google.com (Chris Evans)
 
 #include "bmpdecoderhelper.h"
@@ -25,7 +18,7 @@ static const int kBmpOS2InfoSize = 12;
 static const int kMaxDim = SHRT_MAX / 2;
 
 bool BmpDecoderHelper::DecodeImage(const char* p,
-                                   int len,
+                                   size_t len,
                                    int max_pixels,
                                    BmpDecoderCallback* callback) {
   data_ = reinterpret_cast<const uint8*>(p);
@@ -160,7 +153,7 @@ bool BmpDecoderHelper::DecodeImage(const char* p,
     rowLen += rowPad_;
   }
 
-  if (offset > 0 && offset > pos_ && offset < len_) {
+  if (offset > 0 && (size_t)offset > pos_ && (size_t)offset < len_) {
     pos_ = offset;
   }
   // Deliberately off-by-one; a load of BMPs seem to have their last byte
@@ -189,7 +182,7 @@ void BmpDecoderHelper::DoRLEDecode() {
   static const uint8 RLE_DELTA = 2;
   int x = 0;
   int y = height_ - 1;
-  while (pos_ < len_ - 1) {
+  while (pos_ + 1 < len_) {
     uint8 cmd = GetByte();
     if (cmd != RLE_ESCAPE) {
       uint8 pixels = GetByte();
@@ -217,7 +210,7 @@ void BmpDecoderHelper::DoRLEDecode() {
           return;
         }
       } else if (cmd == RLE_DELTA) {
-        if (pos_ < len_ - 1) {
+        if (pos_ + 1 < len_) {
           uint8 dx = GetByte();
           uint8 dy = GetByte();
           x += dx;
@@ -343,7 +336,7 @@ int BmpDecoderHelper::GetShort() {
 }
 
 uint8 BmpDecoderHelper::GetByte() {
-  CHECK(pos_ >= 0 && pos_ <= len_);
+  CHECK(pos_ <= len_);
   // We deliberately allow this off-by-one access to cater for BMPs with their
   // last byte missing.
   if (pos_ == len_) {

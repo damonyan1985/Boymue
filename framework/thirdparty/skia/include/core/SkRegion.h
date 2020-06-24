@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2005 The Android Open Source Project
+ * Copyright 2005 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #ifndef SkRegion_DEFINED
 #define SkRegion_DEFINED
@@ -40,7 +33,7 @@ public:
     enum {
         kRunTypeSentinel = 0x7FFFFFFF
     };
-    
+
     SkRegion();
     SkRegion(const SkRegion&);
     explicit SkRegion(const SkIRect&);
@@ -52,21 +45,20 @@ public:
      *  Return true if the two regions are equal. i.e. The enclose exactly
      *  the same area.
      */
-    friend bool operator==(const SkRegion& a, const SkRegion& b);
+    bool operator==(const SkRegion& other) const;
 
     /**
      *  Return true if the two regions are not equal.
      */
-    friend bool operator!=(const SkRegion& a, const SkRegion& b) {
-        return !(a == b);
+    bool operator!=(const SkRegion& other) const {
+        return !(*this == other);
     }
-    
+
     /**
      *  Replace this region with the specified region, and return true if the
      *  resulting region is non-empty.
      */
     bool set(const SkRegion& src) {
-        SkASSERT(&src);
         *this = src;
         return !this->isEmpty();
     }
@@ -93,9 +85,19 @@ public:
     const SkIRect& getBounds() const { return fBounds; }
 
     /**
-     *  Returns true if the region is non-empty, and if so, sets the specified
-     *  path to the boundary(s) of the region. If the region is empty, then
-     *  this returns false, and path is left unmodified.
+     *  Returns a value that grows approximately linearly with the number of
+     *  intervals comprised in the region. Empty region will return 0, Rect
+     *  will return 1, Complex will return a value > 1.
+     *
+     *  Use this to compare two regions, where the larger count likely
+     *  indicates a more complex region.
+     */
+    int computeRegionComplexity() const;
+
+    /**
+     *  Returns true if the region is non-empty, and if so, appends the
+     *  boundary(s) of the region to the specified path.
+     *  If the region is empty, returns false, and path is left unmodified.
      */
     bool getBoundaryPath(SkPath* path) const;
 
@@ -124,7 +126,7 @@ public:
      *  @return true if the resulting region is non-empty
      */
     bool setRects(const SkIRect rects[], int count);
-    
+
     /**
      *  Set this region to the specified region, and return true if it is
      *  non-empty.
@@ -138,13 +140,13 @@ public:
      *  drawn by the path (with no antialiasing) with the specified clip.
      */
     bool setPath(const SkPath&, const SkRegion& clip);
-    
+
     /**
      *  Returns true if the specified rectangle has a non-empty intersection
      *  with this region.
      */
     bool intersects(const SkIRect&) const;
-    
+
     /**
      *  Returns true if the specified region has a non-empty intersection
      *  with this region.
@@ -192,14 +194,14 @@ public:
     bool quickContains(int32_t left, int32_t top, int32_t right,
                        int32_t bottom) const {
         SkASSERT(this->isEmpty() == fBounds.isEmpty()); // valid region
-        
+
         return left < right && top < bottom &&
                fRunHead == SkRegion_gRectRunHeadPtr &&  // this->isRect()
                /* fBounds.contains(left, top, right, bottom); */
                fBounds.fLeft <= left && fBounds.fTop <= top &&
                fBounds.fRight >= right && fBounds.fBottom >= bottom;
     }
-    
+
     /**
      *  Return true if this region is empty, or if the specified rectangle does
      *  not intersect the region. Returning false is not a guarantee that they
@@ -241,16 +243,20 @@ public:
         kXOR_Op,        //!< exclusive-or the two regions
         /** subtract the first region from the op region */
         kReverseDifference_Op,
-        kReplace_Op     //!< replace the dst region with the op region
+        kReplace_Op,    //!< replace the dst region with the op region
+
+        kLastOp = kReplace_Op
     };
-    
+
+    static const int kOpCnt = kLastOp + 1;
+
     /**
      *  Set this region to the result of applying the Op to this region and the
      *  specified rectangle: this = (this op rect).
      *  Return true if the resulting region is non-empty.
      */
     bool op(const SkIRect& rect, Op op) { return this->op(*this, rect, op); }
-    
+
     /**
      *  Set this region to the result of applying the Op to this region and the
      *  specified rectangle: this = (this op rect).
@@ -261,7 +267,7 @@ public:
         rect.set(left, top, right, bottom);
         return this->op(*this, rect, op);
     }
-    
+
     /**
      *  Set this region to the result of applying the Op to this region and the
      *  specified region: this = (this op rgn).
@@ -290,7 +296,7 @@ public:
      */
     bool op(const SkRegion& rgna, const SkRegion& rgnb, Op op);
 
-#ifdef ANDROID
+#ifdef SK_BUILD_FOR_ANDROID
     /** Returns a new char* containing the list of rectangles in this region
      */
     char* toString();
@@ -358,13 +364,16 @@ public:
      *  Write the region to the buffer, and return the number of bytes written.
      *  If buffer is NULL, it still returns the number of bytes.
      */
-    uint32_t flatten(void* buffer) const;
-
+    size_t writeToMemory(void* buffer) const;
     /**
-     *  Initialized the region from the buffer, returning the number
-     *  of bytes actually read.
+     * Initializes the region from the buffer
+     *
+     * @param buffer Memory to read from
+     * @param length Amount of memory available in the buffer
+     * @return number of bytes read (must be a multiple of 4) or
+     *         0 if there was not enough memory available
      */
-    uint32_t unflatten(const void* buffer);
+    size_t readFromMemory(const void* buffer, size_t length);
 
     /**
      *  Returns a reference to a global empty region. Just a convenience for
@@ -385,28 +394,53 @@ private:
     };
 
     enum {
-        kRectRegionRuns = 6 // need to store a region of a rect [T B L R S S]        
+        // T
+        // [B N L R S]
+        // S
+        kRectRegionRuns = 7
     };
 
     friend class android::Region;    // needed for marshalling efficiently
-    void allocateRuns(int count); // allocate space for count runs
 
     struct RunHead;
+
+    // allocate space for count runs
+    void allocateRuns(int count);
+    void allocateRuns(int count, int ySpanCount, int intervalCount);
+    void allocateRuns(const RunHead& src);
 
     SkIRect     fBounds;
     RunHead*    fRunHead;
 
-    void            freeRuns();
-    const RunType*  getRuns(RunType tmpStorage[], int* count) const;
-    bool            setRuns(RunType runs[], int count);
+    void freeRuns();
+
+    /**
+     *  Return the runs from this region, consing up fake runs if the region
+     *  is empty or a rect. In those 2 cases, we use tmpStorage to hold the
+     *  run data.
+     */
+    const RunType*  getRuns(RunType tmpStorage[], int* intervals) const;
+
+    // This is called with runs[] that do not yet have their interval-count
+    // field set on each scanline. That is computed as part of this call
+    // (inside ComputeRunBounds).
+    bool setRuns(RunType runs[], int count);
 
     int count_runtype_values(int* itop, int* ibot) const;
-    
+
     static void BuildRectRuns(const SkIRect& bounds,
                               RunType runs[kRectRegionRuns]);
-    // returns true if runs are just a rect
-    static bool ComputeRunBounds(const RunType runs[], int count,
-                                 SkIRect* bounds);
+
+    // If the runs define a simple rect, return true and set bounds to that
+    // rect. If not, return false and ignore bounds.
+    static bool RunsAreARect(const SkRegion::RunType runs[], int count,
+                             SkIRect* bounds);
+
+    /**
+     *  If the last arg is null, just return if the result is non-empty,
+     *  else store the result in the last arg.
+     */
+    static bool Oper(const SkRegion&, const SkRegion&, SkRegion::Op, SkRegion*);
 
     friend struct RunHead;
     friend class Iterator;

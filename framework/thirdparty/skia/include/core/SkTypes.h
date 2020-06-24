@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright 2006 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #ifndef SkTypes_DEFINED
@@ -20,12 +11,14 @@
 #include "SkPreConfig.h"
 #include "SkUserConfig.h"
 #include "SkPostConfig.h"
+#include <stdint.h>
+#include <sys/types.h>
 
-#ifndef SK_IGNORE_STDINT_DOT_H
-    #include <stdint.h>
+#if defined(SK_ARM_HAS_NEON)
+    #include <arm_neon.h>
+#elif SK_CPU_SSE_LEVEL >= SK_CPU_SSE_LEVEL_SSE2
+    #include <immintrin.h>
 #endif
-
-#include <stdio.h>
 
 /** \file SkTypes.h
 */
@@ -43,12 +36,12 @@
 /** Called internally if we run out of memory. The platform implementation must
     not return, but should either throw an exception or otherwise exit.
 */
-extern void  sk_out_of_memory(void);
+SK_API extern void sk_out_of_memory(void);
 /** Called internally if we hit an unrecoverable error.
     The platform implementation must not return, but should either throw
     an exception or otherwise exit.
 */
-extern void  sk_throw(void);
+SK_API extern void sk_throw(void);
 
 enum {
     SK_MALLOC_TEMP  = 0x01, //!< hint to sk_malloc that the requested memory will be freed in the scope of the stack frame
@@ -56,36 +49,59 @@ enum {
 };
 /** Return a block of memory (at least 4-byte aligned) of at least the
     specified size. If the requested memory cannot be returned, either
-    return null (if SK_MALLOC_TEMP bit is clear) or call sk_throw()
+    return null (if SK_MALLOC_TEMP bit is clear) or throw an exception
     (if SK_MALLOC_TEMP bit is set). To free the memory, call sk_free().
 */
 SK_API extern void* sk_malloc_flags(size_t size, unsigned flags);
 /** Same as sk_malloc(), but hard coded to pass SK_MALLOC_THROW as the flag
 */
-extern void* sk_malloc_throw(size_t size);
+SK_API extern void* sk_malloc_throw(size_t size);
 /** Same as standard realloc(), but this one never returns null on failure. It will throw
     an exception if it fails.
 */
-extern void* sk_realloc_throw(void* buffer, size_t size);
+SK_API extern void* sk_realloc_throw(void* buffer, size_t size);
 /** Free memory returned by sk_malloc(). It is safe to pass null.
 */
-SK_API extern void  sk_free(void*);
+SK_API extern void sk_free(void*);
+
+/** Much like calloc: returns a pointer to at least size zero bytes, or NULL on failure.
+ */
+SK_API extern void* sk_calloc(size_t size);
+
+/** Same as sk_calloc, but throws an exception instead of returning NULL on failure.
+ */
+SK_API extern void* sk_calloc_throw(size_t size);
 
 // bzero is safer than memset, but we can't rely on it, so... sk_bzero()
 static inline void sk_bzero(void* buffer, size_t size) {
     memset(buffer, 0, size);
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef override_GLOBAL_NEW
+#include <new>
+
+inline void* operator new(size_t size) {
+    return sk_malloc_throw(size);
+}
+
+inline void operator delete(void* p) {
+    sk_free(p);
+}
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 
 #define SK_INIT_TO_AVOID_WARNING    = 0
 
 #ifndef SkDebugf
-    void SkDebugf(const char format[], ...);
+    SK_API void SkDebugf(const char format[], ...);
 #endif
 
 #ifdef SK_DEBUG
-    #define SkASSERT(cond)              SK_DEBUGBREAK(cond)
+    #define SkASSERT(cond)              SK_ALWAYSBREAK(cond)
+    #define SkDEBUGFAIL(message)        SkASSERT(false && message)
     #define SkDEBUGCODE(code)           code
     #define SkDECLAREPARAM(type, var)   , type var
     #define SkPARAM(var)                , var
@@ -94,6 +110,7 @@ static inline void sk_bzero(void* buffer, size_t size) {
     #define SkAssertResult(cond)        SkASSERT(cond)
 #else
     #define SkASSERT(cond)
+    #define SkDEBUGFAIL(message)
     #define SkDEBUGCODE(code)
     #define SkDEBUGF(args)
     #define SkDECLAREPARAM(type, var)
@@ -103,16 +120,89 @@ static inline void sk_bzero(void* buffer, size_t size) {
     #define SkAssertResult(cond)        cond
 #endif
 
-namespace {
+#define SkFAIL(message)                 SK_ALWAYSBREAK(false && message)
+
+// We want to evaluate cond only once, and inside the SkASSERT somewhere so we see its string form.
+// So we use the comma operator to make an SkDebugf that always returns false: we'll evaluate cond,
+// and if it's true the assert passes; if it's false, we'll print the message and the assert fails.
+#define SkASSERTF(cond, fmt, ...)       SkASSERT((cond) || (SkDebugf(fmt"\n", __VA_ARGS__), false))
+
+#ifdef SK_DEVELOPER
+    #define SkDEVCODE(code)             code
+#else
+    #define SkDEVCODE(code)
+#endif
+
+#ifdef SK_IGNORE_TO_STRING
+    #define SK_TO_STRING_NONVIRT()
+    #define SK_TO_STRING_VIRT()
+    #define SK_TO_STRING_PUREVIRT()
+    #define SK_TO_STRING_OVERRIDE()
+#else
+    // the 'toString' helper functions convert Sk* objects to human-readable
+    // form in developer mode
+    #define SK_TO_STRING_NONVIRT() void toString(SkString* str) const;
+    #define SK_TO_STRING_VIRT() virtual void toString(SkString* str) const;
+    #define SK_TO_STRING_PUREVIRT() virtual void toString(SkString* str) const = 0;
+    #define SK_TO_STRING_OVERRIDE() void toString(SkString* str) const override;
+#endif
 
 template <bool>
 struct SkCompileAssert {
 };
 
-}  // namespace
+// Uses static_cast<bool>(expr) instead of bool(expr) due to
+// https://connect.microsoft.com/VisualStudio/feedback/details/832915
 
+// The extra parentheses in SkCompileAssert<(...)> are a work around for
+// http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57771
+// which was fixed in gcc 4.8.2.
 #define SK_COMPILE_ASSERT(expr, msg) \
-    typedef SkCompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1]
+    typedef SkCompileAssert<(static_cast<bool>(expr))> \
+            msg[static_cast<bool>(expr) ? 1 : -1] SK_UNUSED
+
+/*
+ *  Usage:  SK_MACRO_CONCAT(a, b)   to construct the symbol ab
+ *
+ *  SK_MACRO_CONCAT_IMPL_PRIV just exists to make this work. Do not use directly
+ *
+ */
+#define SK_MACRO_CONCAT(X, Y)           SK_MACRO_CONCAT_IMPL_PRIV(X, Y)
+#define SK_MACRO_CONCAT_IMPL_PRIV(X, Y)  X ## Y
+
+/*
+ *  Usage: SK_MACRO_APPEND_LINE(foo)    to make foo123, where 123 is the current
+ *                                      line number. Easy way to construct
+ *                                      unique names for local functions or
+ *                                      variables.
+ */
+#define SK_MACRO_APPEND_LINE(name)  SK_MACRO_CONCAT(name, __LINE__)
+
+/**
+ * For some classes, it's almost always an error to instantiate one without a name, e.g.
+ *   {
+ *       SkAutoMutexAcquire(&mutex);
+ *       <some code>
+ *   }
+ * In this case, the writer meant to hold mutex while the rest of the code in the block runs,
+ * but instead the mutex is acquired and then immediately released.  The correct usage is
+ *   {
+ *       SkAutoMutexAcquire lock(&mutex);
+ *       <some code>
+ *   }
+ *
+ * To prevent callers from instantiating your class without a name, use SK_REQUIRE_LOCAL_VAR
+ * like this:
+ *   class classname {
+ *       <your class>
+ *   };
+ *   #define classname(...) SK_REQUIRE_LOCAL_VAR(classname)
+ *
+ * This won't work with templates, and you must inline the class' constructors and destructors.
+ * Take a look at SkAutoFree and SkAutoMalloc in this file for examples.
+ */
+#define SK_REQUIRE_LOCAL_VAR(classname) \
+    SK_COMPILE_ASSERT(false, missing_name_for_##classname)
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -152,12 +242,16 @@ typedef int SkBool;
 typedef uint8_t SkBool8;
 
 #ifdef SK_DEBUG
-    SK_API int8_t      SkToS8(long);
-    SK_API uint8_t     SkToU8(size_t);
-    SK_API int16_t     SkToS16(long);
-    SK_API uint16_t    SkToU16(size_t);
-    SK_API int32_t     SkToS32(long);
-    SK_API uint32_t    SkToU32(size_t);
+    SK_API int8_t      SkToS8(intmax_t);
+    SK_API uint8_t     SkToU8(uintmax_t);
+    SK_API int16_t     SkToS16(intmax_t);
+    SK_API uint16_t    SkToU16(uintmax_t);
+    SK_API int32_t     SkToS32(intmax_t);
+    SK_API uint32_t    SkToU32(uintmax_t);
+    SK_API int         SkToInt(intmax_t);
+    SK_API unsigned    SkToUInt(uintmax_t);
+    SK_API size_t      SkToSizeT(uintmax_t);
+    SK_API off_t       SkToOffT(intmax_t x);
 #else
     #define SkToS8(x)   ((int8_t)(x))
     #define SkToU8(x)   ((uint8_t)(x))
@@ -165,6 +259,10 @@ typedef uint8_t SkBool8;
     #define SkToU16(x)  ((uint16_t)(x))
     #define SkToS32(x)  ((int32_t)(x))
     #define SkToU32(x)  ((uint32_t)(x))
+    #define SkToInt(x)  ((int)(x))
+    #define SkToUInt(x) ((unsigned)(x))
+    #define SkToSizeT(x) ((size_t)(x))
+    #define SkToOffT(x) ((off_t)(x))
 #endif
 
 /** Returns 0 or 1 based on the condition
@@ -176,10 +274,10 @@ typedef uint8_t SkBool8;
 #define SK_MaxU16   0xFFFF
 #define SK_MinU16   0
 #define SK_MaxS32   0x7FFFFFFF
-#define SK_MinS32   0x80000001
+#define SK_MinS32   -SK_MaxS32
 #define SK_MaxU32   0xFFFFFFFF
 #define SK_MinU32   0
-#define SK_NaN32    0x80000000
+#define SK_NaN32    (1 << 31)
 
 /** Returns true if the value can be represented with signed 16bits
  */
@@ -195,19 +293,24 @@ static inline bool SkIsU16(long x) {
 
 //////////////////////////////////////////////////////////////////////////////
 #ifndef SK_OFFSETOF
-    #define SK_OFFSETOF(type, field)    ((char*)&(((type*)1)->field) - (char*)1)
+    #define SK_OFFSETOF(type, field)    (size_t)((char*)&(((type*)1)->field) - (char*)1)
 #endif
 
-/** Returns the number of entries in an array (not a pointer)
-*/
-#define SK_ARRAY_COUNT(array)       (sizeof(array) / sizeof(array[0]))
+/** Returns the number of entries in an array (not a pointer) */
+template <typename T, size_t N> char (&SkArrayCountHelper(T (&array)[N]))[N];
+#define SK_ARRAY_COUNT(array) (sizeof(SkArrayCountHelper(array)))
 
-/** Returns x rounded up to a multiple of 2
-*/
 #define SkAlign2(x)     (((x) + 1) >> 1 << 1)
-/** Returns x rounded up to a multiple of 4
-*/
+#define SkIsAlign2(x)   (0 == ((x) & 1))
+
 #define SkAlign4(x)     (((x) + 3) >> 2 << 2)
+#define SkIsAlign4(x)   (0 == ((x) & 3))
+
+#define SkAlign8(x)     (((x) + 7) >> 3 << 3)
+#define SkIsAlign8(x)   (0 == ((x) & 7))
+
+#define SkAlignPtr(x)   (sizeof(void*) == 8 ?   SkAlign8(x) :   SkAlign4(x))
+#define SkIsAlignPtr(x) (sizeof(void*) == 8 ? SkIsAlign8(x) : SkIsAlign4(x))
 
 typedef uint32_t SkFourByteTag;
 #define SkSetFourByteTag(a, b, c, d)    (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
@@ -231,6 +334,13 @@ typedef uint32_t SkMSec;
 */
 #define SkMSec_LE(a, b)     ((int32_t)(a) - (int32_t)(b) <= 0)
 
+/** The generation IDs in Skia reserve 0 has an invalid marker.
+ */
+#define SK_InvalidGenID     0
+/** The unique IDs in Skia reserve 0 has an invalid marker.
+ */
+#define SK_InvalidUniqueID  0
+
 /****************************************************************************
     The rest of these only build with C++
 */
@@ -242,6 +352,8 @@ static inline int Sk32ToBool(uint32_t n) {
     return (n | (0-n)) >> 31;
 }
 
+/** Generic swap function. Classes with efficient swaps should specialize this function to take
+    their fast path. This function is used by SkTSort. */
 template <typename T> inline void SkTSwap(T& a, T& b) {
     T c(a);
     a = b;
@@ -249,14 +361,18 @@ template <typename T> inline void SkTSwap(T& a, T& b) {
 }
 
 static inline int32_t SkAbs32(int32_t value) {
-#ifdef SK_CPU_HAS_CONDITIONAL_INSTR
-    if (value < 0)
+    SkASSERT(value != SK_NaN32);  // The most negative int32_t can't be negated.
+    if (value < 0) {
         value = -value;
+    }
     return value;
-#else
-    int32_t mask = value >> 31;
-    return (value ^ mask) - mask;
-#endif
+}
+
+template <typename T> inline T SkTAbs(T value) {
+    if (value < 0) {
+        value = -value;
+    }
+    return value;
 }
 
 static inline int32_t SkMax32(int32_t a, int32_t b) {
@@ -271,38 +387,32 @@ static inline int32_t SkMin32(int32_t a, int32_t b) {
     return a;
 }
 
+template <typename T> const T& SkTMin(const T& a, const T& b) {
+    return (a < b) ? a : b;
+}
+
+template <typename T> const T& SkTMax(const T& a, const T& b) {
+    return (b < a) ? a : b;
+}
+
 static inline int32_t SkSign32(int32_t a) {
     return (a >> 31) | ((unsigned) -a >> 31);
 }
 
 static inline int32_t SkFastMin32(int32_t value, int32_t max) {
-#ifdef SK_CPU_HAS_CONDITIONAL_INSTR
-    if (value > max)
+    if (value > max) {
         value = max;
+    }
     return value;
-#else
-    int diff = max - value;
-    // clear diff if it is negative (clear if value > max)
-    diff &= (diff >> 31);
-    return value + diff;
-#endif
 }
 
-/** Returns signed 32 bit value pinned between min and max, inclusively
-*/
+template <typename T> static inline const T& SkTPin(const T& x, const T& min, const T& max) {
+    return SkTMax(SkTMin(x, max), min);
+}
+
+/** Returns signed 32 bit value pinned between min and max, inclusively. */
 static inline int32_t SkPin32(int32_t value, int32_t min, int32_t max) {
-#ifdef SK_CPU_HAS_CONDITIONAL_INSTR
-    if (value < min)
-        value = min;
-    if (value > max)
-        value = max;
-#else
-    if (value < min)
-        value = min;
-    else if (value > max)
-        value = max;
-#endif
-    return value;
+    return SkTPin(value, min, max);
 }
 
 static inline uint32_t SkSetClearShift(uint32_t bits, bool cond,
@@ -341,7 +451,7 @@ template <typename Dst> Dst SkTCast(const void* ptr) {
 
 /** \class SkNoncopyable
 
-SkNoncopyable is the base class for objects that may do not want to
+SkNoncopyable is the base class for objects that do not want to
 be copied. It hides its copy-constructor and its assignment-operator.
 */
 class SK_API SkNoncopyable {
@@ -393,22 +503,94 @@ private:
     SkAutoFree(const SkAutoFree&);
     SkAutoFree& operator=(const SkAutoFree&);
 };
+#define SkAutoFree(...) SK_REQUIRE_LOCAL_VAR(SkAutoFree)
 
-class SkAutoMalloc : public SkAutoFree {
+/**
+ *  Manage an allocated block of heap memory. This object is the sole manager of
+ *  the lifetime of the block, so the caller must not call sk_free() or delete
+ *  on the block, unless detach() was called.
+ */
+class SkAutoMalloc : SkNoncopyable {
 public:
-    explicit SkAutoMalloc(size_t size)
-        : SkAutoFree(sk_malloc_flags(size, SK_MALLOC_THROW | SK_MALLOC_TEMP)) {}
-
-    SkAutoMalloc(size_t size, unsigned flags)
-        : SkAutoFree(sk_malloc_flags(size, flags)) {}
-    SkAutoMalloc() {}
-
-    void* alloc(size_t size,
-                unsigned flags = (SK_MALLOC_THROW | SK_MALLOC_TEMP)) {
-        sk_free(set(sk_malloc_flags(size, flags)));
-        return get();
+    explicit SkAutoMalloc(size_t size = 0) {
+        fPtr = size ? sk_malloc_throw(size) : NULL;
+        fSize = size;
     }
+
+    ~SkAutoMalloc() {
+        sk_free(fPtr);
+    }
+
+    /**
+     *  Passed to reset to specify what happens if the requested size is smaller
+     *  than the current size (and the current block was dynamically allocated).
+     */
+    enum OnShrink {
+        /**
+         *  If the requested size is smaller than the current size, and the
+         *  current block is dynamically allocated, free the old block and
+         *  malloc a new block of the smaller size.
+         */
+        kAlloc_OnShrink,
+
+        /**
+         *  If the requested size is smaller than the current size, and the
+         *  current block is dynamically allocated, just return the old
+         *  block.
+         */
+        kReuse_OnShrink
+    };
+
+    /**
+     *  Reallocates the block to a new size. The ptr may or may not change.
+     */
+    void* reset(size_t size, OnShrink shrink = kAlloc_OnShrink,  bool* didChangeAlloc = NULL) {
+        if (size == fSize || (kReuse_OnShrink == shrink && size < fSize)) {
+            if (didChangeAlloc) {
+                *didChangeAlloc = false;
+            }
+            return fPtr;
+        }
+
+        sk_free(fPtr);
+        fPtr = size ? sk_malloc_throw(size) : NULL;
+        fSize = size;
+        if (didChangeAlloc) {
+            *didChangeAlloc = true;
+        }
+
+        return fPtr;
+    }
+
+    /**
+     *  Releases the block back to the heap
+     */
+    void free() {
+        this->reset(0);
+    }
+
+    /**
+     *  Return the allocated block.
+     */
+    void* get() { return fPtr; }
+    const void* get() const { return fPtr; }
+
+   /** Transfer ownership of the current ptr to the caller, setting the
+       internal reference to null. Note the caller is reponsible for calling
+       sk_free on the returned address.
+    */
+    void* detach() {
+        void* ptr = fPtr;
+        fPtr = NULL;
+        fSize = 0;
+        return ptr;
+    }
+
+private:
+    void*   fPtr;
+    size_t  fSize;  // can be larger than the requested size (see kReuse)
 };
+#define SkAutoMalloc(...) SK_REQUIRE_LOCAL_VAR(SkAutoMalloc)
 
 /**
  *  Manage an allocated block of memory. If the requested size is <= kSize, then
@@ -420,11 +602,12 @@ template <size_t kSize> class SkAutoSMalloc : SkNoncopyable {
 public:
     /**
      *  Creates initially empty storage. get() returns a ptr, but it is to
-     *  a zero-byte allocation. Must call realloc(size) to return an allocated
+     *  a zero-byte allocation. Must call reset(size) to return an allocated
      *  block.
      */
     SkAutoSMalloc() {
         fPtr = fStorage;
+        fSize = kSize;
     }
 
     /**
@@ -434,7 +617,8 @@ public:
      */
     explicit SkAutoSMalloc(size_t size) {
         fPtr = fStorage;
-        this->realloc(size);
+        fSize = kSize;
+        this->reset(size);
     }
 
     /**
@@ -461,28 +645,40 @@ public:
      *  then the return block may be allocated locally, rather than from the
      *  heap.
      */
-    void* realloc(size_t size) {
-        if (fPtr != (void*)fStorage) {
-            sk_free(fPtr);
+    void* reset(size_t size,
+                SkAutoMalloc::OnShrink shrink = SkAutoMalloc::kAlloc_OnShrink,
+                bool* didChangeAlloc = NULL) {
+        size = (size < kSize) ? kSize : size;
+        bool alloc = size != fSize && (SkAutoMalloc::kAlloc_OnShrink == shrink || size > fSize);
+        if (didChangeAlloc) {
+            *didChangeAlloc = alloc;
         }
+        if (alloc) {
+            if (fPtr != (void*)fStorage) {
+                sk_free(fPtr);
+            }
 
-        if (size <= kSize) {
-            fPtr = fStorage;
-        } else {
-            fPtr = sk_malloc_flags(size, SK_MALLOC_THROW | SK_MALLOC_TEMP);
+            if (size == kSize) {
+                SkASSERT(fPtr != fStorage); // otherwise we lied when setting didChangeAlloc.
+                fPtr = fStorage;
+            } else {
+                fPtr = sk_malloc_flags(size, SK_MALLOC_THROW | SK_MALLOC_TEMP);
+            }
+
+            fSize = size;
         }
+        SkASSERT(fSize >= size && fSize >= kSize);
+        SkASSERT((fPtr == fStorage) || fSize > kSize);
         return fPtr;
     }
 
 private:
     void*       fPtr;
+    size_t      fSize;  // can be larger than the requested size (see kReuse)
     uint32_t    fStorage[(kSize + 3) >> 2];
-    // illegal
-    SkAutoSMalloc(const SkAutoSMalloc&);
-    SkAutoSMalloc& operator=(const SkAutoSMalloc&);
 };
+// Can't guard the constructor because it's a template class.
 
 #endif /* C++ */
 
 #endif
-

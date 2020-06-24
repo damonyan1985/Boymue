@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkAnimateMaker.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkAnimateMaker.h"
 #include "SkAnimator.h"
@@ -36,7 +28,7 @@ class DefaultTimeline : public SkAnimator::Timeline {
 } gDefaultTimeline;
 
 SkAnimateMaker::SkAnimateMaker(SkAnimator* animator, SkCanvas* canvas, SkPaint* paint)
-    : fActiveEvent(NULL), fAdjustedStart(0), fCanvas(canvas), fEnableTime(0), 
+    : fActiveEvent(NULL), fAdjustedStart(0), fCanvas(canvas), fEnableTime(0),
         fHostEventSinkID(0), fMinimumInterval((SkMSec) -1), fPaint(paint), fParentMaker(NULL),
         fTimeline(&gDefaultTimeline), fInInclude(false), fInMovie(false),
         fFirstScriptError(false), fLoaded(false), fIDs(256), fAnimator(animator)
@@ -90,7 +82,7 @@ bool SkAnimateMaker::computeID(SkDisplayable* displayable, SkDisplayable* parent
 
 SkDisplayable* SkAnimateMaker::createInstance(const char name[], size_t len) {
     SkDisplayTypes type = SkDisplayType::GetType(this, name, len );
-    if ((int)type >= 0) 
+    if ((int)type >= 0)
         return SkDisplayType::CreateInstance(this, type);
     return NULL;
 }
@@ -107,13 +99,15 @@ bool SkAnimateMaker::decodeURI(const char uri[]) {
 //  SkDebugf("animator decode %s\n", uri);
 
 //    SkStream* stream = SkStream::GetURIStream(fPrefix.c_str(), uri);
-    SkStream* stream = new SkFILEStream(uri);
-
-    SkAutoTDelete<SkStream> autoDel(stream);
-    bool success = decodeStream(stream);
-    if (hasError() && fError.hasNoun() == false)
-        fError.setNoun(uri);
-    return success;
+    SkAutoTDelete<SkStream> stream(SkStream::NewFromFile(uri));
+    if (stream.get()) {
+        bool success = decodeStream(stream);
+        if (hasError() && fError.hasNoun() == false)
+            fError.setNoun(uri);
+        return success;
+    } else {
+        return false;
+    }
 }
 
 #if defined SK_DEBUG && 0
@@ -129,9 +123,11 @@ extern "C" {
 
 void SkAnimateMaker::delayEnable(SkApply* apply, SkMSec time) {
     int index = fDelayed.find(apply);
-    if (index < 0)
+    if (index < 0) {
         *fDelayed.append() = apply;
-    (new SkEvent(SK_EventType_Delay))->postTime(fAnimator->getSinkID(), time);
+    }
+
+    (new SkEvent(SK_EventType_Delay, fAnimator->getSinkID()))->postTime(time);
 }
 
 void SkAnimateMaker::deleteMembers() {
@@ -308,7 +304,7 @@ void SkAnimateMaker::setErrorString() {
 #if defined SK_DEBUG
         SkDebugf("%s\n", fErrorString.c_str());
 #endif
-    } 
+    }
 }
 
 void SkAnimateMaker::setEnableTime(SkMSec appTime, SkMSec expectedTime) {
@@ -336,7 +332,7 @@ void SkAnimateMaker::setEnableTime(SkMSec appTime, SkMSec expectedTime) {
     }
 }
 
-void SkAnimateMaker::setExtraPropertyCallBack(SkDisplayTypes type, 
+void SkAnimateMaker::setExtraPropertyCallBack(SkDisplayTypes type,
         SkScriptEngine::_propertyCallBack callBack, void* userStorage) {
     SkExtras** end = fExtras.end();
     for (SkExtras** extraPtr = fExtras.begin(); extraPtr < end; extraPtr++) {

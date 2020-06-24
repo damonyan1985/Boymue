@@ -1,19 +1,11 @@
-/* libs/graphics/sgl/SkBlitBWMaskTemplate.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkBitmap.h"
 #include "SkMask.h"
@@ -39,7 +31,7 @@ static void SK_BLITBWMASK_NAME(const SkBitmap& bitmap, const SkMask& srcMask, co
     int cy = clip.fTop;
     int maskLeft = srcMask.fBounds.fLeft;
     unsigned mask_rowBytes = srcMask.fRowBytes;
-    unsigned bitmap_rowBytes = bitmap.rowBytes();
+    size_t bitmap_rowBytes = bitmap.rowBytes();
     unsigned height = clip.height();
 
     SkASSERT(mask_rowBytes != 0);
@@ -71,6 +63,7 @@ static void SK_BLITBWMASK_NAME(const SkBitmap& bitmap, const SkMask& srcMask, co
 
         int left_mask = 0xFF >> (left_edge & 7);
         int rite_mask = 0xFF << (8 - (rite_edge & 7));
+        rite_mask &= 0xFF;  // only want low-8 bits of mask
         int full_runs = (rite_edge >> 3) - ((left_edge + 7) >> 3);
 
         // check for empty right mask, so we don't read off the end (or go slower than we need to)
@@ -86,8 +79,6 @@ static void SK_BLITBWMASK_NAME(const SkBitmap& bitmap, const SkMask& srcMask, co
         // back up manually so we can keep in sync with our byte-aligned src
         // and not trigger an assert from the getAddr## function
         device -= left_edge & 7;
-        // have cx reflect our actual starting x-coord
-        cx -= left_edge & 7;
 
         if (full_runs < 0)
         {
@@ -127,7 +118,7 @@ static void SK_BLITBWMASK_NAME(const SkBitmap& bitmap, const SkMask& srcMask, co
             } while (--height != 0);
         }
     }
-}   
+}
 
 #undef SK_BLITBWMASK_NAME
 #undef SK_BLITBWMASK_ARGS

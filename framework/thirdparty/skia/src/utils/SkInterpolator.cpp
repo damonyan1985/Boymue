@@ -1,18 +1,11 @@
+
 /*
- * Copyright (C) 2006-2008 The Android Open Source Project
+ * Copyright 2008 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
+
 
 #include "SkInterpolator.h"
 #include "SkMath.h"
@@ -69,8 +62,7 @@ SkScalar SkInterpolatorBase::ComputeRelativeT(SkMSec time, SkMSec prevTime,
                                   SkMSec nextTime, const SkScalar blend[4]) {
     SkASSERT(time > prevTime && time < nextTime);
 
-    SkScalar t = SkScalarDiv((SkScalar)(time - prevTime),
-                             (SkScalar)(nextTime - prevTime));
+    SkScalar t = (SkScalar)(time - prevTime) / (SkScalar)(nextTime - prevTime);
     return blend ?
             SkUnitCubicInterp(t, blend[0], blend[1], blend[2], blend[3]) : t;
 }
@@ -84,11 +76,11 @@ SkInterpolatorBase::Result SkInterpolatorBase::timeToT(SkMSec time, SkScalar* T,
         this->getDuration(&startTime, &endTime);
         SkMSec totalTime = endTime - startTime;
         SkMSec offsetTime = time - startTime;
-        endTime = SkScalarMulFloor(fRepeat, totalTime);
+        endTime = SkScalarFloorToInt(fRepeat * totalTime);
         if (offsetTime >= endTime) {
             SkScalar fraction = SkScalarFraction(fRepeat);
             offsetTime = fraction == 0 && fRepeat > 0 ? totalTime :
-                SkScalarMulFloor(fraction, totalTime);
+                (SkMSec) SkScalarFloorToInt(fraction * totalTime);
             result = kFreezeEnd_Result;
         } else {
             int mirror = fFlags & kMirror;
@@ -162,17 +154,13 @@ void SkInterpolator::reset(int elemCount, int frameCount) {
 #define SK_Fixed2Third      (SK_Fixed1*2/3)
 
 static const SkScalar gIdentityBlend[4] = {
-#ifdef SK_SCALAR_IS_FLOAT
     0.33333333f, 0.33333333f, 0.66666667f, 0.66666667f
-#else
-    SK_Fixed1Third, SK_Fixed1Third, SK_Fixed2Third, SK_Fixed2Third
-#endif
 };
 
 bool SkInterpolator::setKeyFrame(int index, SkMSec time,
                             const SkScalar values[], const SkScalar blend[4]) {
     SkASSERT(values != NULL);
-    
+
     if (blend == NULL) {
         blend = gIdentityBlend;
     }
@@ -244,13 +232,13 @@ SkScalar SkUnitCubicInterp(SkScalar value, SkScalar bx, SkScalar by,
                            SkScalar cx, SkScalar cy) {
     // pin to the unit-square, and convert to 2.14
     Dot14 x = pin_and_convert(value);
-    
+
     if (x == 0) return 0;
     if (x == Dot14_ONE) return SK_Scalar1;
-    
+
     Dot14 b = pin_and_convert(bx);
     Dot14 c = pin_and_convert(cx);
-    
+
     // Now compute our coefficients from the control points
     //  t   -> 3b
     //  t^2 -> 3c - 6b
@@ -271,7 +259,7 @@ SkScalar SkUnitCubicInterp(SkScalar value, SkScalar bx, SkScalar by,
             t += dt;
         }
     }
-    
+
     // Now we have t, so compute the coeff for Y and evaluate
     b = pin_and_convert(by);
     c = pin_and_convert(cy);
@@ -280,60 +268,3 @@ SkScalar SkUnitCubicInterp(SkScalar value, SkScalar bx, SkScalar by,
     C = 3*(b - c) + Dot14_ONE;
     return SkFixedToScalar(eval_cubic(t, A, B, C) << 2);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef SK_DEBUG
-
-#ifdef SK_SUPPORT_UNITTEST
-    static SkScalar* iset(SkScalar array[3], int a, int b, int c) {
-        array[0] = SkIntToScalar(a);
-        array[1] = SkIntToScalar(b);
-        array[2] = SkIntToScalar(c);
-        return array;
-    }
-#endif
-
-void SkInterpolator::UnitTest() {
-#ifdef SK_SUPPORT_UNITTEST
-    SkInterpolator  inter(3, 2);
-    SkScalar        v1[3], v2[3], v[3], vv[3];
-    Result          result;
-
-    inter.setKeyFrame(0, 100, iset(v1, 10, 20, 30), 0);
-    inter.setKeyFrame(1, 200, iset(v2, 110, 220, 330));
-
-    result = inter.timeToValues(0, v);
-    SkASSERT(result == kFreezeStart_Result);
-    SkASSERT(memcmp(v, v1, sizeof(v)) == 0);
-
-    result = inter.timeToValues(99, v);
-    SkASSERT(result == kFreezeStart_Result);
-    SkASSERT(memcmp(v, v1, sizeof(v)) == 0);
-
-    result = inter.timeToValues(100, v);
-    SkASSERT(result == kNormal_Result);
-    SkASSERT(memcmp(v, v1, sizeof(v)) == 0);
-
-    result = inter.timeToValues(200, v);
-    SkASSERT(result == kNormal_Result);
-    SkASSERT(memcmp(v, v2, sizeof(v)) == 0);
-
-    result = inter.timeToValues(201, v);
-    SkASSERT(result == kFreezeEnd_Result);
-    SkASSERT(memcmp(v, v2, sizeof(v)) == 0);
-
-    result = inter.timeToValues(150, v);
-    SkASSERT(result == kNormal_Result);
-    SkASSERT(memcmp(v, iset(vv, 60, 120, 180), sizeof(v)) == 0);
-
-    result = inter.timeToValues(125, v);
-    SkASSERT(result == kNormal_Result);
-    result = inter.timeToValues(175, v);
-    SkASSERT(result == kNormal_Result);
-#endif
-}
-
-#endif
-

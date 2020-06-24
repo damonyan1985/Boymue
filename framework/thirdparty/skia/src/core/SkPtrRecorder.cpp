@@ -1,3 +1,10 @@
+
+/*
+ * Copyright 2011 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 #include "SkPtrRecorder.h"
 #include "SkTSearch.h"
 
@@ -11,20 +18,20 @@ void SkPtrSet::reset() {
     fList.reset();
 }
 
-int SkPtrSet::Cmp(const Pair& a, const Pair& b) {
-    return (char*)a.fPtr - (char*)b.fPtr;
+bool SkPtrSet::Less(const Pair& a, const Pair& b) {
+    return (char*)a.fPtr < (char*)b.fPtr;
 }
 
 uint32_t SkPtrSet::find(void* ptr) const {
     if (NULL == ptr) {
         return 0;
     }
-    
+
     int count = fList.count();
     Pair pair;
     pair.fPtr = ptr;
-    
-    int index = SkTSearch<Pair>(fList.begin(), count, pair, sizeof(pair), &Cmp);
+
+    int index = SkTSearch<Pair, Less>(fList.begin(), count, pair, sizeof(pair));
     if (index < 0) {
         return 0;
     }
@@ -40,7 +47,7 @@ uint32_t SkPtrSet::add(void* ptr) {
     Pair pair;
     pair.fPtr = ptr;
 
-    int index = SkTSearch<Pair>(fList.begin(), count, pair, sizeof(pair), &Cmp);
+    int index = SkTSearch<Pair, Less>(fList.begin(), count, pair, sizeof(pair));
     if (index < 0) {
         index = ~index; // turn it back into an index for insertion
         this->incPtr(ptr);
@@ -65,5 +72,3 @@ void SkPtrSet::copyToArray(void* array[]) const {
         }
     }
 }
-
-

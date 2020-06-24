@@ -1,19 +1,9 @@
-/* libs/graphics/xml/SkXMLWriter.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #include "SkXMLWriter.h"
 #include "SkStream.h"
@@ -59,6 +49,16 @@ void SkXMLWriter::addScalarAttribute(const char name[], SkScalar value)
     this->addAttribute(name, tmp.c_str());
 }
 
+void SkXMLWriter::addText(const char text[], size_t length) {
+    if (fElems.isEmpty()) {
+        return;
+    }
+    
+    this->onAddText(text, length);
+    
+    fElems.top()->fHasText = true;
+}
+
 void SkXMLWriter::doEnd(Elem* elem)
 {
     delete elem;
@@ -71,13 +71,11 @@ bool SkXMLWriter::doStart(const char name[], size_t length)
     if (firstChild)
         fElems[level-1]->fHasChildren = true;
     Elem** elem = fElems.push();
-    *elem = new Elem;
-    (*elem)->fName.set(name, length);
-    (*elem)->fHasChildren = 0;
+    *elem = new Elem(name, length);
     return firstChild;
 }
 
-SkXMLWriter::Elem* SkXMLWriter::getEnd() 
+SkXMLWriter::Elem* SkXMLWriter::getEnd()
 {
     Elem* elem;
     fElems.pop(&elem);
@@ -171,7 +169,14 @@ static void write_dom(const SkDOM& dom, const SkDOM::Node* node, SkXMLWriter* w,
 {
     if (!skipRoot)
     {
-        w->startElement(dom.getName(node));
+        const char* elem = dom.getName(node);
+        if (dom.getType(node) == SkDOM::kText_Type) {
+            SkASSERT(dom.countChildren(node) == 0);
+            w->addText(elem, strlen(elem));
+            return;
+        }
+
+        w->startElement(elem);
 
         SkDOM::AttrIter iter(dom, node);
         const char* name;
@@ -220,7 +225,7 @@ SkXMLStreamWriter::~SkXMLStreamWriter()
 
 void SkXMLStreamWriter::onAddAttributeLen(const char name[], const char value[], size_t length)
 {
-    SkASSERT(!fElems.top()->fHasChildren);
+    SkASSERT(!fElems.top()->fHasChildren && !fElems.top()->fHasText);
     fStream.writeText(" ");
     fStream.writeText(name);
     fStream.writeText("=\"");
@@ -228,18 +233,31 @@ void SkXMLStreamWriter::onAddAttributeLen(const char name[], const char value[],
     fStream.writeText("\"");
 }
 
+void SkXMLStreamWriter::onAddText(const char text[], size_t length) {
+    Elem* elem = fElems.top();
+
+    if (!elem->fHasChildren && !elem->fHasText) {
+        fStream.writeText(">");
+        fStream.newline();
+    }
+
+    tab(fStream, fElems.count() + 1);
+    fStream.write(text, length);
+    fStream.newline();
+}
+
 void SkXMLStreamWriter::onEndElement()
 {
     Elem* elem = getEnd();
-    if (elem->fHasChildren)
+    if (elem->fHasChildren || elem->fHasText)
     {
         tab(fStream, fElems.count());
         fStream.writeText("</");
         fStream.writeText(elem->fName.c_str());
         fStream.writeText(">");
-    }
-    else
+    } else {
         fStream.writeText("/>");
+    }
     fStream.newline();
     doEnd(elem);
 }
@@ -282,9 +300,13 @@ SkXMLParserWriter::~SkXMLParserWriter()
 
 void SkXMLParserWriter::onAddAttributeLen(const char name[], const char value[], size_t length)
 {
-    SkASSERT(fElems.count() == 0 || !fElems.top()->fHasChildren);
+    SkASSERT(fElems.count() == 0 || (!fElems.top()->fHasChildren && !fElems.top()->fHasText));
     SkString str(value, length);
     fParser.addAttribute(name, str.c_str());
+}
+
+void SkXMLParserWriter::onAddText(const char text[], size_t length) {
+    fParser.text(text, SkToInt(length));
 }
 
 void SkXMLParserWriter::onEndElement()
@@ -317,9 +339,7 @@ void SkXMLStreamWriter::UnitTest()
     w.addAttribute("hello", "world");
     w.addS32Attribute("dec", 42);
     w.addHexAttribute("hex", 0x42, 3);
-#ifdef SK_SCALAR_IS_FLOAT
     w.addScalarAttribute("scalar", -4.2f);
-#endif
     w.startElement("elem1");
         w.endElement();
         w.startElement("elem1");
@@ -339,4 +359,3 @@ void SkXMLStreamWriter::UnitTest()
 }
 
 #endif
-

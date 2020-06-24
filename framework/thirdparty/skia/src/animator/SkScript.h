@@ -1,19 +1,11 @@
-/* libs/graphics/animator/SkScript.h
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #ifndef SkScript_DEFINED
 #define SkScript_DEFINED
@@ -71,9 +63,9 @@ public:
     typedef bool (*_boxCallBack)(void* userStorage, SkScriptValue* result);
     typedef bool (*_functionCallBack)(const char* func, size_t len, SkTDArray<SkScriptValue>& params,
         void* userStorage, SkScriptValue* result);
-    typedef bool (*_memberCallBack)(const char* member, size_t len, void* object, 
+    typedef bool (*_memberCallBack)(const char* member, size_t len, void* object,
         void* userStorage, SkScriptValue* result);
-    typedef bool (*_memberFunctionCallBack)(const char* member, size_t len, void* object, 
+    typedef bool (*_memberFunctionCallBack)(const char* member, size_t len, void* object,
         SkTDArray<SkScriptValue>& params, void* userStorage, SkScriptValue* result);
 //  typedef bool (*_objectToStringCallBack)(void* object, void* userStorage, SkScriptValue* result);
     typedef bool (*_propertyCallBack)(const char* prop, size_t len, void* userStorage, SkScriptValue* result);
@@ -177,7 +169,7 @@ public:
         kTowardsNumber = 0,
         kTowardsString
     };
-    
+
 protected:
 
     struct SkOperatorAttributes {

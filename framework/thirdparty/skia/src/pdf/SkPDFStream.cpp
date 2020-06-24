@@ -1,61 +1,70 @@
+
 /*
- * Copyright (C) 2010 Google Inc.
+ * Copyright 2010 Google Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
+
+#include "SkData.h"
 #include "SkFlate.h"
-#include "SkPDFCatalog.h"
 #include "SkPDFStream.h"
 #include "SkStream.h"
+#include "SkStreamPriv.h"
 
-SkPDFStream::SkPDFStream(SkStream* stream) {
-    if (SkFlate::HaveFlate())
-        SkAssertResult(SkFlate::Deflate(stream, &fCompressedData));
+SkPDFStream::SkPDFStream(SkStream* stream) : fState(kUnused_State) {
+    this->setData(stream);
+}
 
-    if (SkFlate::HaveFlate() &&
-            fCompressedData.getOffset() < stream->getLength()) {
-        fLength = fCompressedData.getOffset();
-        insert("Filter", new SkPDFName("FlateDecode"))->unref();
-    } else {
-        fCompressedData.reset();
-        fPlainData = stream;
-        fLength = fPlainData->getLength();
+SkPDFStream::SkPDFStream(SkData* data) : fState(kUnused_State) {
+    this->setData(data);
+}
+
+SkPDFStream::~SkPDFStream() {}
+
+void SkPDFStream::emitObject(SkWStream* stream,
+                             const SkPDFObjNumMap& objNumMap,
+                             const SkPDFSubstituteMap& substitutes) {
+    if (fState == kUnused_State) {
+        fState = kNoCompression_State;
+        SkDynamicMemoryWStream compressedData;
+
+        SkAssertResult(
+                SkFlate::Deflate(fDataStream.get(), &compressedData));
+        SkAssertResult(fDataStream->rewind());
+        if (compressedData.getOffset() < this->dataSize()) {
+            SkAutoTDelete<SkStream> compressed(
+                    compressedData.detachAsStream());
+            this->setData(compressed.get());
+            this->insertName("Filter", "FlateDecode");
+        }
+        fState = kCompressed_State;
+        this->insertInt("Length", this->dataSize());
     }
-    insert("Length", new SkPDFInt(fLength))->unref();
-}
-
-SkPDFStream::~SkPDFStream() {
-}
-
-void SkPDFStream::emitObject(SkWStream* stream, SkPDFCatalog* catalog,
-                             bool indirect) {
-    if (indirect)
-        return emitIndirectObject(stream, catalog);
-
-    this->INHERITED::emitObject(stream, catalog, false);
+    this->INHERITED::emitObject(stream, objNumMap, substitutes);
     stream->writeText(" stream\n");
-    if (fPlainData.get())
-        stream->write(fPlainData->getMemoryBase(), fLength);
-    else
-        stream->write(fCompressedData.getStream(), fLength);
+    stream->writeStream(fDataStream.get(), fDataStream->getLength());
+    SkAssertResult(fDataStream->rewind());
     stream->writeText("\nendstream");
 }
 
-size_t SkPDFStream::getOutputSize(SkPDFCatalog* catalog, bool indirect) {
-    if (indirect)
-        return getIndirectOutputSize(catalog);
+SkPDFStream::SkPDFStream() : fState(kUnused_State) {}
 
-    return this->INHERITED::getOutputSize(catalog, false) +
-        strlen(" stream\n\nendstream") + fLength;
+void SkPDFStream::setData(SkData* data) {
+    // FIXME: Don't swap if the data is the same.
+    fDataStream.reset(SkNEW_ARGS(SkMemoryStream, (data)));
+}
+
+void SkPDFStream::setData(SkStream* stream) {
+    SkASSERT(stream);
+    // Code assumes that the stream starts at the beginning and is rewindable.
+    // SkStreamRewindableFromSkStream will try stream->duplicate().
+    fDataStream.reset(SkStreamRewindableFromSkStream(stream));
+    SkASSERT(fDataStream.get());
+}
+
+size_t SkPDFStream::dataSize() const {
+    SkASSERT(fDataStream->hasLength());
+    return fDataStream->getLength();
 }

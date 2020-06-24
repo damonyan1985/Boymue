@@ -1,21 +1,14 @@
-/* libs/graphics/sgl/SkUtils.cpp
-**
-** Copyright 2006, The Android Open Source Project
-**
-** Licensed under the Apache License, Version 2.0 (the "License"); 
-** you may not use this file except in compliance with the License. 
-** You may obtain a copy of the License at 
-**
-**     http://www.apache.org/licenses/LICENSE-2.0 
-**
-** Unless required by applicable law or agreed to in writing, software 
-** distributed under the License is distributed on an "AS IS" BASIS, 
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-** See the License for the specific language governing permissions and 
-** limitations under the License.
-*/
+
+/*
+ * Copyright 2006 The Android Open Source Project
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
 
 #include "SkUtils.h"
+#include "SkLazyFnPtr.h"
 
 #if 0
 #define assign_16_longs(dst, value)             \
@@ -45,7 +38,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void sk_memset16_portable(uint16_t dst[], uint16_t value, int count) {
+static void sk_memset16_portable(uint16_t dst[], uint16_t value, int count) {
     SkASSERT(dst != NULL && count >= 0);
 
     if (count <= 0) {
@@ -98,7 +91,7 @@ void sk_memset16_portable(uint16_t dst[], uint16_t value, int count) {
     }
 }
 
-void sk_memset32_portable(uint32_t dst[], uint32_t value, int count) {
+static void sk_memset32_portable(uint32_t dst[], uint32_t value, int count) {
     SkASSERT(dst != NULL && count >= 0);
 
     int sixteenlongs = count >> 4;
@@ -116,24 +109,45 @@ void sk_memset32_portable(uint32_t dst[], uint32_t value, int count) {
     }
 }
 
-#if !defined(ANDROID) || defined(SK_BUILD_FOR_ANDROID_NDK)
-static void sk_memset16_stub(uint16_t dst[], uint16_t value, int count) {
+static void sk_memcpy32_portable(uint32_t dst[], const uint32_t src[], int count) {
+    memcpy(dst, src, count * sizeof(uint32_t));
+}
+
+namespace {
+// These three methods technically need external linkage to be passed as template parameters.
+// Since they can't be static, we hide them in an anonymous namespace instead.
+
+SkMemset16Proc choose_memset16() {
     SkMemset16Proc proc = SkMemset16GetPlatformProc();
-    sk_memset16 = proc ? proc : sk_memset16_portable;
-    sk_memset16(dst, value, count);
+    return proc ? proc : sk_memset16_portable;
 }
 
-SkMemset16Proc sk_memset16 = sk_memset16_stub;
-
-static void sk_memset32_stub(uint32_t dst[], uint32_t value, int count) {
+SkMemset32Proc choose_memset32() {
     SkMemset32Proc proc = SkMemset32GetPlatformProc();
-    sk_memset32 = proc ? proc : sk_memset32_portable;
-    sk_memset32(dst, value, count);
+    return proc ? proc : sk_memset32_portable;
 }
 
-SkMemset32Proc sk_memset32 = sk_memset32_stub;
+SkMemcpy32Proc choose_memcpy32() {
+    SkMemcpy32Proc proc = SkMemcpy32GetPlatformProc();
+    return proc ? proc : sk_memcpy32_portable;
+}
 
-#endif
+}  // namespace
+
+void sk_memset16_large(uint16_t dst[], uint16_t value, int count) {
+    SK_DECLARE_STATIC_LAZY_FN_PTR(SkMemset16Proc, proc, choose_memset16);
+    proc.get()(dst, value, count);
+}
+
+void sk_memset32_large(uint32_t dst[], uint32_t value, int count) {
+    SK_DECLARE_STATIC_LAZY_FN_PTR(SkMemset32Proc, proc, choose_memset32);
+    proc.get()(dst, value, count);
+}
+
+void sk_memcpy32(uint32_t dst[], const uint32_t src[], int count) {
+    SK_DECLARE_STATIC_LAZY_FN_PTR(SkMemcpy32Proc, proc, choose_memcpy32);
+    proc.get()(dst, src, count);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -179,7 +193,7 @@ int SkUTF8_CountUnichars(const char utf8[]) {
 }
 
 int SkUTF8_CountUnichars(const char utf8[], size_t byteLength) {
-    SkASSERT(NULL != utf8 || 0 == byteLength);
+    SkASSERT(utf8 || 0 == byteLength);
 
     int         count = 0;
     const char* stop = utf8 + byteLength;
@@ -192,7 +206,7 @@ int SkUTF8_CountUnichars(const char utf8[], size_t byteLength) {
 }
 
 SkUnichar SkUTF8_ToUnichar(const char utf8[]) {
-    SkASSERT(NULL != utf8);
+    SkASSERT(utf8);
 
     const uint8_t*  p = (const uint8_t*)utf8;
     int             c = *p;
@@ -213,12 +227,12 @@ SkUnichar SkUTF8_ToUnichar(const char utf8[]) {
 }
 
 SkUnichar SkUTF8_NextUnichar(const char** ptr) {
-    SkASSERT(NULL != ptr && NULL != *ptr);
+    SkASSERT(ptr && *ptr);
 
     const uint8_t*  p = (const uint8_t*)*ptr;
     int             c = *p;
     int             hic = c << 24;
-    
+
     assert_utf8_leadingbyte(c);
 
     if (hic < 0) {
@@ -235,10 +249,10 @@ SkUnichar SkUTF8_NextUnichar(const char** ptr) {
 }
 
 SkUnichar SkUTF8_PrevUnichar(const char** ptr) {
-    SkASSERT(NULL != ptr && NULL != *ptr);
+    SkASSERT(ptr && *ptr);
 
     const char* p = *ptr;
-    
+
     if (*--p & 0x80) {
         while (*--p & 0x40) {
             ;
@@ -251,7 +265,7 @@ SkUnichar SkUTF8_PrevUnichar(const char** ptr) {
 
 size_t SkUTF8_FromUnichar(SkUnichar uni, char utf8[]) {
     if ((uint32_t)uni > 0x10FFFF) {
-        SkASSERT(!"bad unichar");
+        SkDEBUGFAIL("bad unichar");
         return 0;
     }
 
@@ -325,15 +339,15 @@ int SkUTF16_CountUnichars(const uint16_t src[], int numberOf16BitValues) {
 
 SkUnichar SkUTF16_NextUnichar(const uint16_t** srcPtr) {
     SkASSERT(srcPtr && *srcPtr);
-    
+
     const uint16_t* src = *srcPtr;
     SkUnichar       c = *src++;
-    
+
     SkASSERT(!SkUTF16_IsLowSurrogate(c));
     if (SkUTF16_IsHighSurrogate(c)) {
         unsigned c2 = *src++;
         SkASSERT(SkUTF16_IsLowSurrogate(c2));
-        
+
         // c = ((c & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000
         // c = (((c & 0x3FF) + 64) << 10) + (c2 & 0x3FF)
         c = (c << 10) + c2 + (0x10000 - (0xD800 << 10) - 0xDC00);
@@ -344,10 +358,10 @@ SkUnichar SkUTF16_NextUnichar(const uint16_t** srcPtr) {
 
 SkUnichar SkUTF16_PrevUnichar(const uint16_t** srcPtr) {
     SkASSERT(srcPtr && *srcPtr);
-    
+
     const uint16_t* src = *srcPtr;
     SkUnichar       c = *--src;
-    
+
     SkASSERT(!SkUTF16_IsHighSurrogate(c));
     if (SkUTF16_IsLowSurrogate(c)) {
         unsigned c2 = *--src;
@@ -369,7 +383,7 @@ size_t SkUTF16_FromUnichar(SkUnichar uni, uint16_t dst[]) {
             // dst[0] = SkToU16(0xD800 | ((uni >> 10) - 64));
             dst[0] = SkToU16((0xD800 - 64) + (uni >> 10));
             dst[1] = SkToU16(0xDC00 | (uni & 0x3FF));
-            
+
             SkASSERT(SkUTF16_IsHighSurrogate(dst[0]));
             SkASSERT(SkUTF16_IsLowSurrogate(dst[1]));
         } else {
@@ -389,10 +403,10 @@ size_t SkUTF16_ToUTF8(const uint16_t utf16[], int numberOf16BitValues,
     }
 
     SkASSERT(utf16 != NULL);
-    
+
     const uint16_t* stop = utf16 + numberOf16BitValues;
     size_t          size = 0;
-    
+
     if (utf8 == NULL) {    // just count
         while (utf16 < stop) {
             size += SkUTF8_FromUnichar(SkUTF16_NextUnichar(&utf16), NULL);
@@ -406,37 +420,3 @@ size_t SkUTF16_ToUTF8(const uint16_t utf16[], int numberOf16BitValues,
     }
     return size;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-#include <stdlib.h>
-
-#if 0
-static int round_to_K(size_t bytes) {
-    return (bytes + 512) >> 10;
-}
-#endif
-
-SkAutoMemoryUsageProbe::SkAutoMemoryUsageProbe(const char label[])
-    : fLabel(label) {
-#if 0
-    struct mallinfo mi = mallinfo();
-
-    fBytesAllocated = mi.uordblks;
-#endif
-}
-
-SkAutoMemoryUsageProbe::~SkAutoMemoryUsageProbe() {
-#if 0
-    struct mallinfo mi = mallinfo();
-
-    printf("SkAutoMemoryUsageProbe ");
-    if (fLabel) {
-        printf("<%s> ", fLabel);
-    }
-    printf("delta %dK, current total allocated %dK\n",
-            round_to_K(mi.uordblks - fBytesAllocated),
-            round_to_K(mi.uordblks));
-#endif
-}
-

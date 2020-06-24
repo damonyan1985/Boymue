@@ -1,17 +1,8 @@
 /*
- * Copyright 2009, The Android Open Source Project
+ * Copyright 2009 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
  */
 
 #include "SkImageEncoder.h"
@@ -34,6 +25,15 @@ bool SkImageEncoder::encodeFile(const char file[], const SkBitmap& bm,
     return this->onEncode(&stream, bm, quality);
 }
 
+SkData* SkImageEncoder::encodeData(const SkBitmap& bm, int quality) {
+    SkDynamicMemoryWStream stream;
+    quality = SkMin32(100, SkMax32(0, quality));
+    if (this->onEncode(&stream, bm, quality)) {
+        return stream.copyToData();
+    }
+    return NULL;
+}
+
 bool SkImageEncoder::EncodeFile(const char file[], const SkBitmap& bm, Type t,
                                 int quality) {
     SkAutoTDelete<SkImageEncoder> enc(SkImageEncoder::Create(t));
@@ -41,8 +41,22 @@ bool SkImageEncoder::EncodeFile(const char file[], const SkBitmap& bm, Type t,
 }
 
 bool SkImageEncoder::EncodeStream(SkWStream* stream, const SkBitmap& bm, Type t,
-                                int quality) {
+                                  int quality) {
     SkAutoTDelete<SkImageEncoder> enc(SkImageEncoder::Create(t));
     return enc.get() && enc.get()->encodeStream(stream, bm, quality);
 }
 
+SkData* SkImageEncoder::EncodeData(const SkBitmap& bm, Type t, int quality) {
+    SkAutoTDelete<SkImageEncoder> enc(SkImageEncoder::Create(t));
+    return enc.get() ? enc.get()->encodeData(bm, quality) : NULL;
+}
+
+SkData* SkImageEncoder::EncodeData(const SkImageInfo& info, const void* pixels, size_t rowBytes,
+                                   Type t, int quality) {
+    SkBitmap bm;
+    if (!bm.installPixels(info, const_cast<void*>(pixels), rowBytes)) {
+        return NULL;
+    }
+    SkAutoTDelete<SkImageEncoder> enc(SkImageEncoder::Create(t));
+    return enc.get() ? enc.get()->encodeData(bm, quality) : NULL;
+}
