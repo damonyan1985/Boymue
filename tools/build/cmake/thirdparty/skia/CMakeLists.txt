@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(skia)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wno-unused-parameter")
+add_definitions(-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1 -DSKIA_IMPLEMENTATION=1)
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wno-unused-parameter -fPIC -Wno-invalid-offsetof")
 set(SKIA_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../framework/thirdparty/skia")
 set(THIRDPARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../framework/thirdparty")
 
@@ -525,6 +526,7 @@ target_include_directories(
   ${THIRDPARTY_SRC}/jpeg
   ${THIRDPARTY_SRC}/png
   ${THIRDPARTY_SRC}/zlib
+	${THIRDPARTY_SRC}/gif
   ${SKIA_SRC}/include/c
   ${SKIA_SRC}/include/config
   ${SKIA_SRC}/include/core
@@ -534,6 +536,7 @@ target_include_directories(
   ${SKIA_SRC}/include/utils
   ${SKIA_SRC}/include/images
   ${SKIA_SRC}/include/sfnt
+	${SKIA_SRC}/include/codec
   ${SKIA_SRC}/src/sfnt
 	${SKIA_SRC}/src/image
 	${SKIA_SRC}/src/opts
