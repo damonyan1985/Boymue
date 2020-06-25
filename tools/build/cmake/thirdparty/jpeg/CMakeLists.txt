@@ -57,13 +57,13 @@ set(JPEG_SRC_LIST
 )
 
 add_library(
-    jpeg
-    SHARED
-    ${JPEG_SRC_LIST}
+  jpeg
+  SHARED
+  ${JPEG_SRC_LIST}
 )
 
 target_include_directories(
-    jpeg
-    PRIVATE
-    ${JPEG_SRC}/
-    )
+  jpeg
+  PRIVATE
+  ${JPEG_SRC}/
+)
