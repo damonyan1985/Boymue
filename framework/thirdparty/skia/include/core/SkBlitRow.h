@@ -15,11 +15,11 @@ class SkBlitRow {
 public:
     enum Flags16 {
         //! If set, the alpha parameter will be != 255
-        kGlobalAlpha_Flag   = 0x01,
+        kGlobalAlpha_Flag = 0x01,
         //! If set, the src colors may have alpha != 255
         kSrcPixelAlpha_Flag = 0x02,
         //! If set, the resulting 16bit colors should be dithered
-        kDither_Flag        = 0x04
+        kDither_Flag = 0x04
     };
 
     /** Function pointer that reads a scanline of src SkPMColors, and writes
@@ -33,7 +33,7 @@ public:
         @param y THe y coordinate of the scanline
      */
     typedef void (*Proc16)(uint16_t dst[], const SkPMColor src[], int count,
-                           U8CPU alpha, int x, int y);
+        U8CPU alpha, int x, int y);
 
     static Proc16 Factory16(unsigned flags);
 
@@ -50,8 +50,8 @@ public:
     ///////////// D32 version
 
     enum Flags32 {
-        kGlobalAlpha_Flag32     = 1 << 0,
-        kSrcPixelAlpha_Flag32   = 1 << 1
+        kGlobalAlpha_Flag32 = 1 << 0,
+        kSrcPixelAlpha_Flag32 = 1 << 1
     };
 
     /** Function pointer that blends 32bit colors onto a 32bit destination.
@@ -76,10 +76,20 @@ public:
         system default.
      */
 
-    static Proc32 PlatformProcs32(unsigned flags);
+    static Proc32 PlatformProcs32(unsigned flags)
+    {
+        return NULL;
+    }
 
-    static Proc16 PlatformFactory565(unsigned flags);
-    static ColorProc16 PlatformColorFactory565(unsigned flags);
+    static Proc16 PlatformFactory565(unsigned flags)
+    {
+        return NULL;
+    }
+
+    static ColorProc16 PlatformColorFactory565(unsigned flags)
+    {
+        return NULL;
+    }
 
 private:
     enum {

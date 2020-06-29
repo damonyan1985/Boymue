@@ -11,14 +11,17 @@
 // This method is required to fool the linker into not discarding the pre-main
 // initialization and registration of the decoder classes. Passing true will
 // cause memory leaks.
-int SkForceLinking(bool doNotPassTrue) {
+int SkForceLinking(bool doNotPassTrue)
+{
     if (doNotPassTrue) {
         SkASSERT(false);
         CreateJPEGImageDecoder();
-        CreateWEBPImageDecoder();
+        // boymue comment
+        //CreateWEBPImageDecoder();
         CreateBMPImageDecoder();
         CreateICOImageDecoder();
-        CreateWBMPImageDecoder();
+        // boymue comment
+        //CreateWBMPImageDecoder();
         // Only link hardware texture codecs on platforms that build them. See images.gyp
 #ifndef SK_BUILD_FOR_ANDROID_FRAMEWORK
         CreatePKMImageDecoder();

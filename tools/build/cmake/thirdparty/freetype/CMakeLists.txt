@@ -79,6 +79,8 @@ set(
  ${FREETYPE_SRC}/source/bdf/bdflib.c
  ${FREETYPE_SRC}/source/gzip/ftgzip.c
  ${FREETYPE_SRC}/source/lzw/ftlzw.c
+ ${FREETYPE_SRC}/source/base/fttype1.c
+ ${FREETYPE_SRC}/source/base/ftfstype.c
 )
 
 add_library(

@@ -11,9 +11,10 @@
 #include "SkColorPriv.h"
 
 typedef void (*SkBoxBlurProc)(const SkPMColor* src, int srcStride, SkPMColor* dst, int kernelSize,
-                              int leftOffset, int rightOffset, int width, int height);
+    int leftOffset, int rightOffset, int width, int height);
 
+// boymue comment
 bool SkBoxBlurGetPlatformProcs(SkBoxBlurProc* boxBlurX,
-                               SkBoxBlurProc* boxBlurXY,
-                               SkBoxBlurProc* boxBlurYX);
+    SkBoxBlurProc* boxBlurXY,
+    SkBoxBlurProc* boxBlurYX) { return false; };
 #endif
