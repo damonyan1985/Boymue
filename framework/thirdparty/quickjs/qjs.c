@@ -22,16 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <inttypes.h>
-#include <string.h>
 #include <assert.h>
-#include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 #if defined(__APPLE__)
 #include <malloc/malloc.h>
 #elif defined(__linux__)
@@ -48,8 +48,8 @@ extern const uint8_t qjsc_qjscalc[];
 extern const uint32_t qjsc_qjscalc_size;
 #endif
 
-static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
-                    const char *filename, int eval_flags)
+static int eval_buf(JSContext* ctx, const void* buf, int buf_len,
+    const char* filename, int eval_flags)
 {
     JSValue val;
     int ret;
@@ -58,7 +58,7 @@ static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
         /* for the modules, we compile then run to be able to set
            import.meta */
         val = JS_Eval(ctx, buf, buf_len, filename,
-                      eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
+            eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
         if (!JS_IsException(val)) {
             js_module_set_import_meta(ctx, val, TRUE, TRUE);
             val = JS_EvalFunction(ctx, val);
@@ -76,12 +76,12 @@ static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
     return ret;
 }
 
-static int eval_file(JSContext *ctx, const char *filename, int module)
+static int eval_file(JSContext* ctx, const char* filename, int module)
 {
-    uint8_t *buf;
+    uint8_t* buf;
     int ret, eval_flags;
     size_t buf_len;
-    
+
     buf = js_load_file(ctx, &buf_len, filename);
     if (!buf) {
         perror(filename);
@@ -89,8 +89,7 @@ static int eval_file(JSContext *ctx, const char *filename, int module)
     }
 
     if (module < 0) {
-        module = (has_suffix(filename, ".mjs") ||
-                  JS_DetectModule((const char *)buf, buf_len));
+        module = (has_suffix(filename, ".mjs") || JS_DetectModule((const char*)buf, buf_len));
     }
     if (module)
         eval_flags = JS_EVAL_TYPE_MODULE;
@@ -102,23 +101,23 @@ static int eval_file(JSContext *ctx, const char *filename, int module)
 }
 
 #if defined(__APPLE__)
-#define MALLOC_OVERHEAD  0
+#define MALLOC_OVERHEAD 0
 #else
-#define MALLOC_OVERHEAD  8
+#define MALLOC_OVERHEAD 8
 #endif
 
 struct trace_malloc_data {
-    uint8_t *base;
+    uint8_t* base;
 };
 
-static inline unsigned long long js_trace_malloc_ptr_offset(uint8_t *ptr,
-                                                struct trace_malloc_data *dp)
+static inline unsigned long long js_trace_malloc_ptr_offset(uint8_t* ptr,
+    struct trace_malloc_data* dp)
 {
     return ptr - dp->base;
 }
 
 /* default memory allocation functions with memory limitation */
-static inline size_t js_trace_malloc_usable_size(void *ptr)
+static inline size_t js_trace_malloc_usable_size(void* ptr)
 {
 #if defined(__APPLE__)
     return malloc_size(ptr);
@@ -135,7 +134,7 @@ static inline size_t js_trace_malloc_usable_size(void *ptr)
 }
 
 static void __attribute__((format(printf, 2, 3)))
-    js_trace_malloc_printf(JSMallocState *s, const char *fmt, ...)
+js_trace_malloc_printf(JSMallocState* s, const char* fmt, ...)
 {
     va_list ap;
     int c;
@@ -145,13 +144,13 @@ static void __attribute__((format(printf, 2, 3)))
         if (c == '%') {
             /* only handle %p and %zd */
             if (*fmt == 'p') {
-                uint8_t *ptr = va_arg(ap, void *);
+                uint8_t* ptr = va_arg(ap, void*);
                 if (ptr == NULL) {
                     printf("NULL");
                 } else {
                     printf("H%+06lld.%zd",
-                           js_trace_malloc_ptr_offset(ptr, s->opaque),
-                           js_trace_malloc_usable_size(ptr));
+                        js_trace_malloc_ptr_offset(ptr, s->opaque),
+                        js_trace_malloc_usable_size(ptr));
                 }
                 fmt++;
                 continue;
@@ -168,14 +167,14 @@ static void __attribute__((format(printf, 2, 3)))
     va_end(ap);
 }
 
-static void js_trace_malloc_init(struct trace_malloc_data *s)
+static void js_trace_malloc_init(struct trace_malloc_data* s)
 {
     free(s->base = malloc(8));
 }
 
-static void *js_trace_malloc(JSMallocState *s, size_t size)
+static void* js_trace_malloc(JSMallocState* s, size_t size)
 {
-    void *ptr;
+    void* ptr;
 
     /* Do not allocate zero bytes: behavior is platform dependent */
     assert(size != 0);
@@ -191,7 +190,7 @@ static void *js_trace_malloc(JSMallocState *s, size_t size)
     return ptr;
 }
 
-static void js_trace_free(JSMallocState *s, void *ptr)
+static void js_trace_free(JSMallocState* s, void* ptr)
 {
     if (!ptr)
         return;
@@ -202,7 +201,7 @@ static void js_trace_free(JSMallocState *s, void *ptr)
     free(ptr);
 }
 
-static void *js_trace_realloc(JSMallocState *s, void *ptr, size_t size)
+static void* js_trace_realloc(JSMallocState* s, void* ptr, size_t size)
 {
     size_t old_size;
 
@@ -239,11 +238,11 @@ static const JSMallocFunctions trace_mf = {
 #if defined(__APPLE__)
     malloc_size,
 #elif defined(_WIN32)
-    (size_t (*)(const void *))_msize,
+    (size_t(*)(const void*))_msize,
 #elif defined(EMSCRIPTEN)
     NULL,
 #elif defined(__linux__)
-    (size_t (*)(const void *))malloc_usable_size,
+    (size_t(*)(const void*))malloc_usable_size,
 #else
     /* change this to `NULL,` if compilation fails */
     malloc_usable_size,
@@ -254,7 +253,7 @@ static const JSMallocFunctions trace_mf = {
 
 void help(void)
 {
-    printf("QuickJS version " CONFIG_VERSION "\n"
+    printf("QuickJS version v1.0 \n"
            "usage: " PROG_NAME " [options] [file [args]]\n"
            "-h  --help         list options\n"
            "-e  --eval EXPR    evaluate EXPR\n"
@@ -275,13 +274,14 @@ void help(void)
     exit(1);
 }
 
-int main(int argc, char **argv)
+// boymue comment
+int main1(int argc, char** argv)
 {
-    JSRuntime *rt;
-    JSContext *ctx;
+    JSRuntime* rt;
+    JSContext* ctx;
     struct trace_malloc_data trace_data = { NULL };
     int optind;
-    char *expr = NULL;
+    char* expr = NULL;
     int interactive = 0;
     int dump_memory = 0;
     int trace_memory = 0;
@@ -290,7 +290,7 @@ int main(int argc, char **argv)
     int load_std = 0;
     int dump_unhandled_promise_rejection = 0;
     size_t memory_limit = 0;
-    char *include_list[32];
+    char* include_list[32];
     int i, include_count = 0;
 #ifdef CONFIG_BIGNUM
     int load_jscalc, bignum_ext = 0;
@@ -307,13 +307,13 @@ int main(int argc, char **argv)
         load_jscalc = !strcmp(exename, "qjscalc");
     }
 #endif
-    
+
     /* cannot use getopt because we want to pass the command line to
        the script */
     optind = 1;
     while (optind < argc && *argv[optind] == '-') {
-        char *arg = argv[optind] + 1;
-        const char *longopt = "";
+        char* arg = argv[optind] + 1;
+        const char* longopt = "";
         /* a single - is not an option, it also stops argument scanning */
         if (!*arg)
             break;
@@ -442,15 +442,15 @@ int main(int argc, char **argv)
         JS_EnableBignumExt(ctx, TRUE);
     }
 #endif
-    
+
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);
 
     if (dump_unhandled_promise_rejection) {
         JS_SetHostPromiseRejectionTracker(rt, js_std_promise_rejection_tracker,
-                                          NULL);
+            NULL);
     }
-    
+
     if (!empty_run) {
 #ifdef CONFIG_BIGNUM
         if (load_jscalc) {
@@ -465,14 +465,14 @@ int main(int argc, char **argv)
 
         /* make 'std' and 'os' visible to non module code */
         if (load_std) {
-            const char *str = "import * as std from 'std';\n"
-                "import * as os from 'os';\n"
-                "globalThis.std = std;\n"
-                "globalThis.os = os;\n";
+            const char* str = "import * as std from 'std';\n"
+                              "import * as os from 'os';\n"
+                              "globalThis.std = std;\n"
+                              "globalThis.os = os;\n";
             eval_buf(ctx, str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE);
         }
 
-        for(i = 0; i < include_count; i++) {
+        for (i = 0; i < include_count; i++) {
             if (eval_file(ctx, include_list[i], module))
                 goto fail;
         }
@@ -480,12 +480,11 @@ int main(int argc, char **argv)
         if (expr) {
             if (eval_buf(ctx, expr, strlen(expr), "<cmdline>", 0))
                 goto fail;
-        } else
-        if (optind >= argc) {
+        } else if (optind >= argc) {
             /* interactive mode */
             interactive = 1;
         } else {
-            const char *filename;
+            const char* filename;
             filename = argv[optind];
             if (eval_file(ctx, filename, module))
                 goto fail;
@@ -495,7 +494,7 @@ int main(int argc, char **argv)
         }
         js_std_loop(ctx);
     }
-    
+
     if (dump_memory) {
         JSMemoryUsage stats;
         JS_ComputeMemoryUsage(rt, &stats);
@@ -526,11 +525,11 @@ int main(int argc, char **argv)
             }
         }
         printf("\nInstantiation times (ms): %.3f = %.3f+%.3f+%.3f+%.3f\n",
-               best[1] + best[2] + best[3] + best[4],
-               best[1], best[2], best[3], best[4]);
+            best[1] + best[2] + best[3] + best[4],
+            best[1], best[2], best[3], best[4]);
     }
     return 0;
- fail:
+fail:
     js_std_free_handlers(rt);
     JS_FreeContext(ctx);
     JS_FreeRuntime(rt);
