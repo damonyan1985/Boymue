@@ -2,7 +2,6 @@
  * jdapimin.c
  *
  * Copyright (C) 1994-1998, Thomas G. Lane.
- * Modified 2009-2013 by Guido Vollbeding.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -54,6 +53,7 @@ jpeg_CreateDecompress (j_decompress_ptr cinfo, int version, size_t structsize)
     cinfo->client_data = client_data;
   }
   cinfo->is_decompressor = TRUE;
+  cinfo->tile_decode = FALSE;
 
   /* Initialize a memory manager instance for this object */
   jinit_memory_mgr((j_common_ptr) cinfo);
@@ -114,9 +114,8 @@ jpeg_abort_decompress (j_decompress_ptr cinfo)
 LOCAL(void)
 default_decompress_parms (j_decompress_ptr cinfo)
 {
-  int cid0, cid1, cid2;
-
   /* Guess the input colorspace, and set output colorspace accordingly. */
+  /* (Wish JPEG committee had provided a real way to specify this...) */
   /* Note application may override our guesses. */
   switch (cinfo->num_components) {
   case 1:
@@ -125,22 +124,9 @@ default_decompress_parms (j_decompress_ptr cinfo)
     break;
     
   case 3:
-    cid0 = cinfo->comp_info[0].component_id;
-    cid1 = cinfo->comp_info[1].component_id;
-    cid2 = cinfo->comp_info[2].component_id;
-
-    /* First try to guess from the component IDs */
-    if      (cid0 == 0x01 && cid1 == 0x02 && cid2 == 0x03)
-      cinfo->jpeg_color_space = JCS_YCbCr;
-    else if (cid0 == 0x01 && cid1 == 0x22 && cid2 == 0x23)
-      cinfo->jpeg_color_space = JCS_BG_YCC;
-    else if (cid0 == 0x52 && cid1 == 0x47 && cid2 == 0x42)
-      cinfo->jpeg_color_space = JCS_RGB;	/* ASCII 'R', 'G', 'B' */
-    else if (cid0 == 0x72 && cid1 == 0x67 && cid2 == 0x62)
-      cinfo->jpeg_color_space = JCS_BG_RGB;	/* ASCII 'r', 'g', 'b' */
-    else if (cinfo->saw_JFIF_marker)
-      cinfo->jpeg_color_space = JCS_YCbCr;	/* assume it's YCbCr */
-    else if (cinfo->saw_Adobe_marker) {
+    if (cinfo->saw_JFIF_marker) {
+      cinfo->jpeg_color_space = JCS_YCbCr; /* JFIF implies YCbCr */
+    } else if (cinfo->saw_Adobe_marker) {
       switch (cinfo->Adobe_transform) {
       case 0:
 	cinfo->jpeg_color_space = JCS_RGB;
@@ -150,12 +136,23 @@ default_decompress_parms (j_decompress_ptr cinfo)
 	break;
       default:
 	WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo->Adobe_transform);
-	cinfo->jpeg_color_space = JCS_YCbCr;	/* assume it's YCbCr */
+	cinfo->jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
 	break;
       }
     } else {
-      TRACEMS3(cinfo, 1, JTRC_UNKNOWN_IDS, cid0, cid1, cid2);
-      cinfo->jpeg_color_space = JCS_YCbCr;	/* assume it's YCbCr */
+      /* Saw no special markers, try to guess from the component IDs */
+      int cid0 = cinfo->comp_info[0].component_id;
+      int cid1 = cinfo->comp_info[1].component_id;
+      int cid2 = cinfo->comp_info[2].component_id;
+
+      if (cid0 == 1 && cid1 == 2 && cid2 == 3)
+	cinfo->jpeg_color_space = JCS_YCbCr; /* assume JFIF w/out marker */
+      else if (cid0 == 82 && cid1 == 71 && cid2 == 66)
+	cinfo->jpeg_color_space = JCS_RGB; /* ASCII 'R', 'G', 'B' */
+      else {
+	TRACEMS3(cinfo, 1, JTRC_UNKNOWN_IDS, cid0, cid1, cid2);
+	cinfo->jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
+      }
     }
     /* Always guess RGB is proper output colorspace. */
     cinfo->out_color_space = JCS_RGB;
@@ -172,7 +169,7 @@ default_decompress_parms (j_decompress_ptr cinfo)
 	break;
       default:
 	WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo->Adobe_transform);
-	cinfo->jpeg_color_space = JCS_YCCK;	/* assume it's YCCK */
+	cinfo->jpeg_color_space = JCS_YCCK; /* assume it's YCCK */
 	break;
       }
     } else {
@@ -189,8 +186,8 @@ default_decompress_parms (j_decompress_ptr cinfo)
   }
 
   /* Set defaults for other decompression parameters. */
-  cinfo->scale_num = cinfo->block_size;		/* 1:1 scaling */
-  cinfo->scale_denom = cinfo->block_size;
+  cinfo->scale_num = 1;		/* 1:1 scaling */
+  cinfo->scale_denom = 1;
   cinfo->output_gamma = 1.0;
   cinfo->buffered_image = FALSE;
   cinfo->raw_data_out = FALSE;
@@ -375,6 +372,9 @@ jpeg_finish_decompress (j_decompress_ptr cinfo)
   if ((cinfo->global_state == DSTATE_SCANNING ||
        cinfo->global_state == DSTATE_RAW_OK) && ! cinfo->buffered_image) {
     /* Terminate final pass of non-buffered mode */
+#ifdef ANDROID_TILE_BASED_DECODE
+    cinfo->output_scanline = cinfo->output_height;
+#endif
     if (cinfo->output_scanline < cinfo->output_height)
       ERREXIT(cinfo, JERR_TOO_LITTLE_DATA);
     (*cinfo->master->finish_output_pass) (cinfo);
@@ -387,10 +387,12 @@ jpeg_finish_decompress (j_decompress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
   }
   /* Read until EOI */
+#ifndef ANDROID_TILE_BASED_DECODE
   while (! cinfo->inputctl->eoi_reached) {
     if ((*cinfo->inputctl->consume_input) (cinfo) == JPEG_SUSPENDED)
       return FALSE;		/* Suspend, come back later */
   }
+#endif
   /* Do final cleanup */
   (*cinfo->src->term_source) (cinfo);
   /* We can use jpeg_abort to release memory and reset global_state */

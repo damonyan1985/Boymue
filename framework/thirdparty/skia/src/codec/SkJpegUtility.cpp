@@ -5,51 +5,54 @@
  * found in the LICENSE file.
  */
 
-#include "SkCodecPriv.h"
 #include "SkJpegUtility.h"
+#include "SkCodecPriv.h"
 
 /*
  * Initialize the source manager
  */
-static void sk_init_source(j_decompress_ptr dinfo) {
-    skjpeg_source_mgr* src = (skjpeg_source_mgr*) dinfo->src;
-    src->next_input_byte = (const JOCTET*) src->fBuffer;
+static void sk_init_source(j_decompress_ptr dinfo)
+{
+    skjpeg_source_mgr* src = (skjpeg_source_mgr*)dinfo->src;
+    src->next_input_byte = (const JOCTET*)src->fBuffer;
     src->bytes_in_buffer = 0;
 }
 
 /*
  * Fill the input buffer from the stream
  */
-static boolean sk_fill_input_buffer(j_decompress_ptr dinfo) {
-    skjpeg_source_mgr* src = (skjpeg_source_mgr*) dinfo->src;
+static boolean sk_fill_input_buffer(j_decompress_ptr dinfo)
+{
+    skjpeg_source_mgr* src = (skjpeg_source_mgr*)dinfo->src;
     size_t bytes = src->fStream->read(src->fBuffer, skjpeg_source_mgr::kBufferSize);
-    
+
     // libjpeg is still happy with a less than full read, as long as the result is non-zero
     if (bytes == 0) {
-        return false;
+        return FALSE;
     }
 
-    src->next_input_byte = (const JOCTET*) src->fBuffer;
+    src->next_input_byte = (const JOCTET*)src->fBuffer;
     src->bytes_in_buffer = bytes;
-    return true;
+    return TRUE;
 }
 
 /*
  * Skip a certain number of bytes in the stream
  */
-static void sk_skip_input_data(j_decompress_ptr dinfo, long numBytes) {
-    skjpeg_source_mgr* src = (skjpeg_source_mgr*) dinfo->src;
-    size_t bytes = (size_t) numBytes;
+static void sk_skip_input_data(j_decompress_ptr dinfo, long numBytes)
+{
+    skjpeg_source_mgr* src = (skjpeg_source_mgr*)dinfo->src;
+    size_t bytes = (size_t)numBytes;
 
     if (bytes > src->bytes_in_buffer) {
         size_t bytesToSkip = bytes - src->bytes_in_buffer;
         if (bytesToSkip != src->fStream->skip(bytesToSkip)) {
             SkCodecPrintf("Failure to skip.\n");
-            dinfo->err->error_exit((j_common_ptr) dinfo);
+            dinfo->err->error_exit((j_common_ptr)dinfo);
             return;
         }
 
-        src->next_input_byte = (const JOCTET*) src->fBuffer;
+        src->next_input_byte = (const JOCTET*)src->fBuffer;
         src->bytes_in_buffer = 0;
     } else {
         src->next_input_byte += numBytes;
@@ -61,7 +64,8 @@ static void sk_skip_input_data(j_decompress_ptr dinfo, long numBytes) {
  * We do not need to do anything to terminate our stream
  */
 static void sk_term_source(j_decompress_ptr dinfo)
-{}
+{
+}
 
 /*
  * Constructor for the source manager that we provide to libjpeg
@@ -80,10 +84,11 @@ skjpeg_source_mgr::skjpeg_source_mgr(SkStream* stream)
 /*
  * Call longjmp to continue execution on an error
  */
-void skjpeg_err_exit(j_common_ptr dinfo) {
+void skjpeg_err_exit(j_common_ptr dinfo)
+{
     // Simply return to Skia client code
     // JpegDecoderMgr will take care of freeing memory
-    skjpeg_error_mgr* error = (skjpeg_error_mgr*) dinfo->err;
-    (*error->output_message) (dinfo);
+    skjpeg_error_mgr* error = (skjpeg_error_mgr*)dinfo->err;
+    (*error->output_message)(dinfo);
     longjmp(error->fJmpBuf, 1);
 }

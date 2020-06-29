@@ -8,7 +8,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 /*
  * Copyright 2006 The Android Open Source Project
  *
@@ -16,15 +15,14 @@
  * found in the LICENSE file.
  */
 
-
 #ifndef SkUserConfig_DEFINED
 #define SkUserConfig_DEFINED
 
 /*  SkTypes.h, the root of the public header files, does the following trick:
 
+    #include "SkPostConfig.h"
     #include "SkPreConfig.h"
     #include "SkUserConfig.h"
-    #include "SkPostConfig.h"
 
     SkPreConfig.h runs first, and it is responsible for initializing certain
     skia defines.
@@ -81,7 +79,6 @@
  */
 //#define SK_CRASH() *(int *)(uintptr_t)0 = 0
 
-
 /*  preconfig will have attempted to determine the endianness of the system,
     but you can change these mutually exclusive flags here.
  */
@@ -96,7 +93,6 @@
 */
 //#define SK_UINT8_BITFIELD_BENDIAN
 //#define SK_UINT8_BITFIELD_LENDIAN
-
 
 /*  To write debug messages to a console, skia will call SkDebugf(...) following
     printf conventions (e.g. const char* format, ...). If you want to redirect
@@ -144,12 +140,11 @@
 /*  Change the ordering to work in X windows.
  */
 #ifdef SK_SAMPLES_FOR_X
-        #define SK_R32_SHIFT    16
-        #define SK_G32_SHIFT    8
-        #define SK_B32_SHIFT    0
-        #define SK_A32_SHIFT    24
+#define SK_R32_SHIFT 16
+#define SK_G32_SHIFT 8
+#define SK_B32_SHIFT 0
+#define SK_A32_SHIFT 24
 #endif
-
 
 /* Determines whether to build code that supports the GPU backend. Some classes
    that are not GPU-specific, such as SkShader subclasses, have optional code
@@ -159,7 +154,6 @@
    backend. Defaults to 1 (build the GPU code).
  */
 //#define SK_SUPPORT_GPU 1
-
 
 /* The PDF generation code uses Path Ops to handle complex clipping paths,
  * but at this time, Path Ops is not release ready yet. So, the code is
@@ -176,15 +170,16 @@
 #ifndef SkUserConfig_Android_DEFINED
 #define SkUserConfig_Android_DEFINED
 #ifdef ANDROID
-    #include <utils/misc.h>
+#include <endian.h>
+//#include <utils/misc.h>
 #endif
 
 #if __BYTE_ORDER == __BIG_ENDIAN
-    #define SK_CPU_BENDIAN
-    #undef  SK_CPU_LENDIAN
+#define SK_CPU_BENDIAN
+#undef SK_CPU_LENDIAN
 #else
-    #define SK_CPU_LENDIAN
-    #undef  SK_CPU_BENDIAN
+#define SK_CPU_LENDIAN
+#undef SK_CPU_BENDIAN
 #endif
 
 #define DCT_IFAST_SUPPORTED
@@ -196,7 +191,7 @@
 #define SK_BUILD_FOR_ANDROID
 #define SK_BUILD_FOR_ANDROID_FRAMEWORK
 #define SK_CAN_USE_DLOPEN 0
-#define SK_DEFAULT_FONT_CACHE_LIMIT   (768 * 1024)
+#define SK_DEFAULT_FONT_CACHE_LIMIT (768 * 1024)
 #define SK_DEFAULT_GLOBAL_DISCARDABLE_MEMORY_POOL_SIZE (512 * 1024)
 #define SK_EGL 1
 #define SK_FONTHOST_FREETYPE_RUNTIME_VERSION 0x020400

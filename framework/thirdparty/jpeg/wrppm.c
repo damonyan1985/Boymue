@@ -2,7 +2,6 @@
  * wrppm.c
  *
  * Copyright (C) 1991-1996, Thomas G. Lane.
- * Modified 2009-2017 by Guido Vollbeding.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -41,11 +40,11 @@
 #define BYTESPERSAMPLE 1
 #define PPM_MAXVAL 255
 #else
-/* The word-per-sample format always puts the MSB first. */
+/* The word-per-sample format always puts the LSB first. */
 #define PUTPPMSAMPLE(ptr,v)			\
 	{ register int val_ = v;		\
-	  *ptr++ = (char) ((val_ >> 8) & 0xFF);	\
 	  *ptr++ = (char) (val_ & 0xFF);	\
+	  *ptr++ = (char) ((val_ >> 8) & 0xFF);	\
 	}
 #define BYTESPERSAMPLE 2
 #define PPM_MAXVAL ((1<<BITS_IN_JSAMPLE)-1)
@@ -206,8 +205,8 @@ METHODDEF(void)
 finish_output_ppm (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
 {
   /* Make sure we wrote the output file OK */
-  JFFLUSH(dinfo->output_file);
-  if (JFERROR(dinfo->output_file))
+  fflush(dinfo->output_file);
+  if (ferror(dinfo->output_file))
     ERREXIT(cinfo, JERR_FILE_WRITE);
 }
 
@@ -263,7 +262,7 @@ jinit_write_ppm (j_decompress_ptr cinfo)
     dest->pub.put_pixel_rows = put_pixel_rows;
   }
 
-  return &dest->pub;
+  return (djpeg_dest_ptr) dest;
 }
 
 #endif /* PPM_SUPPORTED */

@@ -2,10 +2,18 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(skia)
 
-add_definitions(-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1 -DSKIA_IMPLEMENTATION=1)
+add_definitions(-DANDROID_NDK -DANDROID -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1 -DSKIA_IMPLEMENTATION=1)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wno-unused-parameter -fPIC -Wno-invalid-offsetof")
 set(SKIA_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../framework/thirdparty/skia")
 set(THIRDPARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../framework/thirdparty")
+
+if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+	include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
+elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+	include_directories(${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
+else()
+	include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
+endif()
 
 set(
   skia_src_list
@@ -524,9 +532,12 @@ target_include_directories(
   skia
   PRIVATE
   ${THIRDPARTY_SRC}/jpeg
-  ${THIRDPARTY_SRC}/png
+  ${THIRDPARTY_SRC}/png/include
   ${THIRDPARTY_SRC}/zlib
 	${THIRDPARTY_SRC}/gif
+	${THIRDPARTY_SRC}/expat/lib
+	${THIRDPARTY_SRC}/freetype/include
+	${THIRDPARTY_SRC}/webp/include
   ${SKIA_SRC}/include/c
   ${SKIA_SRC}/include/config
   ${SKIA_SRC}/include/core
@@ -536,11 +547,12 @@ target_include_directories(
   ${SKIA_SRC}/include/utils
   ${SKIA_SRC}/include/images
   ${SKIA_SRC}/include/sfnt
-	${SKIA_SRC}/include/codec
-  ${SKIA_SRC}/src/sfnt
+  ${SKIA_SRC}/include/codec
+	${SKIA_SRC}/src/sfnt
 	${SKIA_SRC}/src/image
 	${SKIA_SRC}/src/opts
 	${SKIA_SRC}/src/utils
+	${SKIA_SRC}/src/core
 	${SKIA_SRC}/include/gpu
 	${SKIA_SRC}/src/gpu
 	${SKIA_SRC}/include/effects
@@ -555,5 +567,9 @@ target_link_libraries(
   zlib
   png
   jpeg
+	expat
+	EGL
+  GLESv2
+	log
   freetype
 )
