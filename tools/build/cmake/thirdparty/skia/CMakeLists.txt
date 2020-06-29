@@ -289,7 +289,7 @@ set(
 	${SKIA_SRC}/src/images/SkImageDecoder_libbmp.cpp
 	${SKIA_SRC}/src/images/SkImageDecoder_libgif.cpp
 	${SKIA_SRC}/src/images/SkImageDecoder_libico.cpp
-	${SKIA_SRC}/src/images/SkImageDecoder_libwebp.cpp
+	#${SKIA_SRC}/src/images/SkImageDecoder_libwebp.cpp
 	${SKIA_SRC}/src/images/SkImageDecoder_libjpeg.cpp
 	${SKIA_SRC}/src/images/SkImageDecoder_libpng.cpp
 	${SKIA_SRC}/src/images/SkImageEncoder.cpp
@@ -567,6 +567,7 @@ target_link_libraries(
   zlib
   png
   jpeg
+	gif
 	expat
 	EGL
   GLESv2

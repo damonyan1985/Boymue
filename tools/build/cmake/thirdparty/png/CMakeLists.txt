@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(png)
 
+add_definitions(-U__ARM_NEON__ -U__ARM_NEON)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wno-unused-parameter")
 set(PNG_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../framework/thirdparty/png")
 

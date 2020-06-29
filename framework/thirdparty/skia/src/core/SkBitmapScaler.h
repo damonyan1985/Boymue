@@ -80,21 +80,21 @@ public:
     };
 
     static bool Resize(SkBitmap* result,
-                       const SkBitmap& source,
-                       ResizeMethod method,
-                       float dest_width, float dest_height,
-                       SkBitmap::Allocator* allocator = NULL);
+        const SkBitmap& source,
+        ResizeMethod method,
+        float dest_width, float dest_height,
+        SkBitmap::Allocator* allocator = NULL);
 
     static SkBitmap Resize(const SkBitmap& source,
-                           ResizeMethod method,
-                           float dest_width, float dest_height,
-                           SkBitmap::Allocator* allocator = NULL);
+        ResizeMethod method,
+        float dest_width, float dest_height,
+        SkBitmap::Allocator* allocator = NULL);
 
-     /** Platforms can also optionally overwrite the convolution functions
+    /** Platforms can also optionally overwrite the convolution functions
         if we have SIMD versions of them.
       */
-
-    static void PlatformConvolutionProcs(SkConvolutionProcs*);
+    // boymue comment
+    static void PlatformConvolutionProcs(SkConvolutionProcs*) {};
 };
 
 #endif

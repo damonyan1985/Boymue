@@ -17,6 +17,10 @@ enum SkMorphologyProcType {
     kErodeY_SkMorphologyProcType
 };
 
-SkMorphologyImageFilter::Proc SkMorphologyGetPlatformProc(SkMorphologyProcType type);
+// boymue comment
+SkMorphologyImageFilter::Proc SkMorphologyGetPlatformProc(SkMorphologyProcType type)
+{
+    return NULL;
+};
 
 #endif

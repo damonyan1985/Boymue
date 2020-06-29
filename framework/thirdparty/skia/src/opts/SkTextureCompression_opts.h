@@ -8,14 +8,22 @@
 #ifndef SkTextureCompression_opts_DEFINED
 #define SkTextureCompression_opts_DEFINED
 
-#include "SkTextureCompressor.h"
 #include "SkImageInfo.h"
+#include "SkTextureCompressor.h"
 
+// boymue comment
 SkTextureCompressor::CompressionProc
-SkTextureCompressorGetPlatformProc(SkColorType colorType, SkTextureCompressor::Format fmt);
+SkTextureCompressorGetPlatformProc(SkColorType colorType, SkTextureCompressor::Format fmt)
+{
+    return NULL;
+};
 
 // Returns true if dimX and dimY are set to the block size of the supplied
 // compression format according to how the platform can consume them. Returns false otherwise.
-bool SkTextureCompressorGetPlatformDims(SkTextureCompressor::Format fmt, int* dimX, int* dimY);
+// boymue comment
+bool SkTextureCompressorGetPlatformDims(SkTextureCompressor::Format fmt, int* dimX, int* dimY)
+{
+    return false;
+};
 
-#endif  // SkTextureCompression_opts_DEFINED
+#endif // SkTextureCompression_opts_DEFINED
