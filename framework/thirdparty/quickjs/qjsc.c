@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <inttypes.h>
-#include <string.h>
 #include <assert.h>
-#include <unistd.h>
 #include <errno.h>
+#include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #if !defined(_WIN32)
 #include <sys/wait.h>
 #endif
@@ -37,30 +37,30 @@
 #include "quickjs-libc.h"
 
 typedef struct {
-    char *name;
-    char *short_name;
+    char* name;
+    char* short_name;
     int flags;
 } namelist_entry_t;
 
 typedef struct namelist_t {
-    namelist_entry_t *array;
+    namelist_entry_t* array;
     int count;
     int size;
 } namelist_t;
 
 typedef struct {
-    const char *option_name;
-    const char *init_name;
+    const char* option_name;
+    const char* init_name;
 } FeatureEntry;
 
 static namelist_t cname_list;
 static namelist_t cmodule_list;
 static namelist_t init_module_list;
 static uint64_t feature_bitmap;
-static FILE *outfile;
+static FILE* outfile;
 static BOOL byte_swap;
 static BOOL dynamic_export;
-static const char *c_ident_prefix = "qjsc_";
+static const char* c_ident_prefix = "qjsc_";
 
 #define FE_ALL (-1)
 
@@ -81,19 +81,18 @@ static const FeatureEntry feature_list[] = {
 #endif
 };
 
-void namelist_add(namelist_t *lp, const char *name, const char *short_name,
-                  int flags)
+void namelist_add(namelist_t* lp, const char* name, const char* short_name,
+    int flags)
 {
-    namelist_entry_t *e;
+    namelist_entry_t* e;
     if (lp->count == lp->size) {
         size_t newsize = lp->size + (lp->size >> 1) + 4;
-        namelist_entry_t *a =
-            realloc(lp->array, sizeof(lp->array[0]) * newsize);
+        namelist_entry_t* a = realloc(lp->array, sizeof(lp->array[0]) * newsize);
         /* XXX: check for realloc failure */
         lp->array = a;
         lp->size = newsize;
     }
-    e =  &lp->array[lp->count++];
+    e = &lp->array[lp->count++];
     e->name = strdup(name);
     if (short_name)
         e->short_name = strdup(short_name);
@@ -102,10 +101,10 @@ void namelist_add(namelist_t *lp, const char *name, const char *short_name,
     e->flags = flags;
 }
 
-void namelist_free(namelist_t *lp)
+void namelist_free(namelist_t* lp)
 {
     while (lp->count > 0) {
-        namelist_entry_t *e = &lp->array[--lp->count];
+        namelist_entry_t* e = &lp->array[--lp->count];
         free(e->name);
         free(e->short_name);
     }
@@ -114,24 +113,24 @@ void namelist_free(namelist_t *lp)
     lp->size = 0;
 }
 
-namelist_entry_t *namelist_find(namelist_t *lp, const char *name)
+namelist_entry_t* namelist_find(namelist_t* lp, const char* name)
 {
     int i;
-    for(i = 0; i < lp->count; i++) {
-        namelist_entry_t *e = &lp->array[i];
+    for (i = 0; i < lp->count; i++) {
+        namelist_entry_t* e = &lp->array[i];
         if (!strcmp(e->name, name))
             return e;
     }
     return NULL;
 }
 
-static void get_c_name(char *buf, size_t buf_size, const char *file)
+static void get_c_name(char* buf, size_t buf_size, const char* file)
 {
     const char *p, *r;
     size_t len, i;
     int c;
-    char *q;
-    
+    char* q;
+
     p = strrchr(file, '/');
     if (!p)
         p = file;
@@ -144,11 +143,9 @@ static void get_c_name(char *buf, size_t buf_size, const char *file)
         len = r - p;
     pstrcpy(buf, buf_size, c_ident_prefix);
     q = buf + strlen(buf);
-    for(i = 0; i < len; i++) {
+    for (i = 0; i < len; i++) {
         c = p[i];
-        if (!((c >= '0' && c <= '9') ||
-              (c >= 'A' && c <= 'Z') ||
-              (c >= 'a' && c <= 'z'))) {
+        if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) {
             c = '_';
         }
         if ((q - buf) < buf_size - 1)
@@ -157,11 +154,11 @@ static void get_c_name(char *buf, size_t buf_size, const char *file)
     *q = '\0';
 }
 
-static void dump_hex(FILE *f, const uint8_t *buf, size_t len)
+static void dump_hex(FILE* f, const uint8_t* buf, size_t len)
 {
     size_t i, col;
     col = 0;
-    for(i = 0; i < len; i++) {
+    for (i = 0; i < len; i++) {
         fprintf(f, " 0x%02x,", buf[i]);
         if (++col == 8) {
             fprintf(f, "\n");
@@ -172,11 +169,11 @@ static void dump_hex(FILE *f, const uint8_t *buf, size_t len)
         fprintf(f, "\n");
 }
 
-static void output_object_code(JSContext *ctx,
-                               FILE *fo, JSValueConst obj, const char *c_name,
-                               BOOL load_only)
+static void output_object_code(JSContext* ctx,
+    FILE* fo, JSValueConst obj, const char* c_name,
+    BOOL load_only)
 {
-    uint8_t *out_buf;
+    uint8_t* out_buf;
     size_t out_buf_len;
     int flags;
     flags = JS_WRITE_OBJ_BYTECODE;
@@ -189,24 +186,24 @@ static void output_object_code(JSContext *ctx,
     }
 
     namelist_add(&cname_list, c_name, NULL, load_only);
-    
-    fprintf(fo, "const uint32_t %s_size = %u;\n\n", 
-            c_name, (unsigned int)out_buf_len);
+
+    fprintf(fo, "const uint32_t %s_size = %u;\n\n",
+        c_name, (unsigned int)out_buf_len);
     fprintf(fo, "const uint8_t %s[%u] = {\n",
-            c_name, (unsigned int)out_buf_len);
+        c_name, (unsigned int)out_buf_len);
     dump_hex(fo, out_buf, out_buf_len);
     fprintf(fo, "};\n\n");
 
     js_free(ctx, out_buf);
 }
 
-static int js_module_dummy_init(JSContext *ctx, JSModuleDef *m)
+static int js_module_dummy_init(JSContext* ctx, JSModuleDef* m)
 {
     /* should never be called when compiling JS code */
     abort();
 }
 
-static void find_unique_cname(char *cname, size_t cname_size)
+static void find_unique_cname(char* cname, size_t cname_size)
 {
     char cname1[1024];
     int suffix_num;
@@ -219,7 +216,7 @@ static void find_unique_cname(char *cname, size_t cname_size)
     if (len > max_len)
         cname[max_len] = '\0';
     suffix_num = 1;
-    for(;;) {
+    for (;;) {
         snprintf(cname1, sizeof(cname1), "%s_%d", cname, suffix_num);
         if (!namelist_find(&cname_list, cname1))
             break;
@@ -228,11 +225,11 @@ static void find_unique_cname(char *cname, size_t cname_size)
     pstrcpy(cname, cname_size, cname1);
 }
 
-JSModuleDef *jsc_module_loader(JSContext *ctx,
-                              const char *module_name, void *opaque)
+JSModuleDef* jsc_module_loader(JSContext* ctx,
+    const char* module_name, void* opaque)
 {
-    JSModuleDef *m;
-    namelist_entry_t *e;
+    JSModuleDef* m;
+    namelist_entry_t* e;
 
     /* check if it is a declared C or system module */
     e = namelist_find(&cmodule_list, module_name);
@@ -250,20 +247,20 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
         dynamic_export = TRUE;
     } else {
         size_t buf_len;
-        uint8_t *buf;
+        uint8_t* buf;
         JSValue func_val;
         char cname[1024];
-        
+
         buf = js_load_file(ctx, &buf_len, module_name);
         if (!buf) {
             JS_ThrowReferenceError(ctx, "could not load module filename '%s'",
-                                   module_name);
+                module_name);
             return NULL;
         }
-        
+
         /* compile the module */
-        func_val = JS_Eval(ctx, (char *)buf, buf_len, module_name,
-                           JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+        func_val = JS_Eval(ctx, (char*)buf, buf_len, module_name,
+            JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
         js_free(ctx, buf);
         if (JS_IsException(func_val))
             return NULL;
@@ -272,7 +269,7 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
             find_unique_cname(cname, sizeof(cname));
         }
         output_object_code(ctx, outfile, func_val, cname, TRUE);
-        
+
         /* the module is already referenced, so we must free it */
         m = JS_VALUE_GET_PTR(func_val);
         JS_FreeValue(ctx, func_val);
@@ -280,17 +277,17 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
     return m;
 }
 
-static void compile_file(JSContext *ctx, FILE *fo,
-                         const char *filename,
-                         const char *c_name1,
-                         int module)
+static void compile_file(JSContext* ctx, FILE* fo,
+    const char* filename,
+    const char* c_name1,
+    int module)
 {
-    uint8_t *buf;
+    uint8_t* buf;
     char c_name[1024];
     int eval_flags;
     JSValue obj;
     size_t buf_len;
-    
+
     buf = js_load_file(ctx, &buf_len, filename);
     if (!buf) {
         fprintf(stderr, "Could not load '%s'\n", filename);
@@ -298,14 +295,13 @@ static void compile_file(JSContext *ctx, FILE *fo,
     }
     eval_flags = JS_EVAL_FLAG_COMPILE_ONLY;
     if (module < 0) {
-        module = (has_suffix(filename, ".mjs") ||
-                  JS_DetectModule((const char *)buf, buf_len));
+        module = (has_suffix(filename, ".mjs") || JS_DetectModule((const char*)buf, buf_len));
     }
     if (module)
         eval_flags |= JS_EVAL_TYPE_MODULE;
     else
         eval_flags |= JS_EVAL_TYPE_GLOBAL;
-    obj = JS_Eval(ctx, (const char *)buf, buf_len, filename, eval_flags);
+    obj = JS_Eval(ctx, (const char*)buf, buf_len, filename, eval_flags);
     if (JS_IsException(obj)) {
         js_std_dump_error(ctx);
         exit(1);
@@ -320,26 +316,23 @@ static void compile_file(JSContext *ctx, FILE *fo,
     JS_FreeValue(ctx, obj);
 }
 
-static const char main_c_template1[] =
-    "int main(int argc, char **argv)\n"
-    "{\n"
-    "  JSRuntime *rt;\n"
-    "  JSContext *ctx;\n"
-    "  rt = JS_NewRuntime();\n"
-    ;
+static const char main_c_template1[] = "int main(int argc, char **argv)\n"
+                                       "{\n"
+                                       "  JSRuntime *rt;\n"
+                                       "  JSContext *ctx;\n"
+                                       "  rt = JS_NewRuntime();\n";
 
-static const char main_c_template2[] =
-    "  js_std_loop(ctx);\n"
-    "  JS_FreeContext(ctx);\n"
-    "  JS_FreeRuntime(rt);\n"
-    "  return 0;\n"
-    "}\n";
+static const char main_c_template2[] = "  js_std_loop(ctx);\n"
+                                       "  JS_FreeContext(ctx);\n"
+                                       "  JS_FreeRuntime(rt);\n"
+                                       "  return 0;\n"
+                                       "}\n";
 
 #define PROG_NAME "qjsc"
 
 void help(void)
 {
-    printf("QuickJS Compiler version " CONFIG_VERSION "\n"
+    printf("QuickJS Compiler version v1.0  \n"
            "usage: " PROG_NAME " [options] [files]\n"
            "\n"
            "options are:\n"
@@ -350,15 +343,14 @@ void help(void)
            "-m          compile as Javascript module (default=autodetect)\n"
            "-M module_name[,cname] add initialization code for an external C module\n"
            "-x          byte swapped output\n"
-           "-p prefix   set the prefix of the generated C names\n"
-           );
+           "-p prefix   set the prefix of the generated C names\n");
 #ifdef CONFIG_LTO
     {
         int i;
         printf("-flto       use link time optimization\n");
         printf("-fbignum    enable bignum extensions\n");
         printf("-fno-[");
-        for(i = 0; i < countof(feature_list); i++) {
+        for (i = 0; i < countof(feature_list); i++) {
             if (i != 0)
                 printf("|");
             printf("%s", feature_list[i].option_name);
@@ -372,7 +364,7 @@ void help(void)
 
 #if defined(CONFIG_CC) && !defined(_WIN32)
 
-int exec_cmd(char **argv)
+int exec_cmd(char** argv)
 {
     int pid, status, ret;
 
@@ -380,9 +372,9 @@ int exec_cmd(char **argv)
     if (pid == 0) {
         execvp(argv[0], argv);
         exit(1);
-    } 
+    }
 
-    for(;;) {
+    for (;;) {
         ret = waitpid(pid, &status, 0);
         if (ret == pid && WIFEXITED(status))
             break;
@@ -390,15 +382,15 @@ int exec_cmd(char **argv)
     return WEXITSTATUS(status);
 }
 
-static int output_executable(const char *out_filename, const char *cfilename,
-                             BOOL use_lto, BOOL verbose, const char *exename)
+static int output_executable(const char* out_filename, const char* cfilename,
+    BOOL use_lto, BOOL verbose, const char* exename)
 {
-    const char *argv[64];
+    const char* argv[64];
     const char **arg, *bn_suffix, *lto_suffix;
     char libjsname[1024];
     char exe_dir[1024], inc_dir[1024], lib_dir[1024], buf[1024], *p;
     int ret;
-    
+
     /* get the directory of the executable */
     pstrcpy(exe_dir, sizeof(exe_dir), exename);
     p = strrchr(exe_dir, '/');
@@ -418,10 +410,10 @@ static int output_executable(const char *out_filename, const char *cfilename,
         snprintf(inc_dir, sizeof(inc_dir), "%s/include/quickjs", CONFIG_PREFIX);
         snprintf(lib_dir, sizeof(lib_dir), "%s/lib/quickjs", CONFIG_PREFIX);
     }
-    
+
     lto_suffix = "";
     bn_suffix = "";
-    
+
     arg = argv;
     *arg++ = CONFIG_CC;
     *arg++ = "-O2";
@@ -443,25 +435,25 @@ static int output_executable(const char *out_filename, const char *cfilename,
         *arg++ = "-rdynamic";
     *arg++ = cfilename;
     snprintf(libjsname, sizeof(libjsname), "%s/libquickjs%s%s.a",
-             lib_dir, bn_suffix, lto_suffix);
+        lib_dir, bn_suffix, lto_suffix);
     *arg++ = libjsname;
     *arg++ = "-lm";
     *arg++ = "-ldl";
     *arg = NULL;
-    
+
     if (verbose) {
-        for(arg = argv; *arg != NULL; arg++)
+        for (arg = argv; *arg != NULL; arg++)
             printf("%s ", *arg);
         printf("\n");
     }
-    
-    ret = exec_cmd((char **)argv);
+
+    ret = exec_cmd((char**)argv);
     unlink(cfilename);
     return ret;
 }
 #else
-static int output_executable(const char *out_filename, const char *cfilename,
-                             BOOL use_lto, BOOL verbose, const char *exename)
+static int output_executable(const char* out_filename, const char* cfilename,
+    BOOL use_lto, BOOL verbose, const char* exename)
 {
     fprintf(stderr, "Executable output is not supported for this target\n");
     exit(1);
@@ -469,28 +461,28 @@ static int output_executable(const char *out_filename, const char *cfilename,
 }
 #endif
 
-
 typedef enum {
     OUTPUT_C,
     OUTPUT_C_MAIN,
     OUTPUT_EXECUTABLE,
 } OutputTypeEnum;
 
-int main(int argc, char **argv)
+// boymue comment
+int main2(int argc, char** argv)
 {
     int c, i, verbose;
     const char *out_filename, *cname;
     char cfilename[1024];
-    FILE *fo;
-    JSRuntime *rt;
-    JSContext *ctx;
+    FILE* fo;
+    JSRuntime* rt;
+    JSContext* ctx;
     BOOL use_lto;
     int module;
     OutputTypeEnum output_type;
 #ifdef CONFIG_BIGNUM
     BOOL bignum_ext = FALSE;
 #endif
-    
+
     out_filename = NULL;
     output_type = OUTPUT_EXECUTABLE;
     cname = NULL;
@@ -499,16 +491,16 @@ int main(int argc, char **argv)
     byte_swap = FALSE;
     verbose = 0;
     use_lto = FALSE;
-    
+
     /* add system modules */
     namelist_add(&cmodule_list, "std", "std", 0);
     namelist_add(&cmodule_list, "os", "os", 0);
 
-    for(;;) {
+    for (;;) {
         c = getopt(argc, argv, "ho:cN:f:mxevM:p:");
         if (c == -1)
             break;
-        switch(c) {
+        switch (c) {
         case 'h':
             help();
         case 'o':
@@ -523,54 +515,50 @@ int main(int argc, char **argv)
         case 'N':
             cname = optarg;
             break;
-        case 'f':
-            {
-                const char *p;
-                p = optarg;
-                if (!strcmp(optarg, "lto")) {
-                    use_lto = TRUE;
-                } else if (strstart(p, "no-", &p)) {
-                    use_lto = TRUE;
-                    for(i = 0; i < countof(feature_list); i++) {
-                        if (!strcmp(p, feature_list[i].option_name)) {
-                            feature_bitmap &= ~((uint64_t)1 << i);
-                            break;
-                        }
+        case 'f': {
+            const char* p;
+            p = optarg;
+            if (!strcmp(optarg, "lto")) {
+                use_lto = TRUE;
+            } else if (strstart(p, "no-", &p)) {
+                use_lto = TRUE;
+                for (i = 0; i < countof(feature_list); i++) {
+                    if (!strcmp(p, feature_list[i].option_name)) {
+                        feature_bitmap &= ~((uint64_t)1 << i);
+                        break;
                     }
-                    if (i == countof(feature_list))
-                        goto bad_feature;
-                } else
+                }
+                if (i == countof(feature_list))
+                    goto bad_feature;
+            } else
 #ifdef CONFIG_BIGNUM
                 if (!strcmp(optarg, "bignum")) {
-                    bignum_ext = TRUE;
-                } else
+                bignum_ext = TRUE;
+            } else
 #endif
-                {
-                bad_feature:
-                    fprintf(stderr, "unsupported feature: %s\n", optarg);
-                    exit(1);
-                }
+            {
+            bad_feature:
+                fprintf(stderr, "unsupported feature: %s\n", optarg);
+                exit(1);
             }
-            break;
+        } break;
         case 'm':
             module = 1;
             break;
-        case 'M':
-            {
-                char *p;
-                char path[1024];
-                char cname[1024];
-                pstrcpy(path, sizeof(path), optarg);
-                p = strchr(path, ',');
-                if (p) {
-                    *p = '\0';
-                    pstrcpy(cname, sizeof(cname), p + 1);
-                } else {
-                    get_c_name(cname, sizeof(cname), path);
-                }
-                namelist_add(&cmodule_list, path, cname, 0);
+        case 'M': {
+            char* p;
+            char path[1024];
+            char cname[1024];
+            pstrcpy(path, sizeof(path), optarg);
+            p = strchr(path, ',');
+            if (p) {
+                *p = '\0';
+                pstrcpy(cname, sizeof(cname), p + 1);
+            } else {
+                get_c_name(cname, sizeof(cname), path);
             }
-            break;
+            namelist_add(&cmodule_list, path, cname, 0);
+        } break;
         case 'x':
             byte_swap = TRUE;
             break;
@@ -606,14 +594,14 @@ int main(int argc, char **argv)
     } else {
         pstrcpy(cfilename, sizeof(cfilename), out_filename);
     }
-    
+
     fo = fopen(cfilename, "w");
     if (!fo) {
         perror(cfilename);
         exit(1);
     }
     outfile = fo;
-    
+
     rt = JS_NewRuntime();
     ctx = JS_NewContext(rt);
 #ifdef CONFIG_BIGNUM
@@ -624,26 +612,23 @@ int main(int argc, char **argv)
         JS_EnableBignumExt(ctx, TRUE);
     }
 #endif
-    
+
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, jsc_module_loader, NULL);
 
     fprintf(fo, "/* File generated automatically by the QuickJS compiler. */\n"
-            "\n"
-            );
-    
+                "\n");
+
     if (output_type != OUTPUT_C) {
         fprintf(fo, "#include \"quickjs-libc.h\"\n"
-                "\n"
-                );
+                    "\n");
     } else {
         fprintf(fo, "#include <inttypes.h>\n"
-                "\n"
-                );
+                    "\n");
     }
 
-    for(i = optind; i < argc; i++) {
-        const char *filename = argv[i];
+    for (i = optind; i < argc; i++) {
+        const char* filename = argv[i];
         compile_file(ctx, fo, filename, cname, module);
         cname = NULL;
     }
@@ -656,49 +641,48 @@ int main(int argc, char **argv)
         if (feature_bitmap & (1 << FE_MODULE_LOADER)) {
             fprintf(fo, "  JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);\n");
         }
-        
+
         /* add the basic objects */
-        
+
         fprintf(fo, "  JS_AddIntrinsicBaseObjects(ctx);\n");
-        for(i = 0; i < countof(feature_list); i++) {
-            if ((feature_bitmap & ((uint64_t)1 << i)) &&
-                feature_list[i].init_name) {
+        for (i = 0; i < countof(feature_list); i++) {
+            if ((feature_bitmap & ((uint64_t)1 << i)) && feature_list[i].init_name) {
                 fprintf(fo, "  JS_AddIntrinsic%s(ctx);\n",
-                        feature_list[i].init_name);
+                    feature_list[i].init_name);
             }
         }
 #ifdef CONFIG_BIGNUM
         if (bignum_ext) {
             fprintf(fo,
-                    "  JS_AddIntrinsicBigFloat(ctx);\n"
-                    "  JS_AddIntrinsicBigDecimal(ctx);\n"
-                    "  JS_AddIntrinsicOperators(ctx);\n"
-                    "  JS_EnableBignumExt(ctx, 1);\n");
+                "  JS_AddIntrinsicBigFloat(ctx);\n"
+                "  JS_AddIntrinsicBigDecimal(ctx);\n"
+                "  JS_AddIntrinsicOperators(ctx);\n"
+                "  JS_EnableBignumExt(ctx, 1);\n");
         }
 #endif
         fprintf(fo, "  js_std_add_helpers(ctx, argc, argv);\n");
 
-        for(i = 0; i < init_module_list.count; i++) {
-            namelist_entry_t *e = &init_module_list.array[i];
+        for (i = 0; i < init_module_list.count; i++) {
+            namelist_entry_t* e = &init_module_list.array[i];
             /* initialize the static C modules */
-            
+
             fprintf(fo,
-                    "  {\n"
-                    "    extern JSModuleDef *js_init_module_%s(JSContext *ctx, const char *name);\n"
-                    "    js_init_module_%s(ctx, \"%s\");\n"
-                    "  }\n",
-                    e->short_name, e->short_name, e->name);
+                "  {\n"
+                "    extern JSModuleDef *js_init_module_%s(JSContext *ctx, const char *name);\n"
+                "    js_init_module_%s(ctx, \"%s\");\n"
+                "  }\n",
+                e->short_name, e->short_name, e->name);
         }
 
-        for(i = 0; i < cname_list.count; i++) {
-            namelist_entry_t *e = &cname_list.array[i];
+        for (i = 0; i < cname_list.count; i++) {
+            namelist_entry_t* e = &cname_list.array[i];
             fprintf(fo, "  js_std_eval_binary(ctx, %s, %s_size, %s);\n",
-                    e->name, e->name,
-                    e->flags ? "1" : "0");
+                e->name, e->name,
+                e->flags ? "1" : "0");
         }
         fputs(main_c_template2, fo);
     }
-    
+
     JS_FreeContext(ctx);
     JS_FreeRuntime(rt);
 
@@ -706,7 +690,7 @@ int main(int argc, char **argv)
 
     if (output_type == OUTPUT_EXECUTABLE) {
         return output_executable(out_filename, cfilename, use_lto, verbose,
-                                 argv[0]);
+            argv[0]);
     }
     namelist_free(&cname_list);
     namelist_free(&cmodule_list);
