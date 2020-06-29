@@ -1,8 +1,8 @@
 
 /* pngstruct.h - header file for PNG reference library
  *
- * Last changed in libpng 1.6.35 [July 15, 2018]
- * Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
+ * Last changed in libpng 1.6.18 [July 23, 2015]
+ * Copyright (c) 1998-2015 Glenn Randers-Pehrson
  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
  *
@@ -47,7 +47,7 @@
 /* zlib.h declares a magic type 'uInt' that limits the amount of data that zlib
  * can handle at once.  This type need be no larger than 16 bits (so maximum of
  * 65535), this define allows us to discover how big it is, but limited by the
- * maximum for size_t.  The value can be overridden in a library build
+ * maximuum for png_size_t.  The value can be overriden in a library build
  * (pngusr.h, or set it in CPPFLAGS) and it works to set it to a considerably
  * lower value (e.g. 255 works).  A lower value may help memory usage (slightly)
  * and may even improve performance on some systems (and degrade it on others.)
@@ -140,6 +140,50 @@ typedef const png_colorspace * PNG_RESTRICT png_const_colorspacerp;
 #define PNG_COLORSPACE_CANCEL(flags)        (0xffff ^ (flags))
 #endif /* COLORSPACE || GAMMA */
 
+#ifdef PNG_INDEX_SUPPORTED
+/* png_line_index_struct records an index point, where we impose an index point
+ * to be located at the beginning of a line for simplifying the implementation.
+ */
+typedef struct png_line_index_struct
+{
+   // state of the lz decoder
+   z_streamp   z_state;
+
+   // the IDAT header position of the chunk, which the index point is in
+   png_uint_32  stream_idat_position;
+
+   // we intend to record the offset of the index point in the chunk,
+   // but we record the number of remaining bytes in the chunk after the
+   // index point. That's because PNG processes a chunk this way.
+   png_uint_32  bytes_left_in_idat;
+
+   // decompressed data of the previous row
+   png_bytep   prev_row;
+} png_line_index;
+typedef png_line_index FAR * png_line_indexp;
+
+typedef struct png_index_struct
+{
+   // A temporary variable used when we build the index. The variable records
+   // the IDAT header position of the last chunk read in so far.
+   png_uint_32  stream_idat_position;
+
+   // line index information about each passes
+
+   // the number of index points in each pass
+   png_uint_32  size[7];
+
+   // the line span of two index points of each pass
+   png_uint_32  step[7];
+
+   // the index points of each pass
+   png_line_indexp  *pass_line_index[7];
+} png_index;
+typedef png_index FAR * png_indexp;
+
+#define INDEX_SAMPLE_SIZE 254
+#endif
+
 struct png_struct_def
 {
 #ifdef PNG_SETJMP_SUPPORTED
@@ -155,6 +199,9 @@ struct png_struct_def
    png_voidp error_ptr;       /* user supplied struct for error functions */
    png_rw_ptr write_data_fn;  /* function for writing output data */
    png_rw_ptr read_data_fn;   /* function for reading input data */
+#ifdef PNG_INDEX_SUPPORTED
+   png_seek_ptr seek_data_fn; /* function for seeking input data */
+#endif
    png_voidp io_ptr;          /* ptr to application struct for I/O functions */
 
 #ifdef PNG_READ_USER_TRANSFORM_SUPPORTED
@@ -214,7 +261,7 @@ struct png_struct_def
    png_uint_32 height;        /* height of image in pixels */
    png_uint_32 num_rows;      /* number of rows in current pass */
    png_uint_32 usr_width;     /* width of row at start of write */
-   size_t rowbytes;           /* size of row in bytes */
+   png_size_t rowbytes;       /* size of row in bytes */
    png_uint_32 iwidth;        /* width of current interlaced row in pixels */
    png_uint_32 row_number;    /* current row in interlace pass */
    png_uint_32 chunk_name;    /* PNG_CHUNK() id of current chunk */
@@ -232,7 +279,7 @@ struct png_struct_def
    png_bytep try_row;    /* buffer to save trial row when filtering */
    png_bytep tst_row;    /* buffer to save best trial row when filtering */
 #endif
-   size_t info_rowbytes;      /* Added in 1.5.4: cache of updated row bytes */
+   png_size_t info_rowbytes;  /* Added in 1.5.4: cache of updated row bytes */
 
    png_uint_32 idat_size;     /* current IDAT size for read */
    png_uint_32 crc;           /* current chunk CRC value */
@@ -249,7 +296,7 @@ struct png_struct_def
    png_byte filter;           /* file filter type (always 0) */
    png_byte interlaced;       /* PNG_INTERLACE_NONE, PNG_INTERLACE_ADAM7 */
    png_byte pass;             /* current interlace pass (0 - 6) */
-   png_byte do_filter;        /* row filter flags (see PNG_FILTER_ in png.h ) */
+   png_byte do_filter;        /* row filter flags (see PNG_FILTER_ below ) */
    png_byte color_type;       /* color type of file */
    png_byte bit_depth;        /* bit depth of file */
    png_byte usr_bit_depth;    /* bit depth of users row: write only */
@@ -263,7 +310,7 @@ struct png_struct_def
                               /* pixel depth used for the row buffers */
    png_byte transformed_pixel_depth;
                               /* pixel depth after read/write transforms */
-#if ZLIB_VERNUM >= 0x1240
+#if PNG_ZLIB_VERNUM >= 0x1240
    png_byte zstream_start;    /* at start of an input zlib stream */
 #endif /* Zlib >= 1.2.4 */
 #if defined(PNG_READ_FILLER_SUPPORTED) || defined(PNG_WRITE_FILLER_SUPPORTED)
@@ -307,7 +354,7 @@ struct png_struct_def
 #endif
 
 #if defined(PNG_READ_SHIFT_SUPPORTED) || defined(PNG_WRITE_SHIFT_SUPPORTED)
-   png_color_8 shift;         /* shift for significant bit transformation */
+   png_color_8 shift;         /* shift for significant bit tranformation */
 #endif
 
 #if defined(PNG_tRNS_SUPPORTED) || defined(PNG_READ_BACKGROUND_SUPPORTED) \
@@ -328,10 +375,10 @@ struct png_struct_def
    png_bytep current_buffer;         /* buffer for recently used data */
    png_uint_32 push_length;          /* size of current input chunk */
    png_uint_32 skip_length;          /* bytes to skip in input data */
-   size_t save_buffer_size;          /* amount of data now in save_buffer */
-   size_t save_buffer_max;           /* total size of save_buffer */
-   size_t buffer_size;               /* total amount of available input data */
-   size_t current_buffer_size;       /* amount of data now in current_buffer */
+   png_size_t save_buffer_size;      /* amount of data now in save_buffer */
+   png_size_t save_buffer_max;       /* total size of save_buffer */
+   png_size_t buffer_size;           /* total amount of available input data */
+   png_size_t current_buffer_size;   /* amount of data now in current_buffer */
    int process_mode;                 /* what push library is currently doing */
    int cur_palette;                  /* current push library palette index */
 
@@ -353,7 +400,7 @@ struct png_struct_def
 
 /* Options */
 #ifdef PNG_SET_OPTION_SUPPORTED
-   png_uint_32 options;           /* On/off state (up to 16 options) */
+   png_byte options;           /* On/off state (up to 4 options) */
 #endif
 
 #if PNG_LIBPNG_VER < 10700
@@ -451,7 +498,7 @@ struct png_struct_def
 #endif
 
 /* New member added in libpng-1.2.26 */
-   size_t old_big_row_buf_size;
+  png_size_t old_big_row_buf_size;
 
 #ifdef PNG_READ_SUPPORTED
 /* New member added in libpng-1.2.30 */
@@ -479,5 +526,11 @@ struct png_struct_def
    png_colorspace   colorspace;
 #endif
 #endif
+
+#ifdef PNG_INDEX_SUPPORTED
+   png_indexp index;
+   png_uint_32 total_data_read;
+#endif
+
 };
 #endif /* PNGSTRUCT_H */
