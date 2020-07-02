@@ -42,17 +42,17 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\boymue\view\PlatformView.h">
-      <Filter>core\view</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWind.h">
-      <Filter>platform\view</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h">
       <Filter>thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h">
       <Filter>port\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h">
+      <Filter>platform\view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h">
+      <Filter>core\view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

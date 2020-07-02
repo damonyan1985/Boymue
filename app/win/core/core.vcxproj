@@ -160,10 +160,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWind.h" />
+    <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h" />
+    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h" />
     <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
-    <ClInclude Include="..\..\..\framework\boymue\view\PlatformView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
