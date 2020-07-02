@@ -7,10 +7,11 @@ public:
     virtual void run() 
     {
         printf("just test");
+        delete this;
     }
 };
 
 void BoymueOnLoadWin::init() {
-    TestThread thread;
-    thread.start();
+    TestThread* thread = new TestThread();
+    thread->start();
 }

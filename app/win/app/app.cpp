@@ -3,12 +3,14 @@
 #define _WINDLL
 #include <iostream>
 #include <Windows.h>
+#include <stdlib.h>
 #include "BoymueOnLoadWin.h"
 
 int main()
 {
     BoymueOnLoadWin::init();
     std::cout << "Hello World!\n";
+    system("pause");
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
