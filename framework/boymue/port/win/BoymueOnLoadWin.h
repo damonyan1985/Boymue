@@ -14,6 +14,8 @@
 #define BOYMUE_PORTING_API __declspec(dllimport)
 #endif
 
+// Copyright Boymue Authors. All rights reserved.
+// Author yanbo on 2020.07.05
 class BOYMUE_PORTING_API BoymueOnLoadWin {
 public:
     static void init();

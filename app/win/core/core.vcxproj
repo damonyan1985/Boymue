@@ -91,7 +91,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>E:\Boyia\Boymue\framework\boymue\core\view;E:\Boyia\Boymue\framework\boymue\thread;E:\Boyia\Boymue\framework\boymue\platform\view;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,13 +164,20 @@
     <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h" />
     <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h" />
     <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\event\WaitEvent.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\Thread.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

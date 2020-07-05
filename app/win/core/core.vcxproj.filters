@@ -34,6 +34,15 @@
     <Filter Include="port\win">
       <UniqueIdentifier>{644d7e23-175a-432a-a37b-ce9c2aad2d5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thread\event">
+      <UniqueIdentifier>{4270ed52-0212-435f-8b2a-7c0b009b1f8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread\time">
+      <UniqueIdentifier>{d9028067-72eb-4bfe-87a6-e7809e0daddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread\task">
+      <UniqueIdentifier>{7f6004f5-ea06-4de4-ad08-23db371fe860}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +63,18 @@
     <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h">
       <Filter>core\view</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h">
+      <Filter>thread\event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h">
+      <Filter>thread\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h">
+      <Filter>thread\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h">
+      <Filter>thread\task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -67,6 +88,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.cpp">
       <Filter>port\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\event\WaitEvent.cpp">
+      <Filter>thread\event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp">
+      <Filter>thread\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp">
+      <Filter>thread\task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
