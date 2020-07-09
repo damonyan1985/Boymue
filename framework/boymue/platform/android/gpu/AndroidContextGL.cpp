@@ -122,7 +122,7 @@ AndroidEGLSurface::AndroidEGLSurface(EGLSurface surface,
 AndroidEGLSurface::~AndroidEGLSurface()
 {
     auto result = eglDestroySurface(display_, surface_);
-    FML_DCHECK(result == EGL_TRUE);
+    //FML_DCHECK(result == EGL_TRUE);
 }
 
 bool AndroidEGLSurface::IsValid() const
@@ -159,11 +159,8 @@ SkISize AndroidEGLSurface::GetSize() const
     return SkISize::Make(width, height);
 }
 
-AndroidContextGL::AndroidContextGL(
-    AndroidRenderingAPI rendering_api,
-    fml::RefPtr<AndroidEnvironmentGL> environment)
-    : AndroidContext(AndroidRenderingAPI::kOpenGLES)
-    , environment_(environment)
+AndroidContextGL::AndroidContextGL(AndroidEnvironmentGL* environment)
+    : environment_(environment)
     , config_(nullptr)
 {
     if (!environment_->IsValid()) {

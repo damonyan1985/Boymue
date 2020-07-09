@@ -8,6 +8,7 @@
 #define AndroidEGLSurface_h
 
 #include "AndroidEnvironmentGL.h"
+#include "AndroidNativeWindow.h"
 #include <memory>
 
 namespace boymue {

@@ -39,11 +39,13 @@ target_link_libraries(
   jnigraphics
   EGL
   GLESv2
+  android
 ) 
 
 target_include_directories(
   boymue
   PRIVATE
+  ${THIRDPARTY_SRC}
   ${THIRDPARTY_SRC}/skia/include/config
   ${THIRDPARTY_SRC}/skia/include/core
   ${BOYMUE_SRC}/platform/android/gpu
