@@ -68,7 +68,7 @@ private:
 ///
 class AndroidContextGL {
 public:
-    AndroidContextGL(AndroidEnvironmentGL* environment);
+    AndroidContextGL(std::unique_ptr<AndroidEnvironmentGL> environment);
 
     ~AndroidContextGL();
 
@@ -108,7 +108,7 @@ public:
     bool ClearCurrent();
 
 private:
-    AndroidEnvironmentGL* environment_;
+    std::unique_ptr<AndroidEnvironmentGL> environment_;
     EGLConfig config_;
     EGLContext context_;
     EGLContext resource_context_;

@@ -159,7 +159,7 @@ SkISize AndroidEGLSurface::GetSize() const
     return SkISize::Make(width, height);
 }
 
-AndroidContextGL::AndroidContextGL(AndroidEnvironmentGL* environment)
+AndroidContextGL::AndroidContextGL(std::unique_ptr<AndroidEnvironmentGL> environment)
     : environment_(environment)
     , config_(nullptr)
 {
@@ -241,7 +241,7 @@ std::unique_ptr<AndroidEGLSurface> AndroidContextGL::CreateOffscreenSurface()
 
 AndroidEnvironmentGL* AndroidContextGL::Environment() const
 {
-    return environment_;
+    return environment_.get();
 }
 
 bool AndroidContextGL::IsValid() const
