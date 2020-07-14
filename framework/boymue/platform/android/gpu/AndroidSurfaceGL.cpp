@@ -5,7 +5,7 @@
 // Author yanbo on 2020.07.10.
 
 #include "AndroidSurfaceGL.h"
-
+#include "GPUSurfaceGL.h"
 #include <utility>
 
 namespace boymue {
@@ -87,12 +87,13 @@ bool AndroidSurfaceGL::SetNativeWindow(
     return true;
 }
 
-// std::unique_ptr<GLContextResult> AndroidSurfaceGL::GLContextMakeCurrent()
-// {
-//     auto default_context_result = std::make_unique<GLContextDefaultResult>(
-//         onscreen_surface_->MakeCurrent());
-//     return std::move(default_context_result);
-// }
+void AndroidSurfaceGL::GLContextMakeCurrent()
+{
+    // auto default_context_result = std::make_unique<GLContextDefaultResult>(
+    //     onscreen_surface_->MakeCurrent());
+    // return std::move(default_context_result);
+    onscreen_surface_->MakeCurrent();
+}
 
 bool AndroidSurfaceGL::GLContextClearCurrent()
 {
@@ -108,6 +109,14 @@ intptr_t AndroidSurfaceGL::GLContextFBO() const
 {
     // The default window bound framebuffer on Android.
     return 0;
+}
+
+std::unique_ptr<GPUSurfaceGL> AndroidSurfaceGL::CreateGPUSurface(GrContext* gr_context)
+{
+    if (gr_context) {
+        return std::make_unique<GPUSurfaceGL>(gr_context, this);
+    }
+    return std::make_unique<GPUSurfaceGL>(this);
 }
 
 } // namespace boymue

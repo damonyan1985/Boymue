@@ -11,11 +11,11 @@
 #include <memory>
 
 #include "AndroidContextGL.h"
-#include "AndroidEnvironmentGL.h"
+#include "GPUSurfaceDelegate.h"
 
 namespace boymue {
-
-class AndroidSurfaceGL {
+class GPUSurfaceGL;
+class AndroidSurfaceGL : public GPUSurfaceDelegate {
 public:
     AndroidSurfaceGL(std::shared_ptr<AndroidContextGL> android_context);
 
@@ -39,17 +39,19 @@ public:
     // |AndroidSurface|
     bool SetNativeWindow(AndroidNativeWindow* window);
 
-    // |GPUSurfaceGLDelegate|
-    void GLContextMakeCurrent();
+    std::unique_ptr<GPUSurfaceGL> CreateGPUSurface(GrContext* gr_context);
 
     // |GPUSurfaceGLDelegate|
-    bool GLContextClearCurrent();
+    virtual void GLContextMakeCurrent() override;
 
     // |GPUSurfaceGLDelegate|
-    bool GLContextPresent();
+    virtual bool GLContextClearCurrent() override;
 
     // |GPUSurfaceGLDelegate|
-    intptr_t GLContextFBO() const;
+    virtual bool GLContextPresent() override;
+
+    // |GPUSurfaceGLDelegate|
+    virtual intptr_t GLContextFBO() const override;
 
 private:
     const std::shared_ptr<AndroidContextGL> android_context_;

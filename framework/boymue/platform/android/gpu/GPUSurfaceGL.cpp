@@ -1,6 +1,8 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+// Copyright Boymue Authors. All rights reserved.
+// Author yanbo on 2020.07.14
 
 #include "GPUSurfaceGL.h"
 
@@ -31,8 +33,11 @@ static const int kGrCacheMaxCount = 8192;
 // system channel.
 static const size_t kGrCacheMaxByteSize = 24 * (1 << 20);
 
-GPUSurfaceGL::GPUSurfaceGL()
+GPUSurfaceGL::GPUSurfaceGL(GrContext* gr_context, GPUSurfaceDelegate* delegate)
+    : context_(gr_context)
+    , delegate_(delegate)
 {
+    delegate_->GLContextMakeCurrent();
     // auto context_switch = delegate_->GLContextMakeCurrent();
     // if (!context_switch->GetResult()) {
     //     // FML_LOG(ERROR)
@@ -68,7 +73,18 @@ GPUSurfaceGL::GPUSurfaceGL()
 
     // context_ = std::move(context);
 
-    // context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
+    const GrGLInterface* fCurIntf = GrGLCreateNativeInterface();
+    context_ = GrContext::Create(kOpenGL_GrBackend, reinterpret_cast<GrBackendContext>(fCurIntf));
+
+    context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
+
+    // GrBackendRenderTargetDesc desc;
+    // desc.fWidth = 720;
+    // desc.fHeight = 1280;
+    // desc.fConfig = kRGBA_8888_GrPixelConfig;
+    // desc.fOrigin = kTopLeft_GrSurfaceOrigin;
+    // desc.fSampleCnt = 0;
+    // desc.fStencilBits = 0;
 
     // context_owner_ = true;
 
@@ -82,18 +98,7 @@ GPUSurfaceGL::GPUSurfaceGL()
     // // FML_LOG(INFO) << "Found " << caches.size() << " SkSL shaders; precompiled "
     // //               << compiled_count;
 
-    // delegate_->GLContextClearCurrent();
-
-    const GrGLInterface* fCurIntf = GrGLCreateNativeInterface();
-    context_ = GrContext::Create(kOpenGL_GrBackend, reinterpret_cast<GrBackendContext>(fCurIntf));
-
-    GrBackendRenderTargetDesc desc;
-    desc.fWidth = 720;
-    desc.fHeight = 1280;
-    desc.fConfig = kRGBA_8888_GrPixelConfig;
-    desc.fOrigin = kTopLeft_GrSurfaceOrigin;
-    desc.fSampleCnt = 0;
-    desc.fStencilBits = 0;
+    delegate_->GLContextClearCurrent();
 
     // GLint buffer;
     // glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
@@ -143,19 +148,19 @@ bool GPUSurfaceGL::IsValid()
     return valid_;
 }
 
-static SkColorType FirstSupportedColorType(GrContext* context,
-    GrGLenum* format)
-{
-#define RETURN_IF_RENDERABLE(x, y)                   \
-    if (context->colorTypeSupportedAsSurface((x))) { \
-        *format = (y);                               \
-        return (x);                                  \
-    }
-    RETURN_IF_RENDERABLE(kRGBA_8888_SkColorType, GPU_GL_RGBA8);
-    RETURN_IF_RENDERABLE(kARGB_4444_SkColorType, GPU_GL_RGBA4);
-    RETURN_IF_RENDERABLE(kRGB_565_SkColorType, GPU_GL_RGB565);
-    return kUnknown_SkColorType;
-}
+// static SkColorType FirstSupportedColorType(GrContext* context,
+//     GrGLenum* format)
+// {
+// #define RETURN_IF_RENDERABLE(x, y)                   \
+//     if (context->colorTypeSupportedAsSurface((x))) { \
+//         *format = (y);                               \
+//         return (x);                                  \
+//     }
+//     RETURN_IF_RENDERABLE(kRGBA_8888_SkColorType, GPU_GL_RGBA8);
+//     RETURN_IF_RENDERABLE(kARGB_4444_SkColorType, GPU_GL_RGBA4);
+//     RETURN_IF_RENDERABLE(kRGB_565_SkColorType, GPU_GL_RGB565);
+//     return kUnknown_SkColorType;
+// }
 
 static SkSurface* WrapOnscreenSurface(GrContext* context,
     const SkISize& size,
@@ -193,6 +198,10 @@ static SkSurface* WrapOnscreenSurface(GrContext* context,
     desc.fWidth = size.width();
     desc.fHeight = size.height();
     desc.fOrigin = GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin;
+    desc.fConfig = kRGBA_8888_GrPixelConfig;
+    desc.fFlags = kRenderTarget_GrBackendTextureFlag;
+    desc.fSampleCnt = 0;
+    desc.fTextureHandle = fbo;
 
     return SkSurface::NewWrappedRenderTarget(context, desc, &surface_props);
 }
@@ -215,9 +224,7 @@ bool GPUSurfaceGL::CreateOrUpdateSurfaces(const SkISize& size)
         return false;
     }
 
-    sk_sp<SkSurface> onscreen_surface;
-
-    onscreen_surface = WrapOnscreenSurface(context_.get(), // GL context
+    SkSurface* onscreen_surface = WrapOnscreenSurface(context_, // GL context
         size, // root surface size
         delegate_->GLContextFBO() // window FBO ID
     );
@@ -241,17 +248,19 @@ SkMatrix GPUSurfaceGL::GetRootTransformation() const
 }
 
 // |Surface|
-std::unique_ptr<SurfaceFrame> GPUSurfaceGL::AcquireFrame(const SkISize& size)
+void* GPUSurfaceGL::AcquireFrame(const SkISize& size)
 {
-    if (delegate_ == nullptr) {
+    if (!delegate_) {
         return nullptr;
     }
-    auto context_switch = delegate_->GLContextMakeCurrent();
-    if (!context_switch->GetResult()) {
-        // FML_LOG(ERROR)
-        //     << "Could not make the context current to acquire the frame.";
-        return nullptr;
-    }
+
+    delegate_->GLContextMakeCurrent();
+    //auto context_switch = delegate_->GLContextMakeCurrent();
+    // if (!context_switch->GetResult()) {
+    //     // FML_LOG(ERROR)
+    //     //     << "Could not make the context current to acquire the frame.";
+    //     return nullptr;
+    // }
 
     // TODO(38466): Refactor GPU surface APIs take into account the fact that an
     // external view embedder may want to render to the root surface.
@@ -264,22 +273,22 @@ std::unique_ptr<SurfaceFrame> GPUSurfaceGL::AcquireFrame(const SkISize& size)
 
     const auto root_surface_transformation = GetRootTransformation();
 
-    sk_sp<SkSurface> surface = AcquireRenderSurface(size, root_surface_transformation);
+    SkSurface* surface = AcquireRenderSurface(size, root_surface_transformation);
 
-    if (surface == nullptr) {
+    if (!surface) {
         return nullptr;
     }
 
     surface->getCanvas()->setMatrix(root_surface_transformation);
-    SurfaceFrame::SubmitCallback submit_callback =
-        [weak = weak_factory_.GetWeakPtr()](const SurfaceFrame& surface_frame,
-            SkCanvas* canvas) {
-            return weak ? weak->PresentSurface(canvas) : false;
-        };
+    // SurfaceFrame::SubmitCallback submit_callback =
+    //     [weak = weak_factory_.GetWeakPtr()](const SurfaceFrame& surface_frame,
+    //         SkCanvas* canvas) {
+    //         return weak ? weak->PresentSurface(canvas) : false;
+    //     };
 
-    return std::make_unique<SurfaceFrame>(
-        surface, delegate_->SurfaceSupportsReadback(), submit_callback,
-        std::move(context_switch));
+    // return std::make_unique<SurfaceFrame>(
+    //     surface, delegate_->SurfaceSupportsReadback(), submit_callback,
+    //     std::move(context_switch));
 }
 
 bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
@@ -287,7 +296,6 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
     // if (delegate_ == nullptr || canvas == nullptr || context_ == nullptr) {
     //     return false;
     // }
-
     {
         //TRACE_EVENT0("flutter", "SkCanvas::Flush");
         onscreen_surface_->getCanvas()->flush();
@@ -302,7 +310,7 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
 
         // The FBO has changed, ask the delegate for the new FBO and do a surface
         // re-wrap.
-        auto new_onscreen_surface = WrapOnscreenSurface(context_.get(), // GL context
+        auto new_onscreen_surface = WrapOnscreenSurface(context_, // GL context
             current_size, // root surface size
             delegate_->GLContextFBO() // window FBO ID
         );
@@ -311,7 +319,7 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
             return false;
         }
 
-        onscreen_surface_ = std::move(new_onscreen_surface);
+        onscreen_surface_ = new_onscreen_surface;
     }
 
     return true;
@@ -322,7 +330,7 @@ SkSurface* GPUSurfaceGL::AcquireRenderSurface(
     const SkMatrix& root_surface_transformation)
 {
     const auto transformed_rect = root_surface_transformation.mapRect(
-        SkRect::MakeWH(untransformed_size.width(), untransformed_size.height()));
+        &SkRect::MakeWH(untransformed_size.width(), untransformed_size.height()));
 
     const auto transformed_size = SkISize::Make(transformed_rect.width(), transformed_rect.height());
 
@@ -336,17 +344,11 @@ SkSurface* GPUSurfaceGL::AcquireRenderSurface(
 // |Surface|
 GrContext* GPUSurfaceGL::GetContext()
 {
-    return context_.get();
+    return context_;
 }
 
 // |Surface|
-flutter::ExternalViewEmbedder* GPUSurfaceGL::GetExternalViewEmbedder()
-{
-    return delegate_->GetExternalViewEmbedder();
-}
-
-// |Surface|
-std::unique_ptr<GLContextResult> GPUSurfaceGL::MakeRenderContextCurrent()
+void GPUSurfaceGL::MakeRenderContextCurrent()
 {
     return delegate_->GLContextMakeCurrent();
 }

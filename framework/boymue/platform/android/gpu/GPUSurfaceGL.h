@@ -1,6 +1,13 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Copyright Boymue Authors. All rights reserved.
+// Author yanbo on 2020.07.14
+
 #ifndef GPUSurfaceGL_h
 #define GPUSurfaceGL_h
 
+#include "GPUSurfaceDelegate.h"
 #include "skia/include/core/SkSurface.h"
 #include "skia/include/gpu/GrContext.h"
 #include <memory>
@@ -8,10 +15,8 @@
 namespace boymue {
 class GPUSurfaceGL {
 public:
-    GPUSurfaceGL();
-
     // Creates a new GL surface reusing an existing GrContext.
-    GPUSurfaceGL(GrContext* gr_context);
+    GPUSurfaceGL(GrContext* gr_context, GPUSurfaceDelegate* delegate);
 
     // |Surface|
     ~GPUSurfaceGL();
@@ -25,7 +30,12 @@ public:
     // |Surface|
     GrContext* GetContext();
 
+    void MakeRenderContextCurrent();
+
+    void* AcquireFrame(const SkISize& size);
+
 private:
+    GPUSurfaceDelegate* delegate_;
     GrContext* context_;
     SkSurface* onscreen_surface_;
     bool context_owner_;
