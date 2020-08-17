@@ -16,7 +16,7 @@ namespace boymue {
 class GPUSurfaceGL {
 public:
     // Creates a new GL surface reusing an existing GrContext.
-    GPUSurfaceGL(GrContext* gr_context, GPUSurfaceDelegate* delegate);
+    GPUSurfaceGL(GPUSurfaceDelegate* delegate);
 
     // |Surface|
     ~GPUSurfaceGL();
@@ -39,6 +39,8 @@ private:
     GrContext* context_;
     SkSurface* onscreen_surface_;
     bool context_owner_;
+
+    GrRenderTarget* render_target_;
     // TODO(38466): Refactor GPU surface APIs take into account the fact that an
     // external view embedder may want to render to the root surface. This is a
     // hack to make avoid allocating resources for the root surface when an

@@ -113,9 +113,6 @@ intptr_t AndroidSurfaceGL::GLContextFBO() const
 
 std::unique_ptr<GPUSurfaceGL> AndroidSurfaceGL::CreateGPUSurface(GrContext* gr_context)
 {
-    if (gr_context) {
-        return std::make_unique<GPUSurfaceGL>(gr_context, this);
-    }
     return std::make_unique<GPUSurfaceGL>(this);
 }
 

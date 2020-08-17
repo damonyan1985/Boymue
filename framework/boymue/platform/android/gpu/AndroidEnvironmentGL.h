@@ -12,7 +12,7 @@
 namespace boymue {
 
 class AndroidEnvironmentGL {
-private:
+public:
     // MakeRefCounted
     AndroidEnvironmentGL();
 

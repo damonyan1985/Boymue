@@ -13,6 +13,8 @@
 //#include "skia/include/gpu/GrBackendSurface.h"
 //#include "skia/include/gpu/GrContextOptions.h"
 
+#include <GLES2/gl2.h>
+
 // These are common defines present on all OpenGL headers. However, we don't
 // want to perform GL header reasolution on each platform we support. So just
 // define these upfront. It is unlikely we will need more. But, if we do, we can
@@ -33,9 +35,8 @@ static const int kGrCacheMaxCount = 8192;
 // system channel.
 static const size_t kGrCacheMaxByteSize = 24 * (1 << 20);
 
-GPUSurfaceGL::GPUSurfaceGL(GrContext* gr_context, GPUSurfaceDelegate* delegate)
-    : context_(gr_context)
-    , delegate_(delegate)
+GPUSurfaceGL::GPUSurfaceGL(GPUSurfaceDelegate* delegate)
+    : delegate_(delegate)
 {
     delegate_->GLContextMakeCurrent();
     // auto context_switch = delegate_->GLContextMakeCurrent();
@@ -78,66 +79,40 @@ GPUSurfaceGL::GPUSurfaceGL(GrContext* gr_context, GPUSurfaceDelegate* delegate)
 
     context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
 
-    // GrBackendRenderTargetDesc desc;
-    // desc.fWidth = 720;
-    // desc.fHeight = 1280;
-    // desc.fConfig = kRGBA_8888_GrPixelConfig;
-    // desc.fOrigin = kTopLeft_GrSurfaceOrigin;
-    // desc.fSampleCnt = 0;
-    // desc.fStencilBits = 0;
+    GrBackendRenderTargetDesc desc;
+    desc.fWidth = SkScalarRoundToInt(720);
+    desc.fHeight = SkScalarRoundToInt(1280);
+    desc.fConfig = kSkia8888_GrPixelConfig;
+    desc.fOrigin = kBottomLeft_GrSurfaceOrigin;
+    desc.fSampleCnt = 1;
+    desc.fStencilBits = 8;
 
-    // context_owner_ = true;
+    GLint buffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
+    desc.fRenderTargetHandle = buffer;
 
-    // valid_ = true;
-
-    // std::vector<PersistentCache::SkSLCache> caches = PersistentCache::GetCacheForProcess()->LoadSkSLs();
-    // int compiled_count = 0;
-    // for (const auto& cache : caches) {
-    //     compiled_count += context_->precompileShader(*cache.first, *cache.second);
-    // }
-    // // FML_LOG(INFO) << "Found " << caches.size() << " SkSL shaders; precompiled "
-    // //               << compiled_count;
+    render_target_ = context_->textureProvider()->wrapBackendRenderTarget(desc);
 
     delegate_->GLContextClearCurrent();
-
-    // GLint buffer;
-    // glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
-    // desc.fRenderTargetHandle = buffer
-}
-
-GPUSurfaceGL::GPUSurfaceGL(GrContext* gr_context)
-    : context_(gr_context)
-{
-    // auto context_switch = delegate_->GLContextMakeCurrent();
-    // if (!context_switch->GetResult()) {
-    //     // FML_LOG(ERROR)
-    //     //     << "Could not make the context current to setup the gr context.";
-    //     return;
-    // }
-
-    // delegate_->GLContextClearCurrent();
-
-    // valid_ = true;
-    // context_owner_ = false;
 }
 
 GPUSurfaceGL::~GPUSurfaceGL()
 {
-    if (!valid_) {
-        return;
-    }
-    auto context_switch = delegate_->GLContextMakeCurrent();
-    if (!context_switch->GetResult()) {
-        // FML_LOG(ERROR) << "Could not make the context current to destroy the "
-        //                   "GrContext resources.";
-        return;
-    }
+    // if (!valid_) {
+    //     return;
+    // }
+    // auto context_switch = delegate_->GLContextMakeCurrent();
+    // if (!context_switch->GetResult()) {
+    //     // FML_LOG(ERROR) << "Could not make the context current to destroy the "
+    //     //                   "GrContext resources.";
+    //     return;
+    // }
 
-    onscreen_surface_ = nullptr;
-    if (context_owner_) {
-        context_->releaseResourcesAndAbandonContext();
-    }
-    context_ = nullptr;
+    // onscreen_surface_ = nullptr;
+    // if (context_owner_) {
+    //     context_->releaseResourcesAndAbandonContext();
+    // }
+    // context_ = nullptr;
 
     delegate_->GLContextClearCurrent();
 }
