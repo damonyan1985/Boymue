@@ -39,7 +39,7 @@ public:
     // |AndroidSurface|
     bool SetNativeWindow(AndroidNativeWindow* window);
 
-    std::unique_ptr<GPUSurfaceGL> CreateGPUSurface(GrContext* gr_context);
+    GPUSurfaceGL* CreateGPUSurface();
 
     // |GPUSurfaceGLDelegate|
     virtual void GLContextMakeCurrent() override;
@@ -57,8 +57,8 @@ private:
     const std::shared_ptr<AndroidContextGL> android_context_;
 
     AndroidNativeWindow* native_window_;
-    std::unique_ptr<AndroidEGLSurface> onscreen_surface_;
-    std::unique_ptr<AndroidEGLSurface> offscreen_surface_;
+    AndroidEGLSurface* onscreen_surface_;
+    AndroidEGLSurface* offscreen_surface_;
 };
 
 } // namespace flutter

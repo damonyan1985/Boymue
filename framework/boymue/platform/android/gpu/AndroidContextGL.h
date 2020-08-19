@@ -78,7 +78,7 @@ public:
     ///
     /// @return     The window surface.
     ///
-    std::unique_ptr<AndroidEGLSurface> CreateOnscreenSurface(
+    AndroidEGLSurface* CreateOnscreenSurface(
         AndroidNativeWindow* window) const;
 
     //----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ public:
     ///
     /// @return     The pbuffer surface.
     ///
-    std::unique_ptr<AndroidEGLSurface> CreateOffscreenSurface() const;
+    AndroidEGLSurface* CreateOffscreenSurface() const;
 
     //----------------------------------------------------------------------------
     /// @return     The Android environment that contains a reference to the

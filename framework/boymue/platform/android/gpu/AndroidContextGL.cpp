@@ -212,7 +212,7 @@ AndroidContextGL::~AndroidContextGL()
     }
 }
 
-std::unique_ptr<AndroidEGLSurface> AndroidContextGL::CreateOnscreenSurface(
+AndroidEGLSurface* AndroidContextGL::CreateOnscreenSurface(
     AndroidNativeWindow* window) const
 {
     EGLDisplay display = environment_->Display();
@@ -222,10 +222,10 @@ std::unique_ptr<AndroidEGLSurface> AndroidContextGL::CreateOnscreenSurface(
     EGLSurface surface = eglCreateWindowSurface(
         display, config_, reinterpret_cast<EGLNativeWindowType>(window->handle()),
         attribs);
-    return std::make_unique<AndroidEGLSurface>(surface, display, context_);
+    return new AndroidEGLSurface(surface, display, context_);
 }
 
-std::unique_ptr<AndroidEGLSurface> AndroidContextGL::CreateOffscreenSurface()
+AndroidEGLSurface* AndroidContextGL::CreateOffscreenSurface()
     const
 {
     // We only ever create pbuffer surfaces for background resource loading
@@ -235,7 +235,7 @@ std::unique_ptr<AndroidEGLSurface> AndroidContextGL::CreateOffscreenSurface()
     const EGLint attribs[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE };
 
     EGLSurface surface = eglCreatePbufferSurface(display, config_, attribs);
-    return std::make_unique<AndroidEGLSurface>(surface, display,
+    return new AndroidEGLSurface(surface, display,
         resource_context_);
 }
 

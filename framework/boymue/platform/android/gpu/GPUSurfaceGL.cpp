@@ -74,8 +74,8 @@ GPUSurfaceGL::GPUSurfaceGL(GPUSurfaceDelegate* delegate)
 
     // context_ = std::move(context);
 
-    const GrGLInterface* fCurIntf = GrGLCreateNativeInterface();
-    context_ = GrContext::Create(kOpenGL_GrBackend, reinterpret_cast<GrBackendContext>(fCurIntf));
+    //const GrGLInterface* fCurIntf = GrGLCreateNativeInterface();
+    context_ = GrContext::Create(kOpenGL_GrBackend, reinterpret_cast<GrBackendContext>(delegate_->GetGLInterface()));
 
     context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
 
@@ -225,45 +225,45 @@ SkMatrix GPUSurfaceGL::GetRootTransformation() const
 // |Surface|
 void* GPUSurfaceGL::AcquireFrame(const SkISize& size)
 {
-    if (!delegate_) {
-        return nullptr;
-    }
-
-    delegate_->GLContextMakeCurrent();
-    //auto context_switch = delegate_->GLContextMakeCurrent();
-    // if (!context_switch->GetResult()) {
-    //     // FML_LOG(ERROR)
-    //     //     << "Could not make the context current to acquire the frame.";
+    // if (!delegate_) {
     //     return nullptr;
     // }
 
-    // TODO(38466): Refactor GPU surface APIs take into account the fact that an
-    // external view embedder may want to render to the root surface.
-    // if (!render_to_surface_) {
-    //     return std::make_unique<SurfaceFrame>(
-    //         nullptr, true, [](const SurfaceFrame& surface_frame, SkCanvas* canvas) {
-    //             return true;
-    //         });
+    // delegate_->GLContextMakeCurrent();
+    // //auto context_switch = delegate_->GLContextMakeCurrent();
+    // // if (!context_switch->GetResult()) {
+    // //     // FML_LOG(ERROR)
+    // //     //     << "Could not make the context current to acquire the frame.";
+    // //     return nullptr;
+    // // }
+
+    // // TODO(38466): Refactor GPU surface APIs take into account the fact that an
+    // // external view embedder may want to render to the root surface.
+    // // if (!render_to_surface_) {
+    // //     return std::make_unique<SurfaceFrame>(
+    // //         nullptr, true, [](const SurfaceFrame& surface_frame, SkCanvas* canvas) {
+    // //             return true;
+    // //         });
+    // // }
+
+    // const auto root_surface_transformation = GetRootTransformation();
+
+    // SkSurface* surface = AcquireRenderSurface(size, root_surface_transformation);
+
+    // if (!surface) {
+    //     return nullptr;
     // }
 
-    const auto root_surface_transformation = GetRootTransformation();
+    // surface->getCanvas()->setMatrix(root_surface_transformation);
+    // // SurfaceFrame::SubmitCallback submit_callback =
+    // //     [weak = weak_factory_.GetWeakPtr()](const SurfaceFrame& surface_frame,
+    // //         SkCanvas* canvas) {
+    // //         return weak ? weak->PresentSurface(canvas) : false;
+    // //     };
 
-    SkSurface* surface = AcquireRenderSurface(size, root_surface_transformation);
-
-    if (!surface) {
-        return nullptr;
-    }
-
-    surface->getCanvas()->setMatrix(root_surface_transformation);
-    // SurfaceFrame::SubmitCallback submit_callback =
-    //     [weak = weak_factory_.GetWeakPtr()](const SurfaceFrame& surface_frame,
-    //         SkCanvas* canvas) {
-    //         return weak ? weak->PresentSurface(canvas) : false;
-    //     };
-
-    // return std::make_unique<SurfaceFrame>(
-    //     surface, delegate_->SurfaceSupportsReadback(), submit_callback,
-    //     std::move(context_switch));
+    // // return std::make_unique<SurfaceFrame>(
+    // //     surface, delegate_->SurfaceSupportsReadback(), submit_callback,
+    // //     std::move(context_switch));
 }
 
 bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
@@ -271,31 +271,31 @@ bool GPUSurfaceGL::PresentSurface(SkCanvas* canvas)
     // if (delegate_ == nullptr || canvas == nullptr || context_ == nullptr) {
     //     return false;
     // }
-    {
-        //TRACE_EVENT0("flutter", "SkCanvas::Flush");
-        onscreen_surface_->getCanvas()->flush();
-    }
+    // {
+    //     //TRACE_EVENT0("flutter", "SkCanvas::Flush");
+    //     onscreen_surface_->getCanvas()->flush();
+    // }
 
-    if (!delegate_->GLContextPresent()) {
-        return false;
-    }
+    // if (!delegate_->GLContextPresent()) {
+    //     return false;
+    // }
 
-    if (delegate_->GLContextFBOResetAfterPresent()) {
-        auto current_size = SkISize::Make(onscreen_surface_->width(), onscreen_surface_->height());
+    // if (delegate_->GLContextFBOResetAfterPresent()) {
+    //     auto current_size = SkISize::Make(onscreen_surface_->width(), onscreen_surface_->height());
 
-        // The FBO has changed, ask the delegate for the new FBO and do a surface
-        // re-wrap.
-        auto new_onscreen_surface = WrapOnscreenSurface(context_, // GL context
-            current_size, // root surface size
-            delegate_->GLContextFBO() // window FBO ID
-        );
+    //     // The FBO has changed, ask the delegate for the new FBO and do a surface
+    //     // re-wrap.
+    //     auto new_onscreen_surface = WrapOnscreenSurface(context_, // GL context
+    //         current_size, // root surface size
+    //         delegate_->GLContextFBO() // window FBO ID
+    //     );
 
-        if (!new_onscreen_surface) {
-            return false;
-        }
+    //     if (!new_onscreen_surface) {
+    //         return false;
+    //     }
 
-        onscreen_surface_ = new_onscreen_surface;
-    }
+    //     onscreen_surface_ = new_onscreen_surface;
+    // }
 
     return true;
 }
@@ -304,16 +304,18 @@ SkSurface* GPUSurfaceGL::AcquireRenderSurface(
     const SkISize& untransformed_size,
     const SkMatrix& root_surface_transformation)
 {
-    const auto transformed_rect = root_surface_transformation.mapRect(
-        &SkRect::MakeWH(untransformed_size.width(), untransformed_size.height()));
+    // const auto transformed_rect = root_surface_transformation.mapRect(
+    //     &SkRect::MakeWH(untransformed_size.width(), untransformed_size.height()));
 
-    const auto transformed_size = SkISize::Make(transformed_rect.width(), transformed_rect.height());
+    // const auto transformed_size = SkISize::Make(transformed_rect.width(), transformed_rect.height());
 
-    if (!CreateOrUpdateSurfaces(transformed_size)) {
-        return nullptr;
-    }
+    // if (!CreateOrUpdateSurfaces(transformed_size)) {
+    //     return nullptr;
+    // }
 
-    return onscreen_surface_;
+    // return onscreen_surface_;
+
+    return nullptr;
 }
 
 // |Surface|

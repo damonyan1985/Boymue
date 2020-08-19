@@ -16,6 +16,8 @@ class AndroidNativeWindow {
 public:
     using Handle = ANativeWindow*;
 
+    AndroidNativeWindow(Handle window);
+
     bool IsValid() const;
 
     Handle handle() const;
@@ -24,11 +26,7 @@ public:
 
 private:
     Handle window_;
-
-    /// Creates a native window with the given handle. Handle ownership is assumed
-    /// by this instance of the native window.
-    explicit AndroidNativeWindow(Handle window);
-
+    
     ~AndroidNativeWindow();
 };
 

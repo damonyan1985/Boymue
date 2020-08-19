@@ -11,7 +11,7 @@
 namespace boymue {
 
 AndroidSurfaceGL::AndroidSurfaceGL(
-    std::shared_ptr<AndroidContext> android_context)
+    std::shared_ptr<AndroidContextGL> android_context)
     : android_context_(
         std::static_pointer_cast<AndroidContextGL>(android_context))
     , native_window_(nullptr)
@@ -111,9 +111,9 @@ intptr_t AndroidSurfaceGL::GLContextFBO() const
     return 0;
 }
 
-std::unique_ptr<GPUSurfaceGL> AndroidSurfaceGL::CreateGPUSurface(GrContext* gr_context)
+GPUSurfaceGL* AndroidSurfaceGL::CreateGPUSurface()
 {
-    return std::make_unique<GPUSurfaceGL>(this);
+    return new GPUSurfaceGL(this);
 }
 
 } // namespace boymue

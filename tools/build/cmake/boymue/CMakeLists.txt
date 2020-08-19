@@ -48,5 +48,7 @@ target_include_directories(
   ${THIRDPARTY_SRC}
   ${THIRDPARTY_SRC}/skia/include/config
   ${THIRDPARTY_SRC}/skia/include/core
+  ${THIRDPARTY_SRC}/skia/include/gpu
+  ${THIRDPARTY_SRC}/skia/include/utils
   ${BOYMUE_SRC}/platform/android/gpu
 )

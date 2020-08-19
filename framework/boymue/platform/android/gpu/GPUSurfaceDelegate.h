@@ -45,12 +45,6 @@ public:
     virtual SkMatrix GLContextSurfaceTransformation() const;
 
     const GrGLInterface* GetGLInterface() const;
-
-    // TODO(chinmaygarde): The presence of this method is to work around the fact
-    // that not all platforms can accept a custom GL proc table. Migrate all
-    // platforms to move GL proc resolution to the embedder and remove this
-    // method.
-    static const GrGLInterface* GetDefaultPlatformGLInterface();
 };
 
 } // namespace boymue

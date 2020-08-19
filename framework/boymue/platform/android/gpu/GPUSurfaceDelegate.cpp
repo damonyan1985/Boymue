@@ -6,9 +6,9 @@
 
 #include "GPUSurfaceDelegate.h"
 
-#include "skia/include/gpu/gl/GrGLAssembleInterface.h"
+#include "skia/src/gpu/gl/GrGLAssembleInterface.h"
 
-namespace flutter {
+namespace boymue {
 
 GPUSurfaceDelegate::~GPUSurfaceDelegate() = default;
 
@@ -29,50 +29,45 @@ SkMatrix GPUSurfaceDelegate::GLContextSurfaceTransformation() const
     return matrix;
 }
 
-static sk_sp<const GrGLInterface> CreateGLInterface(
-    GPUSurfaceGLDelegate::GLProcResolver proc_resolver)
+// static sk_sp<const GrGLInterface> CreateGLInterface(
+//     GPUSurfaceGLDelegate::GLProcResolver proc_resolver)
+// {
+//     if (proc_resolver == nullptr) {
+//         // If there is no custom proc resolver, ask Skia to guess the native
+//         // interface. This often leads to interesting results on most platforms.
+//         return GrGLMakeNativeInterface();
+//     }
+
+//     struct ProcResolverContext {
+//         GPUSurfaceGLDelegate::GLProcResolver resolver;
+//     };
+
+//     ProcResolverContext context = { proc_resolver };
+
+//     GrGLGetProc gl_get_proc = [](void* context,
+//                                   const char gl_proc_name[]) -> GrGLFuncPtr {
+//         auto proc_resolver_context = reinterpret_cast<ProcResolverContext*>(context);
+//         return reinterpret_cast<GrGLFuncPtr>(
+//             proc_resolver_context->resolver(gl_proc_name));
+//     };
+
+//     // glGetString indicates an OpenGL ES interface.
+//     if (IsProcResolverOpenGLES(proc_resolver)) {
+//         return GrGLMakeAssembledGLESInterface(&context, gl_get_proc);
+//     }
+
+//     // Fallback to OpenGL.
+//     if (auto interface = GrGLMakeAssembledGLInterface(&context, gl_get_proc)) {
+//         return interface;
+//     }
+
+//     //FML_LOG(ERROR) << "Could not create a valid GL interface.";
+//     return nullptr;
+// }
+
+const GrGLInterface* GPUSurfaceDelegate::GetGLInterface() const
 {
-    if (proc_resolver == nullptr) {
-        // If there is no custom proc resolver, ask Skia to guess the native
-        // interface. This often leads to interesting results on most platforms.
-        return GrGLMakeNativeInterface();
-    }
-
-    struct ProcResolverContext {
-        GPUSurfaceGLDelegate::GLProcResolver resolver;
-    };
-
-    ProcResolverContext context = { proc_resolver };
-
-    GrGLGetProc gl_get_proc = [](void* context,
-                                  const char gl_proc_name[]) -> GrGLFuncPtr {
-        auto proc_resolver_context = reinterpret_cast<ProcResolverContext*>(context);
-        return reinterpret_cast<GrGLFuncPtr>(
-            proc_resolver_context->resolver(gl_proc_name));
-    };
-
-    // glGetString indicates an OpenGL ES interface.
-    if (IsProcResolverOpenGLES(proc_resolver)) {
-        return GrGLMakeAssembledGLESInterface(&context, gl_get_proc);
-    }
-
-    // Fallback to OpenGL.
-    if (auto interface = GrGLMakeAssembledGLInterface(&context, gl_get_proc)) {
-        return interface;
-    }
-
-    //FML_LOG(ERROR) << "Could not create a valid GL interface.";
-    return nullptr;
-}
-
-const GrGLInterface* GPUSurfaceGLDelegate::GetGLInterface() const
-{
-    return CreateGLInterface(GetGLProcResolver());
-}
-
-const GrGLInterface* GPUSurfaceGLDelegate::GetDefaultPlatformGLInterface()
-{
-    return CreateGLInterface(nullptr);
+    return GrGLCreateNativeInterface();
 }
 
 } // namespace flutter

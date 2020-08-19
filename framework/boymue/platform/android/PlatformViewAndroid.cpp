@@ -23,7 +23,7 @@ PlatformViewAndroid::PlatformViewAndroid()
 void PlatformViewAndroid::NotifyCreated(AndroidNativeWindow* native_window)
 {
     // gpu线程执行
-    //m_surface->SetNativeWindow(native_window);
+    m_surface->SetNativeWindow(native_window);
     //std::unique_ptr<Surface> surface = CreateRenderingSurface();
 }
 
