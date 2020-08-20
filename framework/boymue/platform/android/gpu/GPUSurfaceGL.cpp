@@ -79,21 +79,21 @@ GPUSurfaceGL::GPUSurfaceGL(GPUSurfaceDelegate* delegate)
 
     context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
 
-    GrBackendRenderTargetDesc desc;
-    desc.fWidth = SkScalarRoundToInt(720);
-    desc.fHeight = SkScalarRoundToInt(1280);
-    desc.fConfig = kSkia8888_GrPixelConfig;
-    desc.fOrigin = kBottomLeft_GrSurfaceOrigin;
-    desc.fSampleCnt = 1;
-    desc.fStencilBits = 8;
+    // GrBackendRenderTargetDesc desc;
+    // desc.fWidth = SkScalarRoundToInt(720);
+    // desc.fHeight = SkScalarRoundToInt(1280);
+    // desc.fConfig = kSkia8888_GrPixelConfig;
+    // desc.fOrigin = kBottomLeft_GrSurfaceOrigin;
+    // desc.fSampleCnt = 1;
+    // desc.fStencilBits = 8;
 
-    GLint buffer;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
-    desc.fRenderTargetHandle = buffer;
+    // GLint buffer;
+    // glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
+    // desc.fRenderTargetHandle = buffer;
 
-    render_target_ = context_->textureProvider()->wrapBackendRenderTarget(desc);
+    // render_target_ = context_->textureProvider()->wrapBackendRenderTarget(desc);
 
-    delegate_->GLContextClearCurrent();
+    //delegate_->GLContextClearCurrent();
 }
 
 GPUSurfaceGL::~GPUSurfaceGL()
@@ -169,16 +169,24 @@ static SkSurface* WrapOnscreenSurface(GrContext* context,
     //     &surface_props // surface properties
     // );
 
-    GrBackendTextureDesc desc;
-    desc.fWidth = size.width();
-    desc.fHeight = size.height();
-    desc.fOrigin = GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin;
-    desc.fConfig = kRGBA_8888_GrPixelConfig;
-    desc.fFlags = kRenderTarget_GrBackendTextureFlag;
-    desc.fSampleCnt = 0;
-    desc.fTextureHandle = fbo;
+    GrBackendRenderTargetDesc desc;
+    desc.fWidth = SkScalarRoundToInt(720);
+    desc.fHeight = SkScalarRoundToInt(1280);
+    desc.fConfig = kSkia8888_GrPixelConfig;
+    desc.fOrigin = kBottomLeft_GrSurfaceOrigin;
+    desc.fSampleCnt = 1;
+    desc.fStencilBits = 8;
 
-    return SkSurface::NewWrappedRenderTarget(context, desc, &surface_props);
+    GLint buffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
+    desc.fRenderTargetHandle = buffer;
+
+    auto render_target_ = context->textureProvider()->wrapBackendRenderTarget(desc);
+
+    // SkSurfaceProps surface_props(
+    //     SkSurfaceProps::InitType::kLegacyFontHost_InitType);
+
+    return SkSurface::NewRenderTargetDirect(render_target_, &surface_props);
 }
 
 bool GPUSurfaceGL::CreateOrUpdateSurfaces(const SkISize& size)

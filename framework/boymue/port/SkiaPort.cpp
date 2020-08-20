@@ -10,12 +10,11 @@
 
 #include "AndroidContextGL.h"
 
-
 #include "skia/include/core/SkColorFilter.h"
 #include "skia/include/core/SkRect.h"
 #include "skia/include/core/SkSurface.h"
-#include "skia/include/gpu/gl/GrGLInterface.h"
 #include "skia/include/gpu/GrContext.h"
+#include "skia/include/gpu/gl/GrGLInterface.h"
 
 #include <GLES2/gl2.h>
 #include <android/native_window_jni.h>
@@ -38,16 +37,14 @@ extern "C" JNIEXPORT void JNICALL Java_com_boymue_app_core_port_SkiaPort_initSur
     glClearColor(1.0f, 0, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-
     const GrGLInterface* fCurIntf = GrGLCreateNativeInterface();
     GrContext* context_ = GrContext::Create(kOpenGL_GrBackend, reinterpret_cast<GrBackendContext>(fCurIntf));
 
     //context_->setResourceCacheLimits(kGrCacheMaxCount, kGrCacheMaxByteSize);
 
-
     GrBackendRenderTargetDesc desc;
-    desc.fWidth = SkScalarRoundToInt(720);
-    desc.fHeight = SkScalarRoundToInt(1280);
+    desc.fWidth = width;
+    desc.fHeight = height;
     desc.fConfig = kSkia8888_GrPixelConfig;
     desc.fOrigin = kBottomLeft_GrSurfaceOrigin;
     desc.fSampleCnt = 1;

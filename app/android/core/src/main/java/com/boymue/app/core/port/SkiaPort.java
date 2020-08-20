@@ -33,14 +33,14 @@ public class SkiaPort {
         activity.setContentView(fMainView);
 
         // Set a timer that will periodically request an update of the SkiaDrawView
-        Timer fAnimationTimer = new Timer();
-        fAnimationTimer.schedule(new TimerTask() {
-            public void run()
-            {
-                // This will request an update of the SkiaDrawView, even from other threads
-                fMainView.postInvalidate();
-            }
-        }, 0, 5); // 0 means no delay before the timer starts; 5 means repeat every 5 milliseconds
+//        Timer fAnimationTimer = new Timer();
+//        fAnimationTimer.schedule(new TimerTask() {
+//            public void run()
+//            {
+//                // This will request an update of the SkiaDrawView, even from other threads
+//                fMainView.postInvalidate();
+//            }
+//        }, 0, 5); // 0 means no delay before the timer starts; 5 means repeat every 5 milliseconds
     }
 
     private static class SkiaDrawView extends SurfaceView implements SurfaceHolder.Callback {
@@ -79,7 +79,7 @@ public class SkiaPort {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            });
+            }).start();
         }
 
         @Override
