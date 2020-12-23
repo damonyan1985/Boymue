@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{CD543DD6-9FF6-4685-B183-0B37FD9A4AA2}</ProjectGuid>
+    <ProjectGuid>{B55BD03F-2DA4-4202-92D0-C634032CD830}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>core</RootNamespace>
+    <RootNamespace>jpeg</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,17 +88,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;HAVE_EXPAT_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;JPEG_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,7 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;JPEG_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -115,7 +113,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +123,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;JPEG_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -136,7 +133,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +143,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;JPEG_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -157,27 +153,72 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h" />
-    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h" />
-    <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\cderror.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jchuff.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jconfig.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jdhuff.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jerror.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jinclude.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jmemsys.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jmorecfg.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jpegint.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jpeglib.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jsimd_neon.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\jversion.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jpeg\transupp.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\event\WaitEvent.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\Thread.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcapimin.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcapistd.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jccoefct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jccolor.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcdctmgr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jchuff.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcinit.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcmainct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcmarker.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcmaster.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcomapi.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcparam.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcphuff.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcprepct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jcsample.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jctrans.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdapimin.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdapistd.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdatadst.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdatasrc.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdcoefct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdcolor.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jddctmgr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdhuff.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdinput.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdmainct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdmarker.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdmaster.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdmerge.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdphuff.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdpostct.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdsample.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jdtrans.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jerror.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jfdctflt.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jfdctfst.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jfdctint.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jidctflt.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jidctfst.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jidctint.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jidctred.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jmemmgr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jmemnobs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jquant1.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jquant2.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jpeg\jutils.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -185,9 +226,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="core.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

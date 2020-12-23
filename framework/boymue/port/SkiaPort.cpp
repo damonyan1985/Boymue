@@ -66,7 +66,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_boymue_app_core_port_SkiaPort_initSur
 
     // Setup a SkPaint for drawing our text
     SkPaint paint;
-    paint.setColor(SK_ColorBLACK); // This is a solid black color for our text
+    paint.setColor(SK_ColorRED); // This is a solid black color for our text
     paint.setTextSize(SkIntToScalar(30)); // Sets the text size to 30 pixels
     paint.setAntiAlias(true); // We turn on anti-aliasing so that the text to looks good.
 

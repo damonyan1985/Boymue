@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{CD543DD6-9FF6-4685-B183-0B37FD9A4AA2}</ProjectGuid>
+    <ProjectGuid>{B0E2FB33-2012-4FBD-9519-F50F32A86531}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>core</RootNamespace>
+    <RootNamespace>expat</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,17 +88,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;HAVE_EXPAT_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;HAVE_EXPAT_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\expat;$(BOYMUE_ROOT)\framework\thirdparty\expat\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>expat.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -115,7 +114,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>expat.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +125,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -136,7 +135,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>expat.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -157,27 +156,32 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>expat.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h" />
-    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h" />
-    <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h" />
-    <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\expat_config.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\ascii.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\asciitab.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\expat.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\expat_external.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\iasciitab.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\internal.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\latin1tab.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\nametab.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\utf8tab.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\xmlrole.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\xmltok.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\expat\lib\xmltok_impl.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\event\WaitEvent.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\Thread.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\expat\lib\xmlparse.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\expat\lib\xmlrole.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\expat\lib\xmltok.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\expat\lib\xmltok_impl.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\expat\lib\xmltok_ns.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -187,7 +191,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="core.def" />
+    <None Include="expat.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{385E51CF-649B-472C-80EA-30A03BC73E13}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>freetype</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;FREETYPE_EXPORTS;_WINDOWS;_USRDLL;FT2_BUILD_LIBRARY=1;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;FREETYPE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;FREETYPE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;FREETYPE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\config\ftheader.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\config\ftoption.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\freetype.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftadvanc.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftbbox.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftbdf.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftbitmap.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftbzip2.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftcache.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftchapters.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftcid.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftdriver.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\fterrdef.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\fterrors.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftgasp.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftglyph.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftgxval.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftgzip.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftimage.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftincrem.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftlist.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftlzw.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftmac.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftmm.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftmodapi.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftmoderr.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftotval.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftoutln.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftparams.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftpfr.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftrender.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftsizes.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftsnames.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftstroke.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftsynth.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftsystem.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\fttrigon.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\fttypes.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\t1tables.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\ttnameid.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\tttables.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\freetype\tttags.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\include\ft2build.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\freetype\source\cid\cidload.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\autofit\autofit.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\basepic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftapi.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftbase.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftbbox.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftbitmap.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftdbgmem.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftfstype.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftglyph.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftinit.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftpic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftstroke.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftsynth.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\ftsystem.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\base\fttype1.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\bdf\bdfdrivr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\bdf\bdflib.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cff\cff.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cid\cidgload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cid\cidload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cid\cidobjs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cid\cidparse.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\cid\cidriver.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\gzip\ftgzip.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\lzw\ftlzw.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pcf\pcfdrivr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pcf\pcfread.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pcf\pcfutil.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pfr\pfr.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pfr\pfrgload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pfr\pfrload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pfr\pfrobjs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pfr\pfrsbit.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psaux\afmparse.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psaux\psaux.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psaux\psconv.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psaux\psobjs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psaux\t1decode.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pshinter\pshglob.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pshinter\pshinter.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pshinter\pshpic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\pshinter\pshrec.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psnames\psnames.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\psnames\pspic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\raster\raster.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\raster\rastpic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\pngshim.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\sfdriver.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\sfntpic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\sfobjs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttbdf.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttcmap.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttkern.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttmtx.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttpost.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\sfnt\ttsbit.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\smooth\ftspic.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\smooth\smooth.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\tools\apinames.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\truetype\truetype.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1afm.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1driver.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1gload.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1load.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1objs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type1\t1parse.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type42\t42objs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type42\t42parse.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\type42\type42.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\freetype\source\winfonts\winfnt.c" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
