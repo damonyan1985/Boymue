@@ -465,4 +465,9 @@
       <Filter>src\pcf</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="freetype.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

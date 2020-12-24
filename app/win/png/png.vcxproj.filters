@@ -111,4 +111,9 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="png.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>
