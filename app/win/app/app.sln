@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "..\freetype\fre
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skia", "..\skia\skia.vcxproj", "{69B61F84-7F81-4923-8DB5-E10DAB216117}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gif", "..\gif\gif.vcxproj", "{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{69B61F84-7F81-4923-8DB5-E10DAB216117}.Release|x64.Build.0 = Release|x64
 		{69B61F84-7F81-4923-8DB5-E10DAB216117}.Release|x86.ActiveCfg = Release|Win32
 		{69B61F84-7F81-4923-8DB5-E10DAB216117}.Release|x86.Build.0 = Release|Win32
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Debug|x64.ActiveCfg = Debug|x64
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Debug|x64.Build.0 = Debug|x64
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Debug|x86.ActiveCfg = Debug|Win32
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Debug|x86.Build.0 = Debug|Win32
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Release|x64.ActiveCfg = Release|x64
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Release|x64.Build.0 = Release|x64
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Release|x86.ActiveCfg = Release|Win32
+		{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

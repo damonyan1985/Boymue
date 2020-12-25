@@ -8,7 +8,12 @@ two modules will be linked.  Preserve this property!
 
 *****************************************************************************/
 
+#ifdef _WINDOWS
+#include <io.h>
+#include <process.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,14 +62,26 @@ EGifOpenFileName(const char *FileName, const bool TestExistence, int *Error)
     int FileHandle;
     GifFileType *GifFile;
 
-    if (TestExistence)
+    if (TestExistence) {
         /* android-changed: changed "S_IREAD | S_IWRITE" to "S_IRUSR | S_IWUSR" */
+#if _WINDOWS
         FileHandle = open(FileName, O_WRONLY | O_CREAT | O_EXCL,
-                          S_IRUSR | S_IWUSR);
-    else
+            S_IREAD | S_IWRITE);
+#else
+        FileHandle = open(FileName, O_WRONLY | O_CREAT | O_EXCL,
+            S_IRUSR | S_IWUSR);
+#endif
+    }
+    else {
+#if _WINDOWS
+        FileHandle = open(FileName, O_WRONLY | O_CREAT | O_TRUNC,
+            S_IREAD | S_IWRITE);
+#else
         /* android-changed: changed "S_IREAD | S_IWRITE" to "S_IRUSR | S_IWUSR" */
         FileHandle = open(FileName, O_WRONLY | O_CREAT | O_TRUNC,
-                          S_IRUSR | S_IWUSR);
+            S_IRUSR | S_IWUSR);
+#endif
+    }
 
     if (FileHandle == -1) {
         if (Error != NULL)

@@ -213,4 +213,9 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="jpeg.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

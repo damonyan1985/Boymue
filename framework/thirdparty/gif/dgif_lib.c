@@ -12,7 +12,12 @@ two modules will be linked.  Preserve this property!
 #include <limits.h>
 #include <stdint.h>
 #include <fcntl.h>
+#ifdef _WINDOWS
+#include <io.h>
+#include <process.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 
