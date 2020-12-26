@@ -67,14 +67,8 @@
     <Filter Include="src\core">
       <UniqueIdentifier>{9afdcf66-ddbd-4405-b8aa-7fdfafdeab2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\animator">
-      <UniqueIdentifier>{9807f528-d557-4ce7-9581-e1545cc1d926}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\codec">
       <UniqueIdentifier>{1e3de4d5-d926-4ac3-8d66-1f2aaa01d1c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\device">
-      <UniqueIdentifier>{97119e0f-278a-42c4-99f9-01604ffd9aef}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\effects">
       <UniqueIdentifier>{65b40422-8cf7-41ee-bf2b-3b5d493ef518}</UniqueIdentifier>
@@ -106,9 +100,6 @@
     <Filter Include="src\utils">
       <UniqueIdentifier>{239324a3-12ea-4114-8294-1880fd6e78cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\device\xps">
-      <UniqueIdentifier>{196bdd71-0245-43ce-8b71-bde5aa793be5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\effects\gradients">
       <UniqueIdentifier>{69bc1a65-3dea-44eb-a4c7-975756fc264a}</UniqueIdentifier>
     </Filter>
@@ -120,9 +111,6 @@
     </Filter>
     <Filter Include="src\pathops">
       <UniqueIdentifier>{d156cc25-35ec-475e-98e1-660e39e38ee8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\xml">
-      <UniqueIdentifier>{90be93cc-7de2-4ecc-9a89-f2ec10689332}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\c">
       <UniqueIdentifier>{9cc1907e-87fb-4be8-93de-f39f5f4bf5de}</UniqueIdentifier>
@@ -1212,234 +1200,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\include\device\xps\SkXPSDevice.h">
       <Filter>include\device\xps</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkADrawable.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimate.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateActive.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateBase.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateMaker.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateProperties.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateSet.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimatorScript.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimatorScript2.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkBoundable.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayable.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayAdd.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayApply.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayBounds.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayEvent.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayEvents.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayInclude.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayInput.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayList.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayMath.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayMovie.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayNumber.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayPost.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayRandom.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayScreenplay.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayType.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayTypes.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayXMLParser.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDraw3D.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawBitmap.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawBlur.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawClip.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawColor.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawDash.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawDiscrete.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawEmboss.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawFull.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawGradient.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawGroup.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawLine.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawMatrix.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawOval.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPaint.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPath.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPoint.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawRectangle.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawSaveLayer.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawShader.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawText.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTextBox.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTo.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTransparentShader.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDump.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkExtras.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkHitClear.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkHitTest.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkIntArray.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkMatrixParts.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkMemberInfo.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOpArray.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOperand.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOperand2.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOperandInterpolator.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPaintPart.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPathParts.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPostParts.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScript.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScript2.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScriptCallBack.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScriptRuntime.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkSnapshot.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTDArray_Experimental.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTextOnPath.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTextToPath.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTypedArray.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkXMLAnimatorWriter.h">
-      <Filter>src\animator</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\codec\SkCodec_libbmp.h">
       <Filter>src\codec</Filter>
     </ClInclude>
@@ -1524,9 +1284,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkGScalerContext.h">
       <Filter>src\fonts</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkTestScalerContext.h">
-      <Filter>src\fonts</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\bmpdecoderhelper.h">
       <Filter>src\images</Filter>
     </ClInclude>
@@ -1542,9 +1299,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImage_Base.h">
       <Filter>src\image</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImage_Gpu.h">
-      <Filter>src\image</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImagePriv.h">
       <Filter>src\image</Filter>
     </ClInclude>
@@ -1552,9 +1306,6 @@
       <Filter>src\image</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkSurface_Base.h">
-      <Filter>src\image</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkSurface_Gpu.h">
       <Filter>src\image</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\lazy\SkCachingPixelRef.h">
@@ -1627,9 +1378,6 @@
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils.h">
-      <Filter>src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_pthread.h">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_win.h">
@@ -1740,12 +1488,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType_common.h">
       <Filter>src\ports</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkScalerContext_win_dw.h">
-      <Filter>src\ports</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkTypeface_win_dw.h">
-      <Filter>src\ports</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\SkGPipePriv.h">
       <Filter>src\pipe</Filter>
     </ClInclude>
@@ -1826,9 +1568,6 @@
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkReduceOrder.h">
       <Filter>src\pathops</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkBML_Verbs.h">
-      <Filter>src\xml</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\c\sk_c_from_to.h">
       <Filter>src\c</Filter>
@@ -2306,240 +2045,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\core\SkYUVPlanesCache.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkADrawable.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateActive.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateBase.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateField.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateMaker.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimateSet.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimator.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimatorScript.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkAnimatorScript2.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkBoundable.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkBuildCondensedInfo.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkCondensedDebug.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkCondensedRelease.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayable.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayAdd.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayApply.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayBounds.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayEvent.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayEvents.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayInclude.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayInput.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayList.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayMath.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayMovie.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayNumber.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayPost.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayRandom.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayScreenplay.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayType.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayTypes.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDisplayXMLParser.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDraw3D.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawBitmap.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawBlur.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawClip.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawColor.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawDash.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawDiscrete.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawEmboss.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawExtraPathEffect.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawFull.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawGradient.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawGroup.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawLine.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawMatrix.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawOval.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPaint.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPath.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawPoint.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawRectangle.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawSaveLayer.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawShader.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawText.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTextBox.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTo.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDrawTransparentShader.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkDump.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkGetCondensedInfo.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkHitClear.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkHitTest.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkMatrixParts.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkMemberInfo.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOpArray.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkOperandIterpolator.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPaintPart.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkParseSVGPath.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPathParts.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkPostParts.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScript.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScriptDecompile.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScriptRuntime.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkScriptTokenizer.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkSnapshot.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTextOnPath.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTextToPath.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTime.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkTypedArray.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\animator\SkXMLAnimatorWriter.cpp">
-      <Filter>src\animator</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\codec\SkCodec.cpp">
       <Filter>src\codec</Filter>
     </ClCompile>
@@ -2578,9 +2083,6 @@
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\codec\SkSwizzler.cpp">
       <Filter>src\codec</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\device\xps\SkXPSDevice.cpp">
-      <Filter>src\device\xps</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\effects\Sk1DPathEffect.cpp">
       <Filter>src\effects</Filter>
@@ -2744,9 +2246,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\effects\gradients\SkTwoPointConicalGradient_gpu.cpp">
       <Filter>src\effects\gradients</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkFontMgr_fontconfig.cpp">
-      <Filter>src\fonts</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkFontMgr_indirect.cpp">
       <Filter>src\fonts</Filter>
     </ClCompile>
@@ -2754,9 +2253,6 @@
       <Filter>src\fonts</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkRemotableFontMgr.cpp">
-      <Filter>src\fonts</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkTestScalerContext.cpp">
       <Filter>src\fonts</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\bmpdecoderhelper.cpp">
@@ -2780,9 +2276,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_FactoryRegistrar.cpp">
       <Filter>src\images</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_ktx.cpp">
-      <Filter>src\images</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_libbmp.cpp">
       <Filter>src\images</Filter>
     </ClCompile>
@@ -2796,15 +2289,6 @@
       <Filter>src\images</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_libpng.cpp">
-      <Filter>src\images</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_libwebp.cpp">
-      <Filter>src\images</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_pkm.cpp">
-      <Filter>src\images</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageDecoder_wbmp.cpp">
       <Filter>src\images</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageEncoder.cpp">
@@ -2834,16 +2318,10 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImage.cpp">
       <Filter>src\image</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImage_Gpu.cpp">
-      <Filter>src\image</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImage_Raster.cpp">
       <Filter>src\image</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkSurface.cpp">
-      <Filter>src\image</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkSurface_Gpu.cpp">
       <Filter>src\image</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkSurface_Raster.cpp">
@@ -2907,12 +2385,6 @@
       <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkLayer.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkLua.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkLuaCanvas.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkMatrix22.cpp">
@@ -2981,18 +2453,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkTextureCompressor_R11EAC.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_pthread.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_pthread_linux.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_pthread_mach.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_pthread_other.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_win.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
@@ -3026,9 +2486,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkDiscardableMemory_none.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontConfigInterface_direct.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_fontconfig.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
@@ -3047,34 +2504,10 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_default_gdi.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_fontconfig.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_win_dw.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageDecoder_CG.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageDecoder_empty.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageDecoder_WIC.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageGenerator_none.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageGenerator_skia.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkMemory_malloc.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkMemory_mozalloc.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkOSFile_posix.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkOSFile_stdio.cpp">
@@ -3083,22 +2516,10 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkOSFile_win.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkRemotableFontMgr_win_dw.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkScalerContext_win_dw.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkTime_win.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkTLS_pthread.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkTLS_win.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkTypeface_win_dw.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\SkGPipeRead.cpp">
@@ -3111,9 +2532,6 @@
       <Filter>src\pipe\utils</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkAddIntersections.cpp">
-      <Filter>src\pathops</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkConicLineIntersection.cpp">
       <Filter>src\pathops</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkDConicLineIntersection.cpp">
@@ -3182,9 +2600,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkPathOpsPoint.cpp">
       <Filter>src\pathops</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkPathOpsPostSect.cpp">
-      <Filter>src\pathops</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkPathOpsQuad.cpp">
       <Filter>src\pathops</Filter>
     </ClCompile>
@@ -3211,21 +2626,6 @@
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pathops\SkReduceOrder.cpp">
       <Filter>src\pathops</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkBML_XMLParser.cpp">
-      <Filter>src\xml</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkDOM.cpp">
-      <Filter>src\xml</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkXMLParser.cpp">
-      <Filter>src\xml</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkXMLPullParser.cpp">
-      <Filter>src\xml</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\xml\SkXMLWriter.cpp">
-      <Filter>src\xml</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\c\sk_paint.cpp">
       <Filter>src\c</Filter>

@@ -1111,7 +1111,7 @@ void SkScalerContext_FreeType::generateMetrics(SkGlyph* glyph) {
     FT_Error    err;
 
     if (this->setupSize()) {
-        goto ERROR;
+        goto SkFontHost_ErrorLabel;
     }
 
     err = FT_Load_Glyph( fFace, glyph->getGlyphID(), fLoadGlyphFlags );
@@ -1120,7 +1120,7 @@ void SkScalerContext_FreeType::generateMetrics(SkGlyph* glyph) {
         SkDEBUGF(("SkScalerContext_FreeType::generateMetrics(%x): FT_Load_Glyph(glyph:%d flags:%x) returned 0x%x\n",
                     fFaceRec->fFontID, glyph->getGlyphID(), fLoadGlyphFlags, err));
 #endif
-    ERROR:
+    SkFontHost_ErrorLabel: // boymue redefine error label
         glyph->zeroMetrics();
         return;
     }
@@ -1168,7 +1168,7 @@ void SkScalerContext_FreeType::generateMetrics(SkGlyph* glyph) {
 
       default:
         SkDEBUGFAIL("unknown glyph format");
-        goto ERROR;
+        goto SkFontHost_ErrorLabel;
     }
 
     if (fRec.fFlags & SkScalerContext::kVertical_Flag) {
@@ -1277,7 +1277,7 @@ void SkScalerContext_FreeType::generateFontMetrics(SkPaint::FontMetrics* metrics
     SkAutoMutexAcquire ac(gFTMutex);
 
     if (this->setupSize()) {
-        ERROR:
+        SkFontHost_ErrorLabel:
         sk_bzero(metrics, sizeof(*metrics));
         return;
     }
@@ -1369,7 +1369,7 @@ void SkScalerContext_FreeType::generateFontMetrics(SkPaint::FontMetrics* metrics
         metrics->fFlags &= ~SkPaint::FontMetrics::kUnderlineThinknessIsValid_Flag;
         metrics->fFlags &= ~SkPaint::FontMetrics::kUnderlinePositionIsValid_Flag;
     } else {
-        goto ERROR;
+        goto SkFontHost_ErrorLabel;
     }
 
     // synthesize elements that were not provided by the os/2 table or format-specific metrics
