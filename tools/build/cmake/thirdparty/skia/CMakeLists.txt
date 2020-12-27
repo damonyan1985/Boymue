@@ -295,7 +295,7 @@ set(
 	${SKIA_SRC}/src/images/SkImageEncoder.cpp
 	${SKIA_SRC}/src/images/SkImageEncoder_Factory.cpp
 	${SKIA_SRC}/src/images/SkImageEncoder_argb.cpp
-	${SKIA_SRC}/src/images/SkJpegUtility.cpp
+	${SKIA_SRC}/src/images/SkJpegUtilityEx.cpp
 	${SKIA_SRC}/src/images/SkMovie.cpp
 	${SKIA_SRC}/src/images/SkMovie_gif.cpp
 	${SKIA_SRC}/src/images/SkPageFlipper.cpp

@@ -103,9 +103,6 @@
     <Filter Include="src\effects\gradients">
       <UniqueIdentifier>{69bc1a65-3dea-44eb-a4c7-975756fc264a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\utils\win">
-      <UniqueIdentifier>{ce883edb-33f3-4f24-bf80-687f07b8a622}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\pipe\utils">
       <UniqueIdentifier>{d079e002-4114-4f26-b260-001a248bdc0d}</UniqueIdentifier>
     </Filter>
@@ -114,6 +111,9 @@
     </Filter>
     <Filter Include="src\c">
       <UniqueIdentifier>{9cc1907e-87fb-4be8-93de-f39f5f4bf5de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils\win">
+      <UniqueIdentifier>{3711054a-55ac-4653-9d40-9d03787fc7ed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1287,9 +1287,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\bmpdecoderhelper.h">
       <Filter>src\images</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkJpegUtility.h">
-      <Filter>src\images</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkScaledBitmapSampler.h">
       <Filter>src\images</Filter>
     </ClInclude>
@@ -1386,18 +1383,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkTLogic.h">
       <Filter>src\utils</Filter>
     </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWrite.h">
-      <Filter>src\utils\win</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteFontFileStream.h">
-      <Filter>src\utils\win</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteGeometrySink.h">
-      <Filter>src\utils\win</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkWGL.h">
-      <Filter>src\utils\win</Filter>
-    </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt\SkIBMFamilyClass.h">
       <Filter>src\sfnt</Filter>
     </ClInclude>
@@ -1483,9 +1468,6 @@
       <Filter>src\sfnt</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontConfigTypeface.h">
-      <Filter>src\ports</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType_common.h">
       <Filter>src\ports</Filter>
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\SkGPipePriv.h">
@@ -1574,6 +1556,9 @@
     </ClInclude>
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\c\sk_types_priv.h">
       <Filter>src\c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\skia\src\images\SkJpegUtilityEx.h">
+      <Filter>src\images</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2300,9 +2285,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageEncoder_Factory.cpp">
       <Filter>src\images</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkJpegUtility.cpp">
-      <Filter>src\images</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkMovie.cpp">
       <Filter>src\images</Filter>
     </ClCompile>
@@ -2456,27 +2438,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_win.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkAutoCoInitialize.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWrite.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteFontFileStream.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteGeometrySink.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkHRESULT.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkIStream.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkWGL_win.cpp">
-      <Filter>src\utils\win</Filter>
-    </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt\SkOTTable_name.cpp">
       <Filter>src\sfnt</Filter>
     </ClCompile>
@@ -2484,24 +2445,6 @@
       <Filter>src\sfnt</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkDiscardableMemory_none.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_fontconfig.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType_common.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_win.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_default_dw.cpp">
-      <Filter>src\ports</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_default_gdi.cpp">
       <Filter>src\ports</Filter>
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageGenerator_skia.cpp">
@@ -2632,6 +2575,24 @@
     </ClCompile>
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\c\sk_surface.cpp">
       <Filter>src\c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkDebug_win.cpp">
+      <Filter>src\ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkGlobalInitialization_default.cpp">
+      <Filter>src\ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkFontMgr_default_gdi.cpp">
+      <Filter>src\ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkFontHost_win.cpp">
+      <Filter>src\ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\utils\win\SkHRESULT.cpp">
+      <Filter>src\utils\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\images\SkJpegUtilityEx.cpp">
+      <Filter>src\images</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

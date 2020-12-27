@@ -11,6 +11,16 @@ gif_lib.h - service library for decoding and encoding GIF images
 extern "C" {
 #endif /* __cplusplus */
 
+#ifdef _WINDOWS
+#  ifdef GIF_DLL_EXPORT 
+#    define GIF_EXTERN(type) __declspec(dllexport) type _cdecl
+#  else
+#    define GIF_EXTERN(type) __declspec(dllimport) type _cdecl
+#  endif
+#else
+#  define GIF_EXTERN(type) extern type
+#endif
+
 #define GIFLIB_MAJOR 5
 #define GIFLIB_MINOR 1
 #define GIFLIB_RELEASE 1
@@ -178,9 +188,9 @@ int EGifPutCodeNext(GifFileType *GifFile,
 /* Main entry points */
 GifFileType *DGifOpenFileName(const char *GifFileName, int *Error);
 GifFileType *DGifOpenFileHandle(int GifFileHandle, int *Error);
-int DGifSlurp(GifFileType * GifFile);
-GifFileType *DGifOpen(void *userPtr, InputFunc readFunc, int *Error);    /* new one (TVT) */
-    int DGifCloseFile(GifFileType * GifFile, int *ErrorCode);
+GIF_EXTERN(int) DGifSlurp(GifFileType * GifFile);
+GIF_EXTERN(GifFileType*) DGifOpen(void *userPtr, InputFunc readFunc, int *Error);    /* new one (TVT) */
+GIF_EXTERN(int) DGifCloseFile(GifFileType * GifFile, int *ErrorCode);
 
 #define D_GIF_SUCCEEDED          0
 #define D_GIF_ERR_OPEN_FAILED    101    /* And DGif possible errors. */
@@ -199,14 +209,14 @@ GifFileType *DGifOpen(void *userPtr, InputFunc readFunc, int *Error);    /* new 
 
 /* These are legacy.  You probably do not want to call them directly */
 int DGifGetScreenDesc(GifFileType *GifFile);
-int DGifGetRecordType(GifFileType *GifFile, GifRecordType *GifType);
-int DGifGetImageDesc(GifFileType *GifFile);
-int DGifGetLine(GifFileType *GifFile, GifPixelType *GifLine, int GifLineLen);
+GIF_EXTERN(int) DGifGetRecordType(GifFileType *GifFile, GifRecordType *GifType);
+GIF_EXTERN(int) DGifGetImageDesc(GifFileType *GifFile);
+GIF_EXTERN(int) DGifGetLine(GifFileType *GifFile, GifPixelType *GifLine, int GifLineLen);
 int DGifGetPixel(GifFileType *GifFile, GifPixelType GifPixel);
 int DGifGetComment(GifFileType *GifFile, char *GifComment);
-int DGifGetExtension(GifFileType *GifFile, int *GifExtCode,
+GIF_EXTERN(int) DGifGetExtension(GifFileType *GifFile, int *GifExtCode,
                      GifByteType **GifExtension);
-int DGifGetExtensionNext(GifFileType *GifFile, GifByteType **GifExtension);
+GIF_EXTERN(int) DGifGetExtensionNext(GifFileType *GifFile, GifByteType **GifExtension);
 int DGifGetCode(GifFileType *GifFile, int *GifCodeSize,
                 GifByteType **GifCodeBlock);
 int DGifGetCodeNext(GifFileType *GifFile, GifByteType **GifCodeBlock);
@@ -249,11 +259,11 @@ extern int GifBitSize(int n);
 ******************************************************************************/
 
 extern void GifApplyTranslation(SavedImage *Image, GifPixelType Translation[]);
-extern int GifAddExtensionBlock(int *ExtensionBlock_Count,
+GIF_EXTERN(int) GifAddExtensionBlock(int *ExtensionBlock_Count,
 				ExtensionBlock **ExtensionBlocks, 
 				int Function, 
 				unsigned int Len, unsigned char ExtData[]);
-extern void GifFreeExtensions(int *ExtensionBlock_Count,
+GIF_EXTERN(void) GifFreeExtensions(int *ExtensionBlock_Count,
 			      ExtensionBlock **ExtensionBlocks);
 extern SavedImage *GifMakeSavedImage(GifFileType *GifFile,
                                   const SavedImage *CopyFrom);

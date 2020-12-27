@@ -105,7 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SKIA_EXPORTS;_WINDOWS;_USRDLL;SK_BUILD_FOR_WIN32;SKIA_IMPLEMENTATION=1;_FORTIFY_SOURCE=1;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;SKIA_EXPORTS;_WINDOWS;WIN32;_USRDLL;SK_BUILD_FOR_WIN32;SKIA_IMPLEMENTATION=1;_FORTIFY_SOURCE=1;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\c;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\codec;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\pathops;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\pipe;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\ports;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\images;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\sfnt;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\opts;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils\win;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\effects;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\effects;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\lazy;$(BOYMUE_ROOT)\framework\thirdparty\skia\third_party\etc1;$(BOYMUE_ROOT)\framework\thirdparty\skia\third_party\ktx;$(BOYMUE_ROOT)\framework\thirdparty\jpeg;$(BOYMUE_ROOT)\framework\thirdparty\png\include;$(BOYMUE_ROOT)\framework\thirdparty\zlib;$(BOYMUE_ROOT)\framework\thirdparty\gif;$(BOYMUE_ROOT)\framework\thirdparty\expat\lib;$(BOYMUE_ROOT)\framework\thirdparty\freetype\include;$(BOYMUE_ROOT)\framework\thirdparty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -114,7 +114,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>expat.lib;png.lib;zlib.lib;jpeg.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>expat.lib;png.lib;zlib.lib;jpeg.lib;freetype.lib;gif.lib;usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOYMUE_ROOT)\app\win\app\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -549,7 +549,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\effects\SkGpuBlurUtils.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\fonts\SkGScalerContext.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\bmpdecoderhelper.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkJpegUtility.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkScaledBitmapSampler.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\transform_scanline.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image\SkImagePriv.h" />
@@ -587,7 +586,6 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\SkGPipePriv.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\utils\SamplePipeControllers.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontConfigTypeface.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType_common.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt\SkIBMFamilyClass.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt\SkOTTableTypes.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt\SkOTTable_EBDT.h" />
@@ -639,10 +637,7 @@
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_win.h" />
     <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkTLogic.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWrite.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteFontFileStream.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteGeometrySink.h" />
-    <ClInclude Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkWGL.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\skia\src\images\SkJpegUtilityEx.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -888,7 +883,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageEncoder.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageEncoder_argb.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkImageEncoder_Factory.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkJpegUtility.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkMovie.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkMovie_gif.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\images\SkPageFlipper.cpp" />
@@ -936,12 +930,6 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\SkGPipeWrite.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\pipe\utils\SamplePipeControllers.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkDiscardableMemory_none.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_fontconfig.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_FreeType_common.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontHost_win.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_default_dw.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkFontMgr_default_gdi.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkImageGenerator_skia.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkMemory_malloc.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\ports\SkOSFile_stdio.cpp" />
@@ -990,13 +978,12 @@
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkTextureCompressor_LATC.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkTextureCompressor_R11EAC.cpp" />
     <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\SkThreadUtils_win.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkAutoCoInitialize.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWrite.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteFontFileStream.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkDWriteGeometrySink.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkHRESULT.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkIStream.cpp" />
-    <ClCompile Include="$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils\win\SkWGL_win.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\images\SkJpegUtilityEx.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkDebug_win.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkFontHost_win.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkFontMgr_default_gdi.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\ports\SkGlobalInitialization_default.cpp" />
+    <ClCompile Include="..\..\..\framework\thirdparty\skia\src\utils\win\SkHRESULT.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

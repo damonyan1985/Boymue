@@ -10,7 +10,7 @@
 #include "SkDither.h"
 #include "SkImageDecoder.h"
 #include "SkImageEncoder.h"
-#include "SkJpegUtility.h"
+#include "SkJpegUtilityEx.h"
 #include "SkRTConf.h"
 #include "SkRect.h"
 #include "SkScaledBitmapSampler.h"
