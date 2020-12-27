@@ -18,7 +18,7 @@
 // Author yanbo on 2020.07.05
 class BOYMUE_PORTING_API BoymueOnLoadWin {
 public:
-    static void init();
+    static void initWindow(HWND hwnd, int width, int height);
 };
 
 #endif // !BoymueOnLoadWin_h

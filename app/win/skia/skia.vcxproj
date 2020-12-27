@@ -97,6 +97,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>skia.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SKIA_EXPORTS;_WINDOWS;WIN32;_USRDLL;SK_BUILD_FOR_WIN32;SKIA_IMPLEMENTATION=1;_FORTIFY_SOURCE=1;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;SKIA_EXPORTS;_WINDOWS;WIN32;_USRDLL;SKIA_DLL;SK_BUILD_FOR_WIN32;SKIA_IMPLEMENTATION=1;_FORTIFY_SOURCE=1;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\c;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\codec;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\pathops;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\pipe;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\ports;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\images;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\sfnt;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\sfnt;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\image;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\opts;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\utils;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils\win;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\effects;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\effects;$(BOYMUE_ROOT)\framework\thirdparty\skia\src\lazy;$(BOYMUE_ROOT)\framework\thirdparty\skia\third_party\etc1;$(BOYMUE_ROOT)\framework\thirdparty\skia\third_party\ktx;$(BOYMUE_ROOT)\framework\thirdparty\jpeg;$(BOYMUE_ROOT)\framework\thirdparty\png\include;$(BOYMUE_ROOT)\framework\thirdparty\zlib;$(BOYMUE_ROOT)\framework\thirdparty\gif;$(BOYMUE_ROOT)\framework\thirdparty\expat\lib;$(BOYMUE_ROOT)\framework\thirdparty\freetype\include;$(BOYMUE_ROOT)\framework\thirdparty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -116,6 +117,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>expat.lib;png.lib;zlib.lib;jpeg.lib;freetype.lib;gif.lib;usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOYMUE_ROOT)\app\win\app\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>skia.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -136,6 +138,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>skia.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,6 +159,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>skia.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -991,6 +995,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="skia.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

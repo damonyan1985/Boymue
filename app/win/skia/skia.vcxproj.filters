@@ -2595,4 +2595,9 @@
       <Filter>src\images</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="skia.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

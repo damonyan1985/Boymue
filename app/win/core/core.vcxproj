@@ -103,19 +103,23 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;SKIA_DLL;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\config;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty;$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(BOYMUE_ROOT)\app\win\app\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>skia.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

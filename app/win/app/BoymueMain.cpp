@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "BoymueOnLoadWin.h"
 
 LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 int WINAPI wWinMain(
@@ -38,6 +39,14 @@ int WINAPI wWinMain(
 LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
+    case WM_CREATE: {
+        RECT rect;
+        ::GetClientRect(hWnd, &rect);
+        BoymueOnLoadWin::initWindow(hWnd, 
+            rect.right - rect.left,
+            rect.bottom - rect.top);
+        break;
+    }
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);

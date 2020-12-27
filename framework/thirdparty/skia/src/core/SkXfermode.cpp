@@ -16,7 +16,7 @@
 #include "SkString.h"
 #include "SkUtilsArm.h"
 #include "SkWriteBuffer.h"
-#include "SkXfermode_opts_SSE2.h"
+//#include "SkXfermode_opts_SSE2.h"
 #include "SkXfermode_proccoeff.h"
 
 // When implemented, the Sk4f and Sk4px xfermodes beat src/opts/SkXfermodes_opts_SSE2's.
