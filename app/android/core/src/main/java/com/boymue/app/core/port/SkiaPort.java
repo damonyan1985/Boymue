@@ -15,6 +15,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.boymue.app.core.port.init.BoymueInit;
+
 public class SkiaPort {
     /** Called when the activity is first created. */
     public static void init(Activity activity) {
@@ -22,6 +24,7 @@ public class SkiaPort {
 
 
         try {
+            //BoymueInit.initFont(activity);
             // Load Skia and then the app shared object in this order
             System.loadLibrary("boymue");
         } catch (UnsatisfiedLinkError e) {

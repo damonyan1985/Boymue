@@ -1,10 +1,11 @@
 #include "BoymueOnLoadWin.h"
-#include "Thread.h"
 #include "SkBitmap.h"
-#include "SkString.h"
 #include "SkCanvas.h"
+#include "SkString.h"
 #include "SkSurface.h"
+#include "Thread.h"
 #include <stdio.h>
+#include <string>
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
@@ -33,8 +34,7 @@ public:
         return hBmp;
     }
 
-
-    virtual void run() 
+    virtual void run()
     {
         /*
         LPVOID pBits = NULL;
@@ -106,31 +106,38 @@ public:
         delete this;
     }
 
-    void Draw(SkCanvas* canvas, int w, int h) {
+    void WcharToChar(const wchar_t* wp, std::string& text, size_t encode)
+    {
+        //std::string str;
+        int len = WideCharToMultiByte(encode, 0, wp, wcslen(wp), NULL, 0, NULL, NULL);
+        char* chs = new char[len + 1];
+        WideCharToMultiByte(encode, 0, wp, wcslen(wp), chs, len, NULL, NULL);
+        chs[len] = '\0';
+        text = chs;
+    }
 
+    void Draw(SkCanvas* canvas, int w, int h)
+    {
+
+        //canvas->save();
         SkPaint paint;
         paint.setStrokeWidth(1);
         paint.setARGB(0xff, 0xff, 0, 0);
+        canvas->drawRect(SkRect::MakeXYWH(10, 10, 100, 100), paint);
+        //canvas->restore();
 
-        for (int i = 0; i < h; i++)
-        {
-            canvas->drawPoint(0, i, paint);
-        }
-
-        for (int i = w; i > 0; i--)
-        {
-            canvas->drawPoint(i - 1, h - 1, paint);
-        }
-
+        //canvas->save();
         SkPaint textpaint;
-        textpaint.reset();
+        //textpaint.reset();
         textpaint.setTextSize(16);
-        textpaint.setColor(SkColor(0xffff0000));
+        textpaint.setARGB(0xff, 0xff, 0, 0);
         textpaint.setAntiAlias(true);
-        SkString string("Hello World");
-
-        canvas->drawText(&string, string.size(), 1, 16, textpaint);
-
+        //SkString string("Hello World");
+        const wchar_t* text = L"Hello World";
+        std::string str;
+        WcharToChar(text, str, CP_UTF8);
+        canvas->drawText(str.c_str(), str.size(), 20, 100, textpaint);
+        //canvas->restore();
         canvas->flush();
     }
 
@@ -140,7 +147,8 @@ private:
     SkBitmap* m_skbitmap;
 };
 
-void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
+void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height)
+{
     UIThread* thread = new UIThread(hwnd);
     thread->start();
 }

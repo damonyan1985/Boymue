@@ -10,6 +10,7 @@
 
 #include "AndroidContextGL.h"
 
+#include "SkTypeface.h"
 #include "skia/include/core/SkColorFilter.h"
 #include "skia/include/core/SkRect.h"
 #include "skia/include/core/SkSurface.h"
@@ -64,14 +65,18 @@ extern "C" JNIEXPORT void JNICALL Java_com_boymue_app_core_port_SkiaPort_initSur
 
     canvas->drawColor(SK_ColorWHITE);
 
+    SkTypeface* typeface = SkTypeface::CreateFromFile("/system/fonts/NotoSansCJK-Regular.ttc", SkTypeface::kNormal);
     // Setup a SkPaint for drawing our text
     SkPaint paint;
+    if (typeface) {
+        paint.setTypeface(typeface);
+    }
     paint.setColor(SK_ColorRED); // This is a solid black color for our text
     paint.setTextSize(SkIntToScalar(30)); // Sets the text size to 30 pixels
     paint.setAntiAlias(true); // We turn on anti-aliasing so that the text to looks good.
 
     // Draw some text
-    SkString text("Skia is Best!");
+    SkString text("Skia纯测试");
     SkScalar fontHeight = paint.getFontSpacing();
     canvas->drawText(text.c_str(), text.size(), // text's data and length
         10, fontHeight, // X and Y coordinates to place the text
