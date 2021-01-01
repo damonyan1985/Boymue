@@ -75,6 +75,12 @@
     <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h">
       <Filter>thread\task</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\Task.h">
+      <Filter>thread\task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskThread.h">
+      <Filter>thread\task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -96,6 +102,12 @@
       <Filter>thread\time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp">
+      <Filter>thread\task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\Task.cpp">
+      <Filter>thread\task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskThread.cpp">
       <Filter>thread\task</Filter>
     </ClCompile>
   </ItemGroup>

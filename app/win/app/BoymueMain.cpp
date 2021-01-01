@@ -50,6 +50,7 @@ LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
+        BoymueOnLoadWin::repaint();
         EndPaint(hWnd, &ps);
     }
         break;

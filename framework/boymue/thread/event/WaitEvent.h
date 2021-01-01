@@ -15,7 +15,7 @@ namespace boymue {
 class WaitEvent final {
 public:
     WaitEvent();
-    ~WaitEvent();
+    ~WaitEvent() {};
 
     void signal();
     void reset();

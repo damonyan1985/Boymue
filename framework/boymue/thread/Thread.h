@@ -1,4 +1,5 @@
 #ifndef Thread_h
+#define Thread_h
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05

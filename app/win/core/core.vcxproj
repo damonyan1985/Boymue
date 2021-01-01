@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;SKIA_DLL;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\config;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty;$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\config;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty;$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\platform\view;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;$(BOYMUE_ROOT)\framework\boymue\thread\task;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -169,7 +169,9 @@
     <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h" />
     <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\Task.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskThread.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h" />
@@ -179,7 +181,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\event\WaitEvent.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\Task.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskThread.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\Thread.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp" />
     <ClCompile Include="dllmain.cpp" />

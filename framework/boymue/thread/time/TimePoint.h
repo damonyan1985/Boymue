@@ -18,14 +18,6 @@ public:
 
     static TimePoint now();
 
-    static constexpr TimePoint min() {
-        return TimePoint(std::numeric_limits<int64_t>::min());
-    }
-
-    static constexpr TimePoint max() {
-        return TimePoint(std::numeric_limits<int64_t>::max());
-    }
-
     static constexpr TimePoint fromEpochDelta(TimeDelta ticks) {
         return TimePoint(ticks.toNanoseconds());
     }

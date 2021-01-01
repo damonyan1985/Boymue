@@ -4,71 +4,22 @@
 #include "SkString.h"
 #include "SkSurface.h"
 #include "Thread.h"
+#include "TaskThread.h"
 #include <stdio.h>
 #include <string>
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
-class UIThread : public boymue::Thread {
+class UIRuntime {
 public:
-    UIThread(HWND hwnd)
+    UIRuntime(HWND hwnd)
         : m_hwnd(hwnd)
+        , m_bitmapInfo(nullptr)
     {
-    }
-
-    HBITMAP createGDIBitmap(int width, int height, void** ppBits)
-    {
-        BITMAPINFO bmi;
-        memset(&bmi, 0, sizeof(bmi));
-        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bmi.bmiHeader.biWidth = width;
-        bmi.bmiHeader.biHeight = height;
-        bmi.bmiHeader.biPlanes = 1;
-        bmi.bmiHeader.biBitCount = 32;
-        bmi.bmiHeader.biCompression = BI_RGB;
-        bmi.bmiHeader.biSizeImage = 0;
-
-        HDC hdc = GetDC(NULL);
-        HBITMAP hBmp = CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, ppBits, 0, 0);
-        ReleaseDC(NULL, hdc);
-        return hBmp;
     }
 
     virtual void run()
     {
-        /*
-        LPVOID pBits = NULL;
-        m_bitmap = createGDIBitmap(360, 640, &pBits);
-        m_skbitmap = new SkBitmap();
-        
-        m_skbitmap->setInfo(SkImageInfo::Make(360, 640, kN32_SkColorType, kPremul_SkAlphaType));
-        m_skbitmap->setPixels(pBits);
-        printf("just test");
-
-        SkCanvas* canvas = new SkCanvas(*m_skbitmap);
-        SkPaint paint;
-        paint.setXfermodeMode(SkXfermode::kClear_Mode);
-        paint.setColor(SK_ColorRED);
-        paint.setTextSize(SkIntToScalar(30));
-        paint.setAntiAlias(true);
-
-        // Draw some text
-        SkString text("Skia is Best!");
-        SkScalar fontHeight = paint.getFontSpacing();
-        canvas->drawText(text.c_str(), text.size(),
-            10, fontHeight,
-            paint);
-
-        
-
-        HDC hdc = GetDC(m_hwnd);
-
-        HDC comDC = ::CreateCompatibleDC(hdc);
-        SelectObject(comDC, m_bitmap);
-        BitBlt(comDC, 0, 0, 360, 640, hdc, 0, 0, SRCCOPY);
-
-        ReleaseDC(m_hwnd, hdc);
-        DeleteDC(comDC);*/
         HDC hdc = GetDC(m_hwnd);
         RECT rt;
         GetClientRect(m_hwnd, &rt);
@@ -76,16 +27,16 @@ public:
         int bmph = rt.bottom - rt.top;
 
         const size_t bmpSize = sizeof(BITMAPINFOHEADER) + bmpw * bmph * sizeof(uint32_t);
-        BITMAPINFO* bmpInfo = (BITMAPINFO*)new BYTE[bmpSize]();
-        bmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bmpInfo->bmiHeader.biWidth = bmpw;
+        m_bitmapInfo = (BITMAPINFO*)new BYTE[bmpSize]();
+        m_bitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        m_bitmapInfo->bmiHeader.biWidth = bmpw;
 
-        bmpInfo->bmiHeader.biHeight = -bmph;
+        m_bitmapInfo->bmiHeader.biHeight = -bmph;
 
-        bmpInfo->bmiHeader.biPlanes = 1;
-        bmpInfo->bmiHeader.biBitCount = 32;
-        bmpInfo->bmiHeader.biCompression = BI_RGB;
-        void* pixels = bmpInfo->bmiColors;
+        m_bitmapInfo->bmiHeader.biPlanes = 1;
+        m_bitmapInfo->bmiHeader.biBitCount = 32;
+        m_bitmapInfo->bmiHeader.biCompression = BI_RGB;
+        void* pixels = m_bitmapInfo->bmiColors;
 
         SkImageInfo info = SkImageInfo::Make(bmpw, bmph,
             kBGRA_8888_SkColorType, kPremul_SkAlphaType);
@@ -99,11 +50,11 @@ public:
 
         StretchDIBits(hdc, 0, 0, bmpw, bmph,
             0, 0, bmpw, bmph,
-            pixels, bmpInfo,
+            pixels, m_bitmapInfo,
             DIB_RGB_COLORS, SRCCOPY);
 
-        delete[] bmpInfo;
-        delete this;
+        //delete[] m_bitmapInfo;
+        //delete this;
     }
 
     void WcharToChar(const wchar_t* wp, std::string& text, size_t encode)
@@ -118,37 +69,80 @@ public:
 
     void Draw(SkCanvas* canvas, int w, int h)
     {
-
-        //canvas->save();
+        
         SkPaint paint;
         paint.setStrokeWidth(1);
         paint.setARGB(0xff, 0xff, 0, 0);
         canvas->drawRect(SkRect::MakeXYWH(10, 10, 100, 100), paint);
-        //canvas->restore();
+        
 
-        //canvas->save();
         SkPaint textpaint;
-        //textpaint.reset();
         textpaint.setTextSize(16);
-        textpaint.setARGB(0xff, 0xff, 0, 0);
+        textpaint.setColor(SK_ColorRED);
         textpaint.setAntiAlias(true);
         //SkString string("Hello World");
         const wchar_t* text = L"Hello World";
         std::string str;
         WcharToChar(text, str, CP_UTF8);
-        canvas->drawText(str.c_str(), str.size(), 20, 100, textpaint);
+        canvas->drawText(str.c_str(), str.size(), 20, 300, textpaint);
         //canvas->restore();
-        canvas->flush();
+        //canvas->flush();
+    }
+
+    BITMAPINFO* getBitmap() const
+    {
+        return m_bitmapInfo;
+    }
+
+    HWND getWindow() const 
+    {
+        return m_hwnd;
     }
 
 private:
     HWND m_hwnd;
-    HBITMAP m_bitmap;
     SkBitmap* m_skbitmap;
+    BITMAPINFO* m_bitmapInfo;
 };
+
+static UIRuntime* s_uiRuntime;
+static boymue::TaskThread* getUiThread()
+{
+    static boymue::TaskThread uiThread;
+    return &uiThread;
+}
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height)
 {
-    UIThread* thread = new UIThread(hwnd);
-    thread->start();
+    s_uiRuntime = new UIRuntime(hwnd);
+    //UIThread* thread = new UIThread(hwnd);
+    //thread->start();
+    getUiThread()->start();
+    getUiThread()->getTaskRunner().postTask([&]() {
+        s_uiRuntime->run();
+    });
+}
+
+void BoymueOnLoadWin::repaint()
+{
+    getUiThread()->getTaskRunner().postTask([&]() {
+        if (!s_uiRuntime->getWindow()) {
+            return;
+        }
+
+        HWND hwnd = s_uiRuntime->getWindow();
+        HDC hdc = GetDC(s_uiRuntime->getWindow());
+        BITMAPINFO* bmp = s_uiRuntime->getBitmap();
+        if (bmp) {
+            RECT rt;
+            GetClientRect(hwnd, &rt);
+            int bmpw = rt.right - rt.left;
+            int bmph = rt.bottom - rt.top;
+
+            StretchDIBits(hdc, 0, 0, bmpw, bmph,
+                0, 0, bmpw, bmph,
+                bmp->bmiColors, bmp,
+                DIB_RGB_COLORS, SRCCOPY);
+        }
+    });
 }

@@ -19,6 +19,7 @@
 class BOYMUE_PORTING_API BoymueOnLoadWin {
 public:
     static void initWindow(HWND hwnd, int width, int height);
+    static void repaint();
 };
 
 #endif // !BoymueOnLoadWin_h

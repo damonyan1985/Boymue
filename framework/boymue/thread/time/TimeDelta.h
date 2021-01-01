@@ -16,12 +16,7 @@ public:
     constexpr TimeDelta() = default;
 
     static constexpr TimeDelta zero() { return TimeDelta(); }
-    static constexpr TimeDelta min() {
-        return TimeDelta(std::numeric_limits<int64_t>::min());
-    }
-    static constexpr TimeDelta max() {
-        return TimeDelta(std::numeric_limits<int64_t>::max());
-    }
+   
     static constexpr TimeDelta fromNanoseconds(int64_t nanos) {
         return TimeDelta(nanos);
     }
