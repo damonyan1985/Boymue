@@ -15,14 +15,28 @@ else()
 	include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
 endif()
 
-set(
+file(
+  GLOB
   port_src_list
   ${BOYMUE_SRC}/port/SkiaPort.cpp
+  ${BOYMUE_SRC}/port/android/*.cpp
+)
+
+file(
+  GLOB
+  core_src_list
+  ${BOYMUE_SRC}/core/paint/*.cpp
+  ${BOYMUE_SRC}/core/view/*.cpp
+  ${BOYMUE_SRC}/thread/*.cpp
+  ${BOYMUE_SRC}/thread/event/*.cpp
+  ${BOYMUE_SRC}/thread/task/*.cpp
+  ${BOYMUE_SRC}/thread/time/*.cpp
 )
 
 file(
   GLOB 
   platform_src_list
+  ${BOYMUE_SRC}/platform/android/*.cpp
   ${BOYMUE_SRC}/platform/android/gpu/*.cpp
 )
 
@@ -31,6 +45,7 @@ add_library(
   SHARED
   ${port_src_list}
   ${platform_src_list}
+  ${core_src_list}
 )
 
 target_link_libraries(
@@ -51,4 +66,11 @@ target_include_directories(
   ${THIRDPARTY_SRC}/skia/include/gpu
   ${THIRDPARTY_SRC}/skia/include/utils
   ${BOYMUE_SRC}/platform/android/gpu
+  ${BOYMUE_SRC}/platform/android
+  ${BOYMUE_SRC}/core/view
+  ${BOYMUE_SRC}/core/paint
+  ${BOYMUE_SRC}/thread
+  ${BOYMUE_SRC}/thread/event
+  ${BOYMUE_SRC}/thread/task
+  ${BOYMUE_SRC}/thread/time
 )

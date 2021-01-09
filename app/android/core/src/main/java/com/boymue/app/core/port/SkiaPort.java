@@ -16,6 +16,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import com.boymue.app.core.port.init.BoymueInit;
+import com.boymue.app.core.BoymueJNI;
 
 public class SkiaPort {
     /** Called when the activity is first created. */
@@ -73,7 +74,7 @@ public class SkiaPort {
 //
 //                holder.unlockCanvasAndPost(canvas);
 
-                initSurface(holder.getSurface(),
+                    BoymueJNI.initSurface(holder.getSurface(),
                         holder.getSurfaceFrame().width(),
                         holder.getSurfaceFrame().height());
 
@@ -105,10 +106,4 @@ public class SkiaPort {
 
         }
     }
-
-
-    private static native void drawIntoBitmap(Bitmap image, long elapsedTime);
-
-
-    private static native void initSurface(Surface surface, int width, int height);
 }

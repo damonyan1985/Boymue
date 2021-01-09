@@ -25,9 +25,6 @@
     <Filter Include="platform">
       <UniqueIdentifier>{30f606fd-4f11-4ef9-8130-0d84d585cf29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="platform\view">
-      <UniqueIdentifier>{087ba84a-9417-42e8-b9e4-ec94486430f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="port">
       <UniqueIdentifier>{c58ba730-e888-46c8-878a-217994370f60}</UniqueIdentifier>
     </Filter>
@@ -43,6 +40,12 @@
     <Filter Include="thread\task">
       <UniqueIdentifier>{7f6004f5-ea06-4de4-ad08-23db371fe860}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core\paint">
+      <UniqueIdentifier>{48f5d6b4-4e2e-47af-9e81-ad11190921f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\win">
+      <UniqueIdentifier>{5880a741-7c3e-4c8f-8062-35292ba3af68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -56,12 +59,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\port\win\BoymueOnLoadWin.h">
       <Filter>port\win</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\boymue\platform\view\PlatformViewWin.h">
-      <Filter>platform\view</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\boymue\core\view\PlatformView.h">
-      <Filter>core\view</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\thread\event\WaitEvent.h">
       <Filter>thread\event</Filter>
@@ -80,6 +77,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskThread.h">
       <Filter>thread\task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\view\BoymueView.h">
+      <Filter>core\view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\paint\PaintContext.h">
+      <Filter>core\paint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\platform\win\PaintContextWin.h">
+      <Filter>platform\win</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskThread.cpp">
       <Filter>thread\task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\view\BoymueView.cpp">
+      <Filter>core\view</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\platform\win\PaintContextWin.cpp">
+      <Filter>platform\win</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

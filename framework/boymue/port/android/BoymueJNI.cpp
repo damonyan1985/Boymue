@@ -3,22 +3,57 @@
 // found in the LICENSE file.
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.14
-#include "AndroidShellHolder.h"
 #include <android/native_window_jni.h>
 #include <jni.h>
 
-#define ANDROID_SHELL_HOLDER \
-    (reinterpret_cast<AndroidShellHolder*>(shell_holder))
+#include "PaintContextAndroid.h"
+#include "SkCanvas.h"
+#include "SkGraphics.h"
+#include "SkString.h"
+#include "SkSurface.h"
+#include "SkTime.h"
+#include "SkTypeface.h"
+#include "skia/include/core/SkColorFilter.h"
+#include "skia/include/core/SkRect.h"
+#include "skia/include/core/SkSurface.h"
 
-static void SurfaceCreated(JNIEnv* env,
-    jobject jcaller,
-    jlong shell_holder,
-    jobject jsurface)
-{
-    // Note: This frame ensures that any local references used by
-    // ANativeWindow_fromSurface are released immediately. This is needed as a
-    // workaround for https://code.google.com/p/android/issues/detail?id=68174
-    //fml::jni::ScopedJavaLocalFrame scoped_local_reference_frame(env);
-    auto window = ANativeWindow_fromSurface(env, jsurface);
-    ANDROID_SHELL_HOLDER->GetPlatformView()->NotifyCreated(window);
+extern "C" JNIEXPORT void JNICALL
+Java_com_boymue_app_core_BoymueJNI_initSurface(JNIEnv* env, jobject thiz,
+                                               jobject jsurface, jint width,
+                                               jint height) {
+  auto window = ANativeWindow_fromSurface(env, jsurface);
+  boymue::PaintContextAndroid* painter = new boymue::PaintContextAndroid();
+  painter->initContext(new boymue::AndroidNativeWindow(window), width, height);
+
+  // JUST test
+  SkCanvas* canvas = painter->canvas();
+  canvas->drawColor(SK_ColorWHITE);
+
+  SkTypeface* typeface = SkTypeface::CreateFromFile(
+      "/system/fonts/NotoSansCJK-Regular.ttc", SkTypeface::kNormal);
+  // Setup a SkPaint for drawing our text
+  SkPaint paint;
+  if (typeface) {
+    paint.setTypeface(typeface);
+  }
+  paint.setColor(SK_ColorRED);  // This is a solid black color for our text
+  paint.setTextSize(SkIntToScalar(30));  // Sets the text size to 30 pixels
+  paint.setAntiAlias(
+      true);  // We turn on anti-aliasing so that the text to looks good.
+
+  // Draw some text
+  SkString text("Skia纯测试");
+  SkScalar fontHeight = paint.getFontSpacing();
+  canvas->drawText(text.c_str(), text.size(),  // text's data and length
+                   10, fontHeight,  // X and Y coordinates to place the text
+                   paint);          // SkPaint to tell how to draw the text
+
+  // Adapt the SkPaint for drawing blue lines
+  paint.setAntiAlias(
+      false);  // Turning off anti-aliasing speeds up the line drawing
+  paint.setColor(0xFF0000FF);  // This is a solid blue color for our lines
+  paint.setStrokeWidth(
+      SkIntToScalar(2));  // This makes the lines have a thickness of 2 pixels
+
+  painter->submit();
 }

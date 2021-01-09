@@ -5,11 +5,10 @@
 #ifndef V8_ARM64_INSTRUMENT_ARM64_H_
 #define V8_ARM64_INSTRUMENT_ARM64_H_
 
+#include "src/asm/arm64/constants-arm64.h"
+#include "src/asm/arm64/decoder-arm64.h"
 #include "src/globals.h"
 #include "src/utils.h"
-
-#include "src/arm64/constants-arm64.h"
-#include "src/arm64/decoder-arm64.h"
 
 namespace v8 {
 namespace internal {
@@ -17,18 +16,12 @@ namespace internal {
 const int kCounterNameMaxLength = 256;
 const uint64_t kDefaultInstrumentationSamplingPeriod = 1 << 22;
 
-
-enum InstrumentState {
-  InstrumentStateDisable = 0,
-  InstrumentStateEnable = 1
-};
-
+enum InstrumentState { InstrumentStateDisable = 0, InstrumentStateEnable = 1 };
 
 enum CounterType {
   Gauge = 0,      // Gauge counters reset themselves after reading.
   Cumulative = 1  // Cumulative counters keep their value after reading.
 };
-
 
 class Counter {
  public:
@@ -49,17 +42,17 @@ class Counter {
   CounterType type_;
 };
 
-
-class Instrument: public DecoderVisitor {
+class Instrument : public DecoderVisitor {
  public:
-  explicit Instrument(const char* datafile = NULL,
-    uint64_t sample_period = kDefaultInstrumentationSamplingPeriod);
+  explicit Instrument(
+      const char* datafile = NULL,
+      uint64_t sample_period = kDefaultInstrumentationSamplingPeriod);
   ~Instrument();
 
-  // Declare all Visitor functions.
-  #define DECLARE(A) void Visit##A(Instruction* instr);
+// Declare all Visitor functions.
+#define DECLARE(A) void Visit##A(Instruction* instr);
   VISITOR_LIST(DECLARE)
-  #undef DECLARE
+#undef DECLARE
 
  private:
   void Update();
@@ -76,7 +69,7 @@ class Instrument: public DecoderVisitor {
 
   std::list<Counter*> counters_;
 
-  FILE *output_stream_;
+  FILE* output_stream_;
   uint64_t sample_period_;
 };
 
