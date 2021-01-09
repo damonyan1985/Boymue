@@ -20,7 +20,6 @@ namespace platform {
  */
 v8::Platform* CreateDefaultPlatform(int thread_pool_size = 0);
 
-
 /**
  * Pumps the message loop for the given isolate.
  *
@@ -30,7 +29,6 @@ v8::Platform* CreateDefaultPlatform(int thread_pool_size = 0);
  * |CreateDefaultPlatform|.
  */
 bool PumpMessageLoop(v8::Platform* platform, v8::Isolate* isolate);
-
 
 }  // namespace platform
 }  // namespace v8

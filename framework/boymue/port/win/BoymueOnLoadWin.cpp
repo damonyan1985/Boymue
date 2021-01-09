@@ -5,6 +5,7 @@
 #include <string>
 
 #include "BoymueView.h"
+#include "JsEngine.h"
 #include "PaintContextWin.h"
 #include "SkBitmap.h"
 #include "SkCanvas.h"
@@ -66,6 +67,7 @@ class UIRuntime {
 
 static UIRuntime* s_uiRuntime;
 static boymue::BoymueView* s_view;
+static boymue::JsEngine* s_engine;
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   boymue::PaintContextWin* painter = new boymue::PaintContextWin();
@@ -74,6 +76,11 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   s_view = new boymue::BoymueView();
 
   s_view->getTaskRunner().postTask([=] { s_uiRuntime->run(); });
+
+  s_engine = new boymue::JsEngine();
+  boymue::JsRuntime* runtime = s_engine->createRuntime();
+
+  runtime->evaluateJs("function test(a, b) {return a * b;} print(test(2,3));");
 }
 
 void BoymueOnLoadWin::repaint() {

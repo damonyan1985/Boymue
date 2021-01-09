@@ -46,6 +46,9 @@
     <Filter Include="platform\win">
       <UniqueIdentifier>{5880a741-7c3e-4c8f-8062-35292ba3af68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{5f7fc4b7-ca56-47a5-994b-52a4f521dae1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -87,6 +90,9 @@
     <ClInclude Include="..\..\..\framework\boymue\platform\win\PaintContextWin.h">
       <Filter>platform\win</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\engine\JsEngine.h">
+      <Filter>engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -121,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\platform\win\PaintContextWin.cpp">
       <Filter>platform\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\engine\JsEngine.cpp">
+      <Filter>engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

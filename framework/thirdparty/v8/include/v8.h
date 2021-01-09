@@ -6634,6 +6634,8 @@ class V8_EXPORT V8 {
   static void InitializeExternalStartupData(const char* directory_path);
   static void InitializeExternalStartupData(const char* natives_blob,
                                             const char* snapshot_blob);
+
+  static Platform* InitializeDefaultPlatform();                                          
   /**
    * Sets the v8::Platform to use. This should be invoked before V8 is
    * initialized.
