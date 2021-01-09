@@ -15,7 +15,7 @@
 #include "src/regexp/jsregexp.h"
 #include "src/regexp/regexp-macro-assembler.h"
 #include "src/runtime/runtime.h"
-#include "src/x64/code-stubs-x64.h"
+#include "src/asm/x64/code-stubs-x64.h"
 
 namespace v8 {
 namespace internal {

@@ -7,7 +7,7 @@
 
 #include "src/macro-assembler.h"
 #include "src/regexp/regexp-macro-assembler.h"
-#include "src/x64/assembler-x64.h"
+#include "src/asm/x64/assembler-x64.h"
 
 namespace v8 {
 namespace internal {

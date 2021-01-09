@@ -7,7 +7,7 @@
 #include "src/codegen.h"
 #include "src/deoptimizer.h"
 #include "src/full-codegen/full-codegen.h"
-#include "src/ia32/frames-ia32.h"
+#include "src/asm/ia32/frames-ia32.h"
 #include "src/register-configuration.h"
 #include "src/safepoint-table.h"
 

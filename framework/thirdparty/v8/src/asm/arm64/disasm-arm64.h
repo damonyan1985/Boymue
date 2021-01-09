@@ -5,14 +5,13 @@
 #ifndef V8_ARM64_DISASM_ARM64_H
 #define V8_ARM64_DISASM_ARM64_H
 
-#include "src/arm64/decoder-arm64.h"
-#include "src/arm64/instructions-arm64.h"
+#include "src/asm/arm64/decoder-arm64.h"
+#include "src/asm/arm64/instructions-arm64.h"
 #include "src/globals.h"
 #include "src/utils.h"
 
 namespace v8 {
 namespace internal {
-
 
 class DisassemblingDecoder : public DecoderVisitor {
  public:
@@ -21,10 +20,10 @@ class DisassemblingDecoder : public DecoderVisitor {
   virtual ~DisassemblingDecoder();
   char* GetOutput();
 
-  // Declare all Visitor functions.
-  #define DECLARE(A)  void Visit##A(Instruction* instr);
+// Declare all Visitor functions.
+#define DECLARE(A) void Visit##A(Instruction* instr);
   VISITOR_LIST(DECLARE)
-  #undef DECLARE
+#undef DECLARE
 
  protected:
   virtual void ProcessOutput(Instruction* instr);
@@ -72,18 +71,16 @@ class DisassemblingDecoder : public DecoderVisitor {
   bool own_buffer_;
 };
 
-
 class PrintDisassembler : public DisassemblingDecoder {
  public:
-  explicit PrintDisassembler(FILE* stream) : stream_(stream) { }
-  ~PrintDisassembler() { }
+  explicit PrintDisassembler(FILE* stream) : stream_(stream) {}
+  ~PrintDisassembler() {}
 
   virtual void ProcessOutput(Instruction* instr);
 
  private:
-  FILE *stream_;
+  FILE* stream_;
 };
-
 
 }  // namespace internal
 }  // namespace v8

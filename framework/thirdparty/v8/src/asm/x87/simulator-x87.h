@@ -15,16 +15,14 @@ namespace internal {
 #define CALL_GENERATED_CODE(isolate, entry, p0, p1, p2, p3, p4) \
   (entry(p0, p1, p2, p3, p4))
 
-
-typedef int (*regexp_matcher)(String*, int, const byte*,
-                              const byte*, int*, int, Address, int, Isolate*);
+typedef int (*regexp_matcher)(String*, int, const byte*, const byte*, int*, int,
+                              Address, int, Isolate*);
 
 // Call the generated regexp code directly. The code at the entry address should
 // expect eight int/pointer sized arguments and return an int.
 #define CALL_GENERATED_REGEXP_CODE(isolate, entry, p0, p1, p2, p3, p4, p5, p6, \
                                    p7, p8)                                     \
   (FUNCTION_CAST<regexp_matcher>(entry)(p0, p1, p2, p3, p4, p5, p6, p7, p8))
-
 
 // The stack limit beyond which we will throw stack overflow errors in
 // generated code. Because generated code on ia32 uses the C stack, we

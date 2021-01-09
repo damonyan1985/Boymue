@@ -4,14 +4,12 @@
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/utils-arm64.h"
-
+#include "src/asm/arm64/utils-arm64.h"
 
 namespace v8 {
 namespace internal {
 
 #define __ assm->
-
 
 int CountLeadingZeros(uint64_t value, int width) {
   // TODO(jbramley): Optimize this for ARM64 hosts.
@@ -25,7 +23,6 @@ int CountLeadingZeros(uint64_t value, int width) {
   return count;
 }
 
-
 int CountLeadingSignBits(int64_t value, int width) {
   // TODO(jbramley): Optimize this for ARM64 hosts.
   DCHECK((width == 32) || (width == 64));
@@ -35,7 +32,6 @@ int CountLeadingSignBits(int64_t value, int width) {
     return CountLeadingZeros(~value, width) - 1;
   }
 }
-
 
 int CountTrailingZeros(uint64_t value, int width) {
   // TODO(jbramley): Optimize this for ARM64 hosts.
@@ -47,14 +43,13 @@ int CountTrailingZeros(uint64_t value, int width) {
   return count;
 }
 
-
 int CountSetBits(uint64_t value, int width) {
   // TODO(jbramley): Would it be useful to allow other widths? The
   // implementation already supports them.
   DCHECK((width == 32) || (width == 64));
 
   // Mask out unused bits to ensure that they are not counted.
-  value &= (0xffffffffffffffffUL >> (64-width));
+  value &= (0xffffffffffffffffUL >> (64 - width));
 
   // Add up the set bits.
   // The algorithm works by adding pairs of bit fields together iteratively,
@@ -77,17 +72,12 @@ int CountSetBits(uint64_t value, int width) {
   return static_cast<int>(value);
 }
 
-
-uint64_t LargestPowerOf2Divisor(uint64_t value) {
-  return value & -value;
-}
-
+uint64_t LargestPowerOf2Divisor(uint64_t value) { return value & -value; }
 
 int MaskToBit(uint64_t mask) {
   DCHECK(CountSetBits(mask, 64) == 1);
   return CountTrailingZeros(mask, 64);
 }
-
 
 }  // namespace internal
 }  // namespace v8

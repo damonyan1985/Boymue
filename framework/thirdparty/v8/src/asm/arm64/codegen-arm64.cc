@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/arm64/codegen-arm64.h"
+#include "src/asm/arm64/codegen-arm64.h"
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/simulator-arm64.h"
+#include "src/asm/arm64/simulator-arm64.h"
 #include "src/codegen.h"
 #include "src/macro-assembler.h"
 
@@ -18,15 +18,12 @@ namespace internal {
 #if defined(USE_SIMULATOR)
 byte* fast_exp_arm64_machine_code = nullptr;
 double fast_exp_simulator(double x, Isolate* isolate) {
-  Simulator * simulator = Simulator::current(isolate);
-  Simulator::CallArgument args[] = {
-      Simulator::CallArgument(x),
-      Simulator::CallArgument::End()
-  };
+  Simulator* simulator = Simulator::current(isolate);
+  Simulator::CallArgument args[] = {Simulator::CallArgument(x),
+                                    Simulator::CallArgument::End()};
   return simulator->CallDouble(fast_exp_arm64_machine_code, args);
 }
 #endif
-
 
 UnaryMathFunctionWithIsolate CreateExpFunction(Isolate* isolate) {
   // Use the Math.exp implemetation in MathExpGenerator::EmitMathExp() to create
@@ -52,9 +49,8 @@ UnaryMathFunctionWithIsolate CreateExpFunction(Isolate* isolate) {
   Register temp2 = x11;
   Register temp3 = x12;
 
-  MathExpGenerator::EmitMathExp(&masm, input, result,
-                                double_temp1, double_temp2,
-                                temp1, temp2, temp3);
+  MathExpGenerator::EmitMathExp(&masm, input, result, double_temp1,
+                                double_temp2, temp1, temp2, temp3);
   // Move the result to the return register.
   masm.Fmov(d0, result);
   masm.Ret();
@@ -74,11 +70,9 @@ UnaryMathFunctionWithIsolate CreateExpFunction(Isolate* isolate) {
 #endif
 }
 
-
 UnaryMathFunctionWithIsolate CreateSqrtFunction(Isolate* isolate) {
   return nullptr;
 }
-
 
 // -------------------------------------------------------------------------
 // Platform-specific RuntimeCallHelper functions.
@@ -89,24 +83,18 @@ void StubRuntimeCallHelper::BeforeCall(MacroAssembler* masm) const {
   masm->set_has_frame(true);
 }
 
-
 void StubRuntimeCallHelper::AfterCall(MacroAssembler* masm) const {
   masm->LeaveFrame(StackFrame::INTERNAL);
   DCHECK(masm->has_frame());
   masm->set_has_frame(false);
 }
 
-
 // -------------------------------------------------------------------------
 // Code generators
 
 void ElementsTransitionGenerator::GenerateMapChangeElementsTransition(
-    MacroAssembler* masm,
-    Register receiver,
-    Register key,
-    Register value,
-    Register target_map,
-    AllocationSiteMode mode,
+    MacroAssembler* masm, Register receiver, Register key, Register value,
+    Register target_map, AllocationSiteMode mode,
     Label* allocation_memento_found) {
   ASM_LOCATION(
       "ElementsTransitionGenerator::GenerateMapChangeElementsTransition");
@@ -120,25 +108,14 @@ void ElementsTransitionGenerator::GenerateMapChangeElementsTransition(
 
   // Set transitioned map.
   __ Str(target_map, FieldMemOperand(receiver, HeapObject::kMapOffset));
-  __ RecordWriteField(receiver,
-                      HeapObject::kMapOffset,
-                      target_map,
-                      x10,
-                      kLRHasNotBeenSaved,
-                      kDontSaveFPRegs,
-                      EMIT_REMEMBERED_SET,
+  __ RecordWriteField(receiver, HeapObject::kMapOffset, target_map, x10,
+                      kLRHasNotBeenSaved, kDontSaveFPRegs, EMIT_REMEMBERED_SET,
                       OMIT_SMI_CHECK);
 }
 
-
 void ElementsTransitionGenerator::GenerateSmiToDouble(
-    MacroAssembler* masm,
-    Register receiver,
-    Register key,
-    Register value,
-    Register target_map,
-    AllocationSiteMode mode,
-    Label* fail) {
+    MacroAssembler* masm, Register receiver, Register key, Register value,
+    Register target_map, AllocationSiteMode mode, Label* fail) {
   ASM_LOCATION("ElementsTransitionGenerator::GenerateSmiToDouble");
   Label gc_required, only_change_map;
   Register elements = x4;
@@ -149,8 +126,8 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
   Register scratch = x6;
 
   // Verify input registers don't conflict with locals.
-  DCHECK(!AreAliased(receiver, key, value, target_map,
-                     elements, length, array_size, array));
+  DCHECK(!AreAliased(receiver, key, value, target_map, elements, length,
+                     array_size, array));
 
   if (mode == TRACK_ALLOCATION_SITE) {
     __ JumpIfJSArrayHasAllocationMemento(receiver, x10, x11, fail);
@@ -162,8 +139,8 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
   __ JumpIfRoot(elements, Heap::kEmptyFixedArrayRootIndex, &only_change_map);
 
   __ Push(lr);
-  __ Ldrsw(length, UntagSmiFieldMemOperand(elements,
-                                           FixedArray::kLengthOffset));
+  __ Ldrsw(length,
+           UntagSmiFieldMemOperand(elements, FixedArray::kLengthOffset));
 
   // Allocate new FixedDoubleArray.
   __ Lsl(array_size, length, kDoubleSizeLog2);
@@ -186,9 +163,9 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
   // Replace receiver's backing store with newly created FixedDoubleArray.
   __ Add(x10, array, kHeapObjectTag);
   __ Str(x10, FieldMemOperand(receiver, JSObject::kElementsOffset));
-  __ RecordWriteField(receiver, JSObject::kElementsOffset, x10,
-                      scratch, kLRHasBeenSaved, kDontSaveFPRegs,
-                      EMIT_REMEMBERED_SET, OMIT_SMI_CHECK);
+  __ RecordWriteField(receiver, JSObject::kElementsOffset, x10, scratch,
+                      kLRHasBeenSaved, kDontSaveFPRegs, EMIT_REMEMBERED_SET,
+                      OMIT_SMI_CHECK);
 
   // Prepare for conversion loop.
   Register src_elements = x10;
@@ -236,15 +213,9 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
   __ Bind(&done);
 }
 
-
 void ElementsTransitionGenerator::GenerateDoubleToObject(
-    MacroAssembler* masm,
-    Register receiver,
-    Register key,
-    Register value,
-    Register target_map,
-    AllocationSiteMode mode,
-    Label* fail) {
+    MacroAssembler* masm, Register receiver, Register key, Register value,
+    Register target_map, AllocationSiteMode mode, Label* fail) {
   ASM_LOCATION("ElementsTransitionGenerator::GenerateDoubleToObject");
   Register elements = x4;
   Register array_size = x6;
@@ -252,8 +223,8 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
   Register length = x5;
 
   // Verify input registers don't conflict with locals.
-  DCHECK(!AreAliased(receiver, key, value, target_map,
-                     elements, array_size, array, length));
+  DCHECK(!AreAliased(receiver, key, value, target_map, elements, array_size,
+                     array, length));
 
   if (mode == TRACK_ALLOCATION_SITE) {
     __ JumpIfJSArrayHasAllocationMemento(receiver, x10, x11, fail);
@@ -270,8 +241,8 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
   // TODO(all): These registers may not need to be pushed. Examine
   // RecordWriteStub and check whether it's needed.
   __ Push(target_map, receiver, key, value);
-  __ Ldrsw(length, UntagSmiFieldMemOperand(elements,
-                                           FixedArray::kLengthOffset));
+  __ Ldrsw(length,
+           UntagSmiFieldMemOperand(elements, FixedArray::kLengthOffset));
   // Allocate new FixedArray.
   Label gc_required;
   __ Mov(array_size, FixedDoubleArray::kHeaderSize);
@@ -333,8 +304,8 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
     Register heap_num = length;
     Register scratch = array_size;
     Register scratch2 = elements;
-    __ AllocateHeapNumber(heap_num, &gc_required, scratch, scratch2,
-                          x13, heap_num_map);
+    __ AllocateHeapNumber(heap_num, &gc_required, scratch, scratch2, x13,
+                          heap_num_map);
     __ Mov(x13, dst_elements);
     __ Str(heap_num, MemOperand(dst_elements, kPointerSize, PostIndex));
     __ RecordWrite(array, x13, heap_num, kLRHasBeenSaved, kDontSaveFPRegs,
@@ -366,7 +337,6 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
                       OMIT_SMI_CHECK);
 }
 
-
 CodeAgingHelper::CodeAgingHelper(Isolate* isolate) {
   USE(isolate);
   DCHECK(young_sequence_.length() == kNoCodeAgeSequenceLength);
@@ -387,18 +357,15 @@ CodeAgingHelper::CodeAgingHelper(Isolate* isolate) {
 #endif
 }
 
-
 #ifdef DEBUG
 bool CodeAgingHelper::IsOld(byte* candidate) const {
   return memcmp(candidate, old_sequence_.start(), kCodeAgeStubEntryOffset) == 0;
 }
 #endif
 
-
 bool Code::IsYoungSequence(Isolate* isolate, byte* sequence) {
   return MacroAssembler::IsYoungSequence(isolate, sequence);
 }
-
 
 void Code::GetCodeAgeAndParity(Isolate* isolate, byte* sequence, Age* age,
                                MarkingParity* parity) {
@@ -412,26 +379,20 @@ void Code::GetCodeAgeAndParity(Isolate* isolate, byte* sequence, Age* age,
   }
 }
 
-
-void Code::PatchPlatformCodeAge(Isolate* isolate,
-                                byte* sequence,
-                                Code::Age age,
+void Code::PatchPlatformCodeAge(Isolate* isolate, byte* sequence, Code::Age age,
                                 MarkingParity parity) {
   PatchingAssembler patcher(isolate, sequence,
                             kNoCodeAgeSequenceLength / kInstructionSize);
   if (age == kNoAgeCodeAge) {
     MacroAssembler::EmitFrameSetupForCodeAgePatching(&patcher);
   } else {
-    Code * stub = GetCodeAgeStub(isolate, age, parity);
+    Code* stub = GetCodeAgeStub(isolate, age, parity);
     MacroAssembler::EmitCodeAgeSequence(&patcher, stub);
   }
 }
 
-
-void StringCharLoadGenerator::Generate(MacroAssembler* masm,
-                                       Register string,
-                                       Register index,
-                                       Register result,
+void StringCharLoadGenerator::Generate(MacroAssembler* masm, Register string,
+                                       Register index, Register result,
                                        Label* call_runtime) {
   DCHECK(string.Is64Bits() && index.Is32Bits() && result.Is64Bits());
   // Fetch the instance type of the receiver into result register.
@@ -511,27 +472,21 @@ void StringCharLoadGenerator::Generate(MacroAssembler* masm,
   __ Bind(&done);
 }
 
-
 static MemOperand ExpConstant(Register base, int index) {
   return MemOperand(base, index * kDoubleSize);
 }
 
-
-void MathExpGenerator::EmitMathExp(MacroAssembler* masm,
-                                   DoubleRegister input,
+void MathExpGenerator::EmitMathExp(MacroAssembler* masm, DoubleRegister input,
                                    DoubleRegister result,
                                    DoubleRegister double_temp1,
-                                   DoubleRegister double_temp2,
-                                   Register temp1,
-                                   Register temp2,
-                                   Register temp3) {
+                                   DoubleRegister double_temp2, Register temp1,
+                                   Register temp2, Register temp3) {
   // TODO(jbramley): There are several instances where fnmsub could be used
   // instead of fmul and fsub. Doing this changes the result, but since this is
   // an estimation anyway, does it matter?
 
-  DCHECK(!AreAliased(input, result,
-                     double_temp1, double_temp2,
-                     temp1, temp2, temp3));
+  DCHECK(!AreAliased(input, result, double_temp1, double_temp2, temp1, temp2,
+                     temp3));
   DCHECK(ExternalReference::math_exp_constants(0).address() != NULL);
   DCHECK(!masm->serializer_enabled());  // External references not serializable.
 
@@ -554,7 +509,7 @@ void MathExpGenerator::EmitMathExp(MacroAssembler* masm,
   // Assert that we can load offset 0 (the small input threshold) and offset 1
   // (the large input threshold) with a single ldp.
   DCHECK(kDRegSize == (ExpConstant(constants, 1).offset() -
-                              ExpConstant(constants, 0).offset()));
+                       ExpConstant(constants, 0).offset()));
   __ Ldp(double_temp1, double_temp2, ExpConstant(constants, 0));
 
   __ Fcmp(input, double_temp1);
@@ -571,7 +526,7 @@ void MathExpGenerator::EmitMathExp(MacroAssembler* masm,
   __ B(&result_is_finite_non_zero, mi);
 
   // TODO(jbramley): Consider adding a +infinity register for ARM64.
-  __ Ldr(double_temp2, ExpConstant(constants, 2));    // Synthesize +infinity.
+  __ Ldr(double_temp2, ExpConstant(constants, 2));  // Synthesize +infinity.
 
   // Select between +0.0 and +infinity. 'lo' tests C == 0.
   __ Fcsel(result, fp_zero, double_temp2, lo);
@@ -584,7 +539,7 @@ void MathExpGenerator::EmitMathExp(MacroAssembler* masm,
 
   // Assert that we can load offset 3 and offset 4 with a single ldp.
   DCHECK(kDRegSize == (ExpConstant(constants, 4).offset() -
-                              ExpConstant(constants, 3).offset()));
+                       ExpConstant(constants, 3).offset()));
   __ Ldp(double_temp1, double_temp3, ExpConstant(constants, 3));
   __ Fmadd(double_temp1, double_temp1, input, double_temp3);
   __ Fmov(temp2.W(), double_temp1.S());
@@ -592,7 +547,7 @@ void MathExpGenerator::EmitMathExp(MacroAssembler* masm,
 
   // Assert that we can load offset 5 and offset 6 with a single ldp.
   DCHECK(kDRegSize == (ExpConstant(constants, 6).offset() -
-                              ExpConstant(constants, 5).offset()));
+                       ExpConstant(constants, 5).offset()));
   __ Ldp(double_temp2, double_temp3, ExpConstant(constants, 5));
   // TODO(jbramley): Consider using Fnmsub here.
   __ Fmul(double_temp1, double_temp1, double_temp2);

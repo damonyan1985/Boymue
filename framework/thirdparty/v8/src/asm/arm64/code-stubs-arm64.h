@@ -8,9 +8,7 @@
 namespace v8 {
 namespace internal {
 
-
 void ArrayNativeCode(MacroAssembler* masm, Label* call_generic_code);
-
 
 class StringHelper : public AllStatic {
  public:
@@ -34,8 +32,7 @@ class StringHelper : public AllStatic {
   DISALLOW_IMPLICIT_CONSTRUCTORS(StringHelper);
 };
 
-
-class StoreRegistersStateStub: public PlatformCodeStub {
+class StoreRegistersStateStub : public PlatformCodeStub {
  public:
   explicit StoreRegistersStateStub(Isolate* isolate)
       : PlatformCodeStub(isolate) {}
@@ -49,8 +46,7 @@ class StoreRegistersStateStub: public PlatformCodeStub {
   DEFINE_PLATFORM_CODE_STUB(StoreRegistersState, PlatformCodeStub);
 };
 
-
-class RestoreRegistersStateStub: public PlatformCodeStub {
+class RestoreRegistersStateStub : public PlatformCodeStub {
  public:
   explicit RestoreRegistersStateStub(Isolate* isolate)
       : PlatformCodeStub(isolate) {}
@@ -62,17 +58,13 @@ class RestoreRegistersStateStub: public PlatformCodeStub {
   DEFINE_PLATFORM_CODE_STUB(RestoreRegistersState, PlatformCodeStub);
 };
 
-
-class RecordWriteStub: public PlatformCodeStub {
+class RecordWriteStub : public PlatformCodeStub {
  public:
   // Stub to record the write of 'value' at 'address' in 'object'.
   // Typically 'address' = 'object' + <some offset>.
   // See MacroAssembler::RecordWriteField() for example.
-  RecordWriteStub(Isolate* isolate,
-                  Register object,
-                  Register value,
-                  Register address,
-                  RememberedSetAction remembered_set_action,
+  RecordWriteStub(Isolate* isolate, Register object, Register value,
+                  Register address, RememberedSetAction remembered_set_action,
                   SaveFPRegsMode fp_mode)
       : PlatformCodeStub(isolate),
         regs_(object,   // An input reg.
@@ -91,18 +83,14 @@ class RecordWriteStub: public PlatformCodeStub {
   RecordWriteStub(uint32_t key, Isolate* isolate)
       : PlatformCodeStub(key, isolate), regs_(object(), address(), value()) {}
 
-  enum Mode {
-    STORE_BUFFER_ONLY,
-    INCREMENTAL,
-    INCREMENTAL_COMPACTION
-  };
+  enum Mode { STORE_BUFFER_ONLY, INCREMENTAL, INCREMENTAL_COMPACTION };
 
   bool SometimesSetsUpAFrame() override { return false; }
 
   static Mode GetMode(Code* stub) {
     // Find the mode depending on the first two instructions.
     Instruction* instr1 =
-      reinterpret_cast<Instruction*>(stub->instruction_start());
+        reinterpret_cast<Instruction*>(stub->instruction_start());
     Instruction* instr2 = instr1->following();
 
     if (instr1->IsUncondBranchImm()) {
@@ -172,9 +160,7 @@ class RecordWriteStub: public PlatformCodeStub {
   // The 'object' and 'address' registers must be preserved.
   class RegisterAllocation {
    public:
-    RegisterAllocation(Register object,
-                       Register address,
-                       Register scratch)
+    RegisterAllocation(Register object, Register address, Register scratch)
         : object_(object),
           address_(address),
           scratch0_(scratch),
@@ -210,9 +196,7 @@ class RecordWriteStub: public PlatformCodeStub {
       masm->Push(scratch1_, scratch2_);
     }
 
-    void Restore(MacroAssembler* masm) {
-      masm->Pop(scratch2_, scratch1_);
-    }
+    void Restore(MacroAssembler* masm) { masm->Pop(scratch2_, scratch1_); }
 
     // If we have to call into C then we need to save and restore all caller-
     // saved registers that were not already preserved.
@@ -225,7 +209,7 @@ class RecordWriteStub: public PlatformCodeStub {
       }
     }
 
-    void RestoreCallerSaveRegisters(MacroAssembler*masm, SaveFPRegsMode mode) {
+    void RestoreCallerSaveRegisters(MacroAssembler* masm, SaveFPRegsMode mode) {
       // TODO(all): This can be very expensive, and it is likely that not every
       // register will need to be preserved. Can we improve this?
       if (mode == kSaveFPRegs) {
@@ -283,8 +267,7 @@ class RecordWriteStub: public PlatformCodeStub {
   void Generate(MacroAssembler* masm) override;
   void GenerateIncremental(MacroAssembler* masm, Mode mode);
   void CheckNeedsToInformIncrementalMarker(
-      MacroAssembler* masm,
-      OnNoNeedToInformIncrementalMarker on_no_need,
+      MacroAssembler* masm, OnNoNeedToInformIncrementalMarker on_no_need,
       Mode mode);
   void InformIncrementalMarker(MacroAssembler* masm);
 
@@ -312,20 +295,20 @@ class RecordWriteStub: public PlatformCodeStub {
     return SaveFPRegsModeBits::decode(minor_key_);
   }
 
-  class ObjectBits: public BitField<int, 0, 5> {};
-  class ValueBits: public BitField<int, 5, 5> {};
-  class AddressBits: public BitField<int, 10, 5> {};
-  class RememberedSetActionBits: public BitField<RememberedSetAction, 15, 1> {};
-  class SaveFPRegsModeBits: public BitField<SaveFPRegsMode, 16, 1> {};
+  class ObjectBits : public BitField<int, 0, 5> {};
+  class ValueBits : public BitField<int, 5, 5> {};
+  class AddressBits : public BitField<int, 10, 5> {};
+  class RememberedSetActionBits : public BitField<RememberedSetAction, 15, 1> {
+  };
+  class SaveFPRegsModeBits : public BitField<SaveFPRegsMode, 16, 1> {};
 
   Label slow_;
   RegisterAllocation regs_;
 };
 
-
 // Helper to call C++ functions from generated code. The caller must prepare
 // the exit frame before doing the call with GenerateCall.
-class DirectCEntryStub: public PlatformCodeStub {
+class DirectCEntryStub : public PlatformCodeStub {
  public:
   explicit DirectCEntryStub(Isolate* isolate) : PlatformCodeStub(isolate) {}
   void GenerateCall(MacroAssembler* masm, Register target);
@@ -337,8 +320,7 @@ class DirectCEntryStub: public PlatformCodeStub {
   DEFINE_PLATFORM_CODE_STUB(DirectCEntry, PlatformCodeStub);
 };
 
-
-class NameDictionaryLookupStub: public PlatformCodeStub {
+class NameDictionaryLookupStub : public PlatformCodeStub {
  public:
   enum LookupMode { POSITIVE_LOOKUP, NEGATIVE_LOOKUP };
 
@@ -347,20 +329,14 @@ class NameDictionaryLookupStub: public PlatformCodeStub {
     minor_key_ = LookupModeBits::encode(mode);
   }
 
-  static void GenerateNegativeLookup(MacroAssembler* masm,
-                                     Label* miss,
-                                     Label* done,
-                                     Register receiver,
-                                     Register properties,
-                                     Handle<Name> name,
+  static void GenerateNegativeLookup(MacroAssembler* masm, Label* miss,
+                                     Label* done, Register receiver,
+                                     Register properties, Handle<Name> name,
                                      Register scratch0);
 
-  static void GeneratePositiveLookup(MacroAssembler* masm,
-                                     Label* miss,
-                                     Label* done,
-                                     Register elements,
-                                     Register name,
-                                     Register scratch1,
+  static void GeneratePositiveLookup(MacroAssembler* masm, Label* miss,
+                                     Label* done, Register elements,
+                                     Register name, Register scratch1,
                                      Register scratch2);
 
   bool SometimesSetsUpAFrame() override { return false; }
@@ -379,7 +355,7 @@ class NameDictionaryLookupStub: public PlatformCodeStub {
 
   LookupMode mode() const { return LookupModeBits::decode(minor_key_); }
 
-  class LookupModeBits: public BitField<LookupMode, 0, 1> {};
+  class LookupModeBits : public BitField<LookupMode, 0, 1> {};
 
   DEFINE_NULL_CALL_INTERFACE_DESCRIPTOR();
   DEFINE_PLATFORM_CODE_STUB(NameDictionaryLookup, PlatformCodeStub);

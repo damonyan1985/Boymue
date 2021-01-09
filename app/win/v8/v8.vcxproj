@@ -89,7 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;V8_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;V8_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;BUILDING_V8_SHARED;WIN32;V8_TARGET_ARCH_X64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\v8\include;$(BOYMUE_ROOT)\framework\thirdparty\v8\src;$(BOYMUE_ROOT)\framework\thirdparty\v8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -99,6 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>v8.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -115,6 +116,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>v8.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,6 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>v8.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,6 +158,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>v8.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -385,6 +389,11 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\date.h" />
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\dateparser-inl.h" />
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\dateparser.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-evaluate.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-frames.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-scopes.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.h" />
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\deoptimizer.h" />
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\disasm.h" />
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\disassembler.h" />
@@ -815,6 +824,12 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\crankshaft\x64\lithium-x64.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\date.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\dateparser.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-evaluate.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-frames.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-scopes.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\x64\debug-x64.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\deoptimizer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\disassembler.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\diy-fp.cc" />
@@ -996,7 +1011,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\unicode.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\utils.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8.cc" />
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8dll-main.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8threads.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\version.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\asm-wasm-builder.cc" />
@@ -1020,10 +1034,14 @@
     <None Include="..\..\..\framework\thirdparty\v8\src\base.isolate" />
     <None Include="..\..\..\framework\thirdparty\v8\src\compiler\OWNERS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\compiler\STYLE" />
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\debug.js" />
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.js" />
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\mirrors.js" />
     <None Include="..\..\..\framework\thirdparty\v8\src\DEPS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\interpreter\OWNERS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\OWNERS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\third_party\fdlibm\fdlibm.js" />
+    <None Include="v8.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

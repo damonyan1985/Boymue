@@ -4,15 +4,15 @@
 #define V8_TARGET_ARCH_IA32 1
 #if V8_TARGET_ARCH_IA32
 
+#include "src/asm/ia32/frames-ia32.h"
+
+#include "src/asm/ia32/assembler-ia32-inl.h"
+#include "src/asm/ia32/assembler-ia32.h"
 #include "src/assembler.h"
 #include "src/frames.h"
-#include "src/ia32/assembler-ia32-inl.h"
-#include "src/ia32/assembler-ia32.h"
-#include "src/ia32/frames-ia32.h"
 
 namespace v8 {
 namespace internal {
-
 
 Register JavaScriptFrame::fp_register() { return ebp; }
 Register JavaScriptFrame::context_register() { return esi; }
@@ -21,14 +21,12 @@ Register JavaScriptFrame::constant_pool_pointer_register() {
   return no_reg;
 }
 
-
 Register StubFailureTrampolineFrame::fp_register() { return ebp; }
 Register StubFailureTrampolineFrame::context_register() { return esi; }
 Register StubFailureTrampolineFrame::constant_pool_pointer_register() {
   UNREACHABLE();
   return no_reg;
 }
-
 
 }  // namespace internal
 }  // namespace v8

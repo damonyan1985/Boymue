@@ -9,8 +9,8 @@
 #include "src/compiler/gap-resolver.h"
 #include "src/compiler/node-matchers.h"
 #include "src/compiler/osr.h"
-#include "src/x64/assembler-x64.h"
-#include "src/x64/macro-assembler-x64.h"
+#include "src/asm/x64/assembler-x64.h"
+#include "src/asm/x64/macro-assembler-x64.h"
 
 namespace v8 {
 namespace internal {

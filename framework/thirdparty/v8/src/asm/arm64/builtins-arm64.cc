@@ -4,7 +4,7 @@
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/frames-arm64.h"
+#include "src/asm/arm64/frames-arm64.h"
 #include "src/codegen.h"
 #include "src/debug/debug.h"
 #include "src/deoptimizer.h"
@@ -14,16 +14,13 @@
 namespace v8 {
 namespace internal {
 
-
 #define __ ACCESS_MASM(masm)
-
 
 // Load the built-in Array function from the current context.
 static void GenerateLoadArrayFunction(MacroAssembler* masm, Register result) {
   // Load the InternalArray function from the native context.
   __ LoadNativeContextSlot(Context::ARRAY_FUNCTION_INDEX, result);
 }
-
 
 // Load the built-in InternalArray function from the current context.
 static void GenerateLoadInternalArrayFunction(MacroAssembler* masm,
@@ -32,9 +29,7 @@ static void GenerateLoadInternalArrayFunction(MacroAssembler* masm,
   __ LoadNativeContextSlot(Context::INTERNAL_ARRAY_FUNCTION_INDEX, result);
 }
 
-
-void Builtins::Generate_Adaptor(MacroAssembler* masm,
-                                CFunctionId id,
+void Builtins::Generate_Adaptor(MacroAssembler* masm, CFunctionId id,
                                 BuiltinExtraArguments extra_args) {
   // ----------- S t a t e -------------
   //  -- x0                 : number of arguments excluding receiver
@@ -79,7 +74,6 @@ void Builtins::Generate_Adaptor(MacroAssembler* masm,
   __ JumpToExternalReference(ExternalReference(id, masm->isolate()));
 }
 
-
 void Builtins::Generate_InternalArrayCode(MacroAssembler* masm) {
   // ----------- S t a t e -------------
   //  -- x0     : number of arguments
@@ -106,7 +100,6 @@ void Builtins::Generate_InternalArrayCode(MacroAssembler* masm) {
   InternalArrayConstructorStub stub(masm->isolate());
   __ TailCallStub(&stub);
 }
-
 
 void Builtins::Generate_ArrayCode(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -135,7 +128,6 @@ void Builtins::Generate_ArrayCode(MacroAssembler* masm) {
   ArrayConstructorStub stub(masm->isolate());
   __ TailCallStub(&stub);
 }
-
 
 // static
 void Builtins::Generate_MathMaxMin(MacroAssembler* masm, MathMaxMinKind kind) {
@@ -259,7 +251,6 @@ void Builtins::Generate_NumberConstructor(MacroAssembler* masm) {
   __ Ret();
 }
 
-
 // static
 void Builtins::Generate_NumberConstructor_ConstructStub(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -329,7 +320,6 @@ void Builtins::Generate_NumberConstructor_ConstructStub(MacroAssembler* masm) {
   __ Ret();
 }
 
-
 // static
 void Builtins::Generate_StringConstructor(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -385,7 +375,6 @@ void Builtins::Generate_StringConstructor(MacroAssembler* masm) {
     __ TailCallRuntime(Runtime::kSymbolDescriptiveString);
   }
 }
-
 
 // static
 void Builtins::Generate_StringConstructor_ConstructStub(MacroAssembler* masm) {
@@ -490,7 +479,6 @@ static void GenerateTailCallToReturnedCode(MacroAssembler* masm,
   __ Br(x2);
 }
 
-
 void Builtins::Generate_InOptimizationQueue(MacroAssembler* masm) {
   // Checking whether the queued function is ready for install is optional,
   // since we come across interrupts and stack checks elsewhere. However, not
@@ -506,7 +494,6 @@ void Builtins::Generate_InOptimizationQueue(MacroAssembler* masm) {
   __ Bind(&ok);
   GenerateTailCallToSharedCode(masm);
 }
-
 
 static void Generate_JSConstructStubHelper(MacroAssembler* masm,
                                            bool is_api_function,
@@ -607,8 +594,7 @@ static void Generate_JSConstructStubHelper(MacroAssembler* masm,
     // x3: new target
     if (is_api_function) {
       __ Ldr(cp, FieldMemOperand(constructor, JSFunction::kContextOffset));
-      Handle<Code> code =
-          masm->isolate()->builtins()->HandleApiCallConstruct();
+      Handle<Code> code = masm->isolate()->builtins()->HandleApiCallConstruct();
       __ Call(code, RelocInfo::CODE_TARGET);
     } else {
       ParameterCount actual(argc);
@@ -683,27 +669,22 @@ static void Generate_JSConstructStubHelper(MacroAssembler* masm,
   __ Ret();
 }
 
-
 void Builtins::Generate_JSConstructStubGeneric(MacroAssembler* masm) {
   Generate_JSConstructStubHelper(masm, false, true, false);
 }
-
 
 void Builtins::Generate_JSConstructStubApi(MacroAssembler* masm) {
   Generate_JSConstructStubHelper(masm, true, false, false);
 }
 
-
 void Builtins::Generate_JSBuiltinsConstructStub(MacroAssembler* masm) {
   Generate_JSConstructStubHelper(masm, false, false, false);
 }
-
 
 void Builtins::Generate_JSBuiltinsConstructStubForDerived(
     MacroAssembler* masm) {
   Generate_JSConstructStubHelper(masm, false, false, true);
 }
-
 
 void Builtins::Generate_ConstructedNonConstructable(MacroAssembler* masm) {
   FrameScope scope(masm, StackFrame::INTERNAL);
@@ -711,9 +692,7 @@ void Builtins::Generate_ConstructedNonConstructable(MacroAssembler* masm) {
   __ CallRuntime(Runtime::kThrowConstructedNonConstructable);
 }
 
-
 enum IsTagged { kArgcIsSmiTagged, kArgcIsUntaggedInt };
-
 
 // Clobbers x10, x15; preserves all other registers.
 static void Generate_CheckStackOverflow(MacroAssembler* masm, Register argc,
@@ -743,7 +722,6 @@ static void Generate_CheckStackOverflow(MacroAssembler* masm, Register argc,
 
   __ Bind(&enough_stack_space);
 }
-
 
 // Input:
 //   x0: new.target.
@@ -794,7 +772,7 @@ static void Generate_JSEntryTrampolineHelper(MacroAssembler* masm,
     __ Bind(&loop);
     __ Ldr(x11, MemOperand(argv, kPointerSize, PostIndex));
     __ Ldr(x12, MemOperand(x11));  // Dereference the handle.
-    __ Push(x12);  // Push the argument.
+    __ Push(x12);                  // Push the argument.
     __ Bind(&entry);
     __ Cmp(scratch, argv);
     __ B(ne, &loop);
@@ -834,16 +812,13 @@ static void Generate_JSEntryTrampolineHelper(MacroAssembler* masm,
   __ Ret();
 }
 
-
 void Builtins::Generate_JSEntryTrampoline(MacroAssembler* masm) {
   Generate_JSEntryTrampolineHelper(masm, false);
 }
 
-
 void Builtins::Generate_JSConstructEntryTrampoline(MacroAssembler* masm) {
   Generate_JSEntryTrampolineHelper(masm, true);
 }
-
 
 // Generate code for entering a JS function with the interpreter.
 // On entry to the function the receiver and arguments have been pushed on the
@@ -957,7 +932,6 @@ void Builtins::Generate_InterpreterEntryTrampoline(MacroAssembler* masm) {
   __ B(&bytecode_array_loaded);
 }
 
-
 void Builtins::Generate_InterpreterExitTrampoline(MacroAssembler* masm) {
   // TODO(rmcilroy): List of things not currently dealt with here but done in
   // fullcodegen's EmitReturnSequence.
@@ -976,7 +950,6 @@ void Builtins::Generate_InterpreterExitTrampoline(MacroAssembler* masm) {
   __ Drop(x1, 1);
   __ Ret();
 }
-
 
 static void Generate_EnterBytecodeDispatch(MacroAssembler* masm) {
   // Initialize register file register and dispatch table register.
@@ -1022,7 +995,6 @@ static void Generate_EnterBytecodeDispatch(MacroAssembler* masm) {
   __ Jump(ip0);
 }
 
-
 static void Generate_InterpreterNotifyDeoptimizedHelper(
     MacroAssembler* masm, Deoptimizer::BailoutType type) {
   // Enter an internal frame.
@@ -1045,16 +1017,13 @@ static void Generate_InterpreterNotifyDeoptimizedHelper(
   Generate_EnterBytecodeDispatch(masm);
 }
 
-
 void Builtins::Generate_InterpreterNotifyDeoptimized(MacroAssembler* masm) {
   Generate_InterpreterNotifyDeoptimizedHelper(masm, Deoptimizer::EAGER);
 }
 
-
 void Builtins::Generate_InterpreterNotifySoftDeoptimized(MacroAssembler* masm) {
   Generate_InterpreterNotifyDeoptimizedHelper(masm, Deoptimizer::SOFT);
 }
-
 
 void Builtins::Generate_InterpreterNotifyLazyDeoptimized(MacroAssembler* masm) {
   Generate_InterpreterNotifyDeoptimizedHelper(masm, Deoptimizer::LAZY);
@@ -1070,22 +1039,18 @@ void Builtins::Generate_InterpreterEnterBytecodeDispatch(MacroAssembler* masm) {
   Generate_EnterBytecodeDispatch(masm);
 }
 
-
 void Builtins::Generate_CompileLazy(MacroAssembler* masm) {
   GenerateTailCallToReturnedCode(masm, Runtime::kCompileLazy);
 }
-
 
 void Builtins::Generate_CompileOptimized(MacroAssembler* masm) {
   GenerateTailCallToReturnedCode(masm,
                                  Runtime::kCompileOptimized_NotConcurrent);
 }
 
-
 void Builtins::Generate_CompileOptimizedConcurrent(MacroAssembler* masm) {
   GenerateTailCallToReturnedCode(masm, Runtime::kCompileOptimized_Concurrent);
 }
-
 
 static void GenerateMakeCodeYoungAgainCommon(MacroAssembler* masm) {
   // For now, we are relying on the fact that make_code_young doesn't do any
@@ -1116,18 +1081,17 @@ static void GenerateMakeCodeYoungAgainCommon(MacroAssembler* masm) {
   __ Br(x0);
 }
 
-#define DEFINE_CODE_AGE_BUILTIN_GENERATOR(C)                 \
-void Builtins::Generate_Make##C##CodeYoungAgainEvenMarking(  \
-    MacroAssembler* masm) {                                  \
-  GenerateMakeCodeYoungAgainCommon(masm);                    \
-}                                                            \
-void Builtins::Generate_Make##C##CodeYoungAgainOddMarking(   \
-    MacroAssembler* masm) {                                  \
-  GenerateMakeCodeYoungAgainCommon(masm);                    \
-}
+#define DEFINE_CODE_AGE_BUILTIN_GENERATOR(C)                  \
+  void Builtins::Generate_Make##C##CodeYoungAgainEvenMarking( \
+      MacroAssembler* masm) {                                 \
+    GenerateMakeCodeYoungAgainCommon(masm);                   \
+  }                                                           \
+  void Builtins::Generate_Make##C##CodeYoungAgainOddMarking(  \
+      MacroAssembler* masm) {                                 \
+    GenerateMakeCodeYoungAgainCommon(masm);                   \
+  }
 CODE_AGE_LIST(DEFINE_CODE_AGE_BUILTIN_GENERATOR)
 #undef DEFINE_CODE_AGE_BUILTIN_GENERATOR
-
 
 void Builtins::Generate_MarkCodeAsExecutedOnce(MacroAssembler* masm) {
   // For now, as in GenerateMakeCodeYoungAgainCommon, we are relying on the fact
@@ -1148,8 +1112,8 @@ void Builtins::Generate_MarkCodeAsExecutedOnce(MacroAssembler* masm) {
     __ Push(x0, x1, x3, fp, lr);
     __ Mov(x1, ExternalReference::isolate_address(masm->isolate()));
     __ CallCFunction(
-        ExternalReference::get_mark_code_as_executed_function(
-            masm->isolate()), 2);
+        ExternalReference::get_mark_code_as_executed_function(masm->isolate()),
+        2);
     __ Pop(lr, fp, x3, x1, x0);
 
     // Perform prologue operations usually performed by the young code stub.
@@ -1161,16 +1125,13 @@ void Builtins::Generate_MarkCodeAsExecutedOnce(MacroAssembler* masm) {
   __ Br(x0);
 }
 
-
 void Builtins::Generate_MarkCodeAsExecutedTwice(MacroAssembler* masm) {
   GenerateMakeCodeYoungAgainCommon(masm);
 }
 
-
 void Builtins::Generate_MarkCodeAsToBeExecutedOnce(MacroAssembler* masm) {
   Generate_MarkCodeAsExecutedOnce(masm);
 }
-
 
 static void Generate_NotifyStubFailureHelper(MacroAssembler* masm,
                                              SaveFPRegsMode save_doubles) {
@@ -1197,16 +1158,13 @@ static void Generate_NotifyStubFailureHelper(MacroAssembler* masm,
   __ Br(lr);
 }
 
-
 void Builtins::Generate_NotifyStubFailure(MacroAssembler* masm) {
   Generate_NotifyStubFailureHelper(masm, kDontSaveFPRegs);
 }
 
-
 void Builtins::Generate_NotifyStubFailureSaveDoubles(MacroAssembler* masm) {
   Generate_NotifyStubFailureHelper(masm, kSaveFPRegs);
 }
-
 
 static void Generate_NotifyDeoptimizedHelper(MacroAssembler* masm,
                                              Deoptimizer::BailoutType type) {
@@ -1225,8 +1183,8 @@ static void Generate_NotifyDeoptimizedHelper(MacroAssembler* masm,
 
   // Switch on the state.
   Label with_tos_register, unknown_state;
-  __ CompareAndBranch(
-      state, FullCodeGenerator::NO_REGISTERS, ne, &with_tos_register);
+  __ CompareAndBranch(state, FullCodeGenerator::NO_REGISTERS, ne,
+                      &with_tos_register);
   __ Drop(1);  // Remove state.
   __ Ret();
 
@@ -1241,21 +1199,17 @@ static void Generate_NotifyDeoptimizedHelper(MacroAssembler* masm,
   __ Abort(kInvalidFullCodegenState);
 }
 
-
 void Builtins::Generate_NotifyDeoptimized(MacroAssembler* masm) {
   Generate_NotifyDeoptimizedHelper(masm, Deoptimizer::EAGER);
 }
-
 
 void Builtins::Generate_NotifyLazyDeoptimized(MacroAssembler* masm) {
   Generate_NotifyDeoptimizedHelper(masm, Deoptimizer::LAZY);
 }
 
-
 void Builtins::Generate_NotifySoftDeoptimized(MacroAssembler* masm) {
   Generate_NotifyDeoptimizedHelper(masm, Deoptimizer::SOFT);
 }
-
 
 static void CompatibleReceiverCheck(MacroAssembler* masm, Register receiver,
                                     Register function_template_info,
@@ -1320,7 +1274,6 @@ static void CompatibleReceiverCheck(MacroAssembler* masm, Register receiver,
   __ Bind(&receiver_check_passed);
 }
 
-
 void Builtins::Generate_HandleFastApiCall(MacroAssembler* masm) {
   // ----------- S t a t e -------------
   //  -- x0                 : number of arguments excluding receiver
@@ -1356,7 +1309,6 @@ void Builtins::Generate_HandleFastApiCall(MacroAssembler* masm) {
   __ TailCallRuntime(Runtime::kThrowIllegalInvocation);
 }
 
-
 void Builtins::Generate_OnStackReplacement(MacroAssembler* masm) {
   // Lookup the function in the JavaScript frame.
   __ Ldr(x0, MemOperand(fp, JavaScriptFrameConstants::kFunctionOffset));
@@ -1380,8 +1332,9 @@ void Builtins::Generate_OnStackReplacement(MacroAssembler* masm) {
 
   // Load the OSR entrypoint offset from the deoptimization data.
   // <osr_offset> = <deopt_data>[#header_size + #osr_pc_offset]
-  __ Ldrsw(w1, UntagSmiFieldMemOperand(x1, FixedArray::OffsetOfElementAt(
-      DeoptimizationInputData::kOsrPcOffsetIndex)));
+  __ Ldrsw(w1, UntagSmiFieldMemOperand(
+                   x1, FixedArray::OffsetOfElementAt(
+                           DeoptimizationInputData::kOsrPcOffsetIndex)));
 
   // Compute the target address = code_obj + header_size + osr_offset
   // <entry_addr> = <code_obj> + #header_size + <osr_offset>
@@ -1391,7 +1344,6 @@ void Builtins::Generate_OnStackReplacement(MacroAssembler* masm) {
   // And "return" to the OSR entry point of the function.
   __ Ret();
 }
-
 
 // static
 void Builtins::Generate_DatePrototype_GetField(MacroAssembler* masm,
@@ -1549,7 +1501,6 @@ void Builtins::Generate_FunctionPrototypeApply(MacroAssembler* masm) {
   }
 }
 
-
 // static
 void Builtins::Generate_FunctionPrototypeCall(MacroAssembler* masm) {
   Register argc = x0;
@@ -1595,7 +1546,6 @@ void Builtins::Generate_FunctionPrototypeCall(MacroAssembler* masm) {
   // 4. Call the callable.
   __ Jump(masm->isolate()->builtins()->Call(), RelocInfo::CODE_TARGET);
 }
-
 
 void Builtins::Generate_ReflectApply(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -1666,7 +1616,6 @@ void Builtins::Generate_ReflectApply(MacroAssembler* masm) {
     __ TailCallRuntime(Runtime::kThrowApplyNonFunction);
   }
 }
-
 
 void Builtins::Generate_ReflectConstruct(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -1754,7 +1703,6 @@ void Builtins::Generate_ReflectConstruct(MacroAssembler* masm) {
   }
 }
 
-
 static void ArgumentAdaptorStackCheck(MacroAssembler* masm,
                                       Label* stack_overflow) {
   // ----------- S t a t e -------------
@@ -1776,7 +1724,6 @@ static void ArgumentAdaptorStackCheck(MacroAssembler* masm,
   __ B(le, stack_overflow);
 }
 
-
 static void EnterArgumentsAdaptorFrame(MacroAssembler* masm) {
   __ SmiTag(x10, x0);
   __ Mov(x11, Smi::FromInt(StackFrame::ARGUMENTS_ADAPTOR));
@@ -1785,7 +1732,6 @@ static void EnterArgumentsAdaptorFrame(MacroAssembler* masm) {
   __ Add(fp, jssp,
          StandardFrameConstants::kFixedFrameSizeFromFp + kPointerSize);
 }
-
 
 static void LeaveArgumentsAdaptorFrame(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -1800,7 +1746,6 @@ static void LeaveArgumentsAdaptorFrame(MacroAssembler* masm) {
   __ DropBySMI(x10, kXRegSize);
   __ Drop(1);
 }
-
 
 // static
 void Builtins::Generate_Apply(MacroAssembler* masm) {
@@ -2048,9 +1993,10 @@ void Builtins::Generate_CallFunction(MacroAssembler* masm,
   __ Ldr(x2, FieldMemOperand(x1, JSFunction::kSharedFunctionInfoOffset));
   __ Ldr(w3, FieldMemOperand(x2, SharedFunctionInfo::kCompilerHintsOffset));
   __ TestAndBranchIfAnySet(
-      w3, (1 << SharedFunctionInfo::kIsDefaultConstructor) |
-              (1 << SharedFunctionInfo::kIsSubclassConstructor) |
-              (1 << SharedFunctionInfo::kIsBaseConstructor),
+      w3,
+      (1 << SharedFunctionInfo::kIsDefaultConstructor) |
+          (1 << SharedFunctionInfo::kIsSubclassConstructor) |
+          (1 << SharedFunctionInfo::kIsBaseConstructor),
       &class_constructor);
 
   // Enter the context of the function; ToObject has to run in the function
@@ -2142,7 +2088,6 @@ void Builtins::Generate_CallFunction(MacroAssembler* masm,
   }
 }
 
-
 namespace {
 
 void Generate_PushBoundArguments(MacroAssembler* masm) {
@@ -2220,7 +2165,6 @@ void Generate_PushBoundArguments(MacroAssembler* masm) {
 
 }  // namespace
 
-
 // static
 void Builtins::Generate_CallBoundFunctionImpl(MacroAssembler* masm,
                                               TailCallMode tail_call_mode) {
@@ -2249,7 +2193,6 @@ void Builtins::Generate_CallBoundFunctionImpl(MacroAssembler* masm,
   __ Add(x12, x11, Code::kHeaderSize - kHeapObjectTag);
   __ Br(x12);
 }
-
 
 // static
 void Builtins::Generate_Call(MacroAssembler* masm, ConvertReceiverMode mode,
@@ -2310,7 +2253,6 @@ void Builtins::Generate_Call(MacroAssembler* masm, ConvertReceiverMode mode,
   }
 }
 
-
 // static
 void Builtins::Generate_ConstructFunction(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -2331,7 +2273,6 @@ void Builtins::Generate_ConstructFunction(MacroAssembler* masm) {
   __ Add(x4, x4, Code::kHeaderSize - kHeapObjectTag);
   __ Br(x4);
 }
-
 
 // static
 void Builtins::Generate_ConstructBoundFunction(MacroAssembler* masm) {
@@ -2363,7 +2304,6 @@ void Builtins::Generate_ConstructBoundFunction(MacroAssembler* masm) {
   __ Br(x12);
 }
 
-
 // static
 void Builtins::Generate_ConstructProxy(MacroAssembler* masm) {
   // ----------- S t a t e -------------
@@ -2382,7 +2322,6 @@ void Builtins::Generate_ConstructProxy(MacroAssembler* masm) {
   __ JumpToExternalReference(
       ExternalReference(Runtime::kJSProxyConstruct, masm->isolate()));
 }
-
 
 // static
 void Builtins::Generate_Construct(MacroAssembler* masm) {
@@ -2434,7 +2373,6 @@ void Builtins::Generate_Construct(MacroAssembler* masm) {
           RelocInfo::CODE_TARGET);
 }
 
-
 // static
 void Builtins::Generate_InterpreterPushArgsAndCallImpl(
     MacroAssembler* masm, TailCallMode tail_call_mode) {
@@ -2469,7 +2407,6 @@ void Builtins::Generate_InterpreterPushArgsAndCallImpl(
                                             tail_call_mode),
           RelocInfo::CODE_TARGET);
 }
-
 
 // static
 void Builtins::Generate_InterpreterPushArgsAndConstruct(MacroAssembler* masm) {
@@ -2507,7 +2444,6 @@ void Builtins::Generate_InterpreterPushArgsAndConstruct(MacroAssembler* masm) {
   __ Jump(masm->isolate()->builtins()->Construct(), RelocInfo::CODE_TARGET);
 }
 
-
 void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
   ASM_LOCATION("Builtins::Generate_ArgumentsAdaptorTrampoline");
   // ----------- S t a t e -------------
@@ -2517,7 +2453,7 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
   //  -- x3 : new target (passed through to callee)
   // -----------------------------------
 
-  Register argc_actual = x0;  // Excluding the receiver.
+  Register argc_actual = x0;    // Excluding the receiver.
   Register argc_expected = x2;  // Excluding the receiver.
   Register function = x1;
   Register code_entry = x10;
@@ -2558,9 +2494,9 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
     Label copy_2_by_2;
     __ Bind(&copy_2_by_2);
     __ Ldp(scratch1, scratch2,
-           MemOperand(copy_start, - 2 * kPointerSize, PreIndex));
+           MemOperand(copy_start, -2 * kPointerSize, PreIndex));
     __ Stp(scratch1, scratch2,
-           MemOperand(copy_to, - 2 * kPointerSize, PreIndex));
+           MemOperand(copy_to, -2 * kPointerSize, PreIndex));
     __ Cmp(copy_start, copy_end);
     __ B(hi, &copy_2_by_2);
 
@@ -2588,7 +2524,7 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
     __ Add(copy_from, fp, 3 * kPointerSize);
     __ Add(copy_from, copy_from, argc_actual);
     __ Mov(copy_to, jssp);
-    __ Sub(copy_end, copy_to, 1 * kPointerSize);   // Adjust for the receiver.
+    __ Sub(copy_end, copy_to, 1 * kPointerSize);  // Adjust for the receiver.
     __ Sub(copy_end, copy_end, argc_actual);
 
     // Claim space for the arguments, the receiver, and one extra slot.
@@ -2601,9 +2537,9 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
     Label copy_2_by_2;
     __ Bind(&copy_2_by_2);
     __ Ldp(scratch1, scratch2,
-           MemOperand(copy_from, - 2 * kPointerSize, PreIndex));
+           MemOperand(copy_from, -2 * kPointerSize, PreIndex));
     __ Stp(scratch1, scratch2,
-           MemOperand(copy_to, - 2 * kPointerSize, PreIndex));
+           MemOperand(copy_to, -2 * kPointerSize, PreIndex));
     __ Cmp(copy_to, copy_end);
     __ B(hi, &copy_2_by_2);
 
@@ -2616,7 +2552,7 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
     Label fill;
     __ Bind(&fill);
     __ Stp(scratch1, scratch1,
-           MemOperand(copy_to, - 2 * kPointerSize, PreIndex));
+           MemOperand(copy_to, -2 * kPointerSize, PreIndex));
     __ Cmp(copy_to, copy_end);
     __ B(hi, &fill);
 
@@ -2652,7 +2588,6 @@ void Builtins::Generate_ArgumentsAdaptorTrampoline(MacroAssembler* masm) {
     __ Unreachable();
   }
 }
-
 
 #undef __
 

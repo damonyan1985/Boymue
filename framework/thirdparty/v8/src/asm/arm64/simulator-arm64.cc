@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include <stdlib.h>
+
 #include <cmath>
 #include <cstdarg>
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/decoder-arm64-inl.h"
-#include "src/arm64/simulator-arm64.h"
+#include "src/asm/arm64/decoder-arm64-inl.h"
+#include "src/asm/arm64/simulator-arm64.h"
 #include "src/assembler.h"
 #include "src/codegen.h"
 #include "src/disasm.h"
@@ -22,39 +23,36 @@ namespace internal {
 
 #if defined(USE_SIMULATOR)
 
-
 // This macro provides a platform independent use of sscanf. The reason for
 // SScanF not being implemented in a platform independent way through
 // ::v8::internal::OS in the same way as SNPrintF is that the
 // Windows C Run-Time Library does not provide vsscanf.
 #define SScanF sscanf  // NOLINT
 
-
 // Helpers for colors.
-#define COLOUR(colour_code)       "\033[0;" colour_code "m"
-#define COLOUR_BOLD(colour_code)  "\033[1;" colour_code "m"
-#define NORMAL  ""
-#define GREY    "30"
-#define RED     "31"
-#define GREEN   "32"
-#define YELLOW  "33"
-#define BLUE    "34"
+#define COLOUR(colour_code) "\033[0;" colour_code "m"
+#define COLOUR_BOLD(colour_code) "\033[1;" colour_code "m"
+#define NORMAL ""
+#define GREY "30"
+#define RED "31"
+#define GREEN "32"
+#define YELLOW "33"
+#define BLUE "34"
 #define MAGENTA "35"
-#define CYAN    "36"
-#define WHITE   "37"
-typedef char const * const TEXT_COLOUR;
-TEXT_COLOUR clr_normal         = FLAG_log_colour ? COLOUR(NORMAL)       : "";
-TEXT_COLOUR clr_flag_name      = FLAG_log_colour ? COLOUR_BOLD(WHITE)   : "";
-TEXT_COLOUR clr_flag_value     = FLAG_log_colour ? COLOUR(NORMAL)       : "";
-TEXT_COLOUR clr_reg_name       = FLAG_log_colour ? COLOUR_BOLD(CYAN)    : "";
-TEXT_COLOUR clr_reg_value      = FLAG_log_colour ? COLOUR(CYAN)         : "";
-TEXT_COLOUR clr_fpreg_name     = FLAG_log_colour ? COLOUR_BOLD(MAGENTA) : "";
-TEXT_COLOUR clr_fpreg_value    = FLAG_log_colour ? COLOUR(MAGENTA)      : "";
-TEXT_COLOUR clr_memory_address = FLAG_log_colour ? COLOUR_BOLD(BLUE)    : "";
-TEXT_COLOUR clr_debug_number   = FLAG_log_colour ? COLOUR_BOLD(YELLOW)  : "";
-TEXT_COLOUR clr_debug_message  = FLAG_log_colour ? COLOUR(YELLOW)       : "";
-TEXT_COLOUR clr_printf         = FLAG_log_colour ? COLOUR(GREEN)        : "";
-
+#define CYAN "36"
+#define WHITE "37"
+typedef char const* const TEXT_COLOUR;
+TEXT_COLOUR clr_normal = FLAG_log_colour ? COLOUR(NORMAL) : "";
+TEXT_COLOUR clr_flag_name = FLAG_log_colour ? COLOUR_BOLD(WHITE) : "";
+TEXT_COLOUR clr_flag_value = FLAG_log_colour ? COLOUR(NORMAL) : "";
+TEXT_COLOUR clr_reg_name = FLAG_log_colour ? COLOUR_BOLD(CYAN) : "";
+TEXT_COLOUR clr_reg_value = FLAG_log_colour ? COLOUR(CYAN) : "";
+TEXT_COLOUR clr_fpreg_name = FLAG_log_colour ? COLOUR_BOLD(MAGENTA) : "";
+TEXT_COLOUR clr_fpreg_value = FLAG_log_colour ? COLOUR(MAGENTA) : "";
+TEXT_COLOUR clr_memory_address = FLAG_log_colour ? COLOUR_BOLD(BLUE) : "";
+TEXT_COLOUR clr_debug_number = FLAG_log_colour ? COLOUR_BOLD(YELLOW) : "";
+TEXT_COLOUR clr_debug_message = FLAG_log_colour ? COLOUR(YELLOW) : "";
+TEXT_COLOUR clr_printf = FLAG_log_colour ? COLOUR(GREEN) : "";
 
 // This is basically the same as PrintF, with a guard for FLAG_trace_sim.
 void Simulator::TraceSim(const char* format, ...) {
@@ -66,9 +64,7 @@ void Simulator::TraceSim(const char* format, ...) {
   }
 }
 
-
 const Instruction* Simulator::kEndOfSimAddress = NULL;
-
 
 void SimSystemRegister::SetBits(int msb, int lsb, uint32_t bits) {
   int width = msb - lsb + 1;
@@ -80,7 +76,6 @@ void SimSystemRegister::SetBits(int msb, int lsb, uint32_t bits) {
 
   value_ = (value_ & ~mask) | (bits & mask);
 }
-
 
 SimSystemRegister SimSystemRegister::DefaultValueFor(SystemRegister id) {
   switch (id) {
@@ -94,13 +89,11 @@ SimSystemRegister SimSystemRegister::DefaultValueFor(SystemRegister id) {
   }
 }
 
-
 void Simulator::Initialize(Isolate* isolate) {
   if (isolate->simulator_initialized()) return;
   isolate->set_simulator_initialized(true);
   ExternalReference::set_redirector(isolate, &RedirectExternalReference);
 }
-
 
 // Get the active Simulator for the current thread.
 Simulator* Simulator::current(Isolate* isolate) {
@@ -121,7 +114,6 @@ Simulator* Simulator::current(Isolate* isolate) {
   return sim;
 }
 
-
 void Simulator::CallVoid(byte* entry, CallArgument* args) {
   int index_x = 0;
   int index_d = 0;
@@ -141,12 +133,12 @@ void Simulator::CallVoid(byte* entry, CallArgument* args) {
 
   // Process stack arguments, and make sure the stack is suitably aligned.
   uintptr_t original_stack = sp();
-  uintptr_t entry_stack = original_stack -
-                          stack_args.size() * sizeof(stack_args[0]);
+  uintptr_t entry_stack =
+      original_stack - stack_args.size() * sizeof(stack_args[0]);
   if (base::OS::ActivationFrameAlignment() != 0) {
     entry_stack &= -base::OS::ActivationFrameAlignment();
   }
-  char * stack = reinterpret_cast<char*>(entry_stack);
+  char* stack = reinterpret_cast<char*>(entry_stack);
   std::vector<int64_t>::const_iterator it;
   for (it = stack_args.begin(); it != stack_args.end(); it++) {
     memcpy(stack, &(*it), sizeof(*it));
@@ -164,64 +156,38 @@ void Simulator::CallVoid(byte* entry, CallArgument* args) {
   set_sp(original_stack);
 }
 
-
 int64_t Simulator::CallInt64(byte* entry, CallArgument* args) {
   CallVoid(entry, args);
   return xreg(0);
 }
-
 
 double Simulator::CallDouble(byte* entry, CallArgument* args) {
   CallVoid(entry, args);
   return dreg(0);
 }
 
-
-int64_t Simulator::CallJS(byte* entry,
-                          Object* new_target,
-                          Object* target,
-                          Object* revc,
-                          int64_t argc,
-                          Object*** argv) {
-  CallArgument args[] = {
-    CallArgument(new_target),
-    CallArgument(target),
-    CallArgument(revc),
-    CallArgument(argc),
-    CallArgument(argv),
-    CallArgument::End()
-  };
+int64_t Simulator::CallJS(byte* entry, Object* new_target, Object* target,
+                          Object* revc, int64_t argc, Object*** argv) {
+  CallArgument args[] = {CallArgument(new_target), CallArgument(target),
+                         CallArgument(revc),       CallArgument(argc),
+                         CallArgument(argv),       CallArgument::End()};
   return CallInt64(entry, args);
 }
 
-
-int64_t Simulator::CallRegExp(byte* entry,
-                              String* input,
-                              int64_t start_offset,
-                              const byte* input_start,
-                              const byte* input_end,
-                              int* output,
-                              int64_t output_size,
-                              Address stack_base,
-                              int64_t direct_call,
-                              void* return_address,
-                              Isolate* isolate) {
+int64_t Simulator::CallRegExp(byte* entry, String* input, int64_t start_offset,
+                              const byte* input_start, const byte* input_end,
+                              int* output, int64_t output_size,
+                              Address stack_base, int64_t direct_call,
+                              void* return_address, Isolate* isolate) {
   CallArgument args[] = {
-    CallArgument(input),
-    CallArgument(start_offset),
-    CallArgument(input_start),
-    CallArgument(input_end),
-    CallArgument(output),
-    CallArgument(output_size),
-    CallArgument(stack_base),
-    CallArgument(direct_call),
-    CallArgument(return_address),
-    CallArgument(isolate),
-    CallArgument::End()
-  };
+      CallArgument(input),          CallArgument(start_offset),
+      CallArgument(input_start),    CallArgument(input_end),
+      CallArgument(output),         CallArgument(output_size),
+      CallArgument(stack_base),     CallArgument(direct_call),
+      CallArgument(return_address), CallArgument(isolate),
+      CallArgument::End()};
   return CallInt64(entry, args);
 }
-
 
 void Simulator::CheckPCSComplianceAndRun() {
   // Adjust JS-based stack limit to C-based stack limit.
@@ -243,8 +209,7 @@ void Simulator::CheckPCSComplianceAndRun() {
     saved_registers[i] = xreg(register_list.PopLowestIndex().code());
   }
   for (int i = 0; i < kNumberOfCalleeSavedFPRegisters; i++) {
-    saved_fpregisters[i] =
-        dreg_bits(fpregister_list.PopLowestIndex().code());
+    saved_fpregisters[i] = dreg_bits(fpregister_list.PopLowestIndex().code());
   }
   int64_t original_stack = sp();
 #endif
@@ -281,7 +246,6 @@ void Simulator::CheckPCSComplianceAndRun() {
 #endif
 }
 
-
 #ifdef DEBUG
 // The least significant byte of the curruption value holds the corresponding
 // register's code.
@@ -300,7 +264,6 @@ void Simulator::CorruptRegisters(CPURegList* list, uint64_t value) {
   }
 }
 
-
 void Simulator::CorruptAllCallerSavedCPURegisters() {
   // Corrupt alters its parameter so copy them first.
   CPURegList register_list = kCallerSaved;
@@ -311,20 +274,17 @@ void Simulator::CorruptAllCallerSavedCPURegisters() {
 }
 #endif
 
-
 // Extending the stack by 2 * 64 bits is required for stack alignment purposes.
 uintptr_t Simulator::PushAddress(uintptr_t address) {
   DCHECK(sizeof(uintptr_t) < 2 * kXRegSize);
   intptr_t new_sp = sp() - 2 * kXRegSize;
-  uintptr_t* alignment_slot =
-    reinterpret_cast<uintptr_t*>(new_sp + kXRegSize);
+  uintptr_t* alignment_slot = reinterpret_cast<uintptr_t*>(new_sp + kXRegSize);
   memcpy(alignment_slot, &kSlotsZapValue, kPointerSize);
   uintptr_t* stack_slot = reinterpret_cast<uintptr_t*>(new_sp);
   memcpy(stack_slot, &address, kPointerSize);
   set_sp(new_sp);
   return new_sp;
 }
-
 
 uintptr_t Simulator::PopAddress() {
   intptr_t current_sp = sp();
@@ -334,7 +294,6 @@ uintptr_t Simulator::PopAddress() {
   set_sp(current_sp + 2 * kXRegSize);
   return address;
 }
-
 
 // Returns the limit of the stack area to enable checking for stack overflows.
 uintptr_t Simulator::StackLimit(uintptr_t c_limit) const {
@@ -348,7 +307,6 @@ uintptr_t Simulator::StackLimit(uintptr_t c_limit) const {
   // to prevent overrunning the stack when pushing values.
   return stack_limit_ + 1024;
 }
-
 
 Simulator::Simulator(Decoder<DispatchingDecoderVisitor>* decoder,
                      Isolate* isolate, FILE* stream)
@@ -367,12 +325,11 @@ Simulator::Simulator(Decoder<DispatchingDecoderVisitor>* decoder,
   }
 
   if (FLAG_log_instruction_stats) {
-    instrument_ = new Instrument(FLAG_log_instruction_file,
-                                 FLAG_log_instruction_period);
+    instrument_ =
+        new Instrument(FLAG_log_instruction_file, FLAG_log_instruction_period);
     decoder_->AppendVisitor(instrument_);
   }
 }
-
 
 Simulator::Simulator()
     : decoder_(NULL),
@@ -382,7 +339,6 @@ Simulator::Simulator()
   Init(stdout);
   CHECK(!FLAG_trace_sim && !FLAG_log_instruction_stats);
 }
-
 
 void Simulator::Init(FILE* stream) {
   ResetState();
@@ -403,7 +359,6 @@ void Simulator::Init(FILE* stream) {
   disassembler_decoder_ = new Decoder<DispatchingDecoderVisitor>();
   disassembler_decoder_->AppendVisitor(print_disasm_);
 }
-
 
 void Simulator::ResetState() {
   // Reset the system registers.
@@ -427,7 +382,6 @@ void Simulator::ResetState() {
   break_on_next_ = false;
 }
 
-
 Simulator::~Simulator() {
   delete[] reinterpret_cast<byte*>(stack_);
   if (FLAG_log_instruction_stats) {
@@ -439,7 +393,6 @@ Simulator::~Simulator() {
   delete decoder_;
 }
 
-
 void Simulator::Run() {
   pc_modified_ = false;
   while (pc_ != kEndOfSimAddress) {
@@ -447,12 +400,10 @@ void Simulator::Run() {
   }
 }
 
-
 void Simulator::RunFrom(Instruction* start) {
   set_pc(start);
   Run();
 }
-
 
 // When the generated code calls an external reference we need to catch that in
 // the simulator.  The external reference will be a function compiled for the
@@ -478,7 +429,9 @@ class Redirection {
   }
 
   template <typename T>
-  T external_function() { return reinterpret_cast<T>(external_function_); }
+  T external_function() {
+    return reinterpret_cast<T>(external_function_);
+  }
 
   ExternalReference::Type type() { return type_; }
 
@@ -522,26 +475,20 @@ class Redirection {
   Redirection* next_;
 };
 
-
 // static
 void Simulator::TearDown(HashMap* i_cache, Redirection* first) {
   Redirection::DeleteChain(first);
 }
-
 
 // Calls into the V8 runtime are based on this very simple interface.
 // Note: To be able to return two values from some calls the code in runtime.cc
 // uses the ObjectPair structure.
 // The simulator assumes all runtime calls return two 64-bits values. If they
 // don't, register x1 is clobbered. This is fine because x1 is caller-saved.
-typedef ObjectPair (*SimulatorRuntimeCall)(int64_t arg0,
-                                           int64_t arg1,
-                                           int64_t arg2,
-                                           int64_t arg3,
-                                           int64_t arg4,
-                                           int64_t arg5,
-                                           int64_t arg6,
-                                           int64_t arg7);
+typedef ObjectPair (*SimulatorRuntimeCall)(int64_t arg0, int64_t arg1,
+                                           int64_t arg2, int64_t arg3,
+                                           int64_t arg4, int64_t arg5,
+                                           int64_t arg6, int64_t arg7);
 
 typedef ObjectTriple (*SimulatorRuntimeTripleCall)(int64_t arg0, int64_t arg1,
                                                    int64_t arg2, int64_t arg3,
@@ -595,20 +542,24 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // ObjectPair f(v8::internal::Arguments).
       TraceSim("Type: BUILTIN_CALL\n");
       SimulatorRuntimeCall target =
-        reinterpret_cast<SimulatorRuntimeCall>(external);
+          reinterpret_cast<SimulatorRuntimeCall>(external);
 
       // We don't know how many arguments are being passed, but we can
       // pass 8 without touching the stack. They will be ignored by the
       // host function if they aren't used.
-      TraceSim("Arguments: "
-               "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
-               "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
-               "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
-               "0x%016" PRIx64 ", 0x%016" PRIx64,
-               xreg(0), xreg(1), xreg(2), xreg(3),
-               xreg(4), xreg(5), xreg(6), xreg(7));
-      ObjectPair result = target(xreg(0), xreg(1), xreg(2), xreg(3),
-                                 xreg(4), xreg(5), xreg(6), xreg(7));
+      TraceSim(
+          "Arguments: "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64,
+          xreg(0), xreg(1), xreg(2), xreg(3), xreg(4), xreg(5), xreg(6),
+          xreg(7));
+      ObjectPair result = target(xreg(0), xreg(1), xreg(2), xreg(3), xreg(4),
+                                 xreg(5), xreg(6), xreg(7));
       TraceSim("Returned: {%p, %p}\n", result.x, result.y);
 #ifdef DEBUG
       CorruptAllCallerSavedCPURegisters();
@@ -629,9 +580,12 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // host function if they aren't used.
       TraceSim(
           "Arguments: "
-          "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
-          "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
-          "0x%016" PRIx64 ", 0x%016" PRIx64 ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
+          "0x%016" PRIx64 ", 0x%016" PRIx64
+          ", "
           "0x%016" PRIx64 ", 0x%016" PRIx64,
           xreg(0), xreg(1), xreg(2), xreg(3), xreg(4), xreg(5), xreg(6),
           xreg(7));
@@ -651,7 +605,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // void f(v8::FunctionCallbackInfo&)
       TraceSim("Type: DIRECT_API_CALL\n");
       SimulatorRuntimeDirectApiCall target =
-        reinterpret_cast<SimulatorRuntimeDirectApiCall>(external);
+          reinterpret_cast<SimulatorRuntimeDirectApiCall>(external);
       TraceSim("Arguments: 0x%016" PRIx64 "\n", xreg(0));
       target(xreg(0));
       TraceSim("No return value.");
@@ -665,7 +619,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // int f(double, double)
       TraceSim("Type: BUILTIN_COMPARE_CALL\n");
       SimulatorRuntimeCompareCall target =
-        reinterpret_cast<SimulatorRuntimeCompareCall>(external);
+          reinterpret_cast<SimulatorRuntimeCompareCall>(external);
       TraceSim("Arguments: %f, %f\n", dreg(0), dreg(1));
       int64_t result = target(dreg(0), dreg(1));
       TraceSim("Returned: %" PRId64 "\n", result);
@@ -680,7 +634,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // double f(double)
       TraceSim("Type: BUILTIN_FP_CALL\n");
       SimulatorRuntimeFPCall target =
-        reinterpret_cast<SimulatorRuntimeFPCall>(external);
+          reinterpret_cast<SimulatorRuntimeFPCall>(external);
       TraceSim("Argument: %f\n", dreg(0));
       double result = target(dreg(0));
       TraceSim("Returned: %f\n", result);
@@ -695,7 +649,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // double f(double, double)
       TraceSim("Type: BUILTIN_FP_FP_CALL\n");
       SimulatorRuntimeFPFPCall target =
-        reinterpret_cast<SimulatorRuntimeFPFPCall>(external);
+          reinterpret_cast<SimulatorRuntimeFPFPCall>(external);
       TraceSim("Arguments: %f, %f\n", dreg(0), dreg(1));
       double result = target(dreg(0), dreg(1));
       TraceSim("Returned: %f\n", result);
@@ -710,7 +664,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // double f(double, int)
       TraceSim("Type: BUILTIN_FP_INT_CALL\n");
       SimulatorRuntimeFPIntCall target =
-        reinterpret_cast<SimulatorRuntimeFPIntCall>(external);
+          reinterpret_cast<SimulatorRuntimeFPIntCall>(external);
       TraceSim("Arguments: %f, %d\n", dreg(0), wreg(0));
       double result = target(dreg(0), wreg(0));
       TraceSim("Returned: %f\n", result);
@@ -725,9 +679,9 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // void f(Local<String> property, PropertyCallbackInfo& info)
       TraceSim("Type: DIRECT_GETTER_CALL\n");
       SimulatorRuntimeDirectGetterCall target =
-        reinterpret_cast<SimulatorRuntimeDirectGetterCall>(external);
-      TraceSim("Arguments: 0x%016" PRIx64 ", 0x%016" PRIx64 "\n",
-               xreg(0), xreg(1));
+          reinterpret_cast<SimulatorRuntimeDirectGetterCall>(external);
+      TraceSim("Arguments: 0x%016" PRIx64 ", 0x%016" PRIx64 "\n", xreg(0),
+               xreg(1));
       target(xreg(0), xreg(1));
       TraceSim("No return value.");
 #ifdef DEBUG
@@ -740,7 +694,7 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       // void f(v8::FunctionCallbackInfo&, v8::FunctionCallback)
       TraceSim("Type: PROFILING_API_CALL\n");
       SimulatorRuntimeProfilingApiCall target =
-        reinterpret_cast<SimulatorRuntimeProfilingApiCall>(external);
+          reinterpret_cast<SimulatorRuntimeProfilingApiCall>(external);
       void* arg1 = Redirection::ReverseRedirection(xreg(1));
       TraceSim("Arguments: 0x%016" PRIx64 ", %p\n", xreg(0), arg1);
       target(xreg(0), arg1);
@@ -756,11 +710,10 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
       //        AccessorNameGetterCallback callback)
       TraceSim("Type: PROFILING_GETTER_CALL\n");
       SimulatorRuntimeProfilingGetterCall target =
-        reinterpret_cast<SimulatorRuntimeProfilingGetterCall>(
-            external);
+          reinterpret_cast<SimulatorRuntimeProfilingGetterCall>(external);
       void* arg2 = Redirection::ReverseRedirection(xreg(2));
-      TraceSim("Arguments: 0x%016" PRIx64 ", 0x%016" PRIx64 ", %p\n",
-               xreg(0), xreg(1), arg2);
+      TraceSim("Arguments: 0x%016" PRIx64 ", 0x%016" PRIx64 ", %p\n", xreg(0),
+               xreg(1), arg2);
       target(xreg(0), xreg(1), arg2);
       TraceSim("No return value.");
 #ifdef DEBUG
@@ -774,7 +727,6 @@ void Simulator::DoRuntimeCall(Instruction* instr) {
   set_pc(return_address);
 }
 
-
 void* Simulator::RedirectExternalReference(Isolate* isolate,
                                            void* external_function,
                                            ExternalReference::Type type) {
@@ -782,37 +734,32 @@ void* Simulator::RedirectExternalReference(Isolate* isolate,
   return redirection->address_of_redirect_call();
 }
 
-
 const char* Simulator::xreg_names[] = {
-"x0",  "x1",  "x2",  "x3",  "x4",   "x5",  "x6",  "x7",
-"x8",  "x9",  "x10", "x11", "x12",  "x13", "x14", "x15",
-"ip0", "ip1", "x18", "x19", "x20",  "x21", "x22", "x23",
-"x24", "x25", "x26", "cp",  "jssp", "fp",  "lr",  "xzr", "csp"};
+    "x0",  "x1",   "x2",  "x3",  "x4",  "x5",  "x6",  "x7",  "x8",
+    "x9",  "x10",  "x11", "x12", "x13", "x14", "x15", "ip0", "ip1",
+    "x18", "x19",  "x20", "x21", "x22", "x23", "x24", "x25", "x26",
+    "cp",  "jssp", "fp",  "lr",  "xzr", "csp"};
 
 const char* Simulator::wreg_names[] = {
-"w0",  "w1",  "w2",  "w3",  "w4",    "w5",  "w6",  "w7",
-"w8",  "w9",  "w10", "w11", "w12",   "w13", "w14", "w15",
-"w16", "w17", "w18", "w19", "w20",   "w21", "w22", "w23",
-"w24", "w25", "w26", "wcp", "wjssp", "wfp", "wlr", "wzr", "wcsp"};
+    "w0",  "w1",    "w2",  "w3",  "w4",  "w5",  "w6",  "w7",  "w8",
+    "w9",  "w10",   "w11", "w12", "w13", "w14", "w15", "w16", "w17",
+    "w18", "w19",   "w20", "w21", "w22", "w23", "w24", "w25", "w26",
+    "wcp", "wjssp", "wfp", "wlr", "wzr", "wcsp"};
 
 const char* Simulator::sreg_names[] = {
-"s0",  "s1",  "s2",  "s3",  "s4",  "s5",  "s6",  "s7",
-"s8",  "s9",  "s10", "s11", "s12", "s13", "s14", "s15",
-"s16", "s17", "s18", "s19", "s20", "s21", "s22", "s23",
-"s24", "s25", "s26", "s27", "s28", "s29", "s30", "s31"};
+    "s0",  "s1",  "s2",  "s3",  "s4",  "s5",  "s6",  "s7",  "s8",  "s9",  "s10",
+    "s11", "s12", "s13", "s14", "s15", "s16", "s17", "s18", "s19", "s20", "s21",
+    "s22", "s23", "s24", "s25", "s26", "s27", "s28", "s29", "s30", "s31"};
 
 const char* Simulator::dreg_names[] = {
-"d0",  "d1",  "d2",  "d3",  "d4",  "d5",  "d6",  "d7",
-"d8",  "d9",  "d10", "d11", "d12", "d13", "d14", "d15",
-"d16", "d17", "d18", "d19", "d20", "d21", "d22", "d23",
-"d24", "d25", "d26", "d27", "d28", "d29", "d30", "d31"};
+    "d0",  "d1",  "d2",  "d3",  "d4",  "d5",  "d6",  "d7",  "d8",  "d9",  "d10",
+    "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18", "d19", "d20", "d21",
+    "d22", "d23", "d24", "d25", "d26", "d27", "d28", "d29", "d30", "d31"};
 
 const char* Simulator::vreg_names[] = {
-"v0",  "v1",  "v2",  "v3",  "v4",  "v5",  "v6",  "v7",
-"v8",  "v9",  "v10", "v11", "v12", "v13", "v14", "v15",
-"v16", "v17", "v18", "v19", "v20", "v21", "v22", "v23",
-"v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31"};
-
+    "v0",  "v1",  "v2",  "v3",  "v4",  "v5",  "v6",  "v7",  "v8",  "v9",  "v10",
+    "v11", "v12", "v13", "v14", "v15", "v16", "v17", "v18", "v19", "v20", "v21",
+    "v22", "v23", "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31"};
 
 const char* Simulator::WRegNameForCode(unsigned code, Reg31Mode mode) {
   STATIC_ASSERT(arraysize(Simulator::wreg_names) == (kNumberOfRegisters + 1));
@@ -828,7 +775,6 @@ const char* Simulator::WRegNameForCode(unsigned code, Reg31Mode mode) {
   return wreg_names[code];
 }
 
-
 const char* Simulator::XRegNameForCode(unsigned code, Reg31Mode mode) {
   STATIC_ASSERT(arraysize(Simulator::xreg_names) == (kNumberOfRegisters + 1));
   DCHECK(code < kNumberOfRegisters);
@@ -841,13 +787,11 @@ const char* Simulator::XRegNameForCode(unsigned code, Reg31Mode mode) {
   return xreg_names[code];
 }
 
-
 const char* Simulator::SRegNameForCode(unsigned code) {
   STATIC_ASSERT(arraysize(Simulator::sreg_names) == kNumberOfFPRegisters);
   DCHECK(code < kNumberOfFPRegisters);
   return sreg_names[code % kNumberOfFPRegisters];
 }
-
 
 const char* Simulator::DRegNameForCode(unsigned code) {
   STATIC_ASSERT(arraysize(Simulator::dreg_names) == kNumberOfFPRegisters);
@@ -855,13 +799,11 @@ const char* Simulator::DRegNameForCode(unsigned code) {
   return dreg_names[code % kNumberOfFPRegisters];
 }
 
-
 const char* Simulator::VRegNameForCode(unsigned code) {
   STATIC_ASSERT(arraysize(Simulator::vreg_names) == kNumberOfFPRegisters);
   DCHECK(code < kNumberOfFPRegisters);
   return vreg_names[code % kNumberOfFPRegisters];
 }
-
 
 int Simulator::CodeFromName(const char* name) {
   for (unsigned i = 0; i < kNumberOfRegisters; i++) {
@@ -883,13 +825,9 @@ int Simulator::CodeFromName(const char* name) {
   return -1;
 }
 
-
 // Helpers ---------------------------------------------------------------------
 template <typename T>
-T Simulator::AddWithCarry(bool set_flags,
-                          T src1,
-                          T src2,
-                          T carry_in) {
+T Simulator::AddWithCarry(bool set_flags, T src1, T src2, T carry_in) {
   typedef typename make_unsigned<T>::type unsignedT;
   DCHECK((carry_in == 0) || (carry_in == 1));
 
@@ -921,8 +859,7 @@ T Simulator::AddWithCarry(bool set_flags,
   return result;
 }
 
-
-template<typename T>
+template <typename T>
 void Simulator::AddSubWithCarry(Instruction* instr) {
   T op2 = reg<T>(instr->Rm());
   T new_val;
@@ -931,9 +868,7 @@ void Simulator::AddSubWithCarry(Instruction* instr) {
     op2 = ~op2;
   }
 
-  new_val = AddWithCarry<T>(instr->FlagsUpdate(),
-                            reg<T>(instr->Rn()),
-                            op2,
+  new_val = AddWithCarry<T>(instr->FlagsUpdate(), reg<T>(instr->Rn()), op2,
                             nzcv().C());
 
   set_reg<T>(instr->Rd(), new_val);
@@ -964,7 +899,6 @@ T Simulator::ShiftOperand(T value, Shift shift_type, unsigned amount) {
       return 0;
   }
 }
-
 
 template <typename T>
 T Simulator::ExtendValue(T value, Extend extend_type, unsigned left_shift) {
@@ -1000,7 +934,6 @@ T Simulator::ExtendValue(T value, Extend extend_type, unsigned left_shift) {
   return value << left_shift;
 }
 
-
 template <typename T>
 void Simulator::Extract(Instruction* instr) {
   unsigned lsb = instr->ImmS();
@@ -1014,16 +947,15 @@ void Simulator::Extract(Instruction* instr) {
   set_reg<T>(instr->Rd(), result);
 }
 
-
-template<> double Simulator::FPDefaultNaN<double>() const {
+template <>
+double Simulator::FPDefaultNaN<double>() const {
   return kFP64DefaultNaN;
 }
 
-
-template<> float Simulator::FPDefaultNaN<float>() const {
+template <>
+float Simulator::FPDefaultNaN<float>() const {
   return kFP32DefaultNaN;
 }
-
 
 void Simulator::FPCompare(double val0, double val1) {
   AssertSupportedFPCR();
@@ -1044,12 +976,10 @@ void Simulator::FPCompare(double val0, double val1) {
   LogSystemRegister(NZCV);
 }
 
-
 void Simulator::SetBreakpoint(Instruction* location) {
   for (unsigned i = 0; i < breakpoints_.size(); i++) {
     if (breakpoints_.at(i).location == location) {
-      PrintF(stream_,
-             "Existing breakpoint at %p was %s\n",
+      PrintF(stream_, "Existing breakpoint at %p was %s\n",
              reinterpret_cast<void*>(location),
              breakpoints_.at(i).enabled ? "disabled" : "enabled");
       breakpoints_.at(i).enabled = !breakpoints_.at(i).enabled;
@@ -1058,10 +988,9 @@ void Simulator::SetBreakpoint(Instruction* location) {
   }
   Breakpoint new_breakpoint = {location, true};
   breakpoints_.push_back(new_breakpoint);
-  PrintF(stream_,
-         "Set a breakpoint at %p\n", reinterpret_cast<void*>(location));
+  PrintF(stream_, "Set a breakpoint at %p\n",
+         reinterpret_cast<void*>(location));
 }
-
 
 void Simulator::ListBreakpoints() {
   PrintF(stream_, "Breakpoints:\n");
@@ -1072,12 +1001,10 @@ void Simulator::ListBreakpoints() {
   }
 }
 
-
 void Simulator::CheckBreakpoints() {
   bool hit_a_breakpoint = false;
   for (unsigned i = 0; i < breakpoints_.size(); i++) {
-    if ((breakpoints_.at(i).location == pc_) &&
-        breakpoints_.at(i).enabled) {
+    if ((breakpoints_.at(i).location == pc_) && breakpoints_.at(i).enabled) {
       hit_a_breakpoint = true;
       // Disable this breakpoint.
       breakpoints_.at(i).enabled = false;
@@ -1090,7 +1017,6 @@ void Simulator::CheckBreakpoints() {
   }
 }
 
-
 void Simulator::CheckBreakNext() {
   // If the current instruction is a BL, insert a breakpoint just after it.
   if (break_on_next_ && pc_->IsBranchAndLinkToRegister()) {
@@ -1099,7 +1025,6 @@ void Simulator::CheckBreakNext() {
   }
 }
 
-
 void Simulator::PrintInstructionsAt(Instruction* start, uint64_t count) {
   Instruction* end = start->InstructionAtOffset(count * kInstructionSize);
   for (Instruction* pc = start; pc < end; pc = pc->following()) {
@@ -1107,12 +1032,10 @@ void Simulator::PrintInstructionsAt(Instruction* start, uint64_t count) {
   }
 }
 
-
 void Simulator::PrintSystemRegisters() {
   PrintSystemRegister(NZCV);
   PrintSystemRegister(FPCR);
 }
-
 
 void Simulator::PrintRegisters() {
   for (unsigned i = 0; i < kNumberOfRegisters; i++) {
@@ -1120,13 +1043,11 @@ void Simulator::PrintRegisters() {
   }
 }
 
-
 void Simulator::PrintFPRegisters() {
   for (unsigned i = 0; i < kNumberOfFPRegisters; i++) {
     PrintFPRegister(i);
   }
 }
-
 
 void Simulator::PrintRegister(unsigned code, Reg31Mode r31mode) {
   // Don't print writes into xzr.
@@ -1135,11 +1056,10 @@ void Simulator::PrintRegister(unsigned code, Reg31Mode r31mode) {
   }
 
   // The template is "# x<code>:value".
-  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s\n",
-          clr_reg_name, XRegNameForCode(code, r31mode),
-          clr_reg_value, reg<uint64_t>(code, r31mode), clr_normal);
+  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s\n", clr_reg_name,
+          XRegNameForCode(code, r31mode), clr_reg_value,
+          reg<uint64_t>(code, r31mode), clr_normal);
 }
-
 
 void Simulator::PrintFPRegister(unsigned code, PrintFPRegisterSizes sizes) {
   // The template is "# v<code>:bits (d<code>:value, ...)".
@@ -1148,25 +1068,23 @@ void Simulator::PrintFPRegister(unsigned code, PrintFPRegisterSizes sizes) {
   DCHECK((sizes & kPrintAllFPRegValues) == sizes);
 
   // Print the raw bits.
-  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s (",
-          clr_fpreg_name, VRegNameForCode(code),
-          clr_fpreg_value, fpreg<uint64_t>(code), clr_normal);
+  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s (", clr_fpreg_name,
+          VRegNameForCode(code), clr_fpreg_value, fpreg<uint64_t>(code),
+          clr_normal);
 
   // Print all requested value interpretations.
   bool need_separator = false;
   if (sizes & kPrintDRegValue) {
-    fprintf(stream_, "%s%s%s: %s%g%s",
-            need_separator ? ", " : "",
-            clr_fpreg_name, DRegNameForCode(code),
-            clr_fpreg_value, fpreg<double>(code), clr_normal);
+    fprintf(stream_, "%s%s%s: %s%g%s", need_separator ? ", " : "",
+            clr_fpreg_name, DRegNameForCode(code), clr_fpreg_value,
+            fpreg<double>(code), clr_normal);
     need_separator = true;
   }
 
   if (sizes & kPrintSRegValue) {
-    fprintf(stream_, "%s%s%s: %s%g%s",
-            need_separator ? ", " : "",
-            clr_fpreg_name, SRegNameForCode(code),
-            clr_fpreg_value, fpreg<float>(code), clr_normal);
+    fprintf(stream_, "%s%s%s: %s%g%s", need_separator ? ", " : "",
+            clr_fpreg_name, SRegNameForCode(code), clr_fpreg_value,
+            fpreg<float>(code), clr_normal);
     need_separator = true;
   }
 
@@ -1174,28 +1092,21 @@ void Simulator::PrintFPRegister(unsigned code, PrintFPRegisterSizes sizes) {
   fprintf(stream_, ")\n");
 }
 
-
 void Simulator::PrintSystemRegister(SystemRegister id) {
   switch (id) {
     case NZCV:
-      fprintf(stream_, "# %sNZCV: %sN:%d Z:%d C:%d V:%d%s\n",
-              clr_flag_name, clr_flag_value,
-              nzcv().N(), nzcv().Z(), nzcv().C(), nzcv().V(),
+      fprintf(stream_, "# %sNZCV: %sN:%d Z:%d C:%d V:%d%s\n", clr_flag_name,
+              clr_flag_value, nzcv().N(), nzcv().Z(), nzcv().C(), nzcv().V(),
               clr_normal);
       break;
     case FPCR: {
-      static const char * rmode[] = {
-        "0b00 (Round to Nearest)",
-        "0b01 (Round towards Plus Infinity)",
-        "0b10 (Round towards Minus Infinity)",
-        "0b11 (Round towards Zero)"
-      };
+      static const char* rmode[] = {
+          "0b00 (Round to Nearest)", "0b01 (Round towards Plus Infinity)",
+          "0b10 (Round towards Minus Infinity)", "0b11 (Round towards Zero)"};
       DCHECK(fpcr().RMode() < arraysize(rmode));
-      fprintf(stream_,
-              "# %sFPCR: %sAHP:%d DN:%d FZ:%d RMode:%s%s\n",
-              clr_flag_name, clr_flag_value,
-              fpcr().AHP(), fpcr().DN(), fpcr().FZ(), rmode[fpcr().RMode()],
-              clr_normal);
+      fprintf(stream_, "# %sFPCR: %sAHP:%d DN:%d FZ:%d RMode:%s%s\n",
+              clr_flag_name, clr_flag_value, fpcr().AHP(), fpcr().DN(),
+              fpcr().FZ(), rmode[fpcr().RMode()], clr_normal);
       break;
     }
     default:
@@ -1203,113 +1114,101 @@ void Simulator::PrintSystemRegister(SystemRegister id) {
   }
 }
 
-
-void Simulator::PrintRead(uintptr_t address,
-                          size_t size,
-                          unsigned reg_code) {
+void Simulator::PrintRead(uintptr_t address, size_t size, unsigned reg_code) {
   USE(size);  // Size is unused here.
 
   // The template is "# x<code>:value <- address".
-  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s",
-          clr_reg_name, XRegNameForCode(reg_code),
-          clr_reg_value, reg<uint64_t>(reg_code), clr_normal);
+  fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s", clr_reg_name,
+          XRegNameForCode(reg_code), clr_reg_value, reg<uint64_t>(reg_code),
+          clr_normal);
 
-  fprintf(stream_, " <- %s0x%016" PRIxPTR "%s\n",
-          clr_memory_address, address, clr_normal);
+  fprintf(stream_, " <- %s0x%016" PRIxPTR "%s\n", clr_memory_address, address,
+          clr_normal);
 }
 
-
-void Simulator::PrintReadFP(uintptr_t address,
-                            size_t size,
-                            unsigned reg_code) {
+void Simulator::PrintReadFP(uintptr_t address, size_t size, unsigned reg_code) {
   // The template is "# reg:bits (reg:value) <- address".
   switch (size) {
     case kSRegSize:
       fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s (%s%s: %s%gf%s)",
-              clr_fpreg_name, VRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<uint64_t>(reg_code), clr_normal,
-              clr_fpreg_name, SRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<float>(reg_code), clr_normal);
+              clr_fpreg_name, VRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<uint64_t>(reg_code), clr_normal, clr_fpreg_name,
+              SRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<float>(reg_code), clr_normal);
       break;
     case kDRegSize:
       fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s (%s%s: %s%g%s)",
-              clr_fpreg_name, VRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<uint64_t>(reg_code), clr_normal,
-              clr_fpreg_name, DRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<double>(reg_code), clr_normal);
+              clr_fpreg_name, VRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<uint64_t>(reg_code), clr_normal, clr_fpreg_name,
+              DRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<double>(reg_code), clr_normal);
       break;
     default:
       UNREACHABLE();
   }
 
-  fprintf(stream_, " <- %s0x%016" PRIxPTR "%s\n",
-          clr_memory_address, address, clr_normal);
+  fprintf(stream_, " <- %s0x%016" PRIxPTR "%s\n", clr_memory_address, address,
+          clr_normal);
 }
 
-
-void Simulator::PrintWrite(uintptr_t address,
-                           size_t size,
-                           unsigned reg_code) {
+void Simulator::PrintWrite(uintptr_t address, size_t size, unsigned reg_code) {
   // The template is "# reg:value -> address". To keep the trace tidy and
   // readable, the value is aligned with the values in the register trace.
   switch (size) {
     case kByteSizeInBytes:
       fprintf(stream_, "# %s%5s<7:0>:          %s0x%02" PRIx8 "%s",
-              clr_reg_name, WRegNameForCode(reg_code),
-              clr_reg_value, reg<uint8_t>(reg_code), clr_normal);
+              clr_reg_name, WRegNameForCode(reg_code), clr_reg_value,
+              reg<uint8_t>(reg_code), clr_normal);
       break;
     case kHalfWordSizeInBytes:
-      fprintf(stream_, "# %s%5s<15:0>:       %s0x%04" PRIx16 "%s",
-              clr_reg_name, WRegNameForCode(reg_code),
-              clr_reg_value, reg<uint16_t>(reg_code), clr_normal);
+      fprintf(stream_, "# %s%5s<15:0>:       %s0x%04" PRIx16 "%s", clr_reg_name,
+              WRegNameForCode(reg_code), clr_reg_value, reg<uint16_t>(reg_code),
+              clr_normal);
       break;
     case kWRegSize:
-      fprintf(stream_, "# %s%5s:         %s0x%08" PRIx32 "%s",
-              clr_reg_name, WRegNameForCode(reg_code),
-              clr_reg_value, reg<uint32_t>(reg_code), clr_normal);
+      fprintf(stream_, "# %s%5s:         %s0x%08" PRIx32 "%s", clr_reg_name,
+              WRegNameForCode(reg_code), clr_reg_value, reg<uint32_t>(reg_code),
+              clr_normal);
       break;
     case kXRegSize:
-      fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s",
-              clr_reg_name, XRegNameForCode(reg_code),
-              clr_reg_value, reg<uint64_t>(reg_code), clr_normal);
+      fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s", clr_reg_name,
+              XRegNameForCode(reg_code), clr_reg_value, reg<uint64_t>(reg_code),
+              clr_normal);
       break;
     default:
       UNREACHABLE();
   }
 
-  fprintf(stream_, " -> %s0x%016" PRIxPTR "%s\n",
-          clr_memory_address, address, clr_normal);
+  fprintf(stream_, " -> %s0x%016" PRIxPTR "%s\n", clr_memory_address, address,
+          clr_normal);
 }
 
-
-void Simulator::PrintWriteFP(uintptr_t address,
-                             size_t size,
+void Simulator::PrintWriteFP(uintptr_t address, size_t size,
                              unsigned reg_code) {
   // The template is "# reg:bits (reg:value) -> address". To keep the trace tidy
   // and readable, the value is aligned with the values in the register trace.
   switch (size) {
     case kSRegSize:
       fprintf(stream_, "# %s%5s<31:0>:   %s0x%08" PRIx32 "%s (%s%s: %s%gf%s)",
-              clr_fpreg_name, VRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<uint32_t>(reg_code), clr_normal,
-              clr_fpreg_name, SRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<float>(reg_code), clr_normal);
+              clr_fpreg_name, VRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<uint32_t>(reg_code), clr_normal, clr_fpreg_name,
+              SRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<float>(reg_code), clr_normal);
       break;
     case kDRegSize:
       fprintf(stream_, "# %s%5s: %s0x%016" PRIx64 "%s (%s%s: %s%g%s)",
-              clr_fpreg_name, VRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<uint64_t>(reg_code), clr_normal,
-              clr_fpreg_name, DRegNameForCode(reg_code),
-              clr_fpreg_value, fpreg<double>(reg_code), clr_normal);
+              clr_fpreg_name, VRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<uint64_t>(reg_code), clr_normal, clr_fpreg_name,
+              DRegNameForCode(reg_code), clr_fpreg_value,
+              fpreg<double>(reg_code), clr_normal);
       break;
     default:
       UNREACHABLE();
   }
 
-  fprintf(stream_, " -> %s0x%016" PRIxPTR "%s\n",
-          clr_memory_address, address, clr_normal);
+  fprintf(stream_, " -> %s0x%016" PRIxPTR "%s\n", clr_memory_address, address,
+          clr_normal);
 }
-
 
 // Visitors---------------------------------------------------------------------
 
@@ -1319,13 +1218,11 @@ void Simulator::VisitUnimplemented(Instruction* instr) {
   UNIMPLEMENTED();
 }
 
-
 void Simulator::VisitUnallocated(Instruction* instr) {
   fprintf(stream_, "Unallocated instruction at %p: 0x%08" PRIx32 "\n",
           reinterpret_cast<void*>(instr), instr->InstructionBits());
   UNIMPLEMENTED();
 }
-
 
 void Simulator::VisitPCRelAddressing(Instruction* instr) {
   switch (instr->Mask(PCRelAddressingMask)) {
@@ -1341,7 +1238,6 @@ void Simulator::VisitPCRelAddressing(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitUnconditionalBranch(Instruction* instr) {
   switch (instr->Mask(UnconditionalBranchMask)) {
     case BL:
@@ -1355,14 +1251,12 @@ void Simulator::VisitUnconditionalBranch(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitConditionalBranch(Instruction* instr) {
   DCHECK(instr->Mask(ConditionalBranchMask) == B_cond);
   if (ConditionPassed(static_cast<Condition>(instr->ConditionBranch()))) {
     set_pc(instr->ImmPCOffsetTarget());
   }
 }
-
 
 void Simulator::VisitUnconditionalBranchToRegister(Instruction* instr) {
   Instruction* target = reg<Instruction*>(instr->Rn());
@@ -1377,44 +1271,57 @@ void Simulator::VisitUnconditionalBranchToRegister(Instruction* instr) {
       // Fall through.
     }
     case BR:
-    case RET: set_pc(target); break;
-    default: UNIMPLEMENTED();
+    case RET:
+      set_pc(target);
+      break;
+    default:
+      UNIMPLEMENTED();
   }
 }
 
-
 void Simulator::VisitTestBranch(Instruction* instr) {
-  unsigned bit_pos = (instr->ImmTestBranchBit5() << 5) |
-                     instr->ImmTestBranchBit40();
+  unsigned bit_pos =
+      (instr->ImmTestBranchBit5() << 5) | instr->ImmTestBranchBit40();
   bool take_branch = ((xreg(instr->Rt()) & (1UL << bit_pos)) == 0);
   switch (instr->Mask(TestBranchMask)) {
-    case TBZ: break;
-    case TBNZ: take_branch = !take_branch; break;
-    default: UNIMPLEMENTED();
+    case TBZ:
+      break;
+    case TBNZ:
+      take_branch = !take_branch;
+      break;
+    default:
+      UNIMPLEMENTED();
   }
   if (take_branch) {
     set_pc(instr->ImmPCOffsetTarget());
   }
 }
-
 
 void Simulator::VisitCompareBranch(Instruction* instr) {
   unsigned rt = instr->Rt();
   bool take_branch = false;
   switch (instr->Mask(CompareBranchMask)) {
-    case CBZ_w: take_branch = (wreg(rt) == 0); break;
-    case CBZ_x: take_branch = (xreg(rt) == 0); break;
-    case CBNZ_w: take_branch = (wreg(rt) != 0); break;
-    case CBNZ_x: take_branch = (xreg(rt) != 0); break;
-    default: UNIMPLEMENTED();
+    case CBZ_w:
+      take_branch = (wreg(rt) == 0);
+      break;
+    case CBZ_x:
+      take_branch = (xreg(rt) == 0);
+      break;
+    case CBNZ_w:
+      take_branch = (wreg(rt) != 0);
+      break;
+    case CBNZ_x:
+      take_branch = (xreg(rt) != 0);
+      break;
+    default:
+      UNIMPLEMENTED();
   }
   if (take_branch) {
     set_pc(instr->ImmPCOffsetTarget());
   }
 }
 
-
-template<typename T>
+template <typename T>
 void Simulator::AddSubHelper(Instruction* instr, T op2) {
   bool set_flags = instr->FlagsUpdate();
   T new_val = 0;
@@ -1423,25 +1330,22 @@ void Simulator::AddSubHelper(Instruction* instr, T op2) {
   switch (operation) {
     case ADD:
     case ADDS: {
-      new_val = AddWithCarry<T>(set_flags,
-                                reg<T>(instr->Rn(), instr->RnMode()),
-                                op2);
+      new_val =
+          AddWithCarry<T>(set_flags, reg<T>(instr->Rn(), instr->RnMode()), op2);
       break;
     }
     case SUB:
     case SUBS: {
-      new_val = AddWithCarry<T>(set_flags,
-                                reg<T>(instr->Rn(), instr->RnMode()),
-                                ~op2,
-                                1);
+      new_val = AddWithCarry<T>(set_flags, reg<T>(instr->Rn(), instr->RnMode()),
+                                ~op2, 1);
       break;
     }
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
 
   set_reg<T>(instr->Rd(), new_val, instr->RdMode());
 }
-
 
 void Simulator::VisitAddSubShifted(Instruction* instr) {
   Shift shift_type = static_cast<Shift>(instr->ShiftDP());
@@ -1457,7 +1361,6 @@ void Simulator::VisitAddSubShifted(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitAddSubImmediate(Instruction* instr) {
   int64_t op2 = instr->ImmAddSub() << ((instr->ShiftAddSub() == 1) ? 12 : 0);
   if (instr->SixtyFourBits()) {
@@ -1466,7 +1369,6 @@ void Simulator::VisitAddSubImmediate(Instruction* instr) {
     AddSubHelper<int32_t>(instr, static_cast<int32_t>(op2));
   }
 }
-
 
 void Simulator::VisitAddSubExtended(Instruction* instr) {
   Extend ext = static_cast<Extend>(instr->ExtendMode());
@@ -1480,7 +1382,6 @@ void Simulator::VisitAddSubExtended(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitAddSubWithCarry(Instruction* instr) {
   if (instr->SixtyFourBits()) {
     AddSubWithCarry<int64_t>(instr);
@@ -1488,7 +1389,6 @@ void Simulator::VisitAddSubWithCarry(Instruction* instr) {
     AddSubWithCarry<int32_t>(instr);
   }
 }
-
 
 void Simulator::VisitLogicalShifted(Instruction* instr) {
   Shift shift_type = static_cast<Shift>(instr->ShiftDP());
@@ -1505,7 +1405,6 @@ void Simulator::VisitLogicalShifted(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitLogicalImmediate(Instruction* instr) {
   if (instr->SixtyFourBits()) {
     LogicalHelper<int64_t>(instr, instr->ImmLogical());
@@ -1514,8 +1413,7 @@ void Simulator::VisitLogicalImmediate(Instruction* instr) {
   }
 }
 
-
-template<typename T>
+template <typename T>
 void Simulator::LogicalHelper(Instruction* instr, T op2) {
   T op1 = reg<T>(instr->Rn());
   T result = 0;
@@ -1524,10 +1422,17 @@ void Simulator::LogicalHelper(Instruction* instr, T op2) {
   // Switch on the logical operation, stripping out the NOT bit, as it has a
   // different meaning for logical immediate instructions.
   switch (instr->Mask(LogicalOpMask & ~NOT)) {
-    case ANDS: update_flags = true;  // Fall through.
-    case AND: result = op1 & op2; break;
-    case ORR: result = op1 | op2; break;
-    case EOR: result = op1 ^ op2; break;
+    case ANDS:
+      update_flags = true;  // Fall through.
+    case AND:
+      result = op1 & op2;
+      break;
+    case ORR:
+      result = op1 | op2;
+      break;
+    case EOR:
+      result = op1 ^ op2;
+      break;
     default:
       UNIMPLEMENTED();
   }
@@ -1543,7 +1448,6 @@ void Simulator::LogicalHelper(Instruction* instr, T op2) {
   set_reg<T>(instr->Rd(), result, instr->RdMode());
 }
 
-
 void Simulator::VisitConditionalCompareRegister(Instruction* instr) {
   if (instr->SixtyFourBits()) {
     ConditionalCompareHelper(instr, xreg(instr->Rm()));
@@ -1551,7 +1455,6 @@ void Simulator::VisitConditionalCompareRegister(Instruction* instr) {
     ConditionalCompareHelper(instr, wreg(instr->Rm()));
   }
 }
-
 
 void Simulator::VisitConditionalCompareImmediate(Instruction* instr) {
   if (instr->SixtyFourBits()) {
@@ -1561,8 +1464,7 @@ void Simulator::VisitConditionalCompareImmediate(Instruction* instr) {
   }
 }
 
-
-template<typename T>
+template <typename T>
 void Simulator::ConditionalCompareHelper(Instruction* instr, T op2) {
   T op1 = reg<T>(instr->Rn());
 
@@ -1582,27 +1484,22 @@ void Simulator::ConditionalCompareHelper(Instruction* instr, T op2) {
   }
 }
 
-
 void Simulator::VisitLoadStoreUnsignedOffset(Instruction* instr) {
   int offset = instr->ImmLSUnsigned() << instr->SizeLS();
   LoadStoreHelper(instr, offset, Offset);
 }
 
-
 void Simulator::VisitLoadStoreUnscaledOffset(Instruction* instr) {
   LoadStoreHelper(instr, instr->ImmLS(), Offset);
 }
-
 
 void Simulator::VisitLoadStorePreIndex(Instruction* instr) {
   LoadStoreHelper(instr, instr->ImmLS(), PreIndex);
 }
 
-
 void Simulator::VisitLoadStorePostIndex(Instruction* instr) {
   LoadStoreHelper(instr, instr->ImmLS(), PostIndex);
 }
-
 
 void Simulator::VisitLoadStoreRegisterOffset(Instruction* instr) {
   Extend ext = static_cast<Extend>(instr->ExtendMode());
@@ -1613,9 +1510,7 @@ void Simulator::VisitLoadStoreRegisterOffset(Instruction* instr) {
   LoadStoreHelper(instr, offset, Offset);
 }
 
-
-void Simulator::LoadStoreHelper(Instruction* instr,
-                                int64_t offset,
+void Simulator::LoadStoreHelper(Instruction* instr, int64_t offset,
                                 AddrMode addrmode) {
   unsigned srcdst = instr->Rt();
   unsigned addr_reg = instr->Rn();
@@ -1641,26 +1536,61 @@ void Simulator::LoadStoreHelper(Instruction* instr,
   switch (op) {
     // Use _no_log variants to suppress the register trace (LOG_REGS,
     // LOG_FP_REGS). We will print a more detailed log.
-    case LDRB_w:  set_wreg_no_log(srcdst, MemoryRead<uint8_t>(address)); break;
-    case LDRH_w:  set_wreg_no_log(srcdst, MemoryRead<uint16_t>(address)); break;
-    case LDR_w:   set_wreg_no_log(srcdst, MemoryRead<uint32_t>(address)); break;
-    case LDR_x:   set_xreg_no_log(srcdst, MemoryRead<uint64_t>(address)); break;
-    case LDRSB_w: set_wreg_no_log(srcdst, MemoryRead<int8_t>(address)); break;
-    case LDRSH_w: set_wreg_no_log(srcdst, MemoryRead<int16_t>(address)); break;
-    case LDRSB_x: set_xreg_no_log(srcdst, MemoryRead<int8_t>(address)); break;
-    case LDRSH_x: set_xreg_no_log(srcdst, MemoryRead<int16_t>(address)); break;
-    case LDRSW_x: set_xreg_no_log(srcdst, MemoryRead<int32_t>(address)); break;
-    case LDR_s:   set_sreg_no_log(srcdst, MemoryRead<float>(address)); break;
-    case LDR_d:   set_dreg_no_log(srcdst, MemoryRead<double>(address)); break;
+    case LDRB_w:
+      set_wreg_no_log(srcdst, MemoryRead<uint8_t>(address));
+      break;
+    case LDRH_w:
+      set_wreg_no_log(srcdst, MemoryRead<uint16_t>(address));
+      break;
+    case LDR_w:
+      set_wreg_no_log(srcdst, MemoryRead<uint32_t>(address));
+      break;
+    case LDR_x:
+      set_xreg_no_log(srcdst, MemoryRead<uint64_t>(address));
+      break;
+    case LDRSB_w:
+      set_wreg_no_log(srcdst, MemoryRead<int8_t>(address));
+      break;
+    case LDRSH_w:
+      set_wreg_no_log(srcdst, MemoryRead<int16_t>(address));
+      break;
+    case LDRSB_x:
+      set_xreg_no_log(srcdst, MemoryRead<int8_t>(address));
+      break;
+    case LDRSH_x:
+      set_xreg_no_log(srcdst, MemoryRead<int16_t>(address));
+      break;
+    case LDRSW_x:
+      set_xreg_no_log(srcdst, MemoryRead<int32_t>(address));
+      break;
+    case LDR_s:
+      set_sreg_no_log(srcdst, MemoryRead<float>(address));
+      break;
+    case LDR_d:
+      set_dreg_no_log(srcdst, MemoryRead<double>(address));
+      break;
 
-    case STRB_w:  MemoryWrite<uint8_t>(address, wreg(srcdst)); break;
-    case STRH_w:  MemoryWrite<uint16_t>(address, wreg(srcdst)); break;
-    case STR_w:   MemoryWrite<uint32_t>(address, wreg(srcdst)); break;
-    case STR_x:   MemoryWrite<uint64_t>(address, xreg(srcdst)); break;
-    case STR_s:   MemoryWrite<float>(address, sreg(srcdst)); break;
-    case STR_d:   MemoryWrite<double>(address, dreg(srcdst)); break;
+    case STRB_w:
+      MemoryWrite<uint8_t>(address, wreg(srcdst));
+      break;
+    case STRH_w:
+      MemoryWrite<uint16_t>(address, wreg(srcdst));
+      break;
+    case STR_w:
+      MemoryWrite<uint32_t>(address, wreg(srcdst));
+      break;
+    case STR_x:
+      MemoryWrite<uint64_t>(address, xreg(srcdst));
+      break;
+    case STR_s:
+      MemoryWrite<float>(address, sreg(srcdst));
+      break;
+    case STR_d:
+      MemoryWrite<double>(address, dreg(srcdst));
+      break;
 
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 
   // Print a detailed trace (including the memory address) instead of the basic
@@ -1697,24 +1627,19 @@ void Simulator::LoadStoreHelper(Instruction* instr,
   CheckMemoryAccess(address, stack);
 }
 
-
 void Simulator::VisitLoadStorePairOffset(Instruction* instr) {
   LoadStorePairHelper(instr, Offset);
 }
-
 
 void Simulator::VisitLoadStorePairPreIndex(Instruction* instr) {
   LoadStorePairHelper(instr, PreIndex);
 }
 
-
 void Simulator::VisitLoadStorePairPostIndex(Instruction* instr) {
   LoadStorePairHelper(instr, PostIndex);
 }
 
-
-void Simulator::LoadStorePairHelper(Instruction* instr,
-                                    AddrMode addrmode) {
+void Simulator::LoadStorePairHelper(Instruction* instr, AddrMode addrmode) {
   unsigned rt = instr->Rt();
   unsigned rt2 = instr->Rt2();
   unsigned addr_reg = instr->Rn();
@@ -1740,7 +1665,7 @@ void Simulator::LoadStorePairHelper(Instruction* instr,
   }
 
   LoadStorePairOp op =
-    static_cast<LoadStorePairOp>(instr->Mask(LoadStorePairMask));
+      static_cast<LoadStorePairOp>(instr->Mask(LoadStorePairMask));
 
   // 'rt' and 'rt2' can only be aliased for stores.
   DCHECK(((op & LoadStorePairLBit) == 0) || (rt != rt2));
@@ -1802,7 +1727,8 @@ void Simulator::LoadStorePairHelper(Instruction* instr,
       MemoryWrite<double>(address2, dreg(rt2));
       break;
     }
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
 
   // Print a detailed trace (including the memory address) instead of the basic
@@ -1842,7 +1768,6 @@ void Simulator::LoadStorePairHelper(Instruction* instr,
   CheckMemoryAccess(address, stack);
 }
 
-
 void Simulator::VisitLoadLiteral(Instruction* instr) {
   uintptr_t address = instr->LiteralAddress();
   unsigned rt = instr->Rt();
@@ -1866,10 +1791,10 @@ void Simulator::VisitLoadLiteral(Instruction* instr) {
       set_dreg_no_log(rt, MemoryRead<double>(address));
       LogReadFP(address, kDRegSize, rt);
       break;
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
 }
-
 
 uintptr_t Simulator::LoadStoreAddress(unsigned addr_reg, int64_t offset,
                                       AddrMode addrmode) {
@@ -1889,9 +1814,7 @@ uintptr_t Simulator::LoadStoreAddress(unsigned addr_reg, int64_t offset,
   return address;
 }
 
-
-void Simulator::LoadStoreWriteBack(unsigned addr_reg,
-                                   int64_t offset,
+void Simulator::LoadStoreWriteBack(unsigned addr_reg, int64_t offset,
                                    AddrMode addrmode) {
   if ((addrmode == PreIndex) || (addrmode == PostIndex)) {
     DCHECK(offset != 0);
@@ -1899,7 +1822,6 @@ void Simulator::LoadStoreWriteBack(unsigned addr_reg,
     set_reg(addr_reg, address + offset, Reg31IsStackPointer);
   }
 }
-
 
 void Simulator::CheckMemoryAccess(uintptr_t address, uintptr_t stack) {
   if ((address >= stack_limit_) && (address < stack)) {
@@ -1915,10 +1837,9 @@ void Simulator::CheckMemoryAccess(uintptr_t address, uintptr_t stack) {
   }
 }
 
-
 void Simulator::VisitMoveWideImmediate(Instruction* instr) {
   MoveWideImmediateOp mov_op =
-    static_cast<MoveWideImmediateOp>(instr->Mask(MoveWideImmediateMask));
+      static_cast<MoveWideImmediateOp>(instr->Mask(MoveWideImmediateMask));
   int64_t new_xn_val = 0;
 
   bool is_64_bits = instr->SixtyFourBits() == 1;
@@ -1933,21 +1854,20 @@ void Simulator::VisitMoveWideImmediate(Instruction* instr) {
   switch (mov_op) {
     case MOVN_w:
     case MOVN_x: {
-        new_xn_val = ~shifted_imm16;
-        if (!is_64_bits) new_xn_val &= kWRegMask;
+      new_xn_val = ~shifted_imm16;
+      if (!is_64_bits) new_xn_val &= kWRegMask;
       break;
     }
     case MOVK_w:
     case MOVK_x: {
-        unsigned reg_code = instr->Rd();
-        int64_t prev_xn_val = is_64_bits ? xreg(reg_code)
-                                         : wreg(reg_code);
-        new_xn_val = (prev_xn_val & ~(0xffffL << shift)) | shifted_imm16;
+      unsigned reg_code = instr->Rd();
+      int64_t prev_xn_val = is_64_bits ? xreg(reg_code) : wreg(reg_code);
+      new_xn_val = (prev_xn_val & ~(0xffffL << shift)) | shifted_imm16;
       break;
     }
     case MOVZ_w:
     case MOVZ_x: {
-        new_xn_val = shifted_imm16;
+      new_xn_val = shifted_imm16;
       break;
     }
     default:
@@ -1957,7 +1877,6 @@ void Simulator::VisitMoveWideImmediate(Instruction* instr) {
   // Update the destination register.
   set_xreg(instr->Rd(), new_xn_val);
 }
-
 
 void Simulator::VisitConditionalSelect(Instruction* instr) {
   uint64_t new_val = xreg(instr->Rn());
@@ -1979,7 +1898,8 @@ void Simulator::VisitConditionalSelect(Instruction* instr) {
       case CSNEG_x:
         new_val = -new_val;
         break;
-      default: UNIMPLEMENTED();
+      default:
+        UNIMPLEMENTED();
     }
   }
   if (instr->SixtyFourBits()) {
@@ -1988,7 +1908,6 @@ void Simulator::VisitConditionalSelect(Instruction* instr) {
     set_wreg(instr->Rd(), static_cast<uint32_t>(new_val));
   }
 }
-
 
 void Simulator::VisitDataProcessing1Source(Instruction* instr) {
   unsigned dst = instr->Rd();
@@ -2016,10 +1935,12 @@ void Simulator::VisitDataProcessing1Source(Instruction* instr) {
     case REV_x:
       set_xreg(dst, ReverseBytes(xreg(src), 3));
       break;
-    case CLZ_w: set_wreg(dst, CountLeadingZeros(wreg(src), kWRegSizeInBits));
-                break;
-    case CLZ_x: set_xreg(dst, CountLeadingZeros(xreg(src), kXRegSizeInBits));
-                break;
+    case CLZ_w:
+      set_wreg(dst, CountLeadingZeros(wreg(src), kWRegSizeInBits));
+      break;
+    case CLZ_x:
+      set_xreg(dst, CountLeadingZeros(xreg(src), kXRegSizeInBits));
+      break;
     case CLS_w: {
       set_wreg(dst, CountLeadingSignBits(wreg(src), kWRegSizeInBits));
       break;
@@ -2028,10 +1949,10 @@ void Simulator::VisitDataProcessing1Source(Instruction* instr) {
       set_xreg(dst, CountLeadingSignBits(xreg(src), kXRegSizeInBits));
       break;
     }
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 template <typename T>
 void Simulator::DataProcessing2Source(Instruction* instr) {
@@ -2066,14 +1987,23 @@ void Simulator::DataProcessing2Source(Instruction* instr) {
       break;
     }
     case LSLV_w:
-    case LSLV_x: shift_op = LSL; break;
+    case LSLV_x:
+      shift_op = LSL;
+      break;
     case LSRV_w:
-    case LSRV_x: shift_op = LSR; break;
+    case LSRV_x:
+      shift_op = LSR;
+      break;
     case ASRV_w:
-    case ASRV_x: shift_op = ASR; break;
+    case ASRV_x:
+      shift_op = ASR;
+      break;
     case RORV_w:
-    case RORV_x: shift_op = ROR; break;
-    default: UNIMPLEMENTED();
+    case RORV_x:
+      shift_op = ROR;
+      break;
+    default:
+      UNIMPLEMENTED();
   }
 
   if (shift_op != NO_SHIFT) {
@@ -2090,7 +2020,6 @@ void Simulator::DataProcessing2Source(Instruction* instr) {
   set_reg<T>(instr->Rd(), result);
 }
 
-
 void Simulator::VisitDataProcessing2Source(Instruction* instr) {
   if (instr->SixtyFourBits()) {
     DataProcessing2Source<int64_t>(instr);
@@ -2098,7 +2027,6 @@ void Simulator::VisitDataProcessing2Source(Instruction* instr) {
     DataProcessing2Source<int32_t>(instr);
   }
 }
-
 
 // The algorithm used is described in section 8.2 of
 //   Hacker's Delight, by Henry S. Warren, Jr.
@@ -2121,7 +2049,6 @@ static int64_t MultiplyHighSigned(int64_t u, int64_t v) {
   return u1 * v1 + w2 + (w1 >> 32);
 }
 
-
 void Simulator::VisitDataProcessing3Source(Instruction* instr) {
   int64_t result = 0;
   // Extract and sign- or zero-extend 32-bit arguments for widening operations.
@@ -2138,15 +2065,24 @@ void Simulator::VisitDataProcessing3Source(Instruction* instr) {
     case MSUB_x:
       result = xreg(instr->Ra()) - (xreg(instr->Rn()) * xreg(instr->Rm()));
       break;
-    case SMADDL_x: result = xreg(instr->Ra()) + (rn_s32 * rm_s32); break;
-    case SMSUBL_x: result = xreg(instr->Ra()) - (rn_s32 * rm_s32); break;
-    case UMADDL_x: result = xreg(instr->Ra()) + (rn_u32 * rm_u32); break;
-    case UMSUBL_x: result = xreg(instr->Ra()) - (rn_u32 * rm_u32); break;
+    case SMADDL_x:
+      result = xreg(instr->Ra()) + (rn_s32 * rm_s32);
+      break;
+    case SMSUBL_x:
+      result = xreg(instr->Ra()) - (rn_s32 * rm_s32);
+      break;
+    case UMADDL_x:
+      result = xreg(instr->Ra()) + (rn_u32 * rm_u32);
+      break;
+    case UMSUBL_x:
+      result = xreg(instr->Ra()) - (rn_u32 * rm_u32);
+      break;
     case SMULH_x:
       DCHECK(instr->Ra() == kZeroRegCode);
       result = MultiplyHighSigned(xreg(instr->Rn()), xreg(instr->Rm()));
       break;
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 
   if (instr->SixtyFourBits()) {
@@ -2155,7 +2091,6 @@ void Simulator::VisitDataProcessing3Source(Instruction* instr) {
     set_wreg(instr->Rd(), static_cast<int32_t>(result));
   }
 }
-
 
 template <typename T>
 void Simulator::BitfieldHelper(Instruction* instr) {
@@ -2212,7 +2147,6 @@ void Simulator::BitfieldHelper(Instruction* instr) {
   set_reg<T>(instr->Rd(), result);
 }
 
-
 void Simulator::VisitBitfield(Instruction* instr) {
   if (instr->SixtyFourBits()) {
     BitfieldHelper<int64_t>(instr);
@@ -2220,7 +2154,6 @@ void Simulator::VisitBitfield(Instruction* instr) {
     BitfieldHelper<int32_t>(instr);
   }
 }
-
 
 void Simulator::VisitExtract(Instruction* instr) {
   if (instr->SixtyFourBits()) {
@@ -2230,18 +2163,21 @@ void Simulator::VisitExtract(Instruction* instr) {
   }
 }
 
-
 void Simulator::VisitFPImmediate(Instruction* instr) {
   AssertSupportedFPCR();
 
   unsigned dest = instr->Rd();
   switch (instr->Mask(FPImmediateMask)) {
-    case FMOV_s_imm: set_sreg(dest, instr->ImmFP32()); break;
-    case FMOV_d_imm: set_dreg(dest, instr->ImmFP64()); break;
-    default: UNREACHABLE();
+    case FMOV_s_imm:
+      set_sreg(dest, instr->ImmFP32());
+      break;
+    case FMOV_d_imm:
+      set_dreg(dest, instr->ImmFP64());
+      break;
+    default:
+      UNREACHABLE();
   }
 }
-
 
 void Simulator::VisitFPIntegerConvert(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2252,14 +2188,30 @@ void Simulator::VisitFPIntegerConvert(Instruction* instr) {
   FPRounding round = fpcr().RMode();
 
   switch (instr->Mask(FPIntegerConvertMask)) {
-    case FCVTAS_ws: set_wreg(dst, FPToInt32(sreg(src), FPTieAway)); break;
-    case FCVTAS_xs: set_xreg(dst, FPToInt64(sreg(src), FPTieAway)); break;
-    case FCVTAS_wd: set_wreg(dst, FPToInt32(dreg(src), FPTieAway)); break;
-    case FCVTAS_xd: set_xreg(dst, FPToInt64(dreg(src), FPTieAway)); break;
-    case FCVTAU_ws: set_wreg(dst, FPToUInt32(sreg(src), FPTieAway)); break;
-    case FCVTAU_xs: set_xreg(dst, FPToUInt64(sreg(src), FPTieAway)); break;
-    case FCVTAU_wd: set_wreg(dst, FPToUInt32(dreg(src), FPTieAway)); break;
-    case FCVTAU_xd: set_xreg(dst, FPToUInt64(dreg(src), FPTieAway)); break;
+    case FCVTAS_ws:
+      set_wreg(dst, FPToInt32(sreg(src), FPTieAway));
+      break;
+    case FCVTAS_xs:
+      set_xreg(dst, FPToInt64(sreg(src), FPTieAway));
+      break;
+    case FCVTAS_wd:
+      set_wreg(dst, FPToInt32(dreg(src), FPTieAway));
+      break;
+    case FCVTAS_xd:
+      set_xreg(dst, FPToInt64(dreg(src), FPTieAway));
+      break;
+    case FCVTAU_ws:
+      set_wreg(dst, FPToUInt32(sreg(src), FPTieAway));
+      break;
+    case FCVTAU_xs:
+      set_xreg(dst, FPToUInt64(sreg(src), FPTieAway));
+      break;
+    case FCVTAU_wd:
+      set_wreg(dst, FPToUInt32(dreg(src), FPTieAway));
+      break;
+    case FCVTAU_xd:
+      set_xreg(dst, FPToUInt64(dreg(src), FPTieAway));
+      break;
     case FCVTMS_ws:
       set_wreg(dst, FPToInt32(sreg(src), FPNegativeInfinity));
       break;
@@ -2284,48 +2236,100 @@ void Simulator::VisitFPIntegerConvert(Instruction* instr) {
     case FCVTMU_xd:
       set_xreg(dst, FPToUInt64(dreg(src), FPNegativeInfinity));
       break;
-    case FCVTNS_ws: set_wreg(dst, FPToInt32(sreg(src), FPTieEven)); break;
-    case FCVTNS_xs: set_xreg(dst, FPToInt64(sreg(src), FPTieEven)); break;
-    case FCVTNS_wd: set_wreg(dst, FPToInt32(dreg(src), FPTieEven)); break;
-    case FCVTNS_xd: set_xreg(dst, FPToInt64(dreg(src), FPTieEven)); break;
-    case FCVTNU_ws: set_wreg(dst, FPToUInt32(sreg(src), FPTieEven)); break;
-    case FCVTNU_xs: set_xreg(dst, FPToUInt64(sreg(src), FPTieEven)); break;
-    case FCVTNU_wd: set_wreg(dst, FPToUInt32(dreg(src), FPTieEven)); break;
-    case FCVTNU_xd: set_xreg(dst, FPToUInt64(dreg(src), FPTieEven)); break;
-    case FCVTZS_ws: set_wreg(dst, FPToInt32(sreg(src), FPZero)); break;
-    case FCVTZS_xs: set_xreg(dst, FPToInt64(sreg(src), FPZero)); break;
-    case FCVTZS_wd: set_wreg(dst, FPToInt32(dreg(src), FPZero)); break;
-    case FCVTZS_xd: set_xreg(dst, FPToInt64(dreg(src), FPZero)); break;
-    case FCVTZU_ws: set_wreg(dst, FPToUInt32(sreg(src), FPZero)); break;
-    case FCVTZU_xs: set_xreg(dst, FPToUInt64(sreg(src), FPZero)); break;
-    case FCVTZU_wd: set_wreg(dst, FPToUInt32(dreg(src), FPZero)); break;
-    case FCVTZU_xd: set_xreg(dst, FPToUInt64(dreg(src), FPZero)); break;
-    case FMOV_ws: set_wreg(dst, sreg_bits(src)); break;
-    case FMOV_xd: set_xreg(dst, dreg_bits(src)); break;
-    case FMOV_sw: set_sreg_bits(dst, wreg(src)); break;
-    case FMOV_dx: set_dreg_bits(dst, xreg(src)); break;
+    case FCVTNS_ws:
+      set_wreg(dst, FPToInt32(sreg(src), FPTieEven));
+      break;
+    case FCVTNS_xs:
+      set_xreg(dst, FPToInt64(sreg(src), FPTieEven));
+      break;
+    case FCVTNS_wd:
+      set_wreg(dst, FPToInt32(dreg(src), FPTieEven));
+      break;
+    case FCVTNS_xd:
+      set_xreg(dst, FPToInt64(dreg(src), FPTieEven));
+      break;
+    case FCVTNU_ws:
+      set_wreg(dst, FPToUInt32(sreg(src), FPTieEven));
+      break;
+    case FCVTNU_xs:
+      set_xreg(dst, FPToUInt64(sreg(src), FPTieEven));
+      break;
+    case FCVTNU_wd:
+      set_wreg(dst, FPToUInt32(dreg(src), FPTieEven));
+      break;
+    case FCVTNU_xd:
+      set_xreg(dst, FPToUInt64(dreg(src), FPTieEven));
+      break;
+    case FCVTZS_ws:
+      set_wreg(dst, FPToInt32(sreg(src), FPZero));
+      break;
+    case FCVTZS_xs:
+      set_xreg(dst, FPToInt64(sreg(src), FPZero));
+      break;
+    case FCVTZS_wd:
+      set_wreg(dst, FPToInt32(dreg(src), FPZero));
+      break;
+    case FCVTZS_xd:
+      set_xreg(dst, FPToInt64(dreg(src), FPZero));
+      break;
+    case FCVTZU_ws:
+      set_wreg(dst, FPToUInt32(sreg(src), FPZero));
+      break;
+    case FCVTZU_xs:
+      set_xreg(dst, FPToUInt64(sreg(src), FPZero));
+      break;
+    case FCVTZU_wd:
+      set_wreg(dst, FPToUInt32(dreg(src), FPZero));
+      break;
+    case FCVTZU_xd:
+      set_xreg(dst, FPToUInt64(dreg(src), FPZero));
+      break;
+    case FMOV_ws:
+      set_wreg(dst, sreg_bits(src));
+      break;
+    case FMOV_xd:
+      set_xreg(dst, dreg_bits(src));
+      break;
+    case FMOV_sw:
+      set_sreg_bits(dst, wreg(src));
+      break;
+    case FMOV_dx:
+      set_dreg_bits(dst, xreg(src));
+      break;
 
     // A 32-bit input can be handled in the same way as a 64-bit input, since
     // the sign- or zero-extension will not affect the conversion.
-    case SCVTF_dx: set_dreg(dst, FixedToDouble(xreg(src), 0, round)); break;
-    case SCVTF_dw: set_dreg(dst, FixedToDouble(wreg(src), 0, round)); break;
-    case UCVTF_dx: set_dreg(dst, UFixedToDouble(xreg(src), 0, round)); break;
+    case SCVTF_dx:
+      set_dreg(dst, FixedToDouble(xreg(src), 0, round));
+      break;
+    case SCVTF_dw:
+      set_dreg(dst, FixedToDouble(wreg(src), 0, round));
+      break;
+    case UCVTF_dx:
+      set_dreg(dst, UFixedToDouble(xreg(src), 0, round));
+      break;
     case UCVTF_dw: {
       set_dreg(dst, UFixedToDouble(reg<uint32_t>(src), 0, round));
       break;
     }
-    case SCVTF_sx: set_sreg(dst, FixedToFloat(xreg(src), 0, round)); break;
-    case SCVTF_sw: set_sreg(dst, FixedToFloat(wreg(src), 0, round)); break;
-    case UCVTF_sx: set_sreg(dst, UFixedToFloat(xreg(src), 0, round)); break;
+    case SCVTF_sx:
+      set_sreg(dst, FixedToFloat(xreg(src), 0, round));
+      break;
+    case SCVTF_sw:
+      set_sreg(dst, FixedToFloat(wreg(src), 0, round));
+      break;
+    case UCVTF_sx:
+      set_sreg(dst, UFixedToFloat(xreg(src), 0, round));
+      break;
     case UCVTF_sw: {
       set_sreg(dst, UFixedToFloat(reg<uint32_t>(src), 0, round));
       break;
     }
 
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
 }
-
 
 void Simulator::VisitFPFixedPointConvert(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2349,8 +2353,7 @@ void Simulator::VisitFPFixedPointConvert(Instruction* instr) {
       set_dreg(dst, UFixedToDouble(xreg(src), fbits, round));
       break;
     case UCVTF_dw_fixed: {
-      set_dreg(dst,
-               UFixedToDouble(reg<uint32_t>(src), fbits, round));
+      set_dreg(dst, UFixedToDouble(reg<uint32_t>(src), fbits, round));
       break;
     }
     case SCVTF_sx_fixed:
@@ -2363,14 +2366,13 @@ void Simulator::VisitFPFixedPointConvert(Instruction* instr) {
       set_sreg(dst, UFixedToFloat(xreg(src), fbits, round));
       break;
     case UCVTF_sw_fixed: {
-      set_sreg(dst,
-               UFixedToFloat(reg<uint32_t>(src), fbits, round));
+      set_sreg(dst, UFixedToFloat(reg<uint32_t>(src), fbits, round));
       break;
     }
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
 }
-
 
 int32_t Simulator::FPToInt32(double value, FPRounding rmode) {
   value = FPRoundInt(value, rmode);
@@ -2382,7 +2384,6 @@ int32_t Simulator::FPToInt32(double value, FPRounding rmode) {
   return std::isnan(value) ? 0 : static_cast<int32_t>(value);
 }
 
-
 int64_t Simulator::FPToInt64(double value, FPRounding rmode) {
   value = FPRoundInt(value, rmode);
   if (value >= kXMaxInt) {
@@ -2392,7 +2393,6 @@ int64_t Simulator::FPToInt64(double value, FPRounding rmode) {
   }
   return std::isnan(value) ? 0 : static_cast<int64_t>(value);
 }
-
 
 uint32_t Simulator::FPToUInt32(double value, FPRounding rmode) {
   value = FPRoundInt(value, rmode);
@@ -2404,7 +2404,6 @@ uint32_t Simulator::FPToUInt32(double value, FPRounding rmode) {
   return std::isnan(value) ? 0 : static_cast<uint32_t>(value);
 }
 
-
 uint64_t Simulator::FPToUInt64(double value, FPRounding rmode) {
   value = FPRoundInt(value, rmode);
   if (value >= kXMaxUInt) {
@@ -2415,23 +2414,26 @@ uint64_t Simulator::FPToUInt64(double value, FPRounding rmode) {
   return std::isnan(value) ? 0 : static_cast<uint64_t>(value);
 }
 
-
 void Simulator::VisitFPCompare(Instruction* instr) {
   AssertSupportedFPCR();
 
-  unsigned reg_size = (instr->Mask(FP64) == FP64) ? kDRegSizeInBits
-                                                  : kSRegSizeInBits;
+  unsigned reg_size =
+      (instr->Mask(FP64) == FP64) ? kDRegSizeInBits : kSRegSizeInBits;
   double fn_val = fpreg(reg_size, instr->Rn());
 
   switch (instr->Mask(FPCompareMask)) {
     case FCMP_s:
-    case FCMP_d: FPCompare(fn_val, fpreg(reg_size, instr->Rm())); break;
+    case FCMP_d:
+      FPCompare(fn_val, fpreg(reg_size, instr->Rm()));
+      break;
     case FCMP_s_zero:
-    case FCMP_d_zero: FPCompare(fn_val, 0.0); break;
-    default: UNIMPLEMENTED();
+    case FCMP_d_zero:
+      FPCompare(fn_val, 0.0);
+      break;
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 void Simulator::VisitFPConditionalCompare(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2442,8 +2444,8 @@ void Simulator::VisitFPConditionalCompare(Instruction* instr) {
       if (ConditionPassed(static_cast<Condition>(instr->Condition()))) {
         // If the condition passes, set the status flags to the result of
         // comparing the operands.
-        unsigned reg_size = (instr->Mask(FP64) == FP64) ? kDRegSizeInBits
-                                                        : kSRegSizeInBits;
+        unsigned reg_size =
+            (instr->Mask(FP64) == FP64) ? kDRegSizeInBits : kSRegSizeInBits;
         FPCompare(fpreg(reg_size, instr->Rn()), fpreg(reg_size, instr->Rm()));
       } else {
         // If the condition fails, set the status flags to the nzcv immediate.
@@ -2452,10 +2454,10 @@ void Simulator::VisitFPConditionalCompare(Instruction* instr) {
       }
       break;
     }
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 void Simulator::VisitFPConditionalSelect(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2468,12 +2470,16 @@ void Simulator::VisitFPConditionalSelect(Instruction* instr) {
   }
 
   switch (instr->Mask(FPConditionalSelectMask)) {
-    case FCSEL_s: set_sreg(instr->Rd(), sreg(selected)); break;
-    case FCSEL_d: set_dreg(instr->Rd(), dreg(selected)); break;
-    default: UNIMPLEMENTED();
+    case FCSEL_s:
+      set_sreg(instr->Rd(), sreg(selected));
+      break;
+    case FCSEL_d:
+      set_dreg(instr->Rd(), dreg(selected));
+      break;
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 void Simulator::VisitFPDataProcessing1Source(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2482,36 +2488,70 @@ void Simulator::VisitFPDataProcessing1Source(Instruction* instr) {
   unsigned fn = instr->Rn();
 
   switch (instr->Mask(FPDataProcessing1SourceMask)) {
-    case FMOV_s: set_sreg(fd, sreg(fn)); break;
-    case FMOV_d: set_dreg(fd, dreg(fn)); break;
-    case FABS_s: set_sreg(fd, std::fabs(sreg(fn))); break;
-    case FABS_d: set_dreg(fd, std::fabs(dreg(fn))); break;
-    case FNEG_s: set_sreg(fd, -sreg(fn)); break;
-    case FNEG_d: set_dreg(fd, -dreg(fn)); break;
-    case FSQRT_s: set_sreg(fd, FPSqrt(sreg(fn))); break;
-    case FSQRT_d: set_dreg(fd, FPSqrt(dreg(fn))); break;
-    case FRINTA_s: set_sreg(fd, FPRoundInt(sreg(fn), FPTieAway)); break;
-    case FRINTA_d: set_dreg(fd, FPRoundInt(dreg(fn), FPTieAway)); break;
+    case FMOV_s:
+      set_sreg(fd, sreg(fn));
+      break;
+    case FMOV_d:
+      set_dreg(fd, dreg(fn));
+      break;
+    case FABS_s:
+      set_sreg(fd, std::fabs(sreg(fn)));
+      break;
+    case FABS_d:
+      set_dreg(fd, std::fabs(dreg(fn)));
+      break;
+    case FNEG_s:
+      set_sreg(fd, -sreg(fn));
+      break;
+    case FNEG_d:
+      set_dreg(fd, -dreg(fn));
+      break;
+    case FSQRT_s:
+      set_sreg(fd, FPSqrt(sreg(fn)));
+      break;
+    case FSQRT_d:
+      set_dreg(fd, FPSqrt(dreg(fn)));
+      break;
+    case FRINTA_s:
+      set_sreg(fd, FPRoundInt(sreg(fn), FPTieAway));
+      break;
+    case FRINTA_d:
+      set_dreg(fd, FPRoundInt(dreg(fn), FPTieAway));
+      break;
     case FRINTM_s:
-        set_sreg(fd, FPRoundInt(sreg(fn), FPNegativeInfinity)); break;
+      set_sreg(fd, FPRoundInt(sreg(fn), FPNegativeInfinity));
+      break;
     case FRINTM_d:
-        set_dreg(fd, FPRoundInt(dreg(fn), FPNegativeInfinity)); break;
+      set_dreg(fd, FPRoundInt(dreg(fn), FPNegativeInfinity));
+      break;
     case FRINTP_s:
       set_sreg(fd, FPRoundInt(sreg(fn), FPPositiveInfinity));
       break;
     case FRINTP_d:
       set_dreg(fd, FPRoundInt(dreg(fn), FPPositiveInfinity));
       break;
-    case FRINTN_s: set_sreg(fd, FPRoundInt(sreg(fn), FPTieEven)); break;
-    case FRINTN_d: set_dreg(fd, FPRoundInt(dreg(fn), FPTieEven)); break;
-    case FRINTZ_s: set_sreg(fd, FPRoundInt(sreg(fn), FPZero)); break;
-    case FRINTZ_d: set_dreg(fd, FPRoundInt(dreg(fn), FPZero)); break;
-    case FCVT_ds: set_dreg(fd, FPToDouble(sreg(fn))); break;
-    case FCVT_sd: set_sreg(fd, FPToFloat(dreg(fn), FPTieEven)); break;
-    default: UNIMPLEMENTED();
+    case FRINTN_s:
+      set_sreg(fd, FPRoundInt(sreg(fn), FPTieEven));
+      break;
+    case FRINTN_d:
+      set_dreg(fd, FPRoundInt(dreg(fn), FPTieEven));
+      break;
+    case FRINTZ_s:
+      set_sreg(fd, FPRoundInt(sreg(fn), FPZero));
+      break;
+    case FRINTZ_d:
+      set_dreg(fd, FPRoundInt(dreg(fn), FPZero));
+      break;
+    case FCVT_ds:
+      set_dreg(fd, FPToDouble(sreg(fn)));
+      break;
+    case FCVT_sd:
+      set_sreg(fd, FPToFloat(dreg(fn), FPTieEven));
+      break;
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 // Assemble the specified IEEE-754 components into the target type and apply
 // appropriate rounding.
@@ -2652,9 +2692,9 @@ static T FPRound(int64_t sign, int64_t exponent, uint64_t mantissa,
     // We have to shift the mantissa to the right. Some precision is lost, so we
     // need to apply rounding.
     uint64_t onebit_mantissa = (mantissa >> (shift)) & 1;
-    uint64_t halfbit_mantissa = (mantissa >> (shift-1)) & 1;
+    uint64_t halfbit_mantissa = (mantissa >> (shift - 1)) & 1;
     uint64_t adjusted = mantissa - (halfbit_mantissa & ~onebit_mantissa);
-    T halfbit_adjusted = (adjusted >> (shift-1)) & 1;
+    T halfbit_adjusted = (adjusted >> (shift - 1)) & 1;
 
     T result =
         static_cast<T>((sign << sign_offset) | (exponent << exponent_offset) |
@@ -2679,30 +2719,21 @@ static T FPRound(int64_t sign, int64_t exponent, uint64_t mantissa,
   }
 }
 
-
 // See FPRound for a description of this function.
 static inline double FPRoundToDouble(int64_t sign, int64_t exponent,
                                      uint64_t mantissa, FPRounding round_mode) {
-  int64_t bits =
-      FPRound<int64_t, kDoubleExponentBits, kDoubleMantissaBits>(sign,
-                                                                 exponent,
-                                                                 mantissa,
-                                                                 round_mode);
+  int64_t bits = FPRound<int64_t, kDoubleExponentBits, kDoubleMantissaBits>(
+      sign, exponent, mantissa, round_mode);
   return rawbits_to_double(bits);
 }
-
 
 // See FPRound for a description of this function.
 static inline float FPRoundToFloat(int64_t sign, int64_t exponent,
                                    uint64_t mantissa, FPRounding round_mode) {
-  int32_t bits =
-      FPRound<int32_t, kFloatExponentBits, kFloatMantissaBits>(sign,
-                                                               exponent,
-                                                               mantissa,
-                                                               round_mode);
+  int32_t bits = FPRound<int32_t, kFloatExponentBits, kFloatMantissaBits>(
+      sign, exponent, mantissa, round_mode);
   return rawbits_to_float(bits);
 }
-
 
 double Simulator::FixedToDouble(int64_t src, int fbits, FPRounding round) {
   if (src >= 0) {
@@ -2712,7 +2743,6 @@ double Simulator::FixedToDouble(int64_t src, int fbits, FPRounding round) {
     return -UFixedToDouble(-src, fbits, round);
   }
 }
-
 
 double Simulator::UFixedToDouble(uint64_t src, int fbits, FPRounding round) {
   // An input of 0 is a special case because the result is effectively
@@ -2729,7 +2759,6 @@ double Simulator::UFixedToDouble(uint64_t src, int fbits, FPRounding round) {
   return FPRoundToDouble(0, exponent, src, round);
 }
 
-
 float Simulator::FixedToFloat(int64_t src, int fbits, FPRounding round) {
   if (src >= 0) {
     return UFixedToFloat(src, fbits, round);
@@ -2738,7 +2767,6 @@ float Simulator::FixedToFloat(int64_t src, int fbits, FPRounding round) {
     return -UFixedToFloat(-src, fbits, round);
   }
 }
-
 
 float Simulator::UFixedToFloat(uint64_t src, int fbits, FPRounding round) {
   // An input of 0 is a special case because the result is effectively
@@ -2754,7 +2782,6 @@ float Simulator::UFixedToFloat(uint64_t src, int fbits, FPRounding round) {
 
   return FPRoundToFloat(0, exponent, src, round);
 }
-
 
 double Simulator::FPRoundInt(double value, FPRounding round_mode) {
   if ((value == 0.0) || (value == kFP64PositiveInfinity) ||
@@ -2786,8 +2813,8 @@ double Simulator::FPRoundInt(double value, FPRounding round_mode) {
       if ((-0.5 <= value) && (value < 0.0)) {
         int_result = -0.0;
 
-      // If the error is greater than 0.5, or is equal to 0.5 and the integer
-      // result is odd, round up.
+        // If the error is greater than 0.5, or is equal to 0.5 and the integer
+        // result is odd, round up.
       } else if ((error > 0.5) ||
                  ((error == 0.5) && (modulo(int_result, 2) != 0))) {
         int_result++;
@@ -2798,7 +2825,7 @@ double Simulator::FPRoundInt(double value, FPRounding round_mode) {
       // If value > 0 then we take floor(value)
       // otherwise, ceil(value)
       if (value < 0) {
-         int_result = ceil(value);
+        int_result = ceil(value);
       }
       break;
     }
@@ -2810,11 +2837,11 @@ double Simulator::FPRoundInt(double value, FPRounding round_mode) {
       int_result = ceil(value);
       break;
     }
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
   return int_result;
 }
-
 
 double Simulator::FPToDouble(float value) {
   switch (std::fpclassify(value)) {
@@ -2852,7 +2879,6 @@ double Simulator::FPToDouble(float value) {
   return static_cast<double>(value);
 }
 
-
 float Simulator::FPToFloat(double value, FPRounding round_mode) {
   // Only the FPTieEven rounding mode is implemented.
   DCHECK(round_mode == FPTieEven);
@@ -2872,7 +2898,7 @@ float Simulator::FPToFloat(double value, FPRounding round_mode) {
       uint32_t exponent = (1 << 8) - 1;
       uint32_t payload =
           static_cast<uint32_t>(unsigned_bitextract_64(50, 52 - 23, raw));
-      payload |= (1 << 22);   // Force a quiet NaN.
+      payload |= (1 << 22);  // Force a quiet NaN.
 
       return rawbits_to_float((sign << 31) | (exponent << 23) | payload);
     }
@@ -2907,7 +2933,6 @@ float Simulator::FPToFloat(double value, FPRounding round_mode) {
   return value;
 }
 
-
 void Simulator::VisitFPDataProcessing2Source(Instruction* instr) {
   AssertSupportedFPCR();
 
@@ -2917,39 +2942,71 @@ void Simulator::VisitFPDataProcessing2Source(Instruction* instr) {
 
   // Fmaxnm and Fminnm have special NaN handling.
   switch (instr->Mask(FPDataProcessing2SourceMask)) {
-    case FMAXNM_s: set_sreg(fd, FPMaxNM(sreg(fn), sreg(fm))); return;
-    case FMAXNM_d: set_dreg(fd, FPMaxNM(dreg(fn), dreg(fm))); return;
-    case FMINNM_s: set_sreg(fd, FPMinNM(sreg(fn), sreg(fm))); return;
-    case FMINNM_d: set_dreg(fd, FPMinNM(dreg(fn), dreg(fm))); return;
+    case FMAXNM_s:
+      set_sreg(fd, FPMaxNM(sreg(fn), sreg(fm)));
+      return;
+    case FMAXNM_d:
+      set_dreg(fd, FPMaxNM(dreg(fn), dreg(fm)));
+      return;
+    case FMINNM_s:
+      set_sreg(fd, FPMinNM(sreg(fn), sreg(fm)));
+      return;
+    case FMINNM_d:
+      set_dreg(fd, FPMinNM(dreg(fn), dreg(fm)));
+      return;
     default:
-      break;    // Fall through.
+      break;  // Fall through.
   }
 
   if (FPProcessNaNs(instr)) return;
 
   switch (instr->Mask(FPDataProcessing2SourceMask)) {
-    case FADD_s: set_sreg(fd, FPAdd(sreg(fn), sreg(fm))); break;
-    case FADD_d: set_dreg(fd, FPAdd(dreg(fn), dreg(fm))); break;
-    case FSUB_s: set_sreg(fd, FPSub(sreg(fn), sreg(fm))); break;
-    case FSUB_d: set_dreg(fd, FPSub(dreg(fn), dreg(fm))); break;
-    case FMUL_s: set_sreg(fd, FPMul(sreg(fn), sreg(fm))); break;
-    case FMUL_d: set_dreg(fd, FPMul(dreg(fn), dreg(fm))); break;
-    case FDIV_s: set_sreg(fd, FPDiv(sreg(fn), sreg(fm))); break;
-    case FDIV_d: set_dreg(fd, FPDiv(dreg(fn), dreg(fm))); break;
-    case FMAX_s: set_sreg(fd, FPMax(sreg(fn), sreg(fm))); break;
-    case FMAX_d: set_dreg(fd, FPMax(dreg(fn), dreg(fm))); break;
-    case FMIN_s: set_sreg(fd, FPMin(sreg(fn), sreg(fm))); break;
-    case FMIN_d: set_dreg(fd, FPMin(dreg(fn), dreg(fm))); break;
+    case FADD_s:
+      set_sreg(fd, FPAdd(sreg(fn), sreg(fm)));
+      break;
+    case FADD_d:
+      set_dreg(fd, FPAdd(dreg(fn), dreg(fm)));
+      break;
+    case FSUB_s:
+      set_sreg(fd, FPSub(sreg(fn), sreg(fm)));
+      break;
+    case FSUB_d:
+      set_dreg(fd, FPSub(dreg(fn), dreg(fm)));
+      break;
+    case FMUL_s:
+      set_sreg(fd, FPMul(sreg(fn), sreg(fm)));
+      break;
+    case FMUL_d:
+      set_dreg(fd, FPMul(dreg(fn), dreg(fm)));
+      break;
+    case FDIV_s:
+      set_sreg(fd, FPDiv(sreg(fn), sreg(fm)));
+      break;
+    case FDIV_d:
+      set_dreg(fd, FPDiv(dreg(fn), dreg(fm)));
+      break;
+    case FMAX_s:
+      set_sreg(fd, FPMax(sreg(fn), sreg(fm)));
+      break;
+    case FMAX_d:
+      set_dreg(fd, FPMax(dreg(fn), dreg(fm)));
+      break;
+    case FMIN_s:
+      set_sreg(fd, FPMin(sreg(fn), sreg(fm)));
+      break;
+    case FMIN_d:
+      set_dreg(fd, FPMin(dreg(fn), dreg(fm)));
+      break;
     case FMAXNM_s:
     case FMAXNM_d:
     case FMINNM_s:
     case FMINNM_d:
       // These were handled before the standard FPProcessNaNs() stage.
       UNREACHABLE();
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 void Simulator::VisitFPDataProcessing3Source(Instruction* instr) {
   AssertSupportedFPCR();
@@ -2961,10 +3018,18 @@ void Simulator::VisitFPDataProcessing3Source(Instruction* instr) {
 
   switch (instr->Mask(FPDataProcessing3SourceMask)) {
     // fd = fa +/- (fn * fm)
-    case FMADD_s: set_sreg(fd, FPMulAdd(sreg(fa), sreg(fn), sreg(fm))); break;
-    case FMSUB_s: set_sreg(fd, FPMulAdd(sreg(fa), -sreg(fn), sreg(fm))); break;
-    case FMADD_d: set_dreg(fd, FPMulAdd(dreg(fa), dreg(fn), dreg(fm))); break;
-    case FMSUB_d: set_dreg(fd, FPMulAdd(dreg(fa), -dreg(fn), dreg(fm))); break;
+    case FMADD_s:
+      set_sreg(fd, FPMulAdd(sreg(fa), sreg(fn), sreg(fm)));
+      break;
+    case FMSUB_s:
+      set_sreg(fd, FPMulAdd(sreg(fa), -sreg(fn), sreg(fm)));
+      break;
+    case FMADD_d:
+      set_dreg(fd, FPMulAdd(dreg(fa), dreg(fn), dreg(fm)));
+      break;
+    case FMSUB_d:
+      set_dreg(fd, FPMulAdd(dreg(fa), -dreg(fn), dreg(fm)));
+      break;
     // Negated variants of the above.
     case FNMADD_s:
       set_sreg(fd, FPMulAdd(-sreg(fa), -sreg(fn), sreg(fm)));
@@ -2978,10 +3043,10 @@ void Simulator::VisitFPDataProcessing3Source(Instruction* instr) {
     case FNMSUB_d:
       set_dreg(fd, FPMulAdd(-dreg(fa), dreg(fn), dreg(fm)));
       break;
-    default: UNIMPLEMENTED();
+    default:
+      UNIMPLEMENTED();
   }
 }
-
 
 template <typename T>
 T Simulator::FPAdd(T op1, T op2) {
@@ -2997,7 +3062,6 @@ T Simulator::FPAdd(T op1, T op2) {
   }
 }
 
-
 template <typename T>
 T Simulator::FPDiv(T op1, T op2) {
   // NaNs should be handled elsewhere.
@@ -3012,21 +3076,18 @@ T Simulator::FPDiv(T op1, T op2) {
   }
 }
 
-
 template <typename T>
 T Simulator::FPMax(T a, T b) {
   // NaNs should be handled elsewhere.
   DCHECK(!std::isnan(a) && !std::isnan(b));
 
-  if ((a == 0.0) && (b == 0.0) &&
-      (copysign(1.0, a) != copysign(1.0, b))) {
+  if ((a == 0.0) && (b == 0.0) && (copysign(1.0, a) != copysign(1.0, b))) {
     // a and b are zero, and the sign differs: return +0.0.
     return 0.0;
   } else {
     return (a > b) ? a : b;
   }
 }
-
 
 template <typename T>
 T Simulator::FPMaxNM(T a, T b) {
@@ -3045,15 +3106,13 @@ T Simulator::FPMin(T a, T b) {
   // NaNs should be handled elsewhere.
   DCHECK(!std::isnan(a) && !std::isnan(b));
 
-  if ((a == 0.0) && (b == 0.0) &&
-      (copysign(1.0, a) != copysign(1.0, b))) {
+  if ((a == 0.0) && (b == 0.0) && (copysign(1.0, a) != copysign(1.0, b))) {
     // a and b are zero, and the sign differs: return -0.0.
     return -0.0;
   } else {
     return (a < b) ? a : b;
   }
 }
-
 
 template <typename T>
 T Simulator::FPMinNM(T a, T b) {
@@ -3066,7 +3125,6 @@ T Simulator::FPMinNM(T a, T b) {
   T result = FPProcessNaNs(a, b);
   return std::isnan(result) ? result : FPMin(a, b);
 }
-
 
 template <typename T>
 T Simulator::FPMul(T op1, T op2) {
@@ -3082,8 +3140,7 @@ T Simulator::FPMul(T op1, T op2) {
   }
 }
 
-
-template<typename T>
+template <typename T>
 T Simulator::FPMulAdd(T a, T op1, T op2) {
   T result = FPProcessNaNs3(a, op1, op2);
 
@@ -3091,9 +3148,9 @@ T Simulator::FPMulAdd(T a, T op1, T op2) {
   T sign_prod = copysign(1.0, op1) * copysign(1.0, op2);
   bool isinf_prod = std::isinf(op1) || std::isinf(op2);
   bool operation_generates_nan =
-      (std::isinf(op1) && (op2 == 0.0)) ||                      // inf * 0.0
-      (std::isinf(op2) && (op1 == 0.0)) ||                      // 0.0 * inf
-      (std::isinf(a) && isinf_prod && (sign_a != sign_prod));   // inf - inf
+      (std::isinf(op1) && (op2 == 0.0)) ||                     // inf * 0.0
+      (std::isinf(op2) && (op1 == 0.0)) ||                     // 0.0 * inf
+      (std::isinf(a) && isinf_prod && (sign_a != sign_prod));  // inf - inf
 
   if (std::isnan(result)) {
     // Generated NaNs override quiet NaNs propagated from a.
@@ -3127,7 +3184,6 @@ T Simulator::FPMulAdd(T a, T op1, T op2) {
   return result;
 }
 
-
 template <typename T>
 T Simulator::FPSqrt(T op) {
   if (std::isnan(op)) {
@@ -3139,7 +3195,6 @@ T Simulator::FPSqrt(T op) {
     return fast_sqrt(op, isolate_);
   }
 }
-
 
 template <typename T>
 T Simulator::FPSub(T op1, T op2) {
@@ -3155,13 +3210,11 @@ T Simulator::FPSub(T op1, T op2) {
   }
 }
 
-
 template <typename T>
 T Simulator::FPProcessNaN(T op) {
   DCHECK(std::isnan(op));
   return fpcr().DN() ? FPDefaultNaN<T>() : ToQuietNaN(op);
 }
-
 
 template <typename T>
 T Simulator::FPProcessNaNs(T op1, T op2) {
@@ -3179,7 +3232,6 @@ T Simulator::FPProcessNaNs(T op1, T op2) {
     return 0.0;
   }
 }
-
 
 template <typename T>
 T Simulator::FPProcessNaNs3(T op1, T op2, T op3) {
@@ -3202,7 +3254,6 @@ T Simulator::FPProcessNaNs3(T op1, T op2, T op3) {
     return 0.0;
   }
 }
-
 
 bool Simulator::FPProcessNaNs(Instruction* instr) {
   unsigned fd = instr->Rd();
@@ -3227,7 +3278,6 @@ bool Simulator::FPProcessNaNs(Instruction* instr) {
   return done;
 }
 
-
 void Simulator::VisitSystem(Instruction* instr) {
   // Some system instructions hijack their Op and Cp fields to represent a
   // range of immediates instead of indicating a different instruction. This
@@ -3236,9 +3286,14 @@ void Simulator::VisitSystem(Instruction* instr) {
     switch (instr->Mask(SystemSysRegMask)) {
       case MRS: {
         switch (instr->ImmSystemRegister()) {
-          case NZCV: set_xreg(instr->Rt(), nzcv().RawValue()); break;
-          case FPCR: set_xreg(instr->Rt(), fpcr().RawValue()); break;
-          default: UNIMPLEMENTED();
+          case NZCV:
+            set_xreg(instr->Rt(), nzcv().RawValue());
+            break;
+          case FPCR:
+            set_xreg(instr->Rt(), fpcr().RawValue());
+            break;
+          default:
+            UNIMPLEMENTED();
         }
         break;
       }
@@ -3252,7 +3307,8 @@ void Simulator::VisitSystem(Instruction* instr) {
             fpcr().SetRawValue(wreg(instr->Rt()));
             LogSystemRegister(FPCR);
             break;
-          default: UNIMPLEMENTED();
+          default:
+            UNIMPLEMENTED();
         }
         break;
       }
@@ -3260,8 +3316,10 @@ void Simulator::VisitSystem(Instruction* instr) {
   } else if (instr->Mask(SystemHintFMask) == SystemHintFixed) {
     DCHECK(instr->Mask(SystemHintMask) == HINT);
     switch (instr->ImmHint()) {
-      case NOP: break;
-      default: UNIMPLEMENTED();
+      case NOP:
+        break;
+      default:
+        UNIMPLEMENTED();
     }
   } else if (instr->Mask(MemBarrierFMask) == MemBarrierFixed) {
     __sync_synchronize();
@@ -3269,7 +3327,6 @@ void Simulator::VisitSystem(Instruction* instr) {
     UNIMPLEMENTED();
   }
 }
-
 
 bool Simulator::GetValue(const char* desc, int64_t* value) {
   int regnum = CodeFromName(desc);
@@ -3290,25 +3347,23 @@ bool Simulator::GetValue(const char* desc, int64_t* value) {
     }
     return true;
   } else if (strncmp(desc, "0x", 2) == 0) {
-    return SScanF(desc + 2, "%" SCNx64,
-                  reinterpret_cast<uint64_t*>(value)) == 1;
+    return SScanF(desc + 2, "%" SCNx64, reinterpret_cast<uint64_t*>(value)) ==
+           1;
   } else {
-    return SScanF(desc, "%" SCNu64,
-                  reinterpret_cast<uint64_t*>(value)) == 1;
+    return SScanF(desc, "%" SCNu64, reinterpret_cast<uint64_t*>(value)) == 1;
   }
 }
-
 
 bool Simulator::PrintValue(const char* desc) {
   if (strcmp(desc, "csp") == 0) {
     DCHECK(CodeFromName(desc) == static_cast<int>(kSPRegInternalCode));
-    PrintF(stream_, "%s csp:%s 0x%016" PRIx64 "%s\n",
-        clr_reg_name, clr_reg_value, xreg(31, Reg31IsStackPointer), clr_normal);
+    PrintF(stream_, "%s csp:%s 0x%016" PRIx64 "%s\n", clr_reg_name,
+           clr_reg_value, xreg(31, Reg31IsStackPointer), clr_normal);
     return true;
   } else if (strcmp(desc, "wcsp") == 0) {
     DCHECK(CodeFromName(desc) == static_cast<int>(kSPRegInternalCode));
-    PrintF(stream_, "%s wcsp:%s 0x%08" PRIx32 "%s\n",
-        clr_reg_name, clr_reg_value, wreg(31, Reg31IsStackPointer), clr_normal);
+    PrintF(stream_, "%s wcsp:%s 0x%08" PRIx32 "%s\n", clr_reg_name,
+           clr_reg_value, wreg(31, Reg31IsStackPointer), clr_normal);
     return true;
   }
 
@@ -3318,40 +3373,31 @@ bool Simulator::PrintValue(const char* desc) {
 
   if (desc[0] == 'v') {
     PrintF(stream_, "%s %s:%s 0x%016" PRIx64 "%s (%s%s:%s %g%s %s:%s %g%s)\n",
-        clr_fpreg_name, VRegNameForCode(i),
-        clr_fpreg_value, double_to_rawbits(dreg(i)),
-        clr_normal,
-        clr_fpreg_name, DRegNameForCode(i),
-        clr_fpreg_value, dreg(i),
-        clr_fpreg_name, SRegNameForCode(i),
-        clr_fpreg_value, sreg(i),
-        clr_normal);
+           clr_fpreg_name, VRegNameForCode(i), clr_fpreg_value,
+           double_to_rawbits(dreg(i)), clr_normal, clr_fpreg_name,
+           DRegNameForCode(i), clr_fpreg_value, dreg(i), clr_fpreg_name,
+           SRegNameForCode(i), clr_fpreg_value, sreg(i), clr_normal);
     return true;
   } else if (desc[0] == 'd') {
-    PrintF(stream_, "%s %s:%s %g%s\n",
-        clr_fpreg_name, DRegNameForCode(i),
-        clr_fpreg_value, dreg(i),
-        clr_normal);
+    PrintF(stream_, "%s %s:%s %g%s\n", clr_fpreg_name, DRegNameForCode(i),
+           clr_fpreg_value, dreg(i), clr_normal);
     return true;
   } else if (desc[0] == 's') {
-    PrintF(stream_, "%s %s:%s %g%s\n",
-        clr_fpreg_name, SRegNameForCode(i),
-        clr_fpreg_value, sreg(i),
-        clr_normal);
+    PrintF(stream_, "%s %s:%s %g%s\n", clr_fpreg_name, SRegNameForCode(i),
+           clr_fpreg_value, sreg(i), clr_normal);
     return true;
   } else if (desc[0] == 'w') {
-    PrintF(stream_, "%s %s:%s 0x%08" PRIx32 "%s\n",
-        clr_reg_name, WRegNameForCode(i), clr_reg_value, wreg(i), clr_normal);
+    PrintF(stream_, "%s %s:%s 0x%08" PRIx32 "%s\n", clr_reg_name,
+           WRegNameForCode(i), clr_reg_value, wreg(i), clr_normal);
     return true;
   } else {
     // X register names have a wide variety of starting characters, but anything
     // else will be an X register.
-    PrintF(stream_, "%s %s:%s 0x%016" PRIx64 "%s\n",
-        clr_reg_name, XRegNameForCode(i), clr_reg_value, xreg(i), clr_normal);
+    PrintF(stream_, "%s %s:%s 0x%016" PRIx64 "%s\n", clr_reg_name,
+           XRegNameForCode(i), clr_reg_value, xreg(i), clr_normal);
     return true;
   }
 }
-
 
 void Simulator::Debug() {
 #define COMMAND_SIZE 63
@@ -3363,7 +3409,7 @@ void Simulator::Debug() {
   char cmd[COMMAND_SIZE + 1];
   char arg1[ARG_SIZE + 1];
   char arg2[ARG_SIZE + 1];
-  char* argv[3] = { cmd, arg1, arg2 };
+  char* argv[3] = {cmd, arg1, arg2};
 
   // Make sure to have a proper terminating character if reaching the limit.
   cmd[COMMAND_SIZE] = 0;
@@ -3426,25 +3472,26 @@ void Simulator::Debug() {
         // again. It will be cleared when exiting.
         pc_modified_ = true;
 
-      // next / n --------------------------------------------------------------
+        // next / n
+        // --------------------------------------------------------------
       } else if ((strcmp(cmd, "next") == 0) || (strcmp(cmd, "n") == 0)) {
         // Tell the simulator to break after the next executed BL.
         break_on_next_ = true;
         // Continue.
         done = true;
 
-      // continue / cont / c ---------------------------------------------------
-      } else if ((strcmp(cmd, "continue") == 0) ||
-                 (strcmp(cmd, "cont") == 0) ||
+        // continue / cont / c
+        // ---------------------------------------------------
+      } else if ((strcmp(cmd, "continue") == 0) || (strcmp(cmd, "cont") == 0) ||
                  (strcmp(cmd, "c") == 0)) {
         // Leave the debugger shell.
         done = true;
 
-      // disassemble / disasm / di ---------------------------------------------
+        // disassemble / disasm / di
+        // ---------------------------------------------
       } else if (strcmp(cmd, "disassemble") == 0 ||
-                 strcmp(cmd, "disasm") == 0 ||
-                 strcmp(cmd, "di") == 0) {
-        int64_t n_of_instrs_to_disasm = 10;  // default value.
+                 strcmp(cmd, "disasm") == 0 || strcmp(cmd, "di") == 0) {
+        int64_t n_of_instrs_to_disasm = 10;                // default value.
         int64_t address = reinterpret_cast<int64_t>(pc_);  // default value.
         if (argc >= 2) {  // disasm <n of instrs>
           GetValue(arg1, &n_of_instrs_to_disasm);
@@ -3458,7 +3505,8 @@ void Simulator::Debug() {
                             n_of_instrs_to_disasm);
         PrintF("\n");
 
-      // print / p -------------------------------------------------------------
+        // print / p
+        // -------------------------------------------------------------
       } else if ((strcmp(cmd, "print") == 0) || (strcmp(cmd, "p") == 0)) {
         if (argc == 2) {
           if (strcmp(arg1, "all") == 0) {
@@ -3471,13 +3519,14 @@ void Simulator::Debug() {
           }
         } else {
           PrintF(
-            "print <register>\n"
-            "    Print the content of a register. (alias 'p')\n"
-            "    'print all' will print all registers.\n"
-            "    Use 'printobject' to get more details about the value.\n");
+              "print <register>\n"
+              "    Print the content of a register. (alias 'p')\n"
+              "    'print all' will print all registers.\n"
+              "    Use 'printobject' to get more details about the value.\n");
         }
 
-      // printobject / po ------------------------------------------------------
+        // printobject / po
+        // ------------------------------------------------------
       } else if ((strcmp(cmd, "printobject") == 0) ||
                  (strcmp(cmd, "po") == 0)) {
         if (argc == 2) {
@@ -3496,12 +3545,14 @@ void Simulator::Debug() {
             os << arg1 << " unrecognized\n";
           }
         } else {
-          PrintF("printobject <value>\n"
-                 "printobject <register>\n"
-                 "    Print details about the value. (alias 'po')\n");
+          PrintF(
+              "printobject <value>\n"
+              "printobject <register>\n"
+              "    Print details about the value. (alias 'po')\n");
         }
 
-      // stack / mem ----------------------------------------------------------
+        // stack / mem
+        // ----------------------------------------------------------
       } else if (strcmp(cmd, "stack") == 0 || strcmp(cmd, "mem") == 0) {
         int64_t* cur = NULL;
         int64_t* end = NULL;
@@ -3556,7 +3607,8 @@ void Simulator::Debug() {
           cur++;
         }
 
-      // trace / t -------------------------------------------------------------
+        // trace / t
+        // -------------------------------------------------------------
       } else if (strcmp(cmd, "trace") == 0 || strcmp(cmd, "t") == 0) {
         if ((log_parameters() & (LOG_DISASM | LOG_REGS)) !=
             (LOG_DISASM | LOG_REGS)) {
@@ -3567,7 +3619,8 @@ void Simulator::Debug() {
           set_log_parameters(log_parameters() & ~(LOG_DISASM | LOG_REGS));
         }
 
-      // break / b -------------------------------------------------------------
+        // break / b
+        // -------------------------------------------------------------
       } else if (strcmp(cmd, "break") == 0 || strcmp(cmd, "b") == 0) {
         if (argc == 2) {
           int64_t value;
@@ -3581,57 +3634,60 @@ void Simulator::Debug() {
           PrintF("Use `break <address>` to set or disable a breakpoint\n");
         }
 
-      // gdb -------------------------------------------------------------------
+        // gdb
+        // -------------------------------------------------------------------
       } else if (strcmp(cmd, "gdb") == 0) {
         PrintF("Relinquishing control to gdb.\n");
         base::OS::DebugBreak();
         PrintF("Regaining control from gdb.\n");
 
-      // sysregs ---------------------------------------------------------------
+        // sysregs
+        // ---------------------------------------------------------------
       } else if (strcmp(cmd, "sysregs") == 0) {
         PrintSystemRegisters();
 
-      // help / h --------------------------------------------------------------
+        // help / h
+        // --------------------------------------------------------------
       } else if (strcmp(cmd, "help") == 0 || strcmp(cmd, "h") == 0) {
         PrintF(
-          "stepi / si\n"
-          "    stepi <n>\n"
-          "    Step <n> instructions.\n"
-          "next / n\n"
-          "    Continue execution until a BL instruction is reached.\n"
-          "    At this point a breakpoint is set just after this BL.\n"
-          "    Then execution is resumed. It will probably later hit the\n"
-          "    breakpoint just set.\n"
-          "continue / cont / c\n"
-          "    Continue execution from here.\n"
-          "disassemble / disasm / di\n"
-          "    disassemble <n> <address>\n"
-          "    Disassemble <n> instructions from current <address>.\n"
-          "    By default <n> is 20 and <address> is the current pc.\n"
-          "print / p\n"
-          "    print <register>\n"
-          "    Print the content of a register.\n"
-          "    'print all' will print all registers.\n"
-          "    Use 'printobject' to get more details about the value.\n"
-          "printobject / po\n"
-          "    printobject <value>\n"
-          "    printobject <register>\n"
-          "    Print details about the value.\n"
-          "stack\n"
-          "    stack [<words>]\n"
-          "    Dump stack content, default dump 10 words\n"
-          "mem\n"
-          "    mem <address> [<words>]\n"
-          "    Dump memory content, default dump 10 words\n"
-          "trace / t\n"
-          "    Toggle disassembly and register tracing\n"
-          "break / b\n"
-          "    break : list all breakpoints\n"
-          "    break <address> : set / enable / disable a breakpoint.\n"
-          "gdb\n"
-          "    Enter gdb.\n"
-          "sysregs\n"
-          "    Print all system registers (including NZCV).\n");
+            "stepi / si\n"
+            "    stepi <n>\n"
+            "    Step <n> instructions.\n"
+            "next / n\n"
+            "    Continue execution until a BL instruction is reached.\n"
+            "    At this point a breakpoint is set just after this BL.\n"
+            "    Then execution is resumed. It will probably later hit the\n"
+            "    breakpoint just set.\n"
+            "continue / cont / c\n"
+            "    Continue execution from here.\n"
+            "disassemble / disasm / di\n"
+            "    disassemble <n> <address>\n"
+            "    Disassemble <n> instructions from current <address>.\n"
+            "    By default <n> is 20 and <address> is the current pc.\n"
+            "print / p\n"
+            "    print <register>\n"
+            "    Print the content of a register.\n"
+            "    'print all' will print all registers.\n"
+            "    Use 'printobject' to get more details about the value.\n"
+            "printobject / po\n"
+            "    printobject <value>\n"
+            "    printobject <register>\n"
+            "    Print details about the value.\n"
+            "stack\n"
+            "    stack [<words>]\n"
+            "    Dump stack content, default dump 10 words\n"
+            "mem\n"
+            "    mem <address> [<words>]\n"
+            "    Dump memory content, default dump 10 words\n"
+            "trace / t\n"
+            "    Toggle disassembly and register tracing\n"
+            "break / b\n"
+            "    break : list all breakpoints\n"
+            "    break <address> : set / enable / disable a breakpoint.\n"
+            "gdb\n"
+            "    Enter gdb.\n"
+            "sysregs\n"
+            "    Print all system registers (including NZCV).\n");
       } else {
         PrintF("Unknown command: %s\n", cmd);
         PrintF("Use 'help' for more information.\n");
@@ -3643,7 +3699,6 @@ void Simulator::Debug() {
   }
 }
 
-
 void Simulator::VisitException(Instruction* instr) {
   switch (instr->Mask(ExceptionMask)) {
     case HLT: {
@@ -3652,33 +3707,21 @@ void Simulator::VisitException(Instruction* instr) {
         uint32_t code;
         uint32_t parameters;
 
-        memcpy(&code,
-               pc_->InstructionAtOffset(kDebugCodeOffset),
-               sizeof(code));
-        memcpy(&parameters,
-               pc_->InstructionAtOffset(kDebugParamsOffset),
+        memcpy(&code, pc_->InstructionAtOffset(kDebugCodeOffset), sizeof(code));
+        memcpy(&parameters, pc_->InstructionAtOffset(kDebugParamsOffset),
                sizeof(parameters));
-        char const *message =
-            reinterpret_cast<char const*>(
-                pc_->InstructionAtOffset(kDebugMessageOffset));
+        char const* message = reinterpret_cast<char const*>(
+            pc_->InstructionAtOffset(kDebugMessageOffset));
 
         // Always print something when we hit a debug point that breaks.
         // We are going to break, so printing something is not an issue in
         // terms of speed.
         if (FLAG_trace_sim_messages || FLAG_trace_sim || (parameters & BREAK)) {
           if (message != NULL) {
-            PrintF(stream_,
-                   "# %sDebugger hit %d: %s%s%s\n",
-                   clr_debug_number,
-                   code,
-                   clr_debug_message,
-                   message,
-                   clr_normal);
+            PrintF(stream_, "# %sDebugger hit %d: %s%s%s\n", clr_debug_number,
+                   code, clr_debug_message, message, clr_normal);
           } else {
-            PrintF(stream_,
-                   "# %sDebugger hit %d.%s\n",
-                   clr_debug_number,
-                   code,
+            PrintF(stream_, "# %sDebugger hit %d.%s\n", clr_debug_number, code,
                    clr_normal);
           }
         }
@@ -3687,9 +3730,15 @@ void Simulator::VisitException(Instruction* instr) {
         switch (parameters & kDebuggerTracingDirectivesMask) {
           case TRACE_ENABLE:
             set_log_parameters(log_parameters() | parameters);
-            if (parameters & LOG_SYS_REGS) { PrintSystemRegisters(); }
-            if (parameters & LOG_REGS) { PrintRegisters(); }
-            if (parameters & LOG_FP_REGS) { PrintFPRegisters(); }
+            if (parameters & LOG_SYS_REGS) {
+              PrintSystemRegisters();
+            }
+            if (parameters & LOG_REGS) {
+              PrintRegisters();
+            }
+            if (parameters & LOG_FP_REGS) {
+              PrintFPRegisters();
+            }
             break;
           case TRACE_DISABLE:
             set_log_parameters(log_parameters() & ~parameters);
@@ -3714,7 +3763,7 @@ void Simulator::VisitException(Instruction* instr) {
         pc_ = pc_->InstructionAtOffset(RoundUp(size, kInstructionSize));
         //  - Verify that the unreachable marker is present.
         DCHECK(pc_->Mask(ExceptionMask) == HLT);
-        DCHECK(pc_->ImmException() ==  kImmExceptionIsUnreachable);
+        DCHECK(pc_->ImmException() == kImmExceptionIsUnreachable);
         //  - Skip past the unreachable marker.
         set_pc(pc_->following());
 
@@ -3742,20 +3791,16 @@ void Simulator::VisitException(Instruction* instr) {
   }
 }
 
-
 void Simulator::DoPrintf(Instruction* instr) {
   DCHECK((instr->Mask(ExceptionMask) == HLT) &&
-              (instr->ImmException() == kImmExceptionIsPrintf));
+         (instr->ImmException() == kImmExceptionIsPrintf));
 
   // Read the arguments encoded inline in the instruction stream.
   uint32_t arg_count;
   uint32_t arg_pattern_list;
   STATIC_ASSERT(sizeof(*instr) == 1);
-  memcpy(&arg_count,
-         instr + kPrintfArgCountOffset,
-         sizeof(arg_count));
-  memcpy(&arg_pattern_list,
-         instr + kPrintfArgPatternListOffset,
+  memcpy(&arg_count, instr + kPrintfArgCountOffset, sizeof(arg_count));
+  memcpy(&arg_pattern_list, instr + kPrintfArgPatternListOffset,
          sizeof(arg_pattern_list));
 
   DCHECK(arg_count <= kPrintfMaxArgCount);
@@ -3770,17 +3815,17 @@ void Simulator::DoPrintf(Instruction* instr) {
   // Allocate space for the format string. We take a copy, so we can modify it.
   // Leave enough space for one extra character per expected argument (plus the
   // '\0' termination).
-  const char * format_base = reg<const char *>(0);
+  const char* format_base = reg<const char*>(0);
   DCHECK(format_base != NULL);
   size_t length = strlen(format_base) + 1;
-  char * const format = new char[length + arg_count];
+  char* const format = new char[length + arg_count];
 
   // A list of chunks, each with exactly one format placeholder.
-  const char * chunks[kPrintfMaxArgCount];
+  const char* chunks[kPrintfMaxArgCount];
 
   // Copy the format string and search for format placeholders.
   uint32_t placeholder_count = 0;
-  char * format_scratch = format;
+  char* format_scratch = format;
   for (size_t i = 0; i < length; i++) {
     if (format_base[i] != '%') {
       *format_scratch++ = format_base[i];
@@ -3819,8 +3864,8 @@ void Simulator::DoPrintf(Instruction* instr) {
   // Because '\0' is inserted before each placeholder, the first string in
   // 'format' contains no format placeholders and should be printed literally.
   int result = fprintf(stream_, "%s", format);
-  int pcs_r = 1;      // Start at x1. x0 holds the format string.
-  int pcs_f = 0;      // Start at d0.
+  int pcs_r = 1;  // Start at x1. x0 holds the format string.
+  int pcs_f = 0;  // Start at d0.
   if (result >= 0) {
     for (uint32_t i = 0; i < placeholder_count; i++) {
       int part_result = -1;
@@ -3837,7 +3882,8 @@ void Simulator::DoPrintf(Instruction* instr) {
         case kPrintfArgD:
           part_result = fprintf(stream_, chunks[i], dreg(pcs_f++));
           break;
-        default: UNREACHABLE();
+        default:
+          UNREACHABLE();
       }
 
       if (part_result < 0) {
@@ -3867,7 +3913,6 @@ void Simulator::DoPrintf(Instruction* instr) {
 
   delete[] format;
 }
-
 
 #endif  // USE_SIMULATOR
 

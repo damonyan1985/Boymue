@@ -4,26 +4,23 @@
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/decoder-arm64.h"
+#include "src/asm/arm64/decoder-arm64.h"
+
 #include "src/globals.h"
 #include "src/utils.h"
 
-
 namespace v8 {
 namespace internal {
-
 
 void DispatchingDecoderVisitor::AppendVisitor(DecoderVisitor* new_visitor) {
   visitors_.remove(new_visitor);
   visitors_.push_back(new_visitor);
 }
 
-
 void DispatchingDecoderVisitor::PrependVisitor(DecoderVisitor* new_visitor) {
   visitors_.remove(new_visitor);
   visitors_.push_front(new_visitor);
 }
-
 
 void DispatchingDecoderVisitor::InsertVisitorBefore(
     DecoderVisitor* new_visitor, DecoderVisitor* registered_visitor) {
@@ -40,7 +37,6 @@ void DispatchingDecoderVisitor::InsertVisitorBefore(
   DCHECK(*it == registered_visitor);
   visitors_.insert(it, new_visitor);
 }
-
 
 void DispatchingDecoderVisitor::InsertVisitorAfter(
     DecoderVisitor* new_visitor, DecoderVisitor* registered_visitor) {
@@ -59,11 +55,9 @@ void DispatchingDecoderVisitor::InsertVisitorAfter(
   visitors_.push_back(new_visitor);
 }
 
-
 void DispatchingDecoderVisitor::RemoveVisitor(DecoderVisitor* visitor) {
   visitors_.remove(visitor);
 }
-
 
 #define DEFINE_VISITOR_CALLERS(A)                                \
   void DispatchingDecoderVisitor::Visit##A(Instruction* instr) { \
@@ -77,7 +71,6 @@ void DispatchingDecoderVisitor::RemoveVisitor(DecoderVisitor* visitor) {
   }
 VISITOR_LIST(DEFINE_VISITOR_CALLERS)
 #undef DEFINE_VISITOR_CALLERS
-
 
 }  // namespace internal
 }  // namespace v8

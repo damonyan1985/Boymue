@@ -64,23 +64,23 @@
 #include "src/wasm/wasm-external-refs.h"
 
 #if V8_TARGET_ARCH_IA32
-#include "src/ia32/assembler-ia32-inl.h"  // NOLINT
+#include "src/asm/ia32/assembler-ia32-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_X64
-#include "src/x64/assembler-x64-inl.h"  // NOLINT
+#include "src/asm/x64/assembler-x64-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM64
-#include "src/arm64/assembler-arm64-inl.h"  // NOLINT
+#include "src/asm/arm64/assembler-arm64-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM
-#include "src/arm/assembler-arm-inl.h"  // NOLINT
+#include "src/asm/arm/assembler-arm-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_PPC
-#include "src/ppc/assembler-ppc-inl.h"  // NOLINT
+#include "src/asm/ppc/assembler-ppc-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS
-#include "src/mips/assembler-mips-inl.h"  // NOLINT
+#include "src/asm/mips/assembler-mips-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS64
-#include "src/mips64/assembler-mips64-inl.h"  // NOLINT
+#include "src/asm/mips64/assembler-mips64-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_S390
-#include "src/s390/assembler-s390-inl.h"  // NOLINT
+#include "src/asm/s390/assembler-s390-inl.h"  // NOLINT
 #elif V8_TARGET_ARCH_X87
-#include "src/x87/assembler-x87-inl.h"  // NOLINT
+#include "src/asm/x87/assembler-x87-inl.h"  // NOLINT
 #else
 #error "Unknown architecture."
 #endif

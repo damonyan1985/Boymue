@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "src/arm/constants-arm.h"
+#include "src/asm/arm/constants-arm.h"
 #include "src/assembler.h"
 
 namespace v8 {

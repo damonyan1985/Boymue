@@ -5,7 +5,7 @@
 #ifndef V8_X64_ASSEMBLER_X64_INL_H_
 #define V8_X64_ASSEMBLER_X64_INL_H_
 
-#include "src/x64/assembler-x64.h"
+#include "src/asm/x64/assembler-x64.h"
 
 #include "src/base/cpu.h"
 #include "src/debug/debug.h"

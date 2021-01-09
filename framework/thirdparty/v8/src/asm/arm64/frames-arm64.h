@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/arm64/assembler-arm64.h"
-#include "src/arm64/constants-arm64.h"
+#include "src/asm/arm64/assembler-arm64.h"
+#include "src/asm/arm64/constants-arm64.h"
 
 #ifndef V8_ARM64_FRAMES_ARM64_H_
 #define V8_ARM64_FRAMES_ARM64_H_
@@ -39,11 +39,10 @@ class ExitFrameConstants : public TypedFrameConstants {
   static const int kSPOffset = TYPED_FRAME_PUSHED_VALUE_OFFSET(0);
   static const int kCodeOffset = TYPED_FRAME_PUSHED_VALUE_OFFSET(1);
   DEFINE_TYPED_FRAME_SIZES(2);
-  static const int kLastExitFrameField   = kCodeOffset;
+  static const int kLastExitFrameField = kCodeOffset;
 
-  static const int kConstantPoolOffset   = 0;  // Not used
+  static const int kConstantPoolOffset = 0;  // Not used
 };
-
 
 class JavaScriptFrameConstants : public AllStatic {
  public:
@@ -56,7 +55,6 @@ class JavaScriptFrameConstants : public AllStatic {
 
   static const int kFunctionOffset = StandardFrameConstants::kFunctionOffset;
 };
-
 
 }  // namespace internal
 }  // namespace v8

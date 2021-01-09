@@ -9,8 +9,8 @@
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/arm64/decoder-arm64-inl.h"
-#include "src/arm64/disasm-arm64.h"
+#include "src/asm/arm64/decoder-arm64-inl.h"
+#include "src/asm/arm64/disasm-arm64.h"
 #include "src/base/platform/platform.h"
 #include "src/disasm.h"
 #include "src/macro-assembler.h"

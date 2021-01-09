@@ -5,14 +5,13 @@
 #ifndef V8_ARM64_INSTRUCTIONS_ARM64_H_
 #define V8_ARM64_INSTRUCTIONS_ARM64_H_
 
-#include "src/arm64/constants-arm64.h"
-#include "src/arm64/utils-arm64.h"
+#include "src/asm/arm64/constants-arm64.h"
+#include "src/asm/arm64/utils-arm64.h"
 #include "src/globals.h"
 #include "src/utils.h"
 
 namespace v8 {
 namespace internal {
-
 
 // ISA constants. --------------------------------------------------------------
 
@@ -51,29 +50,19 @@ DEFINE_FLOAT(kFP32DefaultNaN, 0x7fc00000);
 #undef DEFINE_FLOAT
 #undef DEFINE_DOUBLE
 
-
-enum LSDataSize {
-  LSByte        = 0,
-  LSHalfword    = 1,
-  LSWord        = 2,
-  LSDoubleWord  = 3
-};
+enum LSDataSize { LSByte = 0, LSHalfword = 1, LSWord = 2, LSDoubleWord = 3 };
 
 LSDataSize CalcLSPairDataSize(LoadStorePairOp op);
 
 enum ImmBranchType {
   UnknownBranchType = 0,
-  CondBranchType    = 1,
-  UncondBranchType  = 2,
+  CondBranchType = 1,
+  UncondBranchType = 2,
   CompareBranchType = 3,
-  TestBranchType    = 4
+  TestBranchType = 4
 };
 
-enum AddrMode {
-  Offset,
-  PreIndex,
-  PostIndex
-};
+enum AddrMode { Offset, PreIndex, PostIndex };
 
 enum FPRounding {
   // The first four values are encodable directly by FPCR<RMode>.
@@ -87,10 +76,7 @@ enum FPRounding {
   FPTieAway
 };
 
-enum Reg31Mode {
-  Reg31IsStackPointer,
-  Reg31IsZeroRegister
-};
+enum Reg31Mode { Reg31IsStackPointer, Reg31IsZeroRegister };
 
 // Instructions. ---------------------------------------------------------------
 
@@ -104,9 +90,7 @@ class Instruction {
     *reinterpret_cast<Instr*>(this) = new_instr;
   }
 
-  int Bit(int pos) const {
-    return (InstructionBits() >> pos) & 1;
-  }
+  int Bit(int pos) const { return (InstructionBits() >> pos) & 1; }
 
   uint32_t Bits(int msb, int lsb) const {
     return unsigned_bitextract_32(msb, lsb, InstructionBits());
@@ -117,9 +101,7 @@ class Instruction {
     return signed_bitextract_32(msb, lsb, bits);
   }
 
-  Instr Mask(uint32_t mask) const {
-    return InstructionBits() & mask;
-  }
+  Instr Mask(uint32_t mask) const { return InstructionBits() & mask; }
 
   V8_INLINE const Instruction* following(int count = 1) const {
     return InstructionAtOffset(count * static_cast<int>(kInstructionSize));
@@ -133,14 +115,12 @@ class Instruction {
     return following(-count);
   }
 
-  V8_INLINE Instruction* preceding(int count = 1) {
-    return following(-count);
-  }
+  V8_INLINE Instruction* preceding(int count = 1) { return following(-count); }
 
 #define DEFINE_GETTER(Name, HighBit, LowBit, Func) \
   int32_t Name() const { return Func(HighBit, LowBit); }
   INSTRUCTION_FIELDS_LIST(DEFINE_GETTER)
-  #undef DEFINE_GETTER
+#undef DEFINE_GETTER
 
   // ImmPCRel is a compound field (not present in INSTRUCTION_FIELDS_LIST),
   // formed from ImmPCRelLo and ImmPCRelHi.
@@ -173,29 +153,21 @@ class Instruction {
     return Mask(CompareBranchFMask) == CompareBranchFixed;
   }
 
-  bool IsTestBranch() const {
-    return Mask(TestBranchFMask) == TestBranchFixed;
-  }
+  bool IsTestBranch() const { return Mask(TestBranchFMask) == TestBranchFixed; }
 
-  bool IsImmBranch() const {
-    return BranchType() != UnknownBranchType;
-  }
+  bool IsImmBranch() const { return BranchType() != UnknownBranchType; }
 
   bool IsLdrLiteral() const {
     return Mask(LoadLiteralFMask) == LoadLiteralFixed;
   }
 
-  bool IsLdrLiteralX() const {
-    return Mask(LoadLiteralMask) == LDR_x_lit;
-  }
+  bool IsLdrLiteralX() const { return Mask(LoadLiteralMask) == LDR_x_lit; }
 
   bool IsPCRelAddressing() const {
     return Mask(PCRelAddressingFMask) == PCRelAddressingFixed;
   }
 
-  bool IsAdr() const {
-    return Mask(PCRelAddressingMask) == ADR;
-  }
+  bool IsAdr() const { return Mask(PCRelAddressingMask) == ADR; }
 
   bool IsBrk() const { return Mask(ExceptionMask) == BRK; }
 
@@ -306,18 +278,23 @@ class Instruction {
 
   // The range of the branch instruction, expressed as 'instr +- range'.
   static int32_t ImmBranchRange(ImmBranchType branch_type) {
-    return
-      (1 << (ImmBranchRangeBitwidth(branch_type) + kInstructionSizeLog2)) / 2 -
-      kInstructionSize;
+    return (1 << (ImmBranchRangeBitwidth(branch_type) + kInstructionSizeLog2)) /
+               2 -
+           kInstructionSize;
   }
 
   int ImmBranch() const {
     switch (BranchType()) {
-      case CondBranchType: return ImmCondBranch();
-      case UncondBranchType: return ImmUncondBranch();
-      case CompareBranchType: return ImmCmpBranch();
-      case TestBranchType: return ImmTestBranch();
-      default: UNREACHABLE();
+      case CondBranchType:
+        return ImmCondBranch();
+      case UncondBranchType:
+        return ImmUncondBranch();
+      case CompareBranchType:
+        return ImmCmpBranch();
+      case TestBranchType:
+        return ImmTestBranch();
+      default:
+        UNREACHABLE();
     }
     return 0;
   }
@@ -355,9 +332,7 @@ class Instruction {
     //   mov r<n>,  r<n>
     // which is encoded as
     //   orr r<n>, xzr, r<n>
-    return (Mask(LogicalShiftedMask) == ORR_x) &&
-           (Rd() == Rm()) &&
-           (Rd() == n);
+    return (Mask(LogicalShiftedMask) == ORR_x) && (Rd() == Rm()) && (Rd() == n);
   }
 
   // Find the PC offset encoded in this instruction. 'this' may be a branch or
@@ -400,7 +375,8 @@ class Instruction {
     return this + offset;
   }
 
-  template<typename T> V8_INLINE static Instruction* Cast(T src) {
+  template <typename T>
+  V8_INLINE static Instruction* Cast(T src) {
     return reinterpret_cast<Instruction*>(src);
   }
 
@@ -408,13 +384,11 @@ class Instruction {
     return reinterpret_cast<Address>(target) - reinterpret_cast<Address>(this);
   }
 
-
   static const int ImmPCRelRangeBitwidth = 21;
   static bool IsValidPCRelOffset(ptrdiff_t offset) { return is_int21(offset); }
   void SetPCRelImmTarget(Isolate* isolate, Instruction* target);
   void SetBranchImmTarget(Instruction* target);
 };
-
 
 // Where Instruction looks at instructions generated by the Assembler,
 // InstructionSequence looks at instructions sequences generated by the
@@ -429,7 +403,6 @@ class InstructionSequence : public Instruction {
   bool IsInlineData() const;
   uint64_t InlineData() const;
 };
-
 
 // Simulator/Debugger debug instructions ---------------------------------------
 // Each debug marker is represented by a HLT instruction. The immediate comment
@@ -515,26 +488,24 @@ const unsigned kDebugMessageOffset = 3 * kInstructionSize;
 // stops tracing the registers.
 const unsigned kDebuggerTracingDirectivesMask = 3 << 6;
 enum DebugParameters {
-  NO_PARAM       = 0,
-  BREAK          = 1 << 0,
-  LOG_DISASM     = 1 << 1,  // Use only with TRACE. Disassemble the code.
-  LOG_REGS       = 1 << 2,  // Log general purpose registers.
-  LOG_FP_REGS    = 1 << 3,  // Log floating-point registers.
-  LOG_SYS_REGS   = 1 << 4,  // Log the status flags.
-  LOG_WRITE      = 1 << 5,  // Log any memory write.
+  NO_PARAM = 0,
+  BREAK = 1 << 0,
+  LOG_DISASM = 1 << 1,    // Use only with TRACE. Disassemble the code.
+  LOG_REGS = 1 << 2,      // Log general purpose registers.
+  LOG_FP_REGS = 1 << 3,   // Log floating-point registers.
+  LOG_SYS_REGS = 1 << 4,  // Log the status flags.
+  LOG_WRITE = 1 << 5,     // Log any memory write.
 
-  LOG_STATE      = LOG_REGS | LOG_FP_REGS | LOG_SYS_REGS,
-  LOG_ALL        = LOG_DISASM | LOG_STATE | LOG_WRITE,
+  LOG_STATE = LOG_REGS | LOG_FP_REGS | LOG_SYS_REGS,
+  LOG_ALL = LOG_DISASM | LOG_STATE | LOG_WRITE,
 
   // Trace control.
-  TRACE_ENABLE   = 1 << 6,
-  TRACE_DISABLE  = 2 << 6,
+  TRACE_ENABLE = 1 << 6,
+  TRACE_DISABLE = 2 << 6,
   TRACE_OVERRIDE = 3 << 6
 };
 
-
 }  // namespace internal
 }  // namespace v8
-
 
 #endif  // V8_ARM64_INSTRUCTIONS_ARM64_H_

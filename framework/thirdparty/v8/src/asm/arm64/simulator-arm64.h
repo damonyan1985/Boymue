@@ -6,13 +6,14 @@
 #define V8_ARM64_SIMULATOR_ARM64_H_
 
 #include <stdarg.h>
+
 #include <vector>
 
 #include "src/allocation.h"
-#include "src/arm64/assembler-arm64.h"
-#include "src/arm64/decoder-arm64.h"
-#include "src/arm64/disasm-arm64.h"
-#include "src/arm64/instrument-arm64.h"
+#include "src/asm/arm64/assembler-arm64.h"
+#include "src/asm/arm64/decoder-arm64.h"
+#include "src/asm/arm64/disasm-arm64.h"
+#include "src/asm/arm64/instrument-arm64.h"
 #include "src/assembler.h"
 #include "src/globals.h"
 #include "src/utils.h"
@@ -27,15 +28,11 @@ namespace internal {
 #define CALL_GENERATED_CODE(isolate, entry, p0, p1, p2, p3, p4) \
   (entry(p0, p1, p2, p3, p4))
 
-typedef int (*arm64_regexp_matcher)(String* input,
-                                    int64_t start_offset,
+typedef int (*arm64_regexp_matcher)(String* input, int64_t start_offset,
                                     const byte* input_start,
-                                    const byte* input_end,
-                                    int* output,
-                                    int64_t output_size,
-                                    Address stack_base,
-                                    int64_t direct_call,
-                                    void* return_address,
+                                    const byte* input_end, int* output,
+                                    int64_t output_size, Address stack_base,
+                                    int64_t direct_call, void* return_address,
                                     Isolate* isolate);
 
 // Call the generated regexp code directly. The code at the entry address
@@ -69,7 +66,6 @@ class SimulatorStack : public v8::internal::AllStatic {
 
 #else  // !defined(USE_SIMULATOR)
 
-
 // The proper way to initialize a simulated system register (such as NZCV) is as
 // follows:
 //  SimSystemRegister nzcv = SimSystemRegister::DefaultValueFor(NZCV);
@@ -77,11 +73,9 @@ class SimSystemRegister {
  public:
   // The default constructor represents a register which has no writable bits.
   // It is not possible to set its value to anything other than 0.
-  SimSystemRegister() : value_(0), write_ignore_mask_(0xffffffff) { }
+  SimSystemRegister() : value_(0), write_ignore_mask_(0xffffffff) {}
 
-  uint32_t RawValue() const {
-    return value_;
-  }
+  uint32_t RawValue() const { return value_; }
 
   void SetRawValue(uint32_t new_value) {
     value_ = (value_ & write_ignore_mask_) | (new_value & ~write_ignore_mask_);
@@ -100,12 +94,12 @@ class SimSystemRegister {
   // Default system register values.
   static SimSystemRegister DefaultValueFor(SystemRegister id);
 
-#define DEFINE_GETTER(Name, HighBit, LowBit, Func, Type)                       \
-  Type Name() const { return static_cast<Type>(Func(HighBit, LowBit)); }       \
-  void Set##Name(Type bits) {                                                  \
-    SetBits(HighBit, LowBit, static_cast<Type>(bits));                         \
+#define DEFINE_GETTER(Name, HighBit, LowBit, Func, Type)                 \
+  Type Name() const { return static_cast<Type>(Func(HighBit, LowBit)); } \
+  void Set##Name(Type bits) {                                            \
+    SetBits(HighBit, LowBit, static_cast<Type>(bits));                   \
   }
-#define DEFINE_WRITE_IGNORE_MASK(Name, Mask)                                   \
+#define DEFINE_WRITE_IGNORE_MASK(Name, Mask) \
   static const uint32_t Name##WriteIgnoreMask = ~static_cast<uint32_t>(Mask);
   SYSTEM_REGISTER_FIELDS_LIST(DEFINE_GETTER, DEFINE_WRITE_IGNORE_MASK)
 #undef DEFINE_ZERO_BITS
@@ -116,23 +110,22 @@ class SimSystemRegister {
   // bits are "read-as-zero, write-ignored". The write_ignore_mask argument
   // describes the bits which are not modifiable.
   SimSystemRegister(uint32_t value, uint32_t write_ignore_mask)
-      : value_(value), write_ignore_mask_(write_ignore_mask) { }
+      : value_(value), write_ignore_mask_(write_ignore_mask) {}
 
   uint32_t value_;
   uint32_t write_ignore_mask_;
 };
 
-
 // Represent a register (r0-r31, v0-v31).
 class SimRegisterBase {
  public:
-  template<typename T>
+  template <typename T>
   void Set(T new_value) {
     value_ = 0;
     memcpy(&value_, &new_value, sizeof(T));
   }
 
-  template<typename T>
+  template <typename T>
   T Get() const {
     T result;
     memcpy(&result, &value_, sizeof(T));
@@ -143,10 +136,8 @@ class SimRegisterBase {
   int64_t value_;
 };
 
-
-typedef SimRegisterBase SimRegister;      // r0-r31
-typedef SimRegisterBase SimFPRegister;    // v0-v31
-
+typedef SimRegisterBase SimRegister;    // r0-r31
+typedef SimRegisterBase SimFPRegister;  // v0-v31
 
 class Simulator : public DecoderVisitor {
  public:
@@ -158,8 +149,7 @@ class Simulator : public DecoderVisitor {
   }
 
   explicit Simulator(Decoder<DispatchingDecoderVisitor>* decoder,
-                     Isolate* isolate = NULL,
-                     FILE* stream = stderr);
+                     Isolate* isolate = NULL, FILE* stream = stderr);
   Simulator();
   ~Simulator();
 
@@ -185,22 +175,12 @@ class Simulator : public DecoderVisitor {
   // V8 calls into generated JS code with 5 parameters and into
   // generated RegExp code with 10 parameters. These are convenience functions,
   // which set up the simulator state and grab the result on return.
-  int64_t CallJS(byte* entry,
-                 Object* new_target,
-                 Object* target,
-                 Object* revc,
-                 int64_t argc,
-                 Object*** argv);
-  int64_t CallRegExp(byte* entry,
-                     String* input,
-                     int64_t start_offset,
-                     const byte* input_start,
-                     const byte* input_end,
-                     int* output,
-                     int64_t output_size,
-                     Address stack_base,
-                     int64_t direct_call,
-                     void* return_address,
+  int64_t CallJS(byte* entry, Object* new_target, Object* target, Object* revc,
+                 int64_t argc, Object*** argv);
+  int64_t CallRegExp(byte* entry, String* input, int64_t start_offset,
+                     const byte* input_start, const byte* input_end,
+                     int* output, int64_t output_size, Address stack_base,
+                     int64_t direct_call, void* return_address,
                      Isolate* isolate);
 
   // A wrapper class that stores an argument for one of the above Call
@@ -209,7 +189,7 @@ class Simulator : public DecoderVisitor {
   // Only arguments up to 64 bits in size are supported.
   class CallArgument {
    public:
-    template<typename T>
+    template <typename T>
     explicit CallArgument(T argument) {
       bits_ = 0;
       DCHECK(sizeof(argument) <= sizeof(bits_));
@@ -256,7 +236,6 @@ class Simulator : public DecoderVisitor {
 
     CallArgument() { type_ = NO_ARG; }
   };
-
 
   // Start the debugging command line.
   void Debug();
@@ -305,9 +284,7 @@ class Simulator : public DecoderVisitor {
     pc_modified_ = false;
   }
 
-  virtual void Decode(Instruction* instr) {
-    decoder_->Decode(instr);
-  }
+  virtual void Decode(Instruction* instr) { decoder_->Decode(instr); }
 
   void ExecuteInstruction() {
     DCHECK(IsAligned(reinterpret_cast<uintptr_t>(pc_), kInstructionSize));
@@ -317,10 +294,10 @@ class Simulator : public DecoderVisitor {
     CheckBreakpoints();
   }
 
-  // Declare all Visitor functions.
-  #define DECLARE(A)  void Visit##A(Instruction* instr);
+// Declare all Visitor functions.
+#define DECLARE(A) void Visit##A(Instruction* instr);
   VISITOR_LIST(DECLARE)
-  #undef DECLARE
+#undef DECLARE
 
   bool IsZeroRegister(unsigned code, Reg31Mode r31mode) const {
     return ((code == 31) && (r31mode == Reg31IsZeroRegister));
@@ -330,7 +307,7 @@ class Simulator : public DecoderVisitor {
   // Return 'size' bits of the value of an integer register, as the specified
   // type. The value is zero-extended to fill the result.
   //
-  template<typename T>
+  template <typename T>
   T reg(unsigned code, Reg31Mode r31mode = Reg31IsZeroRegister) const {
     DCHECK(code < kNumberOfRegisters);
     if (IsZeroRegister(code, r31mode)) {
@@ -350,7 +327,7 @@ class Simulator : public DecoderVisitor {
 
   // Write 'value' into an integer register. The value is zero-extended. This
   // behaviour matches AArch64 register writes.
-  template<typename T>
+  template <typename T>
   void set_reg(unsigned code, T value,
                Reg31Mode r31mode = Reg31IsZeroRegister) {
     set_reg_no_log(code, value, r31mode);
@@ -389,13 +366,13 @@ class Simulator : public DecoderVisitor {
   }
 
   // Commonly-used special cases.
-  template<typename T>
+  template <typename T>
   void set_lr(T value) {
     DCHECK(sizeof(T) == kPointerSize);
     set_reg(kLinkRegCode, value);
   }
 
-  template<typename T>
+  template <typename T>
   void set_sp(T value) {
     DCHECK(sizeof(T) == kPointerSize);
     set_reg(31, value, Reg31IsStackPointer);
@@ -403,40 +380,32 @@ class Simulator : public DecoderVisitor {
 
   int64_t sp() { return xreg(31, Reg31IsStackPointer); }
   int64_t jssp() { return xreg(kJSSPCode, Reg31IsStackPointer); }
-  int64_t fp() {
-      return xreg(kFramePointerRegCode, Reg31IsStackPointer);
-  }
+  int64_t fp() { return xreg(kFramePointerRegCode, Reg31IsStackPointer); }
   Instruction* lr() { return reg<Instruction*>(kLinkRegCode); }
 
   Address get_sp() const { return reg<Address>(31, Reg31IsStackPointer); }
 
-  template<typename T>
+  template <typename T>
   T fpreg(unsigned code) const {
     DCHECK(code < kNumberOfRegisters);
     return fpregisters_[code].Get<T>();
   }
 
   // Common specialized accessors for the fpreg() template.
-  float sreg(unsigned code) const {
-    return fpreg<float>(code);
-  }
+  float sreg(unsigned code) const { return fpreg<float>(code); }
 
-  uint32_t sreg_bits(unsigned code) const {
-    return fpreg<uint32_t>(code);
-  }
+  uint32_t sreg_bits(unsigned code) const { return fpreg<uint32_t>(code); }
 
-  double dreg(unsigned code) const {
-    return fpreg<double>(code);
-  }
+  double dreg(unsigned code) const { return fpreg<double>(code); }
 
-  uint64_t dreg_bits(unsigned code) const {
-    return fpreg<uint64_t>(code);
-  }
+  uint64_t dreg_bits(unsigned code) const { return fpreg<uint64_t>(code); }
 
   double fpreg(unsigned size, unsigned code) const {
     switch (size) {
-      case kSRegSizeInBits: return sreg(code);
-      case kDRegSizeInBits: return dreg(code);
+      case kSRegSizeInBits:
+        return sreg(code);
+      case kDRegSizeInBits:
+        return dreg(code);
       default:
         UNREACHABLE();
         return 0.0;
@@ -445,7 +414,7 @@ class Simulator : public DecoderVisitor {
 
   // Write 'value' into a floating-point register. The value is zero-extended.
   // This behaviour matches AArch64 register writes.
-  template<typename T>
+  template <typename T>
   void set_fpreg(unsigned code, T value) {
     set_fpreg_no_log(code, value);
 
@@ -457,21 +426,13 @@ class Simulator : public DecoderVisitor {
   }
 
   // Common specialized accessors for the set_fpreg() template.
-  void set_sreg(unsigned code, float value) {
-    set_fpreg(code, value);
-  }
+  void set_sreg(unsigned code, float value) { set_fpreg(code, value); }
 
-  void set_sreg_bits(unsigned code, uint32_t value) {
-    set_fpreg(code, value);
-  }
+  void set_sreg_bits(unsigned code, uint32_t value) { set_fpreg(code, value); }
 
-  void set_dreg(unsigned code, double value) {
-    set_fpreg(code, value);
-  }
+  void set_dreg(unsigned code, double value) { set_fpreg(code, value); }
 
-  void set_dreg_bits(unsigned code, uint64_t value) {
-    set_fpreg(code, value);
-  }
+  void set_dreg_bits(unsigned code, uint64_t value) { set_fpreg(code, value); }
 
   // As above, but don't automatically log the register update.
   template <typename T>
@@ -595,10 +556,10 @@ class Simulator : public DecoderVisitor {
     }
   }
 
-  static inline const char* WRegNameForCode(unsigned code,
-      Reg31Mode mode = Reg31IsZeroRegister);
-  static inline const char* XRegNameForCode(unsigned code,
-      Reg31Mode mode = Reg31IsZeroRegister);
+  static inline const char* WRegNameForCode(
+      unsigned code, Reg31Mode mode = Reg31IsZeroRegister);
+  static inline const char* XRegNameForCode(
+      unsigned code, Reg31Mode mode = Reg31IsZeroRegister);
   static inline const char* SRegNameForCode(unsigned code);
   static inline const char* DRegNameForCode(unsigned code);
   static inline const char* VRegNameForCode(unsigned code);
@@ -646,32 +607,23 @@ class Simulator : public DecoderVisitor {
     }
   }
 
-  bool ConditionFailed(Condition cond) {
-    return !ConditionPassed(cond);
-  }
+  bool ConditionFailed(Condition cond) { return !ConditionPassed(cond); }
 
-  template<typename T>
+  template <typename T>
   void AddSubHelper(Instruction* instr, T op2);
-  template<typename T>
-  T AddWithCarry(bool set_flags,
-                 T src1,
-                 T src2,
-                 T carry_in = 0);
-  template<typename T>
+  template <typename T>
+  T AddWithCarry(bool set_flags, T src1, T src2, T carry_in = 0);
+  template <typename T>
   void AddSubWithCarry(Instruction* instr);
-  template<typename T>
+  template <typename T>
   void LogicalHelper(Instruction* instr, T op2);
-  template<typename T>
+  template <typename T>
   void ConditionalCompareHelper(Instruction* instr, T op2);
-  void LoadStoreHelper(Instruction* instr,
-                       int64_t offset,
-                       AddrMode addrmode);
+  void LoadStoreHelper(Instruction* instr, int64_t offset, AddrMode addrmode);
   void LoadStorePairHelper(Instruction* instr, AddrMode addrmode);
   uintptr_t LoadStoreAddress(unsigned addr_reg, int64_t offset,
                              AddrMode addrmode);
-  void LoadStoreWriteBack(unsigned addr_reg,
-                          int64_t offset,
-                          AddrMode addrmode);
+  void LoadStoreWriteBack(unsigned addr_reg, int64_t offset, AddrMode addrmode);
   void CheckMemoryAccess(uintptr_t address, uintptr_t stack);
 
   // Memory read helpers.
@@ -693,13 +645,9 @@ class Simulator : public DecoderVisitor {
   }
 
   template <typename T>
-  T ShiftOperand(T value,
-                 Shift shift_type,
-                 unsigned amount);
+  T ShiftOperand(T value, Shift shift_type, unsigned amount);
   template <typename T>
-  T ExtendValue(T value,
-                Extend extend_type,
-                unsigned left_shift = 0);
+  T ExtendValue(T value, Extend extend_type, unsigned left_shift = 0);
   template <typename T>
   void Extract(Instruction* instr);
   template <typename T>
@@ -833,9 +781,7 @@ class Simulator : public DecoderVisitor {
     return (result >> (sizeof(T) * 8 - 1)) & 1;
   }
 
-  static int CalcZFlag(uint64_t result) {
-    return result == 0;
-  }
+  static int CalcZFlag(uint64_t result) { return result == 0; }
 
   static const uint32_t kConditionFlagsMask = 0xf0000000;
 
@@ -870,10 +816,9 @@ class Simulator : public DecoderVisitor {
  private:
   void Init(FILE* stream);
 
-  int  log_parameters_;
+  int log_parameters_;
   Isolate* isolate_;
 };
-
 
 // When running with the simulator transition into simulated execution at this
 // point.
@@ -886,7 +831,6 @@ class Simulator : public DecoderVisitor {
   static_cast<int>(Simulator::current(isolate)->CallRegExp(                    \
       entry, p0, p1, p2, p3, p4, p5, p6, p7, NULL, p8))
 
-
 // The simulator has its own stack. Thus it has a different stack limit from
 // the C-based native code.  The JS-based limit normally points near the end of
 // the simulator stack.  When the C-based limit is exhausted we reflect that by
@@ -894,7 +838,7 @@ class Simulator : public DecoderVisitor {
 class SimulatorStack : public v8::internal::AllStatic {
  public:
   static uintptr_t JsLimitFromCLimit(v8::internal::Isolate* isolate,
-                                            uintptr_t c_limit) {
+                                     uintptr_t c_limit) {
     return Simulator::current(isolate)->StackLimit(c_limit);
   }
 

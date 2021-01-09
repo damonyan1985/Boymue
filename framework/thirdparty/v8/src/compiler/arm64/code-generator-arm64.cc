@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/compiler/code-generator.h"
-
-#include "src/arm64/frames-arm64.h"
-#include "src/arm64/macro-assembler-arm64.h"
+#include "src/asm/arm64/frames-arm64.h"
+#include "src/asm/arm64/macro-assembler-arm64.h"
 #include "src/ast/scopes.h"
 #include "src/compiler/code-generator-impl.h"
+#include "src/compiler/code-generator.h"
 #include "src/compiler/gap-resolver.h"
 #include "src/compiler/node-matchers.h"
 #include "src/compiler/osr.h"
@@ -17,7 +16,6 @@ namespace internal {
 namespace compiler {
 
 #define __ masm()->
-
 
 // Adds Arm64-specific methods to convert InstructionOperands.
 class Arm64OperandConverter final : public InstructionOperandConverter {
@@ -225,7 +223,6 @@ class Arm64OperandConverter final : public InstructionOperandConverter {
   }
 };
 
-
 namespace {
 
 class OutOfLineLoadNaN32 final : public OutOfLineCode {
@@ -241,7 +238,6 @@ class OutOfLineLoadNaN32 final : public OutOfLineCode {
   DoubleRegister const result_;
 };
 
-
 class OutOfLineLoadNaN64 final : public OutOfLineCode {
  public:
   OutOfLineLoadNaN64(CodeGenerator* gen, DoubleRegister result)
@@ -255,7 +251,6 @@ class OutOfLineLoadNaN64 final : public OutOfLineCode {
   DoubleRegister const result_;
 };
 
-
 class OutOfLineLoadZero final : public OutOfLineCode {
  public:
   OutOfLineLoadZero(CodeGenerator* gen, Register result)
@@ -266,7 +261,6 @@ class OutOfLineLoadZero final : public OutOfLineCode {
  private:
   Register const result_;
 };
-
 
 class OutOfLineRecordWrite final : public OutOfLineCode {
  public:
@@ -316,7 +310,6 @@ class OutOfLineRecordWrite final : public OutOfLineCode {
   RecordWriteMode const mode_;
   bool must_save_lr_;
 };
-
 
 Condition FlagsConditionToCondition(FlagsCondition condition) {
   switch (condition) {
@@ -370,7 +363,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
 
 }  // namespace
 
-
 #define ASSEMBLE_CHECKED_LOAD_FLOAT(width)                         \
   do {                                                             \
     auto result = i.OutputFloat##width##Register();                \
@@ -383,7 +375,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ Ldr(result, MemOperand(buffer, offset, UXTW));              \
     __ Bind(ool->exit());                                          \
   } while (0)
-
 
 #define ASSEMBLE_CHECKED_LOAD_INTEGER(asm_instr)             \
   do {                                                       \
@@ -398,7 +389,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ Bind(ool->exit());                                    \
   } while (0)
 
-
 #define ASSEMBLE_CHECKED_LOAD_INTEGER_64(asm_instr)          \
   do {                                                       \
     auto result = i.OutputRegister();                        \
@@ -411,7 +401,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ asm_instr(result, MemOperand(buffer, offset, UXTW));  \
     __ Bind(ool->exit());                                    \
   } while (0)
-
 
 #define ASSEMBLE_CHECKED_STORE_FLOAT(width)          \
   do {                                               \
@@ -426,7 +415,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ Bind(&done);                                  \
   } while (0)
 
-
 #define ASSEMBLE_CHECKED_STORE_INTEGER(asm_instr)          \
   do {                                                     \
     auto buffer = i.InputRegister(0);                      \
@@ -440,7 +428,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ Bind(&done);                                        \
   } while (0)
 
-
 #define ASSEMBLE_CHECKED_STORE_INTEGER_64(asm_instr)       \
   do {                                                     \
     auto buffer = i.InputRegister(0);                      \
@@ -453,7 +440,6 @@ Condition FlagsConditionToCondition(FlagsCondition condition) {
     __ asm_instr(value, MemOperand(buffer, offset, UXTW)); \
     __ Bind(&done);                                        \
   } while (0)
-
 
 #define ASSEMBLE_SHIFT(asm_instr, width)                                    \
   do {                                                                      \
@@ -485,7 +471,6 @@ void CodeGenerator::AssembleDeconstructActivationRecord(int stack_param_delta) {
   }
   frame_access_state()->SetFrameAccessToDefault();
 }
-
 
 void CodeGenerator::AssemblePrepareTailCall(int stack_param_delta) {
   int sp_slot_delta = TailCallFrameStackSlotDelta(stack_param_delta);
@@ -761,8 +746,8 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
         __ Adds(i.OutputRegister(), i.InputOrZeroRegister64(0),
                 i.InputOperand2_64(1));
       } else {
-      __ Add(i.OutputRegister(), i.InputOrZeroRegister64(0),
-             i.InputOperand2_64(1));
+        __ Add(i.OutputRegister(), i.InputOrZeroRegister64(0),
+               i.InputOperand2_64(1));
       }
       break;
     case kArm64Add32:
@@ -909,8 +894,8 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
         __ Subs(i.OutputRegister(), i.InputOrZeroRegister64(0),
                 i.InputOperand2_64(1));
       } else {
-      __ Sub(i.OutputRegister(), i.InputOrZeroRegister64(0),
-             i.InputOperand2_64(1));
+        __ Sub(i.OutputRegister(), i.InputOrZeroRegister64(0),
+               i.InputOperand2_64(1));
       }
       break;
     case kArm64Sub32:
@@ -1395,7 +1380,6 @@ void CodeGenerator::AssembleArchInstruction(Instruction* instr) {
   }
 }  // NOLINT(readability/fn_size)
 
-
 // Assemble branches after this instruction.
 void CodeGenerator::AssembleArchBranch(Instruction* instr, BranchInfo* branch) {
   Arm64OperandConverter i(this, instr);
@@ -1444,11 +1428,9 @@ void CodeGenerator::AssembleArchBranch(Instruction* instr, BranchInfo* branch) {
   if (!branch->fallthru) __ B(flabel);  // no fallthru to flabel.
 }
 
-
 void CodeGenerator::AssembleArchJump(RpoNumber target) {
   if (!IsNextInAssemblyOrder(target)) __ B(GetLabel(target));
 }
-
 
 // Assemble boolean materializations after this instruction.
 void CodeGenerator::AssembleArchBoolean(Instruction* instr,
@@ -1463,7 +1445,6 @@ void CodeGenerator::AssembleArchBoolean(Instruction* instr,
   __ Cset(reg, cc);
 }
 
-
 void CodeGenerator::AssembleArchLookupSwitch(Instruction* instr) {
   Arm64OperandConverter i(this, instr);
   Register input = i.InputRegister32(0);
@@ -1473,7 +1454,6 @@ void CodeGenerator::AssembleArchLookupSwitch(Instruction* instr) {
   }
   AssembleArchJump(i.InputRpo(1));
 }
-
 
 void CodeGenerator::AssembleArchTableSwitch(Instruction* instr) {
   Arm64OperandConverter i(this, instr);
@@ -1494,7 +1474,6 @@ void CodeGenerator::AssembleArchTableSwitch(Instruction* instr) {
   }
   __ EndBlockPools();
 }
-
 
 void CodeGenerator::AssembleDeoptimizerCall(
     int deoptimization_id, Deoptimizer::BailoutType bailout_type) {
@@ -1575,7 +1554,6 @@ void CodeGenerator::AssemblePrologue() {
   }
 }
 
-
 void CodeGenerator::AssembleReturn() {
   CallDescriptor* descriptor = linkage()->GetIncomingDescriptor();
 
@@ -1618,7 +1596,6 @@ void CodeGenerator::AssembleReturn() {
   }
   __ Ret();
 }
-
 
 void CodeGenerator::AssembleMove(InstructionOperand* source,
                                  InstructionOperand* destination) {
@@ -1716,7 +1693,6 @@ void CodeGenerator::AssembleMove(InstructionOperand* source,
   }
 }
 
-
 void CodeGenerator::AssembleSwap(InstructionOperand* source,
                                  InstructionOperand* destination) {
   Arm64OperandConverter g(this, nullptr);
@@ -1771,15 +1747,12 @@ void CodeGenerator::AssembleSwap(InstructionOperand* source,
   }
 }
 
-
 void CodeGenerator::AssembleJumpTable(Label** targets, size_t target_count) {
   // On 64-bit ARM we emit the jump tables inline.
   UNREACHABLE();
 }
 
-
 void CodeGenerator::AddNopForSmiCodeInlining() { __ movz(xzr, 0); }
-
 
 void CodeGenerator::EnsureSpaceForLazyDeopt() {
   if (!info()->ShouldEnsureSpaceForLazyDeopt()) {

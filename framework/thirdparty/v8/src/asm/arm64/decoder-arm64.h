@@ -7,58 +7,57 @@
 
 #include <list>
 
-#include "src/arm64/instructions-arm64.h"
+#include "src/asm/arm64/instructions-arm64.h"
 #include "src/globals.h"
 
 namespace v8 {
 namespace internal {
 
-
 // List macro containing all visitors needed by the decoder class.
 
-#define VISITOR_LIST(V)             \
-  V(PCRelAddressing)                \
-  V(AddSubImmediate)                \
-  V(LogicalImmediate)               \
-  V(MoveWideImmediate)              \
-  V(Bitfield)                       \
-  V(Extract)                        \
-  V(UnconditionalBranch)            \
-  V(UnconditionalBranchToRegister)  \
-  V(CompareBranch)                  \
-  V(TestBranch)                     \
-  V(ConditionalBranch)              \
-  V(System)                         \
-  V(Exception)                      \
-  V(LoadStorePairPostIndex)         \
-  V(LoadStorePairOffset)            \
-  V(LoadStorePairPreIndex)          \
-  V(LoadLiteral)                    \
-  V(LoadStoreUnscaledOffset)        \
-  V(LoadStorePostIndex)             \
-  V(LoadStorePreIndex)              \
-  V(LoadStoreRegisterOffset)        \
-  V(LoadStoreUnsignedOffset)        \
-  V(LogicalShifted)                 \
-  V(AddSubShifted)                  \
-  V(AddSubExtended)                 \
-  V(AddSubWithCarry)                \
-  V(ConditionalCompareRegister)     \
-  V(ConditionalCompareImmediate)    \
-  V(ConditionalSelect)              \
-  V(DataProcessing1Source)          \
-  V(DataProcessing2Source)          \
-  V(DataProcessing3Source)          \
-  V(FPCompare)                      \
-  V(FPConditionalCompare)           \
-  V(FPConditionalSelect)            \
-  V(FPImmediate)                    \
-  V(FPDataProcessing1Source)        \
-  V(FPDataProcessing2Source)        \
-  V(FPDataProcessing3Source)        \
-  V(FPIntegerConvert)               \
-  V(FPFixedPointConvert)            \
-  V(Unallocated)                    \
+#define VISITOR_LIST(V)            \
+  V(PCRelAddressing)               \
+  V(AddSubImmediate)               \
+  V(LogicalImmediate)              \
+  V(MoveWideImmediate)             \
+  V(Bitfield)                      \
+  V(Extract)                       \
+  V(UnconditionalBranch)           \
+  V(UnconditionalBranchToRegister) \
+  V(CompareBranch)                 \
+  V(TestBranch)                    \
+  V(ConditionalBranch)             \
+  V(System)                        \
+  V(Exception)                     \
+  V(LoadStorePairPostIndex)        \
+  V(LoadStorePairOffset)           \
+  V(LoadStorePairPreIndex)         \
+  V(LoadLiteral)                   \
+  V(LoadStoreUnscaledOffset)       \
+  V(LoadStorePostIndex)            \
+  V(LoadStorePreIndex)             \
+  V(LoadStoreRegisterOffset)       \
+  V(LoadStoreUnsignedOffset)       \
+  V(LogicalShifted)                \
+  V(AddSubShifted)                 \
+  V(AddSubExtended)                \
+  V(AddSubWithCarry)               \
+  V(ConditionalCompareRegister)    \
+  V(ConditionalCompareImmediate)   \
+  V(ConditionalSelect)             \
+  V(DataProcessing1Source)         \
+  V(DataProcessing2Source)         \
+  V(DataProcessing3Source)         \
+  V(FPCompare)                     \
+  V(FPConditionalCompare)          \
+  V(FPConditionalSelect)           \
+  V(FPImmediate)                   \
+  V(FPDataProcessing1Source)       \
+  V(FPDataProcessing2Source)       \
+  V(FPDataProcessing3Source)       \
+  V(FPIntegerConvert)              \
+  V(FPFixedPointConvert)           \
+  V(Unallocated)                   \
   V(Unimplemented)
 
 // The Visitor interface. Disassembler and simulator (and other tools)
@@ -67,11 +66,10 @@ class DecoderVisitor {
  public:
   virtual ~DecoderVisitor() {}
 
-  #define DECLARE(A) virtual void Visit##A(Instruction* instr) = 0;
+#define DECLARE(A) virtual void Visit##A(Instruction* instr) = 0;
   VISITOR_LIST(DECLARE)
-  #undef DECLARE
+#undef DECLARE
 };
-
 
 // A visitor that dispatches to a list of visitors.
 class DispatchingDecoderVisitor : public DecoderVisitor {
@@ -108,17 +106,16 @@ class DispatchingDecoderVisitor : public DecoderVisitor {
   // stored by the decoder.
   void RemoveVisitor(DecoderVisitor* visitor);
 
-  #define DECLARE(A) void Visit##A(Instruction* instr);
+#define DECLARE(A) void Visit##A(Instruction* instr);
   VISITOR_LIST(DECLARE)
-  #undef DECLARE
+#undef DECLARE
 
  private:
   // Visitors are registered in a list.
   std::list<DecoderVisitor*> visitors_;
 };
 
-
-template<typename V>
+template <typename V>
 class Decoder : public V {
  public:
   Decoder() {}
@@ -126,7 +123,7 @@ class Decoder : public V {
 
   // Top-level instruction decoder function. Decodes an instruction and calls
   // the visitor functions registered with the Decoder class.
-  virtual void Decode(Instruction *instr);
+  virtual void Decode(Instruction* instr);
 
  private:
   // Decode the PC relative addressing instruction, and call the corresponding
@@ -179,7 +176,6 @@ class Decoder : public V {
   // On entry, instruction bits 27:25 = 0x7.
   void DecodeAdvSIMDDataProcessing(Instruction* instr);
 };
-
 
 }  // namespace internal
 }  // namespace v8

@@ -6,12 +6,12 @@
 
 #define ARM64_DEFINE_FP_STATICS
 
-#include "src/arm64/assembler-arm64-inl.h"
-#include "src/arm64/instructions-arm64.h"
+#include "src/asm/arm64/instructions-arm64.h"
+
+#include "src/asm/arm64/assembler-arm64-inl.h"
 
 namespace v8 {
 namespace internal {
-
 
 bool Instruction::IsLoad() const {
   if (Mask(LoadStoreAnyFMask) != LoadStoreAnyFixed) {
@@ -33,12 +33,13 @@ bool Instruction::IsLoad() const {
       case LDRSH_x:
       case LDRSW_x:
       case LDR_s:
-      case LDR_d: return true;
-      default: return false;
+      case LDR_d:
+        return true;
+      default:
+        return false;
     }
   }
 }
-
 
 bool Instruction::IsStore() const {
   if (Mask(LoadStoreAnyFMask) != LoadStoreAnyFixed) {
@@ -55,15 +56,15 @@ bool Instruction::IsStore() const {
       case STR_w:
       case STR_x:
       case STR_s:
-      case STR_d: return true;
-      default: return false;
+      case STR_d:
+        return true;
+      default:
+        return false;
     }
   }
 }
 
-
-static uint64_t RotateRight(uint64_t value,
-                            unsigned int rotate,
+static uint64_t RotateRight(uint64_t value, unsigned int rotate,
                             unsigned int width) {
   DCHECK(width <= 64);
   rotate &= 63;
@@ -71,9 +72,7 @@ static uint64_t RotateRight(uint64_t value,
          (value >> rotate);
 }
 
-
-static uint64_t RepeatBitsAcrossReg(unsigned reg_size,
-                                    uint64_t value,
+static uint64_t RepeatBitsAcrossReg(unsigned reg_size, uint64_t value,
                                     unsigned width) {
   DCHECK((width == 2) || (width == 4) || (width == 8) || (width == 16) ||
          (width == 32));
@@ -84,7 +83,6 @@ static uint64_t RepeatBitsAcrossReg(unsigned reg_size,
   }
   return result;
 }
-
 
 // Logical immediates can't encode zero, so a return value of zero is used to
 // indicate a failure case. Specifically, where the constraints on imm_s are not
@@ -129,16 +127,14 @@ uint64_t Instruction::ImmLogical() {
           return 0;
         }
         uint64_t bits = (1UL << ((imm_s & mask) + 1)) - 1;
-        return RepeatBitsAcrossReg(reg_size,
-                                   RotateRight(bits, imm_r & mask, width),
-                                   width);
+        return RepeatBitsAcrossReg(
+            reg_size, RotateRight(bits, imm_r & mask, width), width);
       }
     }
   }
   UNREACHABLE();
   return 0;
 }
-
 
 float Instruction::ImmFP32() {
   //  ImmFP: abcdefgh (8 bits)
@@ -152,7 +148,6 @@ float Instruction::ImmFP32() {
 
   return rawbits_to_float(result);
 }
-
 
 double Instruction::ImmFP64() {
   //  ImmFP: abcdefgh (8 bits)
@@ -168,17 +163,17 @@ double Instruction::ImmFP64() {
   return rawbits_to_double(result);
 }
 
-
 LSDataSize CalcLSPairDataSize(LoadStorePairOp op) {
   switch (op) {
     case STP_x:
     case LDP_x:
     case STP_d:
-    case LDP_d: return LSDoubleWord;
-    default: return LSWord;
+    case LDP_d:
+      return LSDoubleWord;
+    default:
+      return LSWord;
   }
 }
-
 
 int64_t Instruction::ImmPCOffset() {
   int64_t offset;
@@ -202,22 +197,18 @@ int64_t Instruction::ImmPCOffset() {
   return offset;
 }
 
-
 Instruction* Instruction::ImmPCOffsetTarget() {
   return InstructionAtOffset(ImmPCOffset());
 }
-
 
 bool Instruction::IsValidImmPCOffset(ImmBranchType branch_type,
                                      ptrdiff_t offset) {
   return is_intn(offset, ImmBranchRangeBitwidth(branch_type));
 }
 
-
 bool Instruction::IsTargetInImmPCOffsetRange(Instruction* target) {
   return IsValidImmPCOffset(BranchType(), DistanceTo(target));
 }
-
 
 void Instruction::SetImmPCOffsetTarget(Isolate* isolate, Instruction* target) {
   if (IsPCRelAddressing()) {
@@ -231,7 +222,6 @@ void Instruction::SetImmPCOffsetTarget(Isolate* isolate, Instruction* target) {
     SetImmLLiteral(target);
   }
 }
-
 
 void Instruction::SetPCRelImmTarget(Isolate* isolate, Instruction* target) {
   // ADRP is not supported, so 'this' must point to an ADR instruction.
@@ -248,7 +238,6 @@ void Instruction::SetPCRelImmTarget(Isolate* isolate, Instruction* target) {
     patcher.PatchAdrFar(target_offset);
   }
 }
-
 
 void Instruction::SetBranchImmTarget(Instruction* target) {
   DCHECK(IsAligned(DistanceTo(target), kInstructionSize));
@@ -278,11 +267,11 @@ void Instruction::SetBranchImmTarget(Instruction* target) {
       imm_mask = ImmTestBranch_mask;
       break;
     }
-    default: UNREACHABLE();
+    default:
+      UNREACHABLE();
   }
   SetInstructionBits(Mask(~imm_mask) | branch_imm);
 }
-
 
 void Instruction::SetUnresolvedInternalReferenceImmTarget(Isolate* isolate,
                                                           Instruction* target) {
@@ -299,7 +288,6 @@ void Instruction::SetUnresolvedInternalReferenceImmTarget(Isolate* isolate,
   patcher.brk(low16);
 }
 
-
 void Instruction::SetImmLLiteral(Instruction* source) {
   DCHECK(IsLdrLiteral());
   DCHECK(IsAligned(DistanceTo(source), kInstructionSize));
@@ -310,7 +298,6 @@ void Instruction::SetImmLLiteral(Instruction* source) {
 
   SetInstructionBits(Mask(~mask) | imm);
 }
-
 
 // TODO(jbramley): We can't put this inline in the class because things like
 // xzr and Register are not defined in that header. Consider adding
@@ -323,7 +310,6 @@ bool InstructionSequence::IsInlineData() const {
   // to update this method too.
 }
 
-
 // TODO(jbramley): We can't put this inline in the class because things like
 // xzr and Register are not defined in that header. Consider adding
 // instructions-arm64-inl.h to work around this.
@@ -334,7 +320,6 @@ uint64_t InstructionSequence::InlineData() const {
   // to update this method too.
   return payload;
 }
-
 
 }  // namespace internal
 }  // namespace v8

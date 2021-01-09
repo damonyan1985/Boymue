@@ -109,6 +109,12 @@
     <Filter Include="src\wasm">
       <UniqueIdentifier>{354f6007-ce20-4221-be08-cbbb8606ad36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\debug">
+      <UniqueIdentifier>{ceb52725-36bc-49ca-82d5-c6f7b4f85037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\debug\x64">
+      <UniqueIdentifier>{6595cb2e-d828-4504-b21c-b173907c7edb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -1479,6 +1485,21 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\zone-containers.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-evaluate.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-frames.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\debug-scopes.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.h">
+      <Filter>src\debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -2651,9 +2672,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8dll-main.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\v8threads.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -2662,6 +2680,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\zone.cc">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\x64\debug-x64.cc">
+      <Filter>src\debug\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug.cc">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-evaluate.cc">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-frames.cc">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\debug-scopes.cc">
+      <Filter>src\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.cc">
+      <Filter>src\debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2685,6 +2721,18 @@
     </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\OWNERS">
       <Filter>src</Filter>
+    </None>
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\debug.js">
+      <Filter>src\debug</Filter>
+    </None>
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.js">
+      <Filter>src\debug</Filter>
+    </None>
+    <None Include="..\..\..\framework\thirdparty\v8\src\debug\mirrors.js">
+      <Filter>src\debug</Filter>
+    </None>
+    <None Include="v8.def">
+      <Filter>源文件</Filter>
     </None>
   </ItemGroup>
 </Project>
