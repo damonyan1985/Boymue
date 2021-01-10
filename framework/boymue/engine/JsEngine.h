@@ -13,7 +13,7 @@ class JsRuntime {
   virtual void evaluateJs(const std::string& jsSource) = 0;
 };
 
-class JsGlobal;
+class JsInitor;
 class JsEngine {
  public:
   JsEngine();
@@ -22,7 +22,7 @@ class JsEngine {
   JsRuntime* createRuntime();
 
  private:
-  JsGlobal* m_global;
+  JsInitor* m_initor;
 };
 }  // namespace boymue
 #endif

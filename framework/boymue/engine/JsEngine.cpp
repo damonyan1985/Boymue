@@ -51,12 +51,18 @@ class JsRuntimeImpl : public JsRuntime {
     initRuntime();
   }
 
-  ~JsRuntimeImpl() { m_isolate->Dispose(); }
+  ~JsRuntimeImpl() {
+      m_context.Reset();
+      m_isolate->Dispose(); 
+  }
 
   virtual void evaluateJs(const std::string& jsSource) {
+    // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
+    // local stack
     HandleScope handle_scope(m_isolate);
     Local<Context> context = Local<Context>::New(m_isolate, m_context);
+    // Enter current context
     Context::Scope context_scope(context);
 
     // Context::Scope context_scope(context);
@@ -91,9 +97,9 @@ class JsRuntimeImpl : public JsRuntime {
   Persistent<Context> m_context;
 };
 
-class JsGlobal {
+class JsInitor {
  public:
-  JsGlobal() {
+  JsInitor() {
     // Initialize V8.
     V8::InitializeICU();
     // V8::InitializeExternalStartupData(argv[0]);
@@ -102,7 +108,7 @@ class JsGlobal {
     V8::Initialize();
   }
 
-  ~JsGlobal() {
+  ~JsInitor() {
     V8::Dispose();
     V8::ShutdownPlatform();
     delete m_platform;
@@ -111,9 +117,9 @@ class JsGlobal {
  private:
   Platform* m_platform;
 };
-JsEngine::JsEngine() : m_global(new JsGlobal()) {}
+JsEngine::JsEngine() : m_initor(new JsInitor()) {}
 
-JsEngine::~JsEngine() { delete m_global; }
+JsEngine::~JsEngine() { delete m_initor; }
 
 JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
 }  // namespace boymue
