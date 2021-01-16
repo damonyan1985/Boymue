@@ -20,6 +20,7 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
   virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
   virtual void Free(void* data, size_t) { free(data); }
 };
+
 const char* ToCString(const v8::String::Utf8Value& value) {
   return *value ? *value : "<string conversion failed>";
 }
@@ -60,10 +61,10 @@ class JsRuntimeImpl : public JsRuntime {
     // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
     // local stack
-    HandleScope handle_scope(m_isolate);
+    HandleScope handleScope(m_isolate);
     Local<Context> context = Local<Context>::New(m_isolate, m_context);
     // Enter current context
-    Context::Scope context_scope(context);
+    Context::Scope contextScope(context);
 
     // Context::Scope context_scope(context);
     // Create a string containing the JavaScript source code.
@@ -117,9 +118,11 @@ class JsInitor {
  private:
   Platform* m_platform;
 };
-JsEngine::JsEngine() : m_initor(new JsInitor()) {}
 
-JsEngine::~JsEngine() { delete m_initor; }
+// unique_ptr can be return for right reference by compiler
+JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
+
+JsEngine::~JsEngine() {}
 
 JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
 }  // namespace boymue

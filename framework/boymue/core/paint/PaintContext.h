@@ -7,6 +7,7 @@
 #include "SkCanvas.h"
 
 namespace boymue {
+// 图形绘制上下文
 class PaintContext {
  public:
   virtual void reset() = 0;

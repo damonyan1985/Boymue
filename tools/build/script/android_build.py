@@ -1,6 +1,10 @@
 import os
 
-android_dir = os.getcwd()
+current_dir = os.getcwd()
+android_dir = os.path.join(current_dir, '../../../app/android')
+
+# change workspace
+os.chdir(android_dir)
 gradle_cmd = os.path.join(android_dir, 'gradlew')
 
 build_core_library_cmd = (
@@ -12,7 +16,7 @@ build_app_cmd = (
 )
 
 install_apk_cmd = (
-    'adb install -t app/build/outputs/apk/debug/app-debug.apk'
+    f'adb install -t {android_dir}/app/build/outputs/apk/debug/app-debug.apk'
 )
 
 launch_app_cmd = (

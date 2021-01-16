@@ -5,6 +5,9 @@
 #define JsEngine_h
 
 #include <string>
+#include <memory>
+
+using namespace std;
 
 namespace boymue {
 class JsRuntime {
@@ -22,7 +25,7 @@ class JsEngine {
   JsRuntime* createRuntime();
 
  private:
-  JsInitor* m_initor;
+  unique_ptr<JsInitor> m_initor;
 };
 }  // namespace boymue
 #endif
