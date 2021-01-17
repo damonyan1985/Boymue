@@ -1881,7 +1881,6 @@ void Genesis::InstallTypedArray(const char* name, ElementsKind elements_kind,
 
 
 void Genesis::InitializeExperimentalGlobal() {
-	/*
 #define FEATURE_INITIALIZE_GLOBAL(id, descr) InitializeGlobal_##id();
 
   HARMONY_INPROGRESS(FEATURE_INITIALIZE_GLOBAL)
@@ -1889,7 +1888,7 @@ void Genesis::InitializeExperimentalGlobal() {
   HARMONY_SHIPPING(FEATURE_INITIALIZE_GLOBAL)
   FEATURE_INITIALIZE_GLOBAL(promise_extra, "")
 #undef FEATURE_INITIALIZE_GLOBAL
-*/
+
 }
 
 
@@ -2601,14 +2600,14 @@ bool Genesis::InstallNatives(GlobalContextType context_type) {
 
   InstallInternalArray(extras_utils, "InternalPackedArray", FAST_ELEMENTS);
 
-  /*
+  
   int builtin_index = Natives::GetDebuggerCount();
   // Only run prologue.js and runtime.js at this point.
   DCHECK_EQ(builtin_index, Natives::GetIndex("prologue"));
   if (!Bootstrapper::CompileBuiltin(isolate(), builtin_index++)) return false;
   DCHECK_EQ(builtin_index, Natives::GetIndex("runtime"));
   if (!Bootstrapper::CompileBuiltin(isolate(), builtin_index++)) return false;
-  */
+  
   // A thin context is ready at this point.
   if (context_type == THIN_CONTEXT) return true;
 
@@ -2641,18 +2640,18 @@ bool Genesis::InstallNatives(GlobalContextType context_type) {
   }
 
   // Run the rest of the native scripts.
-  /*
+  
   while (builtin_index < Natives::GetBuiltinsCount()) {
     if (!Bootstrapper::CompileBuiltin(isolate(), builtin_index++)) return false;
-  }*/
+  }
 
-  //if (!CallUtilsFunction(isolate(), "PostNatives")) return false;
+  if (!CallUtilsFunction(isolate(), "PostNatives")) return false;
 
   auto template_instantiations_cache = UnseededNumberDictionary::New(
       isolate(), ApiNatives::kInitialFunctionCacheSize);
   native_context()->set_template_instantiations_cache(
       *template_instantiations_cache);
-  /*
+  
   // Store the map for the %ObjectPrototype% after the natives has been compiled
   // and the Object function has been set up.
   Handle<JSFunction> object_function(native_context()->object_function());
@@ -2934,19 +2933,10 @@ bool Genesis::InstallNatives(GlobalContextType context_type) {
     }
   }
 
-  */
   return true;
 }
 
-
-
-
-
-
-
-
 bool Genesis::InstallExperimentalNatives() {
-/*
   static const char* harmony_iterator_close_natives[] = {nullptr};
   static const char* harmony_sloppy_natives[] = {nullptr};
   static const char* harmony_sloppy_function_natives[] = {nullptr};
@@ -3006,7 +2996,6 @@ bool Genesis::InstallExperimentalNatives() {
   if (!CallUtilsFunction(isolate(), "PostExperimentals")) return false;
 
   InstallExperimentalBuiltinFunctionIds();
-  */
   return true;
 }
 
@@ -3018,34 +3007,30 @@ bool Genesis::InstallExtraNatives() {
   Handle<JSObject> extras_binding =
       factory()->NewJSObject(isolate()->object_function());
   native_context()->set_extras_binding_object(*extras_binding);
-  /*
   for (int i = ExtraNatives::GetDebuggerCount();
        i < ExtraNatives::GetBuiltinsCount(); i++) {
     if (!Bootstrapper::CompileExtraBuiltin(isolate(), i)) return false;
   }
-*/
+
   return true;
 }
 
 
 bool Genesis::InstallExperimentalExtraNatives() {
-/*
   for (int i = ExperimentalExtraNatives::GetDebuggerCount();
        i < ExperimentalExtraNatives::GetBuiltinsCount(); i++) {
     if (!Bootstrapper::CompileExperimentalExtraBuiltin(isolate(), i))
       return false;
   }
 
-*/
   return true;
 }
 
 
 bool Genesis::InstallDebuggerNatives() {
-	/*
   for (int i = 0; i < Natives::GetDebuggerCount(); ++i) {
     if (!Bootstrapper::CompileBuiltin(isolate(), i)) return false;
-  }*/
+  }
   return CallUtilsFunction(isolate(), "PostDebug");
 }
 

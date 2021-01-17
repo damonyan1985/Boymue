@@ -115,6 +115,9 @@
     <Filter Include="src\debug\x64">
       <UniqueIdentifier>{6595cb2e-d828-4504-b21c-b173907c7edb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gen">
+      <UniqueIdentifier>{24a07ac2-2344-4c08-a654-4d487d64a766}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -2330,9 +2333,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\natives-common.cc">
       <Filter>src\snapshot</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\natives-external.cc">
-      <Filter>src\snapshot</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\partial-serializer.cc">
       <Filter>src\snapshot</Filter>
     </ClCompile>
@@ -2343,9 +2343,6 @@
       <Filter>src\snapshot</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-common.cc">
-      <Filter>src\snapshot</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-external.cc">
       <Filter>src\snapshot</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-source-sink.cc">
@@ -2699,6 +2696,21 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.cc">
       <Filter>src\debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\experimental-extras-libraries.cc">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\experimental-libraries.cc">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\extras-libraries.cc">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\libraries.cc">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-empty.cc">
+      <Filter>src\snapshot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\framework\thirdparty\v8\src\compiler\OWNERS">
@@ -2709,9 +2721,6 @@
     </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\interpreter\OWNERS">
       <Filter>src\interpreter</Filter>
-    </None>
-    <None Include="..\..\..\framework\thirdparty\v8\src\third_party\fdlibm\fdlibm.js">
-      <Filter>src\third_party\fdlibm</Filter>
     </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\base.isolate">
       <Filter>src</Filter>

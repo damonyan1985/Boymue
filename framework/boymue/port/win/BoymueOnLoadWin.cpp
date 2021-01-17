@@ -80,7 +80,7 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   s_engine = new boymue::JsEngine();
   boymue::JsRuntime* runtime = s_engine->createRuntime();
 
-  runtime->evaluateJs("function test(a, b) { let arr = [0, 1, 2];print('test arr length='+arr.length);return a * b * arr[2];} print(test(2, 3));");
+  runtime->evaluateJs("function test(a, b) { let arr = [0, 1, 2];arr.push(5);print('test arr length='+arr.length);return a * b * arr[2];} print(test(2, 3));");
 }
 
 void BoymueOnLoadWin::repaint() {

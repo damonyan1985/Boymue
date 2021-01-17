@@ -31,9 +31,8 @@ library_files = [
     f'{v8_project_path}/src/js/json.js',
     f'{v8_project_path}/src/js/array-iterator.js',
     f'{v8_project_path}/src/js/string-iterator.js',
-    f'{v8_project_path}/src/js/templates.js',
+    # f'{v8_project_path}/src/js/templates.js',
     f'{v8_project_path}/src/js/spread.js',
-    f'{v8_project_path}/src/js/proxy.js',
     f'{v8_project_path}/src/debug/mirrors.js',
     f'{v8_project_path}/src/debug/debug.js',
     f'{v8_project_path}/src/debug/liveedit.js',
@@ -42,6 +41,7 @@ library_files = [
 experimental_library_files = [
     f'{v8_project_path}/src/js/macros.py',
     f'{v8_project_path}/src/messages.h',
+    f'{v8_project_path}/src/js/proxy.js',
     f'{v8_project_path}/src/js/generator.js',
     f'{v8_project_path}/src/js/harmony-atomics.js',
     f'{v8_project_path}/src/js/harmony-regexp-exec.js',
@@ -75,6 +75,7 @@ concatenate_natives_blob_cmd = f'{python_version_cmd} concatenate-files.py {targ
 
 
 def exec_libraries_bin_cmd():
+    print('===begin build library===')
     library_cc_gen_cmd = library_cc_gen_cmd_head + ' '.join(library_files)
     global library_bin_gen_cmd
     library_bin_gen_cmd = library_cc_gen_cmd_head + \
@@ -85,19 +86,24 @@ def exec_libraries_bin_cmd():
 
     print(library_bin_gen_cmd + '\n')
     os.system(library_bin_gen_cmd)
+    print('===end build library===')
 
 
 def exec_experimental_library_bin_cmd():
+    print('===begin build experimental library===')
     experimental_library_cc_cmd = experimental_library_cc_cmd_head + \
         ' '.join(experimental_library_files)
+    print(experimental_library_cc_cmd + '\n')
     os.system(experimental_library_cc_cmd)
     experimental_library_bin_cmd = experimental_library_cc_cmd_head + \
         ' '.join(library_files) + \
         f' --startup_blob {target_out_path}/libraries-experimental.bin --nojs'
     os.system(experimental_library_bin_cmd)
+    print('===end build experimental library===')
 
 
 def exec_extras_libraries_bin_cmd():
+    print('===begin build extras library===')
     extras_libraries_cc_cmd = extras_libraries_cc_cmd_head + \
         ' '.join(v8_extra_library_files)
     print(extras_libraries_cc_cmd + '\n')
@@ -108,9 +114,11 @@ def exec_extras_libraries_bin_cmd():
         f' --startup_blob {target_out_path}/libraries-extras.bin --nojs'
     print(extras_libraries_bin_cmd + '\n')
     os.system(extras_libraries_bin_cmd)
+    print('===end build extras library===')
 
 
 def exec_experimental_extra_library_bin_cmd():
+    print('===begin build experimental extras library===')
     experimental_extra_library_cc_cmd = experimental_extra_library_cc_cmd_head + \
         ' '.join(v8_experimental_extra_library_files)
     print(experimental_extra_library_cc_cmd + '\n')
@@ -120,6 +128,7 @@ def exec_experimental_extra_library_bin_cmd():
         f' --startup_blob {target_out_path}/libraries-experimental-extras.bin --nojs'
     print(experimental_extra_library_bin_cmd + '\n')
     os.system(experimental_extra_library_bin_cmd)
+    print('===end build experimental extras library===')
 
 
 def exec_natives_blob_bin_cmd():

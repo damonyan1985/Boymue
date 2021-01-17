@@ -89,7 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;V8_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;BUILDING_V8_SHARED;WIN32;V8_TARGET_ARCH_X64=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;V8_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;BUILDING_V8_SHARED;WIN32;V8_TARGET_ARCH_X64=1;V8_USE_EXTERNAL_STARTUP_DATA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\v8\include;$(BOYMUE_ROOT)\framework\thirdparty\v8\src;$(BOYMUE_ROOT)\framework\thirdparty\v8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -625,6 +625,10 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\experimental-extras-libraries.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\experimental-libraries.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\extras-libraries.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\gen\libraries.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\accessors.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\address-map.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\allocation-site-scopes.cc" />
@@ -984,12 +988,11 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\code-serializer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\deserializer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\natives-common.cc" />
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\natives-external.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\partial-serializer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\serializer-common.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\serializer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-common.cc" />
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-external.cc" />
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-empty.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-source-sink.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\startup-serializer.cc" />
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\startup-data-util.cc" />
@@ -1040,7 +1043,6 @@
     <None Include="..\..\..\framework\thirdparty\v8\src\DEPS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\interpreter\OWNERS" />
     <None Include="..\..\..\framework\thirdparty\v8\src\OWNERS" />
-    <None Include="..\..\..\framework\thirdparty\v8\src\third_party\fdlibm\fdlibm.js" />
     <None Include="v8.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
