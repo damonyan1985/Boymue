@@ -588,6 +588,8 @@ def WriteStartupBlob(sources, startup_blob):
 
 
 def JS2C(sources, target, native_type, raw_file, startup_blob, emit_js):
+    print('execute JS2C')
+    print(sources)
     prepared_sources = PrepareSources(sources, native_type, emit_js)
     sources_output = "".join(prepared_sources.modules)
     metadata = BuildMetadata(prepared_sources, sources_output, native_type)

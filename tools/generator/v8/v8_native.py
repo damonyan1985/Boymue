@@ -95,8 +95,9 @@ def exec_experimental_library_bin_cmd():
         ' '.join(experimental_library_files)
     print(experimental_library_cc_cmd + '\n')
     os.system(experimental_library_cc_cmd)
+
     experimental_library_bin_cmd = experimental_library_cc_cmd_head + \
-        ' '.join(library_files) + \
+        ' '.join(experimental_library_files) + \
         f' --startup_blob {target_out_path}/libraries-experimental.bin --nojs'
     os.system(experimental_library_bin_cmd)
     print('===end build experimental library===')
