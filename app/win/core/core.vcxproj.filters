@@ -49,6 +49,9 @@
     <Filter Include="engine">
       <UniqueIdentifier>{5f7fc4b7-ca56-47a5-994b-52a4f521dae1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="apis">
+      <UniqueIdentifier>{5bdfa8a5-d530-450b-9bc1-58ead3cb424a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -93,6 +96,12 @@
     <ClInclude Include="..\..\..\framework\boymue\engine\JsEngine.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\engine\JsApiInterface.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsLogApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -130,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\engine\JsEngine.cpp">
       <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsLogApi.cpp">
+      <Filter>apis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
