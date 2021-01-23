@@ -1,7 +1,7 @@
 /*
-* Author damonyan
-* All Copyright reserved
-*/
+ * Author damonyan
+ * All Copyright reserved
+ */
 
 #ifndef BoymueOnLoadWin_h
 #define BoymueOnLoadWin_h
@@ -17,9 +17,9 @@
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 class BOYMUE_PORTING_API BoymueOnLoadWin {
-public:
-    static void initWindow(HWND hwnd, int width, int height);
-    static void repaint();
+ public:
+  static void initWindow(HWND hwnd, int width, int height);
+  static void repaint();
 };
 
-#endif // !BoymueOnLoadWin_h
+#endif  // !BoymueOnLoadWin_h

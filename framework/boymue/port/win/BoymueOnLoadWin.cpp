@@ -6,6 +6,7 @@
 
 #include "BoymueView.h"
 #include "JsEngine.h"
+#include "JsLogApi.h"
 #include "PaintContextWin.h"
 #include "SkBitmap.h"
 #include "SkCanvas.h"
@@ -13,7 +14,6 @@
 #include "SkSurface.h"
 #include "TaskThread.h"
 #include "Thread.h"
-#include "JsLogApi.h"
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
@@ -81,7 +81,10 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   s_engine = new boymue::JsEngine();
   boymue::JsRuntime* runtime = s_engine->createRuntime();
   runtime->registerApi(new boymue::JsLogApi());
-  runtime->evaluateJs("function test(a, b) { let arr = [0, 1, 2];arr.push(5);boymue.log('test arr length='+arr.length);return a * b * arr[2];} boymue.log(test(2, 3));");
+  runtime->evaluateJs(
+      "function test(a, b) { let arr = [0, 1, 2];arr.push(5);boymue.log('test "
+      "arr length='+arr.length);return a * b * arr[2];} boymue.log(test(2, "
+      "3));");
 }
 
 void BoymueOnLoadWin::repaint() {

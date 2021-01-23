@@ -68,7 +68,15 @@
 
 /* If we didn't define it above, define it away: */
 #ifndef XMLIMPORT
+#if defined(_WINDOWS)
+#if defined(EXPAT_DLL)
+#define XMLIMPORT __declspec(dllexport)
+#else
+#define XMLIMPORT __declspec(dllimport)
+#endif
+#else 
 #define XMLIMPORT
+#endif
 #endif
 
 

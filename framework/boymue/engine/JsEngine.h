@@ -15,7 +15,7 @@ class JsRuntime {
  public:
   virtual ~JsRuntime() {}
   virtual void evaluateJs(const std::string& jsSource) = 0;
-  virtual void registerApi(JsApiInterface* handler) = 0;
+  virtual void registerApi(JsApiInterface* api) = 0;
 };
 
 class JsInitor;

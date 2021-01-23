@@ -7,7 +7,7 @@
 namespace boymue {
 class TaskThread : public Thread {
 public:
-    TaskThread();
+    TaskThread(const std::string& name);
     virtual ~TaskThread();
 
     TaskRunner& getTaskRunner() const;

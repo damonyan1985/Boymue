@@ -16,12 +16,6 @@
     <Filter Include="thread">
       <UniqueIdentifier>{d1412a39-d2cc-4ef9-bb10-788eb573e3e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core">
-      <UniqueIdentifier>{8bee3af1-f283-47f5-a0d7-8502d50d9df5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="core\view">
-      <UniqueIdentifier>{e76db31f-aa8e-4298-8a04-857709e834e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="platform">
       <UniqueIdentifier>{30f606fd-4f11-4ef9-8130-0d84d585cf29}</UniqueIdentifier>
     </Filter>
@@ -40,9 +34,6 @@
     <Filter Include="thread\task">
       <UniqueIdentifier>{7f6004f5-ea06-4de4-ad08-23db371fe860}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\paint">
-      <UniqueIdentifier>{48f5d6b4-4e2e-47af-9e81-ad11190921f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="platform\win">
       <UniqueIdentifier>{5880a741-7c3e-4c8f-8062-35292ba3af68}</UniqueIdentifier>
     </Filter>
@@ -51,6 +42,21 @@
     </Filter>
     <Filter Include="apis">
       <UniqueIdentifier>{5bdfa8a5-d530-450b-9bc1-58ead3cb424a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{8bee3af1-f283-47f5-a0d7-8502d50d9df5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\view">
+      <UniqueIdentifier>{e76db31f-aa8e-4298-8a04-857709e834e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\paint">
+      <UniqueIdentifier>{48f5d6b4-4e2e-47af-9e81-ad11190921f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\render">
+      <UniqueIdentifier>{dadf0aac-f852-4c2f-8aac-6bae5b4a4ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\dom">
+      <UniqueIdentifier>{34fac322-0219-44a2-b2d7-8056c466d66f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +108,15 @@
     <ClInclude Include="..\..\..\framework\boymue\apis\JsLogApi.h">
       <Filter>apis</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\thread\ThreadExecutor.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\Document.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\DomTags.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -142,6 +157,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\apis\JsLogApi.cpp">
       <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\thread\ThreadExecutor.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\Document.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\DomTags.cpp">
+      <Filter>core\dom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

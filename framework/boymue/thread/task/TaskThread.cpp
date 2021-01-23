@@ -1,7 +1,8 @@
 #include "TaskThread.h"
 
 namespace boymue {
-TaskThread::TaskThread()
+TaskThread::TaskThread(const std::string& name)
+    : Thread(name)
 {
 }
 

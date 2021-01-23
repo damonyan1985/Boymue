@@ -16,12 +16,11 @@ using TaskQueue = std::priority_queue<Task,
 class TaskRunner {
 public:
     TaskRunner();
-
     void postTask(const closure& task);
-    // Thread loop
-    void loop();
 
 private:
+    // Thread loop
+    void loop();
     // guard queue
     mutable std::mutex m_mutex;
     // wait for task
@@ -29,6 +28,8 @@ private:
     TaskQueue m_queue;
     size_t m_order;
     bool m_status;
+
+    friend class TaskThread;
 };
 }
 #endif

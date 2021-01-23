@@ -51,10 +51,22 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
   JsApiInterface* jsApi = static_cast<JsApiInterface*>(data->Value());
 
   HandleScope handleScope(args.GetIsolate());
-  String::Utf8Value str(args[0]);
+  //String::Utf8Value str(args[0]);
+  if (!jsApi) {
+      args.GetReturnValue().SetUndefined();
+      return;
+  }
 
-  if (jsApi) {
-      jsApi->execute(*str, new JsApiCallbackImpl(args));
+  closure task = [jsApi, args] {
+      if (jsApi) {
+          String::Utf8Value str(args[0]);
+          jsApi->execute(*str, new JsApiCallbackImpl(args));
+      }
+  };
+  if (jsApi->executor()) {
+      jsApi->executor()->submitTask(task);
+  } else {
+      task();
   }
 }
 

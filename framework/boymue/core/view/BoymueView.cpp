@@ -4,7 +4,7 @@
 #include "BoymueView.h"
 
 namespace boymue {
-BoymueView::BoymueView() { m_uiThread.start(); }
+BoymueView::BoymueView() : m_uiThread("ui_thread") { m_uiThread.start(); }
 
 TaskRunner& BoymueView::getTaskRunner() const {
   return m_uiThread.getTaskRunner();

@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;CORE_EXPORTS;_WINDOWS;_USRDLL;SKIA_DLL;WIN32;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\config;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty;$(BOYMUE_ROOT)\framework\thirdparty\v8;$(BOYMUE_ROOT)\framework\thirdparty\v8\include;$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\core\paint;$(BOYMUE_ROOT)\framework\boymue\platform\win;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;$(BOYMUE_ROOT)\framework\boymue\thread\task;$(BOYMUE_ROOT)\framework\boymue\engine;$(BOYMUE_ROOT)\framework\boymue\apis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\skia\include\core;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\config;$(BOYMUE_ROOT)\framework\thirdparty\skia\include\utils;$(BOYMUE_ROOT)\framework\thirdparty\expat;$(BOYMUE_ROOT)\framework\thirdparty\expat\lib;$(BOYMUE_ROOT)\framework\thirdparty;$(BOYMUE_ROOT)\framework\thirdparty\v8;$(BOYMUE_ROOT)\framework\thirdparty\v8\include;$(BOYMUE_ROOT)\framework\boymue\core\view;$(BOYMUE_ROOT)\framework\boymue\core\dom;$(BOYMUE_ROOT)\framework\boymue\core\render;$(BOYMUE_ROOT)\framework\boymue\core\paint;$(BOYMUE_ROOT)\framework\boymue\platform\win;$(BOYMUE_ROOT)\framework\boymue\thread;$(BOYMUE_ROOT)\framework\boymue\thread\event;$(BOYMUE_ROOT)\framework\boymue\thread\time;$(BOYMUE_ROOT)\framework\boymue\thread\task;$(BOYMUE_ROOT)\framework\boymue\engine;$(BOYMUE_ROOT)\framework\boymue\apis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -119,7 +119,7 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(BOYMUE_ROOT)\app\win\app\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>skia.lib;v8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>skia.lib;v8.lib;expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,6 +166,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\framework\boymue\apis\JsLogApi.h" />
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\Document.h" />
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\DomTags.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\paint\PaintContext.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\view\BoymueView.h" />
     <ClInclude Include="..\..\..\framework\boymue\engine\JsEngine.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskRunner.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\task\TaskThread.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\Thread.h" />
+    <ClInclude Include="..\..\..\framework\boymue\thread\ThreadExecutor.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\time\TimeDelta.h" />
     <ClInclude Include="..\..\..\framework\boymue\thread\time\TimePoint.h" />
     <ClInclude Include="framework.h" />
@@ -184,6 +187,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\framework\boymue\apis\JsLogApi.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\Document.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\DomTags.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\view\BoymueView.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\engine\JsEngine.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\platform\win\PaintContextWin.cpp" />
@@ -193,6 +198,7 @@
     <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskRunner.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\task\TaskThread.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\Thread.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\thread\ThreadExecutor.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\thread\time\TimePoint.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

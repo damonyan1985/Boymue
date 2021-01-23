@@ -106,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;HAVE_EXPAT_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;EXPAT_EXPORTS;_WINDOWS;_USRDLL;HAVE_EXPAT_CONFIG_H;XML_BUILDING_EXPAT=1;EXPAT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\expat;$(BOYMUE_ROOT)\framework\thirdparty\expat\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
