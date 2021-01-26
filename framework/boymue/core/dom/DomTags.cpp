@@ -20,6 +20,8 @@ void DomTags::initDomTags() {
     m_map["radio"] = DomTags::kRadio;
     m_map["image"] = DomTags::kImage;
     m_map["text"] = DomTags::kText;
+    m_map["input"] = DomTags::kInput;
+    m_map["icon"] = DomTags::kIcon;
 }
 
 int DomTags::getTag(const std::string& key)

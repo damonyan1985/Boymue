@@ -13,6 +13,7 @@
 namespace boymue {
 class PaintContextWin : public PaintContext {
  public:
+  ~PaintContextWin();
   void initContext(HWND hwnd, int width, int height);
   virtual void reset();
   virtual SkCanvas* canvas();

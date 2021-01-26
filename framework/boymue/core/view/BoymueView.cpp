@@ -4,9 +4,8 @@
 #include "BoymueView.h"
 
 namespace boymue {
-BoymueView::BoymueView() : m_uiThread("ui_thread") { m_uiThread.start(); }
-
-TaskRunner& BoymueView::getTaskRunner() const {
-  return m_uiThread.getTaskRunner();
+BoymueView::BoymueView()
+  : m_document(std::make_unique<Document>()) {
 }
+
 }  // namespace boymue

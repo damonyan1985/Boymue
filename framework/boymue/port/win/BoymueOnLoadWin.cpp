@@ -14,19 +14,31 @@
 #include "SkSurface.h"
 #include "TaskThread.h"
 #include "Thread.h"
+#include "BoymueApplication.h"
+#include "SkPictureRecorder.h"
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 class UIRuntime {
  public:
-  UIRuntime(boymue::PaintContextWin* painer) : m_painter(painer) {}
+  UIRuntime(boymue::PaintContextWin* painter, int width, int height) 
+      : m_painter(painter)
+      , m_width(width)
+      , m_height(height)
+  {}
 
   virtual void run() {
     SkCanvas* canvas = m_painter->canvas();
 
     canvas->clear(SK_ColorWHITE);
 
-    Draw(canvas);
+    SkPictureRecorder recorder;
+    SkCanvas* recorderCanvas = recorder.beginRecording(m_width, m_height, NULL, 0);
+    Draw(recorderCanvas);
+    SkPicture* picture = recorder.endRecording();
+    canvas->drawPicture(picture);
+    picture->unref();
+    canvas->unref();
 
     m_painter->submit();
   }
@@ -64,19 +76,21 @@ class UIRuntime {
 
  private:
   boymue::PaintContextWin* m_painter;
+  int m_width;
+  int m_height;
 };
 
 static UIRuntime* s_uiRuntime;
-static boymue::BoymueView* s_view;
+static boymue::BoymueApplication* s_app;
 static boymue::JsEngine* s_engine;
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   boymue::PaintContextWin* painter = new boymue::PaintContextWin();
   painter->initContext(hwnd, width, height);
-  s_uiRuntime = new UIRuntime(painter);
-  s_view = new boymue::BoymueView();
+  s_uiRuntime = new UIRuntime(painter, width, height);
+  s_app = new boymue::BoymueApplication();
 
-  s_view->getTaskRunner().postTask([=] { s_uiRuntime->run(); });
+  s_app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
 
   s_engine = new boymue::JsEngine();
   boymue::JsRuntime* runtime = s_engine->createRuntime();
@@ -88,5 +102,5 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
 }
 
 void BoymueOnLoadWin::repaint() {
-  s_view->getTaskRunner().postTask([=] { s_uiRuntime->repaint(); });
+  s_app->getUITaskRunner().postTask([=] { s_uiRuntime->repaint(); });
 }

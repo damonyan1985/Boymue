@@ -4,17 +4,16 @@
 #ifndef BoymueView_h
 #define BoymueView_h
 
-#include "TaskThread.h"
+#include "Document.h"
+#include <memory>
 
 namespace boymue {
 class BoymueView {
  public:
   BoymueView();
 
-  TaskRunner& getTaskRunner() const;
-
  private:
-  TaskThread m_uiThread;
+  std::unique_ptr<Document> m_document;
 };
 }  // namespace boymue
 #endif

@@ -18,6 +18,7 @@ public:
         kText,
         kRadio,
         kCheckBox,
+        kInput,
         kIcon,
     };
 

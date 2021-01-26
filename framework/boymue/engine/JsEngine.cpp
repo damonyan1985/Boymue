@@ -28,6 +28,7 @@ class JsApiCallbackImpl : public JsApiCallback {
       : m_args(args) {}
 
   // 回调可能是异步的，因此需要设置Scope
+  // TODO callback中的内容必须回调给JS线程
   virtual void callback(const std::string& result) {
     Isolate* isolate = m_args.GetIsolate();
     Isolate::Scope isolateScope(isolate);
@@ -51,22 +52,22 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
   JsApiInterface* jsApi = static_cast<JsApiInterface*>(data->Value());
 
   HandleScope handleScope(args.GetIsolate());
-  //String::Utf8Value str(args[0]);
+  // String::Utf8Value str(args[0]);
   if (!jsApi) {
-      args.GetReturnValue().SetUndefined();
-      return;
+    args.GetReturnValue().SetUndefined();
+    return;
   }
 
   closure task = [jsApi, args] {
-      if (jsApi) {
-          String::Utf8Value str(args[0]);
-          jsApi->execute(*str, new JsApiCallbackImpl(args));
-      }
+    if (jsApi) {
+      String::Utf8Value str(args[0]);
+      jsApi->execute(*str, new JsApiCallbackImpl(args));
+    }
   };
   if (jsApi->executor()) {
-      jsApi->executor()->submitTask(task);
+    jsApi->executor()->submitTask(task);
   } else {
-      task();
+    task();
   }
 }
 
@@ -79,8 +80,9 @@ static void JsGlobalObjectAccessor(Local<String> property,
 class JsRuntimeImpl : public JsRuntime {
  public:
   JsRuntimeImpl() {
+    m_arrayBufferAllocator = new ArrayBufferAllocator;
     Isolate::CreateParams create_params;
-    create_params.array_buffer_allocator = new ArrayBufferAllocator;
+    create_params.array_buffer_allocator = m_arrayBufferAllocator;
     m_isolate = Isolate::New(create_params);
 
     initRuntime();
@@ -89,6 +91,7 @@ class JsRuntimeImpl : public JsRuntime {
   ~JsRuntimeImpl() {
     m_context.Reset();
     m_isolate->Dispose();
+    delete m_arrayBufferAllocator;
   }
 
   virtual void registerApi(JsApiInterface* api) {
@@ -152,6 +155,7 @@ class JsRuntimeImpl : public JsRuntime {
   Isolate* m_isolate;
   Persistent<Context> m_context;
   Persistent<Object> m_global;
+  ArrayBufferAllocator* m_arrayBufferAllocator;
 };
 
 class JsInitor {

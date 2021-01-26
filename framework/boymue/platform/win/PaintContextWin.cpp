@@ -6,6 +6,11 @@
 #include "SkSurface.h"
 
 namespace boymue {
+PaintContextWin::~PaintContextWin() {
+  if (m_surface) {
+    m_surface->unref();
+  }
+}
 
 void PaintContextWin::initContext(HWND hwnd, int width, int height) {
   m_hwnd = hwnd;
@@ -36,6 +41,7 @@ void PaintContextWin::initContext(HWND hwnd, int width, int height) {
 void PaintContextWin::reset() {}
 
 SkCanvas* PaintContextWin::canvas() { return m_surface->getCanvas(); }
+
 void PaintContextWin::submit() {
   HDC hdc = GetDC(m_hwnd);
   RECT rt;

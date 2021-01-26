@@ -52,11 +52,17 @@
     <Filter Include="core\paint">
       <UniqueIdentifier>{48f5d6b4-4e2e-47af-9e81-ad11190921f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\render">
-      <UniqueIdentifier>{dadf0aac-f852-4c2f-8aac-6bae5b4a4ef2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core\dom">
       <UniqueIdentifier>{34fac322-0219-44a2-b2d7-8056c466d66f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\css">
+      <UniqueIdentifier>{fb0735c6-0a3f-43aa-b6e5-c741517824c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\layout">
+      <UniqueIdentifier>{dadf0aac-f852-4c2f-8aac-6bae5b4a4ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\app">
+      <UniqueIdentifier>{09f4dbc6-1ef4-4d34-b52c-48940bb4167f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +123,21 @@
     <ClInclude Include="..\..\..\framework\boymue\core\dom\DomTags.h">
       <Filter>core\dom</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\DocumentElement.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\ViewElement.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\TextElement.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\layout\TextLayout.h">
+      <Filter>core\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\app\BoymueApplication.h">
+      <Filter>core\app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -166,6 +187,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\dom\DomTags.cpp">
       <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\TextElement.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\DocumentElement.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\ViewElement.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\app\BoymueApplication.cpp">
+      <Filter>core\app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
