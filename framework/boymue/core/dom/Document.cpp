@@ -2,7 +2,7 @@
 // Author yanbo on 2021.01.23
 
 #include "Document.h"
-
+#include "ViewElement.h"
 #include "DomTags.h"
 #include "expat.h"
 
@@ -43,6 +43,21 @@ void Document::initDocument(const std::string& content) {
 
 DocumentElement* Document::createElement(int tag, const char** atts,
                                          DocumentElement* parent) {
+    DocumentElement* element = nullptr;
+    switch (tag)
+    {
+    case DomTags::kView:
+        element = new ViewElement();
+        break;
+    case DomTags::kImage:
+    default:
+        break;
+    }
+
+    if (parent) {
+        parent->addChild(element);
+    }
+
   return nullptr;
 }
 

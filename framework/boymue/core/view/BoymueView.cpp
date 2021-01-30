@@ -7,7 +7,7 @@
 namespace boymue {
 BoymueView::BoymueView(BoymueApplication* context)
   : m_context(context)
-  , m_document(std::make_unique<Document>()) {
+  , m_root(std::make_unique<Layout>()) {
 }
 
 }  // namespace boymue

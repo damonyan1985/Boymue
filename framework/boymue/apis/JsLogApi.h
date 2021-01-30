@@ -9,9 +9,9 @@ namespace boymue {
 class JsLogApi : public JsApiInterface {
  public:
   JsLogApi(BoymueApplication* context);
-  virtual const char* name() const;
-  virtual BoymueApplication* context() const;
-  virtual void execute(const std::string& params, JsApiCallback* callback);
+  virtual const char* name() const override;
+  virtual BoymueApplication* context() const override;
+  virtual void execute(const std::string& params, JsApiCallback* callback) override;
 
  private:
   BoymueApplication* m_context;

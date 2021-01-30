@@ -4,7 +4,7 @@
 #ifndef BoymueView_h
 #define BoymueView_h
 
-#include "Document.h"
+#include "Layout.h"
 #include <memory>
 
 namespace boymue {
@@ -15,7 +15,7 @@ class BoymueView {
 
  private:
   BoymueApplication* m_context;
-  std::unique_ptr<Document> m_document;
+  std::unique_ptr<Layout> m_root;
 };
 }  // namespace boymue
 #endif

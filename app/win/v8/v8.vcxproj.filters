@@ -16,6 +16,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{d8f6d36a-ffe4-4407-8a2c-eb4f9343b522}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gen">
+      <UniqueIdentifier>{24a07ac2-2344-4c08-a654-4d487d64a766}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{078d8832-9343-4280-bc08-10ac633f0aeb}</UniqueIdentifier>
     </Filter>
@@ -114,9 +117,6 @@
     </Filter>
     <Filter Include="src\debug\x64">
       <UniqueIdentifier>{6595cb2e-d828-4504-b21c-b173907c7edb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gen">
-      <UniqueIdentifier>{24a07ac2-2344-4c08-a654-4d487d64a766}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,9 @@
 #ifndef TextLayout_h
 #define TextLayout_h
 
+#include "Layout.h"
+
 namespace boymue {
-class TextLayout {};
+class TextLayout : public Layout {};
 }  // namespace boymue
 #endif  // !TextLayout_h
