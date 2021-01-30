@@ -19,4 +19,9 @@ void TaskThread::run()
 {
     m_runner.loop();
 }
+
+void TaskThread::terminate()
+{
+    m_runner.m_status = false;
+}
 }

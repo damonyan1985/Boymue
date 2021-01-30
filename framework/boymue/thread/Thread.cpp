@@ -8,10 +8,13 @@ Thread::Thread(const std::string& name)
 {
 }
 
+Thread::~Thread() {
+    m_thread->join();
+}
+
 void Thread::start() 
 {
     m_thread = std::make_unique<std::thread>(&Thread::startThread, this);
-    m_thread->detach();
 }
 
 void Thread::startThread(void* ptr)

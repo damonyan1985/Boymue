@@ -4,28 +4,25 @@
 
 #include <string>
 
+#include "BoymueApplication.h"
 #include "BoymueView.h"
 #include "JsEngine.h"
 #include "JsLogApi.h"
 #include "PaintContextWin.h"
 #include "SkBitmap.h"
 #include "SkCanvas.h"
+#include "SkPictureRecorder.h"
 #include "SkString.h"
 #include "SkSurface.h"
 #include "TaskThread.h"
 #include "Thread.h"
-#include "BoymueApplication.h"
-#include "SkPictureRecorder.h"
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 class UIRuntime {
  public:
-  UIRuntime(boymue::PaintContextWin* painter, int width, int height) 
-      : m_painter(painter)
-      , m_width(width)
-      , m_height(height)
-  {}
+  UIRuntime(boymue::PaintContextWin* painter, int width, int height)
+      : m_painter(painter), m_width(width), m_height(height) {}
 
   virtual void run() {
     SkCanvas* canvas = m_painter->canvas();
@@ -33,7 +30,8 @@ class UIRuntime {
     canvas->clear(SK_ColorWHITE);
 
     SkPictureRecorder recorder;
-    SkCanvas* recorderCanvas = recorder.beginRecording(m_width, m_height, NULL, 0);
+    SkCanvas* recorderCanvas =
+        recorder.beginRecording(m_width, m_height, NULL, 0);
     Draw(recorderCanvas);
     SkPicture* picture = recorder.endRecording();
     canvas->drawPicture(picture);
@@ -92,10 +90,11 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
 
   s_app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
 
-  s_engine = new boymue::JsEngine();
-  boymue::JsRuntime* runtime = s_engine->createRuntime();
-  runtime->registerApi(new boymue::JsLogApi());
-  runtime->evaluateJs(
+  // s_engine = new boymue::JsEngine();
+  // boymue::JsRuntime* runtime = s_engine->createRuntime();
+  // runtime->registerApi(new boymue::JsLogApi());
+
+  s_app->evaluateJs(
       "function test(a, b) { let arr = [0, 1, 2];arr.push(5);boymue.log('test "
       "arr length='+arr.length);return a * b * arr[2];} boymue.log(test(2, "
       "3));");

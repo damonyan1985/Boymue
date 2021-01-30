@@ -13,6 +13,7 @@ public:
     TaskRunner& getTaskRunner() const;
 
     virtual void run();
+    virtual void terminate();
 
 private:
     mutable TaskRunner m_runner;

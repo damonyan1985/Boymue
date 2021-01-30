@@ -9,6 +9,7 @@
 namespace boymue {
 // expat淡疼的一点是在多线程中调用会有问题，后期可以用threadlocal改造一下这个开源库
 // 或者部分重写
+// 处理标签开始
 static void XMLCALL OnStartElement(void* dom, const char* name,
                                    const char** atts) {
   Document* document = static_cast<Document*>(dom);
@@ -17,10 +18,12 @@ static void XMLCALL OnStartElement(void* dom, const char* name,
   stack->push(document->createElement(tag, atts, stack->top()));
 }
 
+// 处理标签结束
 static void XMLCALL OnEndElement(void* dom, const char* name) {
   static_cast<Document*>(dom)->getParseStack()->pop();
 }
 
+// 处理文本
 static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
   TextElement* element = new TextElement(text);
   DocumentElement* parent = static_cast<Document*>(dom)->getParseStack()->top();

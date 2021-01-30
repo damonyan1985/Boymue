@@ -8,6 +8,7 @@
 #include "ThreadExecutor.h"
 
 namespace boymue {
+class BoymueApplication;
 // Api回调
 class JsApiCallback {
 public:
@@ -18,6 +19,7 @@ class JsApiInterface {
  public:
   virtual ~JsApiInterface(){};
   virtual const char* name() const = 0;
+  virtual BoymueApplication* context() const = 0;
   virtual ThreadExecutor* executor() { return nullptr;  }
   virtual void execute(const std::string& params, JsApiCallback* callback) = 0;
 };

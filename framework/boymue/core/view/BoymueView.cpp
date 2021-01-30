@@ -2,10 +2,12 @@
 // Author yanbo on 2021.01.09
 
 #include "BoymueView.h"
+#include "BoymueApplication.h"
 
 namespace boymue {
-BoymueView::BoymueView()
-  : m_document(std::make_unique<Document>()) {
+BoymueView::BoymueView(BoymueApplication* context)
+  : m_context(context)
+  , m_document(std::make_unique<Document>()) {
 }
 
 }  // namespace boymue

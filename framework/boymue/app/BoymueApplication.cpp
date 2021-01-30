@@ -2,6 +2,7 @@
 // Author boymue on 2021.01.26
 
 #include "BoymueApplication.h"
+#include "JsLogApi.h"
 
 namespace boymue {
 int BoymueApplication::s_applicationId = 0;
@@ -11,12 +12,33 @@ BoymueApplication::BoymueApplication()
       m_uiThread("ui_thread_" + m_appId),
       m_ioThread("io_thread_" + m_appId),
       m_jsThread("js_thread_" + m_appId) {
+  m_jsEngine = std::make_unique<JsEngine>();
+
   m_uiThread.start();
   m_ioThread.start();
   m_jsThread.start();
 
   getUITaskRunner().postTask(
-      [self = this] { self->m_view = std::make_unique<BoymueView>(); });
+      [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
+
+  getJSTaskRunner().postTask([self = this] {
+    self->m_mainRuntime =
+        std::unique_ptr<JsRuntime>(self->m_jsEngine->createRuntime());
+    self->m_mainRuntime->registerApi(new boymue::JsLogApi(self));
+  });
+}
+
+void BoymueApplication::evaluateJs(const std::string& jsSource) {
+    getJSTaskRunner().postTask([=] {
+        this->m_mainRuntime->evaluateJs(jsSource);
+    });
+}
+
+// 结束当前应用的线程
+BoymueApplication::~BoymueApplication() {
+  m_uiThread.terminate();
+  m_ioThread.terminate();
+  m_jsThread.terminate();
 }
 
 TaskRunner& BoymueApplication::getUITaskRunner() const {

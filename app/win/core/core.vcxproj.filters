@@ -55,14 +55,14 @@
     <Filter Include="core\dom">
       <UniqueIdentifier>{34fac322-0219-44a2-b2d7-8056c466d66f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\css">
-      <UniqueIdentifier>{fb0735c6-0a3f-43aa-b6e5-c741517824c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core\layout">
       <UniqueIdentifier>{dadf0aac-f852-4c2f-8aac-6bae5b4a4ef2}</UniqueIdentifier>
     </Filter>
     <Filter Include="core\app">
       <UniqueIdentifier>{09f4dbc6-1ef4-4d34-b52c-48940bb4167f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\style">
+      <UniqueIdentifier>{fb0735c6-0a3f-43aa-b6e5-c741517824c1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

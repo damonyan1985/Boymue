@@ -11,8 +11,10 @@
 using namespace std;
 
 namespace boymue {
+class BoymueApplication;
 class JsRuntime {
  public:
+  virtual void setContext(BoymueApplication* app) = 0;
   virtual ~JsRuntime() {}
   virtual void evaluateJs(const std::string& jsSource) = 0;
   virtual void registerApi(JsApiInterface* api) = 0;

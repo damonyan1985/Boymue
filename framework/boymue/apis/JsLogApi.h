@@ -8,8 +8,13 @@
 namespace boymue {
 class JsLogApi : public JsApiInterface {
  public:
+  JsLogApi(BoymueApplication* context);
   virtual const char* name() const;
+  virtual BoymueApplication* context() const;
   virtual void execute(const std::string& params, JsApiCallback* callback);
+
+ private:
+  BoymueApplication* m_context;
 };
 }  // namespace boymue
 #endif

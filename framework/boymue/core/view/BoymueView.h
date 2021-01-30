@@ -8,11 +8,13 @@
 #include <memory>
 
 namespace boymue {
+class BoymueApplication;
 class BoymueView {
  public:
-  BoymueView();
+  BoymueView(BoymueApplication* context);
 
  private:
+  BoymueApplication* m_context;
   std::unique_ptr<Document> m_document;
 };
 }  // namespace boymue

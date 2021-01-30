@@ -9,19 +9,25 @@
 
 #include "BoymueView.h"
 #include "TaskThread.h"
+#include "JsEngine.h"
 
 namespace boymue {
 class BoymueApplication {
  public:
   BoymueApplication();
+  ~BoymueApplication();
   TaskRunner& getUITaskRunner() const;
   TaskRunner& getIOTaskRunner() const;
   TaskRunner& getJSTaskRunner() const;
 
+  void evaluateJs(const std::string& jsSource);
+
  private:
   static int s_applicationId;
+  std::unique_ptr<JsEngine> m_jsEngine;
   // BoymueView can only used in ui thread
-  std::unique_ptr<BoymueView> m_view;
+  std::unique_ptr<BoymueView> m_mainView;
+  std::unique_ptr<JsRuntime> m_mainRuntime;
 
   // 应用id
   std::string m_appId;

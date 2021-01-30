@@ -2,6 +2,7 @@
 // Author boymue on 2021.01.09
 
 #include "JsEngine.h"
+#include "BoymueApplication.h"
 
 #include <string>
 
@@ -94,6 +95,10 @@ class JsRuntimeImpl : public JsRuntime {
     delete m_arrayBufferAllocator;
   }
 
+  void setContext(BoymueApplication* app) {
+      m_app = app;
+  }
+
   virtual void registerApi(JsApiInterface* api) {
     // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
@@ -156,6 +161,7 @@ class JsRuntimeImpl : public JsRuntime {
   Persistent<Context> m_context;
   Persistent<Object> m_global;
   ArrayBufferAllocator* m_arrayBufferAllocator;
+  BoymueApplication* m_app;
 };
 
 class JsInitor {
