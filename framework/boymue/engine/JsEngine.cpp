@@ -2,10 +2,10 @@
 // Author boymue on 2021.01.09
 
 #include "JsEngine.h"
-#include "BoymueApplication.h"
 
 #include <string>
 
+#include "BoymueApplication.h"
 #include "libplatform/libplatform.h"
 #include "v8.h"
 
@@ -95,11 +95,9 @@ class JsRuntimeImpl : public JsRuntime {
     delete m_arrayBufferAllocator;
   }
 
-  void setContext(BoymueApplication* app) {
-      m_app = app;
-  }
+  void setContext(BoymueApplication* app) { m_app = app; }
 
-  virtual void registerApi(JsApiInterface* api) {
+  virtual void registerApi(JsApiInterface* api) override {
     // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
     // local stack
@@ -117,7 +115,7 @@ class JsRuntimeImpl : public JsRuntime {
                 Function::New(m_isolate, JsApiHandlerImpl, extension));
   }
 
-  virtual void evaluateJs(const std::string& jsSource) {
+  virtual void evaluateJs(const std::string& jsSource) override {
     // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
     // local stack

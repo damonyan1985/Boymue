@@ -58,11 +58,14 @@
     <Filter Include="core\layout">
       <UniqueIdentifier>{dadf0aac-f852-4c2f-8aac-6bae5b4a4ef2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\app">
-      <UniqueIdentifier>{09f4dbc6-1ef4-4d34-b52c-48940bb4167f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core\style">
       <UniqueIdentifier>{fb0735c6-0a3f-43aa-b6e5-c741517824c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{09f4dbc6-1ef4-4d34-b52c-48940bb4167f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="example">
+      <UniqueIdentifier>{907b6dd3-fa6b-48ad-a939-7cc858cfa145}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -136,7 +139,7 @@
       <Filter>core\layout</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\app\BoymueApplication.h">
-      <Filter>core\app</Filter>
+      <Filter>app</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\core\layout\Layout.h">
       <Filter>core\layout</Filter>
@@ -152,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\core\paint\PaintInfo.h">
       <Filter>core\paint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\ImageElement.h">
+      <Filter>core\dom</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -213,7 +219,7 @@
       <Filter>core\dom</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\app\BoymueApplication.cpp">
-      <Filter>core\app</Filter>
+      <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\layout\Layout.cpp">
       <Filter>core\layout</Filter>
@@ -224,10 +230,24 @@
     <ClCompile Include="..\..\..\framework\boymue\core\paint\TextPainter.cpp">
       <Filter>core\paint</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\ImageElement.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="core.def">
       <Filter>源文件</Filter>
     </None>
+    <None Include="..\..\..\boymuejs\example\test.js">
+      <Filter>example</Filter>
+    </None>
+    <None Include="..\..\..\boymuejs\example\config.json">
+      <Filter>example</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\boymuejs\example\test.xml">
+      <Filter>example</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 
 #include "Document.h"
 #include "ViewElement.h"
+#include "ImageElement.h"
 #include "DomTags.h"
 #include "expat.h"
 
@@ -50,6 +51,7 @@ DocumentElement* Document::createElement(int tag, const char** atts,
         element = new ViewElement();
         break;
     case DomTags::kImage:
+        element = new ImageElement();
     default:
         break;
     }

@@ -7,10 +7,11 @@
 #include "PaintInfo.h"
 
 namespace boymue {
+// Create and run in ui thread
 class Layout {
  public:
   virtual void layout();
-  virtual void paint(PaintInfo& info) {};
+  virtual void paint(PaintInfo& info){};
 };
 }  // namespace boymue
 #endif  // !Layout_h

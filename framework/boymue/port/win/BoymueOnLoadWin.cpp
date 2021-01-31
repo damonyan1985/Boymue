@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include <string>
+#include <fstream>
 
 #include "BoymueApplication.h"
 #include "BoymueView.h"
@@ -78,6 +79,7 @@ class UIRuntime {
   int m_height;
 };
 
+static std::string s_projectPath = getenv("BOYMUE_ROOT");
 static UIRuntime* s_uiRuntime;
 static boymue::BoymueApplication* s_app;
 static boymue::JsEngine* s_engine;
@@ -93,11 +95,11 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   // s_engine = new boymue::JsEngine();
   // boymue::JsRuntime* runtime = s_engine->createRuntime();
   // runtime->registerApi(new boymue::JsLogApi());
-
-  s_app->evaluateJs(
-      "function test(a, b) { let arr = [0, 1, 2];arr.push(5);boymue.log('test "
-      "arr length='+arr.length);return a * b * arr[2];} boymue.log(test(2, "
-      "3));");
+  std::string testPath = s_projectPath + "\\boymuejs\\example\\test.js";
+  std::ifstream file(testPath);
+  std::string str((std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>());
+  s_app->evaluateJs(str.c_str());
 }
 
 void BoymueOnLoadWin::repaint() {

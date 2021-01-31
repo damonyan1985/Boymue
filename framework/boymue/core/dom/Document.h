@@ -11,6 +11,7 @@
 #include "TextElement.h"
 
 namespace boymue {
+// Create and run in js thread
 class Document {
  public:
   // 利用XML内容来初始化document
