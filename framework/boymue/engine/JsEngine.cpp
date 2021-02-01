@@ -25,26 +25,48 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 // JsApi回调实现
 class JsApiCallbackImpl : public JsApiCallback {
  public:
-  JsApiCallbackImpl(const FunctionCallbackInfo<v8::Value>& args)
-      : m_args(args) {}
+  JsApiCallbackImpl(const FunctionCallbackInfo<v8::Value>& args,
+                    BoymueApplication* context, bool async = false)
+      : m_args(args),
+        m_context(context),
+        m_isolate(args.GetIsolate()),
+        m_async(async) {}
 
   // 回调可能是异步的，因此需要设置Scope
-  // TODO callback中的内容必须回调给JS线程
+  // callback中的内容必须回调给JS线程
   virtual void callback(const std::string& result) {
-    Isolate* isolate = m_args.GetIsolate();
-    Isolate::Scope isolateScope(isolate);
-    HandleScope handleScope(isolate);
-    // 如果result长度不为0，则回调，否则回调undefined
-    if (result.length()) {
-      Local<String> jsResult = String::NewFromUtf8(isolate, result.c_str());
-      m_args.GetReturnValue().Set(jsResult);
+    closure task = [self = this, result] {
+      Isolate* isolate = self->m_isolate;
+      Isolate::Scope isolateScope(isolate);
+      HandleScope handleScope(isolate);
+
+      if (self->m_async) {
+        // TODO 实现异步回调
+        return;
+      }
+
+      // 如果result长度不为0，则回调，否则回调undefined
+      // 同步函数才需要处理以下逻辑
+      if (result.length()) {
+        Local<String> jsResult = String::NewFromUtf8(isolate, result.c_str());
+        self->m_args.GetReturnValue().Set(jsResult);
+      } else {
+        self->m_args.GetReturnValue().SetUndefined();
+      }
+    };
+
+    if (m_async) {
+      m_context->getJSTaskRunner().postTask(task);
     } else {
-      m_args.GetReturnValue().SetUndefined();
+      task();
     }
   }
 
  private:
   FunctionCallbackInfo<v8::Value> m_args;
+  BoymueApplication* m_context;
+  Isolate* m_isolate;
+  bool m_async;
 };
 
 // JsApiHandler模板函数实现
@@ -62,7 +84,8 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
   closure task = [jsApi, args] {
     if (jsApi) {
       String::Utf8Value str(args[0]);
-      jsApi->execute(*str, new JsApiCallbackImpl(args));
+      jsApi->execute(*str, new JsApiCallbackImpl(args, jsApi->context(),
+                                                 jsApi->executor()));
     }
   };
   if (jsApi->executor()) {

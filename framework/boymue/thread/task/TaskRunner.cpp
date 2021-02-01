@@ -16,14 +16,26 @@ void TaskRunner::postTask(const closure& task)
     m_event.signal();
 }
 
+closure TaskRunner::getInvocation()
+{
+    std::lock_guard guard(m_mutex);
+    if (!m_queue.size()) {
+        return nullptr;
+    }
+
+    const Task& task = m_queue.top();
+    closure invocation = task.getTask();
+    m_queue.pop();
+
+    return invocation;
+}
+
 void TaskRunner::loop()
 {
     while (m_status) {
-        if (m_queue.size()) {
-            std::lock_guard guard(m_mutex);
-            const Task& task = m_queue.top();
-            task.run();
-            m_queue.pop();
+        closure invocation = getInvocation();
+        if (invocation) {
+            invocation();
         } else {
             m_event.wait();
         }

@@ -21,6 +21,8 @@ public:
 private:
     // Thread loop
     void loop();
+    // Get task;
+    closure getInvocation();
     // guard queue
     mutable std::mutex m_mutex;
     // wait for task

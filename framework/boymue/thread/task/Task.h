@@ -10,8 +10,8 @@ class Task {
 public:
     Task(size_t order, const closure& func, TimePoint targetTime);
     virtual ~Task();
-    // Task execute unit
-    virtual void run() const;
+    // Get task execute unit
+    const closure& getTask() const;
     // Task priority compare
     bool operator > (const Task& other) const;
 

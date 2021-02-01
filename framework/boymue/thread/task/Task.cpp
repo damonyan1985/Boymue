@@ -19,8 +19,8 @@ bool Task::operator > (const Task& other) const
     return m_targetTime > other.m_targetTime;
 }
 
-void Task::run() const
+const closure& Task::getTask() const
 {
-    m_func();
+    return m_func;
 }
 }

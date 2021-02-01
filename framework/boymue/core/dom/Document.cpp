@@ -2,9 +2,10 @@
 // Author yanbo on 2021.01.23
 
 #include "Document.h"
-#include "ViewElement.h"
-#include "ImageElement.h"
+
 #include "DomTags.h"
+#include "ImageElement.h"
+#include "ViewElement.h"
 #include "expat.h"
 
 namespace boymue {
@@ -44,21 +45,24 @@ void Document::initDocument(const std::string& content) {
 
 DocumentElement* Document::createElement(int tag, const char** atts,
                                          DocumentElement* parent) {
-    DocumentElement* element = nullptr;
-    switch (tag)
-    {
+  DocumentElement* element = nullptr;
+  switch (tag) {
     case DomTags::kView:
-        element = new ViewElement();
-        break;
+      element = new ViewElement();
+      // 如果Dom root不存在，则设置root
+      if (!m_root) {
+        m_root = element;
+      }
+      break;
     case DomTags::kImage:
-        element = new ImageElement();
+      element = new ImageElement();
     default:
-        break;
-    }
+      break;
+  }
 
-    if (parent) {
-        parent->addChild(element);
-    }
+  if (parent) {
+    parent->addChild(element);
+  }
 
   return nullptr;
 }

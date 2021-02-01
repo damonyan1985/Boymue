@@ -22,6 +22,7 @@ class Document {
 
  private:
   std::stack<DocumentElement*> m_parseStack;
+  DocumentElement* m_root;
 };
 }  // namespace boymue
 #endif  // !Document_h
