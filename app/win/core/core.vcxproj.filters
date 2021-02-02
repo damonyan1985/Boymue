@@ -159,6 +159,9 @@
     <ClInclude Include="..\..\..\framework\boymue\core\dom\ImageElement.h">
       <Filter>core\dom</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JSTestApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\dom\ImageElement.cpp">
       <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JSTestApi.cpp">
+      <Filter>apis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

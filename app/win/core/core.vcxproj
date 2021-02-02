@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\framework\boymue\apis\JsLogApi.h" />
+    <ClInclude Include="..\..\..\framework\boymue\apis\JSTestApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\app\BoymueApplication.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\dom\Document.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\dom\DocumentElement.h" />
@@ -198,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\framework\boymue\apis\JsLogApi.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\apis\JSTestApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\app\BoymueApplication.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\dom\Document.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\dom\DocumentElement.cpp" />

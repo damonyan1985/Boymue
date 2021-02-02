@@ -21,6 +21,7 @@ class BoymueApplication {
   TaskRunner& getJSTaskRunner() const;
 
   void evaluateJs(const std::string& jsSource);
+  void doRuntimeAction(RuntimeClosure& action);
 
  private:
   static int s_applicationId;

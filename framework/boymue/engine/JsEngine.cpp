@@ -7,7 +7,6 @@
 
 #include "BoymueApplication.h"
 #include "libplatform/libplatform.h"
-#include "v8.h"
 
 namespace boymue {
 using namespace v8;
@@ -26,47 +25,60 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 class JsApiCallbackImpl : public JsApiCallback {
  public:
   JsApiCallbackImpl(const FunctionCallbackInfo<v8::Value>& args,
-                    BoymueApplication* context, bool async = false)
-      : m_args(args),
-        m_context(context),
-        m_isolate(args.GetIsolate()),
-        m_async(async) {}
+                    BoymueApplication* context)
+      : m_args(args), m_context(context) {
+    m_receiver.Reset(args.GetIsolate(), args.This());
+    if (args.Length() > 1 && args[1]->IsFunction()) {
+      m_callback.Reset(args.GetIsolate(), Local<Function>::Cast(args[1]));
+    }
+  }
+
+  ~JsApiCallbackImpl() {
+      m_callback.Reset();
+      m_receiver.Reset();
+  }
 
   // 回调可能是异步的，因此需要设置Scope
   // callback中的内容必须回调给JS线程
   virtual void callback(const std::string& result) {
-    closure task = [self = this, result] {
-      Isolate* isolate = self->m_isolate;
-      Isolate::Scope isolateScope(isolate);
-      HandleScope handleScope(isolate);
+    RuntimeClosure task = [self = this, result](JsRuntime* runtime) {
+      // 实现异步回调
+      Local<Value> argv[] = {
+          String::NewFromUtf8(runtime->getIsolate(), result.c_str())};
+      Local<Context> context = runtime->getJsContext();
 
-      if (self->m_async) {
-        // TODO 实现异步回调
-        return;
-      }
+      Context::Scope contextScope(context);
+      // selfm_callback->Call(context, context->Global(), 1, argv);
+      Local<Function> jsCallback =
+          Local<Function>::New(runtime->getIsolate(), self->m_callback);
 
-      // 如果result长度不为0，则回调，否则回调undefined
-      // 同步函数才需要处理以下逻辑
-      if (result.length()) {
-        Local<String> jsResult = String::NewFromUtf8(isolate, result.c_str());
-        self->m_args.GetReturnValue().Set(jsResult);
-      } else {
-        self->m_args.GetReturnValue().SetUndefined();
-      }
+      Local<Object> jsReceiver =
+          Local<Object>::New(runtime->getIsolate(), self->m_receiver);
+      jsCallback->Call(context, jsReceiver, 1, argv);
+
+      delete self;
     };
 
-    if (m_async) {
-      m_context->getJSTaskRunner().postTask(task);
+    if (m_callback.IsEmpty()) {
+      if (result.length()) {
+        Local<String> jsResult =
+            String::NewFromUtf8(m_args.GetIsolate(), result.c_str());
+        m_args.GetReturnValue().Set(jsResult);
+      } else {
+        m_args.GetReturnValue().SetUndefined();
+      }
+
+      delete this;
     } else {
-      task();
+      m_context->doRuntimeAction(task);
     }
   }
 
- private:
+ public:
   FunctionCallbackInfo<v8::Value> m_args;
   BoymueApplication* m_context;
-  Isolate* m_isolate;
-  bool m_async;
+  Persistent<Function> m_callback;
+  Persistent<Object> m_receiver;
 };
 
 // JsApiHandler模板函数实现
@@ -84,8 +96,7 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
   closure task = [jsApi, args] {
     if (jsApi) {
       String::Utf8Value str(args[0]);
-      jsApi->execute(*str, new JsApiCallbackImpl(args, jsApi->context(),
-                                                 jsApi->executor()));
+      jsApi->execute(*str, new JsApiCallbackImpl(args, jsApi->context()));
     }
   };
   if (jsApi->executor()) {
@@ -116,6 +127,25 @@ class JsRuntimeImpl : public JsRuntime {
     m_context.Reset();
     m_isolate->Dispose();
     delete m_arrayBufferAllocator;
+  }
+
+  v8::Isolate* getIsolate() { return m_isolate; }
+
+  Local<Context> getJsContext() {
+    return Local<Context>::New(m_isolate, m_context);
+  }
+
+  void doAction(const RuntimeClosure& action) {
+    // Enter isolate scope
+    Isolate::Scope isolateScope(m_isolate);
+    // local stack
+    HandleScope handleScope(m_isolate);
+    // Create local context
+    // Local<Context> context = Local<Context>::New(m_isolate, m_context);
+    // Enter current context
+    // Context::Scope contextScope(context);
+    // Do what you want
+    action(this);
   }
 
   void setContext(BoymueApplication* app) { m_app = app; }

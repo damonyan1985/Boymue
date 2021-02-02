@@ -2,6 +2,8 @@
 // Author boymue on 2021.01.26
 
 #include "BoymueApplication.h"
+
+#include "JSTestApi.h"
 #include "JsLogApi.h"
 
 namespace boymue {
@@ -25,13 +27,18 @@ BoymueApplication::BoymueApplication()
     self->m_mainRuntime =
         std::unique_ptr<JsRuntime>(self->m_jsEngine->createRuntime());
     self->m_mainRuntime->registerApi(new boymue::JsLogApi(self));
+    self->m_mainRuntime->registerApi(new boymue::JsTestApi(self));
   });
 }
 
 void BoymueApplication::evaluateJs(const std::string& jsSource) {
-    getJSTaskRunner().postTask([=] {
-        this->m_mainRuntime->evaluateJs(jsSource);
-    });
+  getJSTaskRunner().postTask(
+      [=] { this->m_mainRuntime->evaluateJs(jsSource); });
+}
+
+void BoymueApplication::doRuntimeAction(RuntimeClosure& action) {
+    getJSTaskRunner().postTask(
+        [=] { this->m_mainRuntime->doAction(action); });
 }
 
 // 结束当前应用的线程

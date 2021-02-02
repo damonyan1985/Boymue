@@ -4,20 +4,30 @@
 #ifndef JsEngine_h
 #define JsEngine_h
 
-#include "JsApiInterface.h"
-#include <string>
 #include <memory>
+#include <string>
+
+#include "JsApiInterface.h"
+#include "v8.h"
 
 using namespace std;
 
 namespace boymue {
+class JsRuntime;
+// 可以使用JSRuntime提供的lambda规则来运行异步任务
+using RuntimeClosure = std::function<void(JsRuntime*)>;
+
 class BoymueApplication;
 class JsRuntime {
  public:
   virtual void setContext(BoymueApplication* app) = 0;
   virtual ~JsRuntime() {}
+
+  virtual void doAction(const RuntimeClosure& action) = 0;
   virtual void evaluateJs(const std::string& jsSource) = 0;
   virtual void registerApi(JsApiInterface* api) = 0;
+  virtual v8::Isolate* getIsolate() = 0;
+  virtual v8::Local<v8::Context> getJsContext() = 0;
 };
 
 class JsInitor;

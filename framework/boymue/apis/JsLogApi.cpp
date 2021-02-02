@@ -9,8 +9,8 @@ BoymueApplication* JsLogApi::context() const { return m_context; }
 
 void JsLogApi::execute(const std::string& params, JsApiCallback* callback) {
   printf("Boymue: %s", params.c_str());
-  if (callback) {
-    callback->callback("");
-  }
+  //if (callback) {
+  //  callback->callback("");
+  //}
 }
 }  // namespace boymue
