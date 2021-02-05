@@ -41,4 +41,8 @@ void TaskRunner::loop()
         }
     }
 }
+
+void TaskRunner::terminate() {
+    postTask([self = this] { self->m_status = false; });
+}
 }

@@ -8,6 +8,8 @@ TaskThread::TaskThread(const std::string& name)
 
 TaskThread::~TaskThread()
 {
+    terminate();
+    join();
 }
 
 TaskRunner& TaskThread::getTaskRunner() const
@@ -22,6 +24,6 @@ void TaskThread::run()
 
 void TaskThread::terminate()
 {
-    m_runner.m_status = false;
+    m_runner.terminate();
 }
 }

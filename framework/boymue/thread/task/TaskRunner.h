@@ -17,6 +17,7 @@ class TaskRunner {
 public:
     TaskRunner();
     void postTask(const closure& task);
+    void terminate();
 
 private:
     // Thread loop

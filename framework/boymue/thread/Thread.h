@@ -13,8 +13,10 @@ public:
     Thread(const std::string& name);
     ~Thread();
     void start();
+    void join();
+
     virtual void run() = 0;
-    virtual void terminate() = 0;
+    virtual void terminate() = 0;    
 
 private:
     static void startThread(void* ptr);

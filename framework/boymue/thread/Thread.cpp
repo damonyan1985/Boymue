@@ -9,6 +9,9 @@ Thread::Thread(const std::string& name)
 }
 
 Thread::~Thread() {
+}
+
+void Thread::join() {
     m_thread->join();
 }
 
