@@ -5,3 +5,11 @@
 .project
 .settings
 *.pyc
+*.bin
+target
+Cargo.lock
+libs
+.DS_Store
+xcuserdata
+UserInterfaceState.xcuserstate
+/xcdebugger
