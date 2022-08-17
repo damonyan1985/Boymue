@@ -14,7 +14,22 @@
 		4CCD0B0C28A6325D00B4D4FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CCD0B0B28A6325D00B4D4FB /* Assets.xcassets */; };
 		4CCD0B0F28A6325D00B4D4FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CCD0B0D28A6325D00B4D4FB /* LaunchScreen.storyboard */; };
 		4CCD0B1228A6325D00B4D4FB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD0B1128A6325D00B4D4FB /* main.m */; };
+		4CCD16CC28ACF72400B4D4FB /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16CB28ACF72400B4D4FB /* core.framework */; };
+		4CCD16CE28ACF74E00B4D4FB /* core.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CCD16CB28ACF72400B4D4FB /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4CCD16CD28ACF74000B4D4FB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4CCD16CE28ACF74E00B4D4FB /* core.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4CCD0AFC28A6325800B4D4FB /* shell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = shell.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -29,6 +44,7 @@
 		4CCD0B0E28A6325D00B4D4FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4CCD0B1028A6325D00B4D4FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CCD0B1128A6325D00B4D4FB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4CCD16CB28ACF72400B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CCD16CC28ACF72400B4D4FB /* core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +64,7 @@
 			children = (
 				4CCD0AFE28A6325800B4D4FB /* shell */,
 				4CCD0AFD28A6325800B4D4FB /* Products */,
+				4CCD16CA28ACF72400B4D4FB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,6 +94,14 @@
 			path = shell;
 			sourceTree = "<group>";
 		};
+		4CCD16CA28ACF72400B4D4FB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16CB28ACF72400B4D4FB /* core.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -86,6 +112,7 @@
 				4CCD0AF828A6325800B4D4FB /* Sources */,
 				4CCD0AF928A6325800B4D4FB /* Frameworks */,
 				4CCD0AFA28A6325800B4D4FB /* Resources */,
+				4CCD16CD28ACF74000B4D4FB /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -226,6 +253,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../framework/boymue/port/ios";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -279,6 +307,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../framework/boymue/port/ios";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -295,6 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../framework/boymue/port/ios";
 				INFOPLIST_FILE = shell/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -321,6 +351,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../framework/boymue/port/ios";
 				INFOPLIST_FILE = shell/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

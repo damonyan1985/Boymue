@@ -687,7 +687,7 @@
 		4CCD165328AC8BAD00B4D4FB /* GrGLBufferImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD163228AC8BAD00B4D4FB /* GrGLBufferImpl.cpp */; };
 		4CCD165428AC8BAD00B4D4FB /* GrGLTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD163328AC8BAD00B4D4FB /* GrGLTexture.cpp */; };
 		4CCD165528AC8BAD00B4D4FB /* GrGLUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD163428AC8BAD00B4D4FB /* GrGLUtil.cpp */; };
-		4CCD165928AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.cpp */; };
+		4CCD165928AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.mm */; };
 		4CCD165A28AC8DE600B4D4FB /* SkCreatePlatformGLContext_iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD165828AC8DE600B4D4FB /* SkCreatePlatformGLContext_iOS.mm */; };
 		4CCD165D28AC953500B4D4FB /* etc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD165C28AC953500B4D4FB /* etc1.cpp */; };
 		4CCD166028AC955B00B4D4FB /* ktx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD165F28AC955B00B4D4FB /* ktx.cpp */; };
@@ -721,8 +721,8 @@
 		4CCD169D28ACC25400B4D4FB /* GrDebugGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD169428ACC25300B4D4FB /* GrDebugGL.cpp */; };
 		4CCD169E28ACC25400B4D4FB /* GrBufferObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD169528ACC25400B4D4FB /* GrBufferObj.cpp */; };
 		4CCD169F28ACC25400B4D4FB /* GrFrameBufferObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD169628ACC25400B4D4FB /* GrFrameBufferObj.cpp */; };
-		4CCD16A228ACC2C300B4D4FB /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16A128ACC2C200B4D4FB /* OpenGLES.framework */; };
-		4CCD16A428ACC2DF00B4D4FB /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16A328ACC2DF00B4D4FB /* GLKit.framework */; };
+		4CCD16A228ACC2C300B4D4FB /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16A128ACC2C200B4D4FB /* OpenGLES.framework */; platformFilter = ios; };
+		4CCD16A428ACC2DF00B4D4FB /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16A328ACC2DF00B4D4FB /* GLKit.framework */; platformFilter = ios; };
 		4CCD16A628ACC96900B4D4FB /* SkImageDecoder_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16A528ACC96900B4D4FB /* SkImageDecoder_CG.cpp */; };
 		4CCD16AC28ACCB1B00B4D4FB /* SkCreateCGImageRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16AA28ACCB1B00B4D4FB /* SkCreateCGImageRef.cpp */; };
 		4CCD16AD28ACCB1B00B4D4FB /* SkStream_mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16AB28ACCB1B00B4D4FB /* SkStream_mac.cpp */; };
@@ -733,6 +733,12 @@
 		4CCD16B928ACE37F00B4D4FB /* SkImageDecoder_ktx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16B628ACE37E00B4D4FB /* SkImageDecoder_ktx.cpp */; };
 		4CCD16BA28ACE37F00B4D4FB /* SkImageDecoder_astc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16B728ACE37E00B4D4FB /* SkImageDecoder_astc.cpp */; };
 		4CCD16BB28ACE37F00B4D4FB /* SkImageDecoder_pkm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16B828ACE37E00B4D4FB /* SkImageDecoder_pkm.cpp */; };
+		4CCD16BF28ACE8D100B4D4FB /* PaintContextIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16BE28ACE8D100B4D4FB /* PaintContextIOS.mm */; };
+		4CCD16C328ACEA1E00B4D4FB /* PaintContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD16C228ACEA1E00B4D4FB /* PaintContext.h */; };
+		4CCD16C728ACEFEF00B4D4FB /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16C628ACEFEE00B4D4FB /* BoymueViewController.mm */; };
+		4CCD16C928ACF34600B4D4FB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16C828ACF34600B4D4FB /* UIKit.framework */; };
+		4CCD16D128ACFD3400B4D4FB /* BoymueView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16D028ACFD3400B4D4FB /* BoymueView.m */; };
+		4CCD16D428AD0B0400B4D4FB /* BoymueIOSGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16D328AD0B0400B4D4FB /* BoymueIOSGLContext.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1417,7 +1423,7 @@
 		4CCD163228AC8BAD00B4D4FB /* GrGLBufferImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrGLBufferImpl.cpp; path = ../../../framework/thirdparty/skia/src/gpu/gl/GrGLBufferImpl.cpp; sourceTree = "<group>"; };
 		4CCD163328AC8BAD00B4D4FB /* GrGLTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrGLTexture.cpp; path = ../../../framework/thirdparty/skia/src/gpu/gl/GrGLTexture.cpp; sourceTree = "<group>"; };
 		4CCD163428AC8BAD00B4D4FB /* GrGLUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrGLUtil.cpp; path = ../../../framework/thirdparty/skia/src/gpu/gl/GrGLUtil.cpp; sourceTree = "<group>"; };
-		4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrGLCreateNativeInterface_iOS.cpp; path = ../../../framework/thirdparty/skia/src/gpu/gl/iOS/GrGLCreateNativeInterface_iOS.cpp; sourceTree = "<group>"; };
+		4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GrGLCreateNativeInterface_iOS.mm; path = ../../../framework/thirdparty/skia/src/gpu/gl/iOS/GrGLCreateNativeInterface_iOS.mm; sourceTree = "<group>"; };
 		4CCD165828AC8DE600B4D4FB /* SkCreatePlatformGLContext_iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SkCreatePlatformGLContext_iOS.mm; path = ../../../framework/thirdparty/skia/src/gpu/gl/iOS/SkCreatePlatformGLContext_iOS.mm; sourceTree = "<group>"; };
 		4CCD165C28AC953500B4D4FB /* etc1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = etc1.cpp; path = ../../../framework/thirdparty/skia/third_party/etc1/etc1.cpp; sourceTree = "<group>"; };
 		4CCD165F28AC955B00B4D4FB /* ktx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ktx.cpp; path = ../../../framework/thirdparty/skia/third_party/ktx/ktx.cpp; sourceTree = "<group>"; };
@@ -1464,6 +1470,16 @@
 		4CCD16B628ACE37E00B4D4FB /* SkImageDecoder_ktx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SkImageDecoder_ktx.cpp; path = ../../../framework/thirdparty/skia/src/images/SkImageDecoder_ktx.cpp; sourceTree = "<group>"; };
 		4CCD16B728ACE37E00B4D4FB /* SkImageDecoder_astc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SkImageDecoder_astc.cpp; path = ../../../framework/thirdparty/skia/src/images/SkImageDecoder_astc.cpp; sourceTree = "<group>"; };
 		4CCD16B828ACE37E00B4D4FB /* SkImageDecoder_pkm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SkImageDecoder_pkm.cpp; path = ../../../framework/thirdparty/skia/src/images/SkImageDecoder_pkm.cpp; sourceTree = "<group>"; };
+		4CCD16BE28ACE8D100B4D4FB /* PaintContextIOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PaintContextIOS.mm; path = ../../../framework/boymue/platform/ios/PaintContextIOS.mm; sourceTree = "<group>"; };
+		4CCD16C028ACE8F200B4D4FB /* PaintContextIOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaintContextIOS.h; path = ../../../framework/boymue/platform/ios/PaintContextIOS.h; sourceTree = "<group>"; };
+		4CCD16C228ACEA1E00B4D4FB /* PaintContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PaintContext.h; path = ../../../framework/boymue/core/paint/PaintContext.h; sourceTree = "<group>"; };
+		4CCD16C528ACEFC900B4D4FB /* BoymueViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
+		4CCD16C628ACEFEE00B4D4FB /* BoymueViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
+		4CCD16C828ACF34600B4D4FB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		4CCD16CF28ACFD1C00B4D4FB /* BoymueView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueView.h; path = ../../../framework/boymue/port/ios/BoymueView.h; sourceTree = "<group>"; };
+		4CCD16D028ACFD3400B4D4FB /* BoymueView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BoymueView.m; path = ../../../framework/boymue/port/ios/BoymueView.m; sourceTree = "<group>"; };
+		4CCD16D228AD0AE300B4D4FB /* BoymueIOSGLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueIOSGLContext.h; path = ../../../framework/boymue/platform/ios/BoymueIOSGLContext.h; sourceTree = "<group>"; };
+		4CCD16D328AD0B0400B4D4FB /* BoymueIOSGLContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BoymueIOSGLContext.m; path = ../../../framework/boymue/platform/ios/BoymueIOSGLContext.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1471,6 +1487,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CCD16C928ACF34600B4D4FB /* UIKit.framework in Frameworks */,
 				4CCD16B528ACD35900B4D4FB /* CoreServices.framework in Frameworks */,
 				4CCD16B328ACD29F00B4D4FB /* CoreText.framework in Frameworks */,
 				4CCD16B128ACD18B00B4D4FB /* ImageIO.framework in Frameworks */,
@@ -1486,7 +1503,7 @@
 		4CCD0B1828A6329C00B4D4FB = {
 			isa = PBXGroup;
 			children = (
-				4CCD0B3728A676DF00B4D4FB /* boymue */,
+				4CCD0B3728A676DF00B4D4FB /* framework */,
 				4CCD0B2428A6329C00B4D4FB /* core */,
 				4CCD0B2328A6329C00B4D4FB /* Products */,
 				4CCD16A028ACC2C200B4D4FB /* Frameworks */,
@@ -1509,12 +1526,13 @@
 			path = core;
 			sourceTree = "<group>";
 		};
-		4CCD0B3728A676DF00B4D4FB /* boymue */ = {
+		4CCD0B3728A676DF00B4D4FB /* framework */ = {
 			isa = PBXGroup;
 			children = (
+				4CCD16BC28ACE83500B4D4FB /* boymue */,
 				4CCD0F7B28ABA96B00B4D4FB /* third_party */,
 			);
-			name = boymue;
+			name = framework;
 			sourceTree = "<group>";
 		};
 		4CCD0F7B28ABA96B00B4D4FB /* third_party */ = {
@@ -2599,7 +2617,7 @@
 		4CCD165628AC8DCB00B4D4FB /* ios */ = {
 			isa = PBXGroup;
 			children = (
-				4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.cpp */,
+				4CCD165728AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.mm */,
 				4CCD165828AC8DE600B4D4FB /* SkCreatePlatformGLContext_iOS.mm */,
 			);
 			name = ios;
@@ -2669,6 +2687,7 @@
 		4CCD16A028ACC2C200B4D4FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CCD16C828ACF34600B4D4FB /* UIKit.framework */,
 				4CCD16B428ACD35800B4D4FB /* CoreServices.framework */,
 				4CCD16B228ACD29F00B4D4FB /* CoreText.framework */,
 				4CCD16B028ACD18B00B4D4FB /* ImageIO.framework */,
@@ -2689,6 +2708,46 @@
 			name = ios;
 			sourceTree = "<group>";
 		};
+		4CCD16BC28ACE83500B4D4FB /* boymue */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16C428ACEF9600B4D4FB /* port */,
+				4CCD16C128ACEA0600B4D4FB /* paint */,
+				4CCD16BD28ACE88600B4D4FB /* platform */,
+			);
+			name = boymue;
+			sourceTree = "<group>";
+		};
+		4CCD16BD28ACE88600B4D4FB /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16BE28ACE8D100B4D4FB /* PaintContextIOS.mm */,
+				4CCD16C028ACE8F200B4D4FB /* PaintContextIOS.h */,
+				4CCD16D228AD0AE300B4D4FB /* BoymueIOSGLContext.h */,
+				4CCD16D328AD0B0400B4D4FB /* BoymueIOSGLContext.m */,
+			);
+			name = platform;
+			sourceTree = "<group>";
+		};
+		4CCD16C128ACEA0600B4D4FB /* paint */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16C228ACEA1E00B4D4FB /* PaintContext.h */,
+			);
+			name = paint;
+			sourceTree = "<group>";
+		};
+		4CCD16C428ACEF9600B4D4FB /* port */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16C528ACEFC900B4D4FB /* BoymueViewController.h */,
+				4CCD16C628ACEFEE00B4D4FB /* BoymueViewController.mm */,
+				4CCD16CF28ACFD1C00B4D4FB /* BoymueView.h */,
+				4CCD16D028ACFD3400B4D4FB /* BoymueView.m */,
+			);
+			name = port;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2704,6 +2763,7 @@
 				4CCD0F9128ABA9D400B4D4FB /* latin1tab.h in Headers */,
 				4CCD0F9B28ABA9D400B4D4FB /* nametab.h in Headers */,
 				4CCD0FB128ABACAB00B4D4FB /* config.h in Headers */,
+				4CCD16C328ACEA1E00B4D4FB /* PaintContext.h in Headers */,
 				4CCD0FAE28ABACAB00B4D4FB /* gif_lib.h in Headers */,
 				4CCD0F9D28ABA9D400B4D4FB /* asciitab.h in Headers */,
 				4CCD0F9C28ABA9D400B4D4FB /* xmltok.h in Headers */,
@@ -2930,6 +2990,7 @@
 				4CCD169828ACC25400B4D4FB /* GrTextureObj.cpp in Sources */,
 				4CCD15D528AC8ADD00B4D4FB /* GrPathRange.cpp in Sources */,
 				4CCD124228ABB63200B4D4FB /* pcfutil.c in Sources */,
+				4CCD16D428AD0B0400B4D4FB /* BoymueIOSGLContext.m in Sources */,
 				4CCD168428ACA26100B4D4FB /* SkRadialGradient.cpp in Sources */,
 				4CCD120C28ABB40900B4D4FB /* ttmtx.c in Sources */,
 				4CCD122528ABB55D00B4D4FB /* cidriver.c in Sources */,
@@ -3091,6 +3152,7 @@
 				4CCD11BE28ABB17A00B4D4FB /* vp8.c in Sources */,
 				4CCD151428AC89B100B4D4FB /* SkCanvasStack.cpp in Sources */,
 				4CCD15B528AC8ADD00B4D4FB /* GrStrokeInfo.cpp in Sources */,
+				4CCD16BF28ACE8D100B4D4FB /* PaintContextIOS.mm in Sources */,
 				4CCD159428AC8ADC00B4D4FB /* GrInOrderDrawBuffer.cpp in Sources */,
 				4CCD13DE28AC863000B4D4FB /* SkRefDict.cpp in Sources */,
 				4CCD147D28AC879300B4D4FB /* SkDiscretePathEffect.cpp in Sources */,
@@ -3108,6 +3170,7 @@
 				4CCD15CC28AC8ADD00B4D4FB /* GrResourceCache.cpp in Sources */,
 				4CCD133128AC85D700B4D4FB /* SkHalf.cpp in Sources */,
 				4CCD128728ABBDEE00B4D4FB /* inflate.c in Sources */,
+				4CCD16D128ACFD3400B4D4FB /* BoymueView.m in Sources */,
 				4CCD128828ABBDEE00B4D4FB /* gzwrite.c in Sources */,
 				4CCD11C628ABB17A00B4D4FB /* idec.c in Sources */,
 				4CCD13CA28AC863000B4D4FB /* SkRecordDraw.cpp in Sources */,
@@ -3197,6 +3260,7 @@
 				4CCD14B728AC881700B4D4FB /* SkImageDecoder_FactoryRegistrar.cpp in Sources */,
 				4CCD126628ABB73C00B4D4FB /* ftlzw.c in Sources */,
 				4CCD15CE28AC8ADD00B4D4FB /* GrReducedClip.cpp in Sources */,
+				4CCD16C728ACEFEF00B4D4FB /* BoymueViewController.mm in Sources */,
 				4CCD15C228AC8ADD00B4D4FB /* GrOvalRenderer.cpp in Sources */,
 				4CCD152E28AC89B100B4D4FB /* SkParse.cpp in Sources */,
 				4CCD0FB228ABACAB00B4D4FB /* gif_err.c in Sources */,
@@ -3376,7 +3440,7 @@
 				4CCD127F28ABBDEE00B4D4FB /* inffast.c in Sources */,
 				4CCD142528AC874700B4D4FB /* SkPathOpsCommon.cpp in Sources */,
 				4CCD153128AC89B100B4D4FB /* SkCamera.cpp in Sources */,
-				4CCD165928AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.cpp in Sources */,
+				4CCD165928AC8DE600B4D4FB /* GrGLCreateNativeInterface_iOS.mm in Sources */,
 				4CCD160D28AC8B0900B4D4FB /* GrTextureDomain.cpp in Sources */,
 				4CCD159A28AC8ADC00B4D4FB /* GrContext.cpp in Sources */,
 				4CCD137528AC85D800B4D4FB /* SkMatrix.cpp in Sources */,
@@ -3687,6 +3751,8 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/images",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/utils/mac",
+					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
+					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3700,6 +3766,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.boymue.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
@@ -3751,6 +3818,8 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/images",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/utils/mac",
+					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
+					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3764,6 +3833,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.boymue.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
