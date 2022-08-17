@@ -283,6 +283,9 @@ template SkAdvancedTypefaceMetrics::WidthRange* getAdvanceData(
         uint32_t subsetGlyphIDsLength,
         bool (*getAdvance)(CTFontRef ctFont, int gId, int16_t* data));
 #endif
+
+
+
 template void resetRange(
         SkAdvancedTypefaceMetrics::WidthRange* range,
         int startId);

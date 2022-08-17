@@ -23,7 +23,7 @@ public:
 private:
     void destroyGLContext();
 
-    void* fEAGLContext;
+    EAGLContext* fEAGLContext;
 };
 
 IOSGLContext::IOSGLContext()
@@ -55,7 +55,7 @@ void IOSGLContext::destroyGLContext() {
         if ([EAGLContext currentContext] == EAGLCTX) {
             [EAGLContext setCurrentContext:nil];
         }
-        [EAGLCTX release];
+        //[EAGLCTX release];
         fEAGLContext = NULL;
     }
 }

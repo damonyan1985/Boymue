@@ -24,9 +24,9 @@ int SkForceLinking(bool doNotPassTrue)
         //CreateWBMPImageDecoder();
         // Only link hardware texture codecs on platforms that build them. See images.gyp
 #ifndef SK_BUILD_FOR_ANDROID_FRAMEWORK
-        CreatePKMImageDecoder();
-        CreateKTXImageDecoder();
-        CreateASTCImageDecoder();
+         CreatePKMImageDecoder();
+         CreateKTXImageDecoder();
+         CreateASTCImageDecoder();
 #endif
         // Only link GIF and PNG on platforms that build them. See images.gyp
 #if !defined(SK_BUILD_FOR_MAC) && !defined(SK_BUILD_FOR_WIN) && !defined(SK_BUILD_FOR_IOS)

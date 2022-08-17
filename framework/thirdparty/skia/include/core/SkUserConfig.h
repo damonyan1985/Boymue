@@ -172,6 +172,8 @@
 #ifdef ANDROID
 #include <endian.h>
 //#include <utils/misc.h>
+#define SK_BUILD_FOR_ANDROID
+#define SK_BUILD_FOR_ANDROID_FRAMEWORK
 #endif
 
 #if defined(ANDROID) && __BYTE_ORDER == __BIG_ENDIAN
@@ -188,8 +190,6 @@
 #define IGNORE_ROT_AA_RECT_OPT
 #define SKIA_DLL
 #define SK_ALLOW_STATIC_GLOBAL_INITIALIZERS 0
-#define SK_BUILD_FOR_ANDROID
-#define SK_BUILD_FOR_ANDROID_FRAMEWORK
 
 #if defined(ANDROID)
 #define SK_CAN_USE_DLOPEN 0
