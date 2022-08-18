@@ -12,7 +12,7 @@
 
 @interface BoymueIOSGLContext : NSObject
 
--(void)makeCurrent:(CAEAGLLayer*)layer;
+-(void)makeCurrent;
 -(void)swapBuffers;
 -(void)attachLayer:(CAEAGLLayer*)layer;
 

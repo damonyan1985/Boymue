@@ -27,7 +27,7 @@
     return self;
 }
 
--(void)makeCurrent:(CAEAGLLayer*)layer {
+-(void)makeCurrent {
     [EAGLContext setCurrentContext:self.glContext];
     //[self.glContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer];
 }

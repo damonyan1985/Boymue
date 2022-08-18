@@ -14,6 +14,7 @@
 #include "SkSurface.h"
 
 #import "BoymueIOSGLContext.h"
+#import <OpenGLES/ES2/gl.h>
 #import <UIKit/UIKit.h>
 
 namespace boymue {
@@ -29,6 +30,8 @@ private:
   BoymueIOSGLContext* m_glContext;
   GrContext* m_context;
   SkSurface* m_surface;
+  GLuint m_framebuffer = GL_NONE;
+  GLuint m_colorbuffer = GL_NONE;
 };
 }
 
