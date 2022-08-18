@@ -58,9 +58,7 @@ void PaintContextIOS::initContext(CAEAGLLayer* layer, int width, int height) {
     glViewport(0, 0, width, height);
 
     glClearColor(1.0f, 0, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    [m_glContext attachLayer:layer];
+    glClear(GL_COLOR_BUFFER_BIT);    
 }
     
 SkCanvas* PaintContextIOS::canvas() {

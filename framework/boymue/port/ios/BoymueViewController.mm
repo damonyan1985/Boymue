@@ -9,6 +9,7 @@
 
 #import "BoymueViewController.h"
 #import "BoymueView.h"
+#include "SkTypeface.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -47,14 +48,18 @@
 
     SkCanvas* canvas = painter->canvas();
     canvas->drawColor(SK_ColorBLUE);
+    
+    SkTypeface* typeface = SkTypeface::CreateFromName("Heiti SC", SkTypeface::kNormal);
     SkPaint paint;
+    if (typeface) {
+        paint.setTypeface(typeface);
+    }
     paint.setColor(SK_ColorRED);  // This is a solid black color for our text
     paint.setTextSize(SkIntToScalar(30));  // Sets the text size to 30 pixels
-    paint.setAntiAlias(
-      true);  // We turn on anti-aliasing so that the text to looks good.
+    paint.setAntiAlias(true);  // We turn on anti-aliasing so that the text to looks good.
 
     // Draw some text
-    SkString text("Skia Test");
+    SkString text("Skia Test你好");
     SkScalar fontHeight = paint.getFontSpacing();
     canvas->drawText(text.c_str(), text.size(),  // text's data and length
                    10, 100,  // X and Y coordinates to place the text
