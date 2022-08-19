@@ -739,6 +739,24 @@
 		4CCD16C928ACF34600B4D4FB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCD16C828ACF34600B4D4FB /* UIKit.framework */; };
 		4CCD16D128ACFD3400B4D4FB /* BoymueView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16D028ACFD3400B4D4FB /* BoymueView.m */; };
 		4CCD16D428AD0B0400B4D4FB /* BoymueIOSGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16D328AD0B0400B4D4FB /* BoymueIOSGLContext.m */; };
+		4CCD16EB28AF6FEE00B4D4FB /* libregexp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16E528AF6FEC00B4D4FB /* libregexp.c */; };
+		4CCD16EC28AF6FEE00B4D4FB /* quickjs-libc.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16E628AF6FEC00B4D4FB /* quickjs-libc.c */; };
+		4CCD16ED28AF6FEE00B4D4FB /* cutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16E728AF6FEC00B4D4FB /* cutils.c */; };
+		4CCD16EE28AF6FEE00B4D4FB /* quickjs.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16E828AF6FED00B4D4FB /* quickjs.c */; };
+		4CCD16EF28AF6FEE00B4D4FB /* libbf.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16E928AF6FED00B4D4FB /* libbf.c */; };
+		4CCD16F028AF6FEE00B4D4FB /* libunicode.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16EA28AF6FED00B4D4FB /* libunicode.c */; };
+		4CCD16FC28AF747900B4D4FB /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F228AF747800B4D4FB /* Utils.cpp */; };
+		4CCD16FD28AF747900B4D4FB /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F328AF747800B4D4FB /* YGEnums.cpp */; };
+		4CCD16FE28AF747900B4D4FB /* YGNodePrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F428AF747800B4D4FB /* YGNodePrint.cpp */; };
+		4CCD16FF28AF747900B4D4FB /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F528AF747800B4D4FB /* Yoga.cpp */; };
+		4CCD170028AF747900B4D4FB /* YGLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F628AF747800B4D4FB /* YGLayout.cpp */; };
+		4CCD170128AF747900B4D4FB /* YGStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F728AF747800B4D4FB /* YGStyle.cpp */; };
+		4CCD170228AF747900B4D4FB /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F828AF747900B4D4FB /* log.cpp */; };
+		4CCD170328AF747900B4D4FB /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16F928AF747900B4D4FB /* YGNode.cpp */; };
+		4CCD170428AF747900B4D4FB /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16FA28AF747900B4D4FB /* YGConfig.cpp */; };
+		4CCD170528AF747900B4D4FB /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD16FB28AF747900B4D4FB /* YGValue.cpp */; };
+		4CCD170828AF749400B4D4FB /* event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD170728AF749400B4D4FB /* event.cpp */; };
+		4CCD170B28AF74B400B4D4FB /* experiments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CCD170A28AF74B400B4D4FB /* experiments.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1480,6 +1498,24 @@
 		4CCD16D028ACFD3400B4D4FB /* BoymueView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BoymueView.m; path = ../../../framework/boymue/port/ios/BoymueView.m; sourceTree = "<group>"; };
 		4CCD16D228AD0AE300B4D4FB /* BoymueIOSGLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueIOSGLContext.h; path = ../../../framework/boymue/platform/ios/BoymueIOSGLContext.h; sourceTree = "<group>"; };
 		4CCD16D328AD0B0400B4D4FB /* BoymueIOSGLContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BoymueIOSGLContext.m; path = ../../../framework/boymue/platform/ios/BoymueIOSGLContext.m; sourceTree = "<group>"; };
+		4CCD16E528AF6FEC00B4D4FB /* libregexp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libregexp.c; path = ../../../framework/thirdparty/quickjs/src/libregexp.c; sourceTree = "<group>"; };
+		4CCD16E628AF6FEC00B4D4FB /* quickjs-libc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "quickjs-libc.c"; path = "../../../framework/thirdparty/quickjs/src/quickjs-libc.c"; sourceTree = "<group>"; };
+		4CCD16E728AF6FEC00B4D4FB /* cutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cutils.c; path = ../../../framework/thirdparty/quickjs/src/cutils.c; sourceTree = "<group>"; };
+		4CCD16E828AF6FED00B4D4FB /* quickjs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = quickjs.c; path = ../../../framework/thirdparty/quickjs/src/quickjs.c; sourceTree = "<group>"; };
+		4CCD16E928AF6FED00B4D4FB /* libbf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libbf.c; path = ../../../framework/thirdparty/quickjs/src/libbf.c; sourceTree = "<group>"; };
+		4CCD16EA28AF6FED00B4D4FB /* libunicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libunicode.c; path = ../../../framework/thirdparty/quickjs/src/libunicode.c; sourceTree = "<group>"; };
+		4CCD16F228AF747800B4D4FB /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../../framework/thirdparty/yoga/src/Utils.cpp; sourceTree = "<group>"; };
+		4CCD16F328AF747800B4D4FB /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGEnums.cpp; path = ../../../framework/thirdparty/yoga/src/YGEnums.cpp; sourceTree = "<group>"; };
+		4CCD16F428AF747800B4D4FB /* YGNodePrint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGNodePrint.cpp; path = ../../../framework/thirdparty/yoga/src/YGNodePrint.cpp; sourceTree = "<group>"; };
+		4CCD16F528AF747800B4D4FB /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Yoga.cpp; path = ../../../framework/thirdparty/yoga/src/Yoga.cpp; sourceTree = "<group>"; };
+		4CCD16F628AF747800B4D4FB /* YGLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGLayout.cpp; path = ../../../framework/thirdparty/yoga/src/YGLayout.cpp; sourceTree = "<group>"; };
+		4CCD16F728AF747800B4D4FB /* YGStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGStyle.cpp; path = ../../../framework/thirdparty/yoga/src/YGStyle.cpp; sourceTree = "<group>"; };
+		4CCD16F828AF747900B4D4FB /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = ../../../framework/thirdparty/yoga/src/log.cpp; sourceTree = "<group>"; };
+		4CCD16F928AF747900B4D4FB /* YGNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGNode.cpp; path = ../../../framework/thirdparty/yoga/src/YGNode.cpp; sourceTree = "<group>"; };
+		4CCD16FA28AF747900B4D4FB /* YGConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGConfig.cpp; path = ../../../framework/thirdparty/yoga/src/YGConfig.cpp; sourceTree = "<group>"; };
+		4CCD16FB28AF747900B4D4FB /* YGValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YGValue.cpp; path = ../../../framework/thirdparty/yoga/src/YGValue.cpp; sourceTree = "<group>"; };
+		4CCD170728AF749400B4D4FB /* event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = event.cpp; path = ../../../framework/thirdparty/yoga/src/event/event.cpp; sourceTree = "<group>"; };
+		4CCD170A28AF74B400B4D4FB /* experiments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = experiments.cpp; path = ../../../framework/thirdparty/yoga/src/internal/experiments.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1538,6 +1574,8 @@
 		4CCD0F7B28ABA96B00B4D4FB /* third_party */ = {
 			isa = PBXGroup;
 			children = (
+				4CCD16F128AF745100B4D4FB /* yoga */,
+				4CCD16D628AF684300B4D4FB /* quickjs */,
 				4CCD128C28AC832B00B4D4FB /* skia */,
 				4CCD126B28ABBDB000B4D4FB /* zlib */,
 				4CCD11C828ABB1FC00B4D4FB /* freetype */,
@@ -2711,6 +2749,7 @@
 		4CCD16BC28ACE83500B4D4FB /* boymue */ = {
 			isa = PBXGroup;
 			children = (
+				4CCD16D528AF669900B4D4FB /* core */,
 				4CCD16C428ACEF9600B4D4FB /* port */,
 				4CCD16C128ACEA0600B4D4FB /* paint */,
 				4CCD16BD28ACE88600B4D4FB /* platform */,
@@ -2746,6 +2785,61 @@
 				4CCD16D028ACFD3400B4D4FB /* BoymueView.m */,
 			);
 			name = port;
+			sourceTree = "<group>";
+		};
+		4CCD16D528AF669900B4D4FB /* core */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		4CCD16D628AF684300B4D4FB /* quickjs */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD16E728AF6FEC00B4D4FB /* cutils.c */,
+				4CCD16E928AF6FED00B4D4FB /* libbf.c */,
+				4CCD16E528AF6FEC00B4D4FB /* libregexp.c */,
+				4CCD16EA28AF6FED00B4D4FB /* libunicode.c */,
+				4CCD16E628AF6FEC00B4D4FB /* quickjs-libc.c */,
+				4CCD16E828AF6FED00B4D4FB /* quickjs.c */,
+			);
+			name = quickjs;
+			sourceTree = "<group>";
+		};
+		4CCD16F128AF745100B4D4FB /* yoga */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD170928AF74A000B4D4FB /* internal */,
+				4CCD170628AF747D00B4D4FB /* event */,
+				4CCD16F828AF747900B4D4FB /* log.cpp */,
+				4CCD16F228AF747800B4D4FB /* Utils.cpp */,
+				4CCD16FA28AF747900B4D4FB /* YGConfig.cpp */,
+				4CCD16F328AF747800B4D4FB /* YGEnums.cpp */,
+				4CCD16F628AF747800B4D4FB /* YGLayout.cpp */,
+				4CCD16F928AF747900B4D4FB /* YGNode.cpp */,
+				4CCD16F428AF747800B4D4FB /* YGNodePrint.cpp */,
+				4CCD16F728AF747800B4D4FB /* YGStyle.cpp */,
+				4CCD16FB28AF747900B4D4FB /* YGValue.cpp */,
+				4CCD16F528AF747800B4D4FB /* Yoga.cpp */,
+			);
+			name = yoga;
+			sourceTree = "<group>";
+		};
+		4CCD170628AF747D00B4D4FB /* event */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD170728AF749400B4D4FB /* event.cpp */,
+			);
+			name = event;
+			sourceTree = "<group>";
+		};
+		4CCD170928AF74A000B4D4FB /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				4CCD170A28AF74B400B4D4FB /* experiments.cpp */,
+			);
+			name = internal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2922,6 +3016,7 @@
 				4CCD120F28ABB40900B4D4FB /* sfdriver.c in Sources */,
 				4CCD12A728AC843A00B4D4FB /* SkMasks.cpp in Sources */,
 				4CCD11BD28ABB17A00B4D4FB /* bits.c in Sources */,
+				4CCD170228AF747900B4D4FB /* log.cpp in Sources */,
 				4CCD133228AC85D700B4D4FB /* SkMaskFilter.cpp in Sources */,
 				4CCD122228ABB55D00B4D4FB /* cidgload.c in Sources */,
 				4CCD14BD28AC881700B4D4FB /* SkImageDecoder_libico.cpp in Sources */,
@@ -2935,6 +3030,7 @@
 				4CCD134A28AC85D800B4D4FB /* SkFont.cpp in Sources */,
 				4CCD165328AC8BAD00B4D4FB /* GrGLBufferImpl.cpp in Sources */,
 				4CCD151E28AC89B100B4D4FB /* SkBoundaryPatch.cpp in Sources */,
+				4CCD16EB28AF6FEE00B4D4FB /* libregexp.c in Sources */,
 				4CCD116D28ABB04D00B4D4FB /* pngpread.c in Sources */,
 				4CCD121B28ABB4A600B4D4FB /* truetype.c in Sources */,
 				4CCD165528AC8BAD00B4D4FB /* GrGLUtil.cpp in Sources */,
@@ -3009,6 +3105,7 @@
 				4CCD152528AC89B100B4D4FB /* SkDeferredCanvas.cpp in Sources */,
 				4CCD122D28ABB59300B4D4FB /* pfr.c in Sources */,
 				4CCD159D28AC8ADC00B4D4FB /* GrInOrderCommandBuilder.cpp in Sources */,
+				4CCD16F028AF6FEE00B4D4FB /* libunicode.c in Sources */,
 				4CCD13EE28AC86AA00B4D4FB /* SkSurface_Raster.cpp in Sources */,
 				4CCD110A28ABAE6000B4D4FB /* jidctfst.c in Sources */,
 				4CCD149028AC879300B4D4FB /* SkTileImageFilter.cpp in Sources */,
@@ -3029,6 +3126,7 @@
 				4CCD11DA28ABB2B800B4D4FB /* ftbbox.c in Sources */,
 				4CCD136F28AC85D800B4D4FB /* SkData.cpp in Sources */,
 				4CCD128928ABBDEE00B4D4FB /* trees.c in Sources */,
+				4CCD170528AF747900B4D4FB /* YGValue.cpp in Sources */,
 				4CCD148428AC879300B4D4FB /* SkOffsetImageFilter.cpp in Sources */,
 				4CCD14D328AC88EA00B4D4FB /* SkOSFile_stdio.cpp in Sources */,
 				4CCD15DE28AC8ADD00B4D4FB /* GrDashLinePathRenderer.cpp in Sources */,
@@ -3066,6 +3164,7 @@
 				4CCD13B128AC863000B4D4FB /* SkStringUtils.cpp in Sources */,
 				4CCD11E028ABB2B800B4D4FB /* ftapi.c in Sources */,
 				4CCD14C328AC881700B4D4FB /* SkPageFlipper.cpp in Sources */,
+				4CCD170428AF747900B4D4FB /* YGConfig.cpp in Sources */,
 				4CCD13C628AC863000B4D4FB /* SkRTree.cpp in Sources */,
 				4CCD148C28AC879300B4D4FB /* SkColorMatrix.cpp in Sources */,
 				4CCD10ED28ABAE5F00B4D4FB /* jfdctfst.c in Sources */,
@@ -3111,6 +3210,7 @@
 				4CCD151128AC89B100B4D4FB /* SkTextureCompressor_LATC.cpp in Sources */,
 				4CCD127B28ABBDEE00B4D4FB /* zutil.c in Sources */,
 				4CCD142828AC874700B4D4FB /* SkOpEdgeBuilder.cpp in Sources */,
+				4CCD170328AF747900B4D4FB /* YGNode.cpp in Sources */,
 				4CCD134328AC85D800B4D4FB /* SkLayerInfo.cpp in Sources */,
 				4CCD112828ABAE6000B4D4FB /* jcprepct.c in Sources */,
 				4CCD14C028AC881700B4D4FB /* SkMovie.cpp in Sources */,
@@ -3155,6 +3255,7 @@
 				4CCD16BF28ACE8D100B4D4FB /* PaintContextIOS.mm in Sources */,
 				4CCD159428AC8ADC00B4D4FB /* GrInOrderDrawBuffer.cpp in Sources */,
 				4CCD13DE28AC863000B4D4FB /* SkRefDict.cpp in Sources */,
+				4CCD16FC28AF747900B4D4FB /* Utils.cpp in Sources */,
 				4CCD147D28AC879300B4D4FB /* SkDiscretePathEffect.cpp in Sources */,
 				4CCD151F28AC89B100B4D4FB /* SkNullCanvas.cpp in Sources */,
 				4CCD135028AC85D800B4D4FB /* SkBitmapScaler.cpp in Sources */,
@@ -3188,6 +3289,7 @@
 				4CCD13D728AC863000B4D4FB /* SkReadBuffer.cpp in Sources */,
 				4CCD133928AC85D800B4D4FB /* SkPicture.cpp in Sources */,
 				4CCD15A728AC8ADC00B4D4FB /* GrDrawTarget.cpp in Sources */,
+				4CCD170028AF747900B4D4FB /* YGLayout.cpp in Sources */,
 				4CCD160228AC8B0800B4D4FB /* GrCustomXfermode.cpp in Sources */,
 				4CCD15D828AC8ADD00B4D4FB /* GrClip.cpp in Sources */,
 				4CCD15D028AC8ADD00B4D4FB /* GrAAConvexTessellator.cpp in Sources */,
@@ -3214,8 +3316,10 @@
 				4CCD136328AC85D800B4D4FB /* SkDevice.cpp in Sources */,
 				4CCD133528AC85D700B4D4FB /* SkDataTable.cpp in Sources */,
 				4CCD152228AC89B100B4D4FB /* SkFrontBufferedStream.cpp in Sources */,
+				4CCD16EE28AF6FEE00B4D4FB /* quickjs.c in Sources */,
 				4CCD13EF28AC86AA00B4D4FB /* SkSurface.cpp in Sources */,
 				4CCD12C428AC855500B4D4FB /* SkBitmapCache.cpp in Sources */,
+				4CCD16ED28AF6FEE00B4D4FB /* cutils.c in Sources */,
 				4CCD142028AC874700B4D4FB /* SkOpContour.cpp in Sources */,
 				4CCD14B428AC881700B4D4FB /* SkImageEncoder_argb.cpp in Sources */,
 				4CCD15FD28AC8B0800B4D4FB /* GrPorterDuffXferProcessor.cpp in Sources */,
@@ -3264,6 +3368,7 @@
 				4CCD15C228AC8ADD00B4D4FB /* GrOvalRenderer.cpp in Sources */,
 				4CCD152E28AC89B100B4D4FB /* SkParse.cpp in Sources */,
 				4CCD0FB228ABACAB00B4D4FB /* gif_err.c in Sources */,
+				4CCD16EC28AF6FEE00B4D4FB /* quickjs-libc.c in Sources */,
 				4CCD149428AC879300B4D4FB /* SkMagnifierImageFilter.cpp in Sources */,
 				4CCD137328AC85D800B4D4FB /* SkInstCnt.cpp in Sources */,
 				4CCD111028ABAE6000B4D4FB /* jidctintelsse.c in Sources */,
@@ -3340,6 +3445,7 @@
 				4CCD13BD28AC863000B4D4FB /* SkScalar.cpp in Sources */,
 				4CCD159828AC8ADC00B4D4FB /* GrBatchAtlas.cpp in Sources */,
 				4CCD125A28ABB6C600B4D4FB /* t1afm.c in Sources */,
+				4CCD16FE28AF747900B4D4FB /* YGNodePrint.cpp in Sources */,
 				4CCD132228AC85D700B4D4FB /* SkFlattenable.cpp in Sources */,
 				4CCD13D228AC863000B4D4FB /* SkRRect.cpp in Sources */,
 				4CCD13B028AC863000B4D4FB /* SkRWBuffer.cpp in Sources */,
@@ -3365,6 +3471,7 @@
 				4CCD15CD28AC8ADD00B4D4FB /* GrAADistanceFieldPathRenderer.cpp in Sources */,
 				4CCD13DA28AC863000B4D4FB /* SkStream.cpp in Sources */,
 				4CCD143028AC874700B4D4FB /* SkOpCubicHull.cpp in Sources */,
+				4CCD16FF28AF747900B4D4FB /* Yoga.cpp in Sources */,
 				4CCD112128ABAE6000B4D4FB /* jerror.c in Sources */,
 				4CCD152A28AC89B100B4D4FB /* SkCullPoints.cpp in Sources */,
 				4CCD110D28ABAE6000B4D4FB /* jfdctint.c in Sources */,
@@ -3376,6 +3483,7 @@
 				4CCD160A28AC8B0900B4D4FB /* GrCoverageSetOpXP.cpp in Sources */,
 				4CCD148A28AC879300B4D4FB /* SkTestImageFilters.cpp in Sources */,
 				4CCD134228AC85D800B4D4FB /* SkPictureFlat.cpp in Sources */,
+				4CCD170828AF749400B4D4FB /* event.cpp in Sources */,
 				4CCD114D28ABAE6000B4D4FB /* jdmarker.c in Sources */,
 				4CCD128428ABBDEE00B4D4FB /* gzclose.c in Sources */,
 				4CCD15BA28AC8ADD00B4D4FB /* GrReorderCommandBuilder.cpp in Sources */,
@@ -3393,6 +3501,7 @@
 				4CCD164628AC8BAD00B4D4FB /* GrGLPathProcessor.cpp in Sources */,
 				4CCD134028AC85D800B4D4FB /* SkImageInfo.cpp in Sources */,
 				4CCD164728AC8BAD00B4D4FB /* GrGLVertexBuffer.cpp in Sources */,
+				4CCD16FD28AF747900B4D4FB /* YGEnums.cpp in Sources */,
 				4CCD13C528AC863000B4D4FB /* SkRecord.cpp in Sources */,
 				4CCD137228AC85D800B4D4FB /* SkColor.cpp in Sources */,
 				4CCD141E28AC874700B4D4FB /* SkPathOpsRect.cpp in Sources */,
@@ -3420,6 +3529,7 @@
 				4CCD153328AC89B100B4D4FB /* SkThreadUtils_pthread.cpp in Sources */,
 				4CCD12C828AC855500B4D4FB /* SkBitmap.cpp in Sources */,
 				4CCD134B28AC85D800B4D4FB /* SkBitmapProcState_matrixProcs.cpp in Sources */,
+				4CCD170B28AF74B400B4D4FB /* experiments.cpp in Sources */,
 				4CCD13BB28AC863000B4D4FB /* SkRasterClip.cpp in Sources */,
 				4CCD15CA28AC8ADD00B4D4FB /* GrSWMaskHelper.cpp in Sources */,
 				4CCD147828AC879300B4D4FB /* SkBlurDrawLooper.cpp in Sources */,
@@ -3507,6 +3617,7 @@
 				4CCD15AA28AC8ADC00B4D4FB /* GrAtlas.cpp in Sources */,
 				4CCD152D28AC89B100B4D4FB /* SkMD5.cpp in Sources */,
 				4CCD149628AC879300B4D4FB /* SkDropShadowImageFilter.cpp in Sources */,
+				4CCD16EF28AF6FEE00B4D4FB /* libbf.c in Sources */,
 				4CCD125728ABB6C600B4D4FB /* t1load.c in Sources */,
 				4CCD167D28ACA26000B4D4FB /* SkSweepGradient.cpp in Sources */,
 				4CCD13C228AC863000B4D4FB /* SkPixelRef.cpp in Sources */,
@@ -3533,6 +3644,7 @@
 				4CCD133A28AC85D800B4D4FB /* SkColorTable.cpp in Sources */,
 				4CCD135528AC85D800B4D4FB /* SkEdge.cpp in Sources */,
 				4CCD169D28ACC25400B4D4FB /* GrDebugGL.cpp in Sources */,
+				4CCD170128AF747900B4D4FB /* YGStyle.cpp in Sources */,
 				4CCD116F28ABB04D00B4D4FB /* pngrio.c in Sources */,
 				4CCD148B28AC879300B4D4FB /* SkXfermodeImageFilter.cpp in Sources */,
 				4CCD160E28AC8B0900B4D4FB /* GrMatrixConvolutionEffect.cpp in Sources */,
@@ -3752,6 +3864,8 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/images",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/utils/mac",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/yoga",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 				);
@@ -3819,6 +3933,8 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/images",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/utils/mac",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/yoga",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 				);
