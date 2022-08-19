@@ -4,7 +4,14 @@
 #ifndef StyleEngine_h
 #define StyleEngine_h
 
+#include "StyleParser.h"
+#include <list>
+
 namespace boymue {
-class StyleEngine {};
+class StyleEngine {
+private:
+    StyleParser m_parser;
+    std::list<StyleSheet> m_sheets;
+};
 }  // namespace boymue
 #endif  // !StyleEngine_h
