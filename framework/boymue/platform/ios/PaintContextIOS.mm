@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <OpenGLES/ES2/glext.h>
 #include "PaintContextIOS.h"
+#include "skia/include/gpu/gl/GrGLInterface.h"
 
 namespace boymue {
 PaintContextIOS::PaintContextIOS() {}

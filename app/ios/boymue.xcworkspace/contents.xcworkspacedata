@@ -7,4 +7,7 @@
    <FileRef
       location = "group:core/core.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:thirdparty/thirdparty.xcodeproj">
+   </FileRef>
 </Workspace>

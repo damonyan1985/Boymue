@@ -9,9 +9,8 @@
 #define PaintContextIOS_h
 
 #include "PaintContext.h"
-#include "GrContext.h"
-#include "GrContextFactory.h"
-#include "SkSurface.h"
+#include "skia/include/core/SkSurface.h"
+#include "skia/include/gpu/GrContext.h"
 
 #import "BoymueIOSGLContext.h"
 #import <OpenGLES/ES2/gl.h>

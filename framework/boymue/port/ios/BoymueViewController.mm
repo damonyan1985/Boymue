@@ -18,7 +18,6 @@
 
 @property (nonatomic, strong) BoymueView* boymueView;
 
-@property (nonatomic, strong) GLKBaseEffect *effect;
 @property (nonatomic, strong) BoymueIOSGLContext* glContext;
 @property (nonatomic, assign) GLuint framebuffer;
 @property (nonatomic, assign) GLuint colorRenderbuffer;
@@ -36,7 +35,6 @@
     self.boymueView.eaLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking:@NO, kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8};
     self.boymueView.eaLayer.opaque = YES;
     self.view = self.boymueView;
-    self.effect = [[GLKBaseEffect alloc] init];
     //self.view.backgroundColor = [UIColor whiteColor];
     NSLog(@"hello boymue");
     [self drawTest];
