@@ -11,10 +11,12 @@
 #include "skia/include/gpu/gl/GrGLInterface.h"
 
 namespace boymue {
-PaintContextIOS::PaintContextIOS() {}
+PaintContextIOS::PaintContextIOS() {
+    m_glContext = [BoymueIOSGLContext new];
+}
     
 void PaintContextIOS::initContext(CAEAGLLayer* layer, int width, int height) {
-    m_glContext = [BoymueIOSGLContext new];
+    
     [m_glContext makeCurrent];
     
     //set up color render buffer

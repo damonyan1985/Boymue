@@ -20,6 +20,13 @@
 		4CB016B728B327250039F675 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB016B628B327250039F675 /* GLKit.framework */; };
 		4CB016B928B327310039F675 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB016B828B327310039F675 /* OpenGLES.framework */; };
 		4CB016BA28B3277D0039F675 /* thirdparty.framework in Resources */ = {isa = PBXBuildFile; fileRef = 4CB016B128B325CA0039F675 /* thirdparty.framework */; };
+		4CB016C528B33C1A0039F675 /* StyleParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016BE28B33C190039F675 /* StyleParser.h */; };
+		4CB016C628B33C1A0039F675 /* StyleEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016BF28B33C190039F675 /* StyleEngine.h */; };
+		4CB016C728B33C1A0039F675 /* Style.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016C028B33C190039F675 /* Style.h */; };
+		4CB016C828B33C1A0039F675 /* StyleSheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016C128B33C1A0039F675 /* StyleSheet.cpp */; };
+		4CB016C928B33C1A0039F675 /* StyleEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016C228B33C1A0039F675 /* StyleEngine.cpp */; };
+		4CB016CA28B33C1A0039F675 /* StyleParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016C328B33C1A0039F675 /* StyleParser.cpp */; };
+		4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016C428B33C1A0039F675 /* StyleSheet.h */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -36,6 +43,13 @@
 		4CB016B128B325CA0039F675 /* thirdparty.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = thirdparty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB016B628B327250039F675 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		4CB016B828B327310039F675 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		4CB016BE28B33C190039F675 /* StyleParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StyleParser.h; path = ../../../framework/boymue/core/style/StyleParser.h; sourceTree = "<group>"; };
+		4CB016BF28B33C190039F675 /* StyleEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StyleEngine.h; path = ../../../framework/boymue/core/style/StyleEngine.h; sourceTree = "<group>"; };
+		4CB016C028B33C190039F675 /* Style.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Style.h; path = ../../../framework/boymue/core/style/Style.h; sourceTree = "<group>"; };
+		4CB016C128B33C1A0039F675 /* StyleSheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StyleSheet.cpp; path = ../../../framework/boymue/core/style/StyleSheet.cpp; sourceTree = "<group>"; };
+		4CB016C228B33C1A0039F675 /* StyleEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StyleEngine.cpp; path = ../../../framework/boymue/core/style/StyleEngine.cpp; sourceTree = "<group>"; };
+		4CB016C328B33C1A0039F675 /* StyleParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StyleParser.cpp; path = ../../../framework/boymue/core/style/StyleParser.cpp; sourceTree = "<group>"; };
+		4CB016C428B33C1A0039F675 /* StyleSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StyleSheet.h; path = ../../../framework/boymue/core/style/StyleSheet.h; sourceTree = "<group>"; };
 		4CCD171928B320B800B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD171C28B320B800B4D4FB /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +81,9 @@
 		4CB0169A28B323C40039F675 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				4CB016CC28B33C4B0039F675 /* layout */,
+				4CB016BD28B33BF90039F675 /* style */,
+				4CB016BC28B33A7D0039F675 /* engine */,
 				4CB0169D28B323DA0039F675 /* paint */,
 			);
 			name = core;
@@ -112,6 +129,34 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4CB016BC28B33A7D0039F675 /* engine */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = engine;
+			sourceTree = "<group>";
+		};
+		4CB016BD28B33BF90039F675 /* style */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016C028B33C190039F675 /* Style.h */,
+				4CB016C228B33C1A0039F675 /* StyleEngine.cpp */,
+				4CB016BF28B33C190039F675 /* StyleEngine.h */,
+				4CB016C328B33C1A0039F675 /* StyleParser.cpp */,
+				4CB016BE28B33C190039F675 /* StyleParser.h */,
+				4CB016C128B33C1A0039F675 /* StyleSheet.cpp */,
+				4CB016C428B33C1A0039F675 /* StyleSheet.h */,
+			);
+			name = style;
+			sourceTree = "<group>";
+		};
+		4CB016CC28B33C4B0039F675 /* layout */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = layout;
+			sourceTree = "<group>";
+		};
 		4CCD170F28B320B800B4D4FB = {
 			isa = PBXGroup;
 			children = (
@@ -147,9 +192,13 @@
 			files = (
 				4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */,
 				4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */,
+				4CB016C628B33C1A0039F675 /* StyleEngine.h in Headers */,
+				4CB016C728B33C1A0039F675 /* Style.h in Headers */,
+				4CB016C528B33C1A0039F675 /* StyleParser.h in Headers */,
 				4CCD171D28B320B800B4D4FB /* core.h in Headers */,
 				4CB016AA28B3242A0039F675 /* BoymueIOSGLContext.h in Headers */,
 				4CB016A528B323F80039F675 /* BoymueView.h in Headers */,
+				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4CB016AF28B3243F0039F675 /* PaintContext.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,8 +274,11 @@
 			files = (
 				4CB016AC28B3242A0039F675 /* PaintContextIOS.mm in Sources */,
 				4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */,
+				4CB016C828B33C1A0039F675 /* StyleSheet.cpp in Sources */,
 				4CB016A328B323F80039F675 /* BoymueView.m in Sources */,
 				4CB016AD28B3242A0039F675 /* BoymueIOSGLContext.m in Sources */,
+				4CB016C928B33C1A0039F675 /* StyleEngine.cpp in Sources */,
+				4CB016CA28B33C1A0039F675 /* StyleParser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +329,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					GLES_SILENCE_DEPRECATION,
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -360,6 +413,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					GLES_SILENCE_DEPRECATION,
+					"$(inherited)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/core",
@@ -395,6 +453,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					GLES_SILENCE_DEPRECATION,
+					"$(inherited)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/core",

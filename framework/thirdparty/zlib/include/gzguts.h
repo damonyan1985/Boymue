@@ -209,7 +209,7 @@ unsigned ZLIB_INTERNAL gz_intmax OF((void));
 #endif
 
 // IOS上需要添加open和read头文件
-#ifdef ENABLE_BOYIA_IOS
+#ifdef ENABLE_BOYMUE_IOS
 #include <fcntl.h>
 #include <unistd.h>
 #endif

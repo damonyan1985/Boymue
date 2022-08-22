@@ -3641,7 +3641,7 @@
 					"HAVE_EXPAT_CONFIG_H=1",
 					"FT2_BUILD_LIBRARY=1",
 					"DEBUG=1",
-					"ENABLE_BOYIA_IOS=1",
+					"ENABLE_BOYMUE_IOS=1",
 					"SK_SUPPORT_GPU=1",
 					"$(inherited)",
 				);
@@ -3751,7 +3751,7 @@
 					"HAVE_EXPAT_CONFIG_H=1",
 					"FT2_BUILD_LIBRARY=1",
 					"DEBUG=1",
-					"ENABLE_BOYIA_IOS=1",
+					"ENABLE_BOYMUE_IOS=1",
 					"SK_SUPPORT_GPU=1",
 					"SK_BUILD_FOR_IOS=1",
 					NDEBUG,

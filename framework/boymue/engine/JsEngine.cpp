@@ -9,6 +9,9 @@
 #include "libplatform/libplatform.h"
 
 namespace boymue {
+#if ENABLE_BOYMUE_IOS
+#else
+  
 using namespace v8;
 
 class ArrayBufferAllocator : public ArrayBuffer::Allocator {
@@ -242,4 +245,6 @@ JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
 JsEngine::~JsEngine() {}
 
 JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
+#endif
+
 }  // namespace boymue

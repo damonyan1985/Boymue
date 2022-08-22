@@ -14,4 +14,6 @@
 ## 相关编译事项
 ```
 1. C++17不支持异常处理，需要添加-Wno-dynamic-exception-spec进行忽略异常处理, IOS中在Other Warning Flags中添加
+2. 鉴于目前ios将opengles2标注为过期，使用GLES_SILENCE_DEPRECATION来忽略代码中的警告
+3. Windows与Android上将使用V8 JS引擎，IOS上由于不能开启JIT，所以采用包更小的QuickJS
 ```
