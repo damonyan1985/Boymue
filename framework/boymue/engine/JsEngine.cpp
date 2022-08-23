@@ -2,14 +2,80 @@
 // Author boymue on 2021.01.09
 
 #include "JsEngine.h"
+#include "BoymueApplication.h"
+
+#ifdef ENABLE_BOYMUE_IOS
+#include "qjs/include/cutils.h"
+#include "qjs/include/quickjs-libc.h"
+#else
+#include "v8.h"
+#include "libplatform/libplatform.h"
+#endif
 
 #include <string>
 
-#include "BoymueApplication.h"
-#include "libplatform/libplatform.h"
-
 namespace boymue {
 #if ENABLE_BOYMUE_IOS
+
+#define KB (1024)
+#define MB (1024*1024)
+// 使用qjs
+class JsRuntimeImpl : public JsRuntime {
+ public:
+    JsRuntimeImpl() {
+        m_runtime = JS_NewRuntime();
+        JS_SetMemoryLimit(m_runtime, 8 * MB);
+        JS_SetMaxStackSize(m_runtime, 1 * MB);
+        //m_context = JS_NewCustomContext(m_runtime);
+        // 初始化JS context
+        JSContext* ctx = JS_NewContext(m_runtime);
+        if (!ctx)
+            return;
+        /* system modules */
+        js_init_module_std(ctx, "std");
+        js_init_module_os(ctx, "os");
+        
+        m_context = ctx;
+    }
+    
+    virtual void setContext(BoymueApplication* app) {
+        
+    }
+    virtual ~JsRuntimeImpl() {}
+
+    virtual void doAction(const RuntimeClosure& action) {
+        
+    };
+    virtual void evaluateJs(const std::string& jsSource) {
+        
+    };
+    virtual void registerApi(JsApiInterface* api) {
+        
+    };
+    
+private:
+    JSRuntime* m_runtime;
+    JSContext* m_context;
+};
+
+class JsInitor {
+ public:
+  JsInitor() {
+  }
+
+  ~JsInitor() {
+  }
+
+ private:
+};
+
+// unique_ptr can be return for right reference by compiler
+JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
+
+JsEngine::~JsEngine() {}
+
+JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
+
 #else
   
 using namespace v8;

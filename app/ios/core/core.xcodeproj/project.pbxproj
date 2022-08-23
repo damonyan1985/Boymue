@@ -8,9 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
-		4CB016A328B323F80039F675 /* BoymueView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169F28B323F80039F675 /* BoymueView.m */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
-		4CB016A528B323F80039F675 /* BoymueView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueView.h */; };
+		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
 		4CB016AA28B3242A0039F675 /* BoymueIOSGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A628B3242A0039F675 /* BoymueIOSGLContext.h */; };
 		4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A728B3242A0039F675 /* PaintContextIOS.h */; };
 		4CB016AC28B3242A0039F675 /* PaintContextIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016A828B3242A0039F675 /* PaintContextIOS.mm */; };
@@ -27,14 +26,43 @@
 		4CB016C928B33C1A0039F675 /* StyleEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016C228B33C1A0039F675 /* StyleEngine.cpp */; };
 		4CB016CA28B33C1A0039F675 /* StyleParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016C328B33C1A0039F675 /* StyleParser.cpp */; };
 		4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016C428B33C1A0039F675 /* StyleSheet.h */; };
+		4CB016D028B4CF660039F675 /* JsApiInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016CD28B4CF650039F675 /* JsApiInterface.h */; };
+		4CB016D128B4CF660039F675 /* JsEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016CE28B4CF650039F675 /* JsEngine.h */; };
+		4CB016D228B4CF660039F675 /* JsEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016CF28B4CF650039F675 /* JsEngine.cpp */; };
+		4CB016DB28B4D05D0039F675 /* ThreadExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016D728B4D05D0039F675 /* ThreadExecutor.h */; };
+		4CB016DC28B4D05D0039F675 /* ThreadExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016D828B4D05D0039F675 /* ThreadExecutor.cpp */; };
+		4CB016DD28B4D05D0039F675 /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016D928B4D05D0039F675 /* Thread.h */; };
+		4CB016DE28B4D05D0039F675 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016DA28B4D05D0039F675 /* Thread.cpp */; };
+		4CB016E128B4D0780039F675 /* WaitEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016DF28B4D0780039F675 /* WaitEvent.cpp */; };
+		4CB016E228B4D0780039F675 /* WaitEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016E028B4D0780039F675 /* WaitEvent.h */; };
+		4CB016E628B4D0910039F675 /* TimePoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016E328B4D0910039F675 /* TimePoint.cpp */; };
+		4CB016E728B4D0910039F675 /* TimeDelta.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016E428B4D0910039F675 /* TimeDelta.h */; };
+		4CB016E828B4D0910039F675 /* TimePoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016E528B4D0910039F675 /* TimePoint.h */; };
+		4CB016EF28B4D0A70039F675 /* Task.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016E928B4D0A70039F675 /* Task.h */; };
+		4CB016F028B4D0A70039F675 /* TaskRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016EA28B4D0A70039F675 /* TaskRunner.h */; };
+		4CB016F128B4D0A70039F675 /* TaskThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016EB28B4D0A70039F675 /* TaskThread.cpp */; };
+		4CB016F228B4D0A70039F675 /* TaskRunner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016EC28B4D0A70039F675 /* TaskRunner.cpp */; };
+		4CB016F328B4D0A70039F675 /* TaskThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016ED28B4D0A70039F675 /* TaskThread.h */; };
+		4CB016F428B4D0A80039F675 /* Task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016EE28B4D0A70039F675 /* Task.cpp */; };
+		4CB016F828B4D16F0039F675 /* BoymueApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016F628B4D16F0039F675 /* BoymueApplication.cpp */; };
+		4CB016F928B4D16F0039F675 /* BoymueApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016F728B4D16F0039F675 /* BoymueApplication.h */; };
+		4CB016FD28B4D18E0039F675 /* BoymueView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016FB28B4D18D0039F675 /* BoymueView.h */; };
+		4CB016FE28B4D18E0039F675 /* BoymueView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB016FC28B4D18D0039F675 /* BoymueView.cpp */; };
+		4CB0170228B4D1A30039F675 /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016FF28B4D1A20039F675 /* Layout.h */; };
+		4CB0170328B4D1A30039F675 /* TextLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0170028B4D1A30039F675 /* TextLayout.h */; };
+		4CB0170428B4D1A30039F675 /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0170128B4D1A30039F675 /* Layout.cpp */; };
+		4CB0170628B4D2900039F675 /* BoymueAppView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0170528B4D2900039F675 /* BoymueAppView.m */; };
+		4CB0170C28B4D2DB0039F675 /* JsLogApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0170828B4D2DB0039F675 /* JsLogApi.cpp */; };
+		4CB0170D28B4D2DB0039F675 /* JsLogApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0170928B4D2DB0039F675 /* JsLogApi.h */; };
+		4CB0170E28B4D2DB0039F675 /* JSTestApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0170A28B4D2DB0039F675 /* JSTestApi.h */; };
+		4CB0170F28B4D2DB0039F675 /* JSTestApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
-		4CB0169F28B323F80039F675 /* BoymueView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BoymueView.m; path = ../../../framework/boymue/port/ios/BoymueView.m; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
-		4CB016A128B323F80039F675 /* BoymueView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueView.h; path = ../../../framework/boymue/port/ios/BoymueView.h; sourceTree = "<group>"; };
+		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
 		4CB016A628B3242A0039F675 /* BoymueIOSGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueIOSGLContext.h; path = ../../../framework/boymue/platform/ios/BoymueIOSGLContext.h; sourceTree = "<group>"; };
 		4CB016A728B3242A0039F675 /* PaintContextIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PaintContextIOS.h; path = ../../../framework/boymue/platform/ios/PaintContextIOS.h; sourceTree = "<group>"; };
 		4CB016A828B3242A0039F675 /* PaintContextIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = PaintContextIOS.mm; path = ../../../framework/boymue/platform/ios/PaintContextIOS.mm; sourceTree = "<group>"; };
@@ -50,6 +78,36 @@
 		4CB016C228B33C1A0039F675 /* StyleEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StyleEngine.cpp; path = ../../../framework/boymue/core/style/StyleEngine.cpp; sourceTree = "<group>"; };
 		4CB016C328B33C1A0039F675 /* StyleParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StyleParser.cpp; path = ../../../framework/boymue/core/style/StyleParser.cpp; sourceTree = "<group>"; };
 		4CB016C428B33C1A0039F675 /* StyleSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StyleSheet.h; path = ../../../framework/boymue/core/style/StyleSheet.h; sourceTree = "<group>"; };
+		4CB016CD28B4CF650039F675 /* JsApiInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsApiInterface.h; path = ../../../framework/boymue/engine/JsApiInterface.h; sourceTree = "<group>"; };
+		4CB016CE28B4CF650039F675 /* JsEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsEngine.h; path = ../../../framework/boymue/engine/JsEngine.h; sourceTree = "<group>"; };
+		4CB016CF28B4CF650039F675 /* JsEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JsEngine.cpp; path = ../../../framework/boymue/engine/JsEngine.cpp; sourceTree = "<group>"; };
+		4CB016D728B4D05D0039F675 /* ThreadExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadExecutor.h; path = ../../../framework/boymue/thread/ThreadExecutor.h; sourceTree = "<group>"; };
+		4CB016D828B4D05D0039F675 /* ThreadExecutor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadExecutor.cpp; path = ../../../framework/boymue/thread/ThreadExecutor.cpp; sourceTree = "<group>"; };
+		4CB016D928B4D05D0039F675 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Thread.h; path = ../../../framework/boymue/thread/Thread.h; sourceTree = "<group>"; };
+		4CB016DA28B4D05D0039F675 /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Thread.cpp; path = ../../../framework/boymue/thread/Thread.cpp; sourceTree = "<group>"; };
+		4CB016DF28B4D0780039F675 /* WaitEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaitEvent.cpp; path = ../../../framework/boymue/thread/event/WaitEvent.cpp; sourceTree = "<group>"; };
+		4CB016E028B4D0780039F675 /* WaitEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WaitEvent.h; path = ../../../framework/boymue/thread/event/WaitEvent.h; sourceTree = "<group>"; };
+		4CB016E328B4D0910039F675 /* TimePoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimePoint.cpp; path = ../../../framework/boymue/thread/time/TimePoint.cpp; sourceTree = "<group>"; };
+		4CB016E428B4D0910039F675 /* TimeDelta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeDelta.h; path = ../../../framework/boymue/thread/time/TimeDelta.h; sourceTree = "<group>"; };
+		4CB016E528B4D0910039F675 /* TimePoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimePoint.h; path = ../../../framework/boymue/thread/time/TimePoint.h; sourceTree = "<group>"; };
+		4CB016E928B4D0A70039F675 /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Task.h; path = ../../../framework/boymue/thread/task/Task.h; sourceTree = "<group>"; };
+		4CB016EA28B4D0A70039F675 /* TaskRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TaskRunner.h; path = ../../../framework/boymue/thread/task/TaskRunner.h; sourceTree = "<group>"; };
+		4CB016EB28B4D0A70039F675 /* TaskThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TaskThread.cpp; path = ../../../framework/boymue/thread/task/TaskThread.cpp; sourceTree = "<group>"; };
+		4CB016EC28B4D0A70039F675 /* TaskRunner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TaskRunner.cpp; path = ../../../framework/boymue/thread/task/TaskRunner.cpp; sourceTree = "<group>"; };
+		4CB016ED28B4D0A70039F675 /* TaskThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TaskThread.h; path = ../../../framework/boymue/thread/task/TaskThread.h; sourceTree = "<group>"; };
+		4CB016EE28B4D0A70039F675 /* Task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Task.cpp; path = ../../../framework/boymue/thread/task/Task.cpp; sourceTree = "<group>"; };
+		4CB016F628B4D16F0039F675 /* BoymueApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BoymueApplication.cpp; path = ../../../framework/boymue/app/BoymueApplication.cpp; sourceTree = "<group>"; };
+		4CB016F728B4D16F0039F675 /* BoymueApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueApplication.h; path = ../../../framework/boymue/app/BoymueApplication.h; sourceTree = "<group>"; };
+		4CB016FB28B4D18D0039F675 /* BoymueView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueView.h; path = ../../../framework/boymue/core/view/BoymueView.h; sourceTree = "<group>"; };
+		4CB016FC28B4D18D0039F675 /* BoymueView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BoymueView.cpp; path = ../../../framework/boymue/core/view/BoymueView.cpp; sourceTree = "<group>"; };
+		4CB016FF28B4D1A20039F675 /* Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Layout.h; path = ../../../framework/boymue/core/layout/Layout.h; sourceTree = "<group>"; };
+		4CB0170028B4D1A30039F675 /* TextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextLayout.h; path = ../../../framework/boymue/core/layout/TextLayout.h; sourceTree = "<group>"; };
+		4CB0170128B4D1A30039F675 /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Layout.cpp; path = ../../../framework/boymue/core/layout/Layout.cpp; sourceTree = "<group>"; };
+		4CB0170528B4D2900039F675 /* BoymueAppView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BoymueAppView.m; path = ../../../framework/boymue/port/ios/BoymueAppView.m; sourceTree = "<group>"; };
+		4CB0170828B4D2DB0039F675 /* JsLogApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JsLogApi.cpp; path = ../../../framework/boymue/apis/JsLogApi.cpp; sourceTree = "<group>"; };
+		4CB0170928B4D2DB0039F675 /* JsLogApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsLogApi.h; path = ../../../framework/boymue/apis/JsLogApi.h; sourceTree = "<group>"; };
+		4CB0170A28B4D2DB0039F675 /* JSTestApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTestApi.h; path = ../../../framework/boymue/apis/JSTestApi.h; sourceTree = "<group>"; };
+		4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSTestApi.cpp; path = ../../../framework/boymue/apis/JSTestApi.cpp; sourceTree = "<group>"; };
 		4CCD171928B320B800B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD171C28B320B800B4D4FB /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -71,6 +129,9 @@
 		4CB0169928B323BD0039F675 /* boymue */ = {
 			isa = PBXGroup;
 			children = (
+				4CB0170728B4D2BB0039F675 /* apis */,
+				4CB016F528B4D15E0039F675 /* app */,
+				4CB016D328B4D01F0039F675 /* thread */,
 				4CB0169C28B323D30039F675 /* port */,
 				4CB0169B28B323CB0039F675 /* platform */,
 				4CB0169A28B323C40039F675 /* core */,
@@ -81,6 +142,7 @@
 		4CB0169A28B323C40039F675 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				4CB016FA28B4D1780039F675 /* view */,
 				4CB016CC28B33C4B0039F675 /* layout */,
 				4CB016BD28B33BF90039F675 /* style */,
 				4CB016BC28B33A7D0039F675 /* engine */,
@@ -103,8 +165,8 @@
 		4CB0169C28B323D30039F675 /* port */ = {
 			isa = PBXGroup;
 			children = (
-				4CB016A128B323F80039F675 /* BoymueView.h */,
-				4CB0169F28B323F80039F675 /* BoymueView.m */,
+				4CB0170528B4D2900039F675 /* BoymueAppView.m */,
+				4CB016A128B323F80039F675 /* BoymueAppView.h */,
 				4CB016A028B323F80039F675 /* BoymueViewController.h */,
 				4CB0169E28B323F80039F675 /* BoymueViewController.mm */,
 			);
@@ -132,6 +194,9 @@
 		4CB016BC28B33A7D0039F675 /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				4CB016CD28B4CF650039F675 /* JsApiInterface.h */,
+				4CB016CF28B4CF650039F675 /* JsEngine.cpp */,
+				4CB016CE28B4CF650039F675 /* JsEngine.h */,
 			);
 			name = engine;
 			sourceTree = "<group>";
@@ -153,8 +218,86 @@
 		4CB016CC28B33C4B0039F675 /* layout */ = {
 			isa = PBXGroup;
 			children = (
+				4CB0170128B4D1A30039F675 /* Layout.cpp */,
+				4CB016FF28B4D1A20039F675 /* Layout.h */,
+				4CB0170028B4D1A30039F675 /* TextLayout.h */,
 			);
 			name = layout;
+			sourceTree = "<group>";
+		};
+		4CB016D328B4D01F0039F675 /* thread */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016DA28B4D05D0039F675 /* Thread.cpp */,
+				4CB016D928B4D05D0039F675 /* Thread.h */,
+				4CB016D828B4D05D0039F675 /* ThreadExecutor.cpp */,
+				4CB016D728B4D05D0039F675 /* ThreadExecutor.h */,
+				4CB016D628B4D0450039F675 /* event */,
+				4CB016D528B4D03F0039F675 /* time */,
+				4CB016D428B4D0380039F675 /* task */,
+			);
+			name = thread;
+			sourceTree = "<group>";
+		};
+		4CB016D428B4D0380039F675 /* task */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016EE28B4D0A70039F675 /* Task.cpp */,
+				4CB016E928B4D0A70039F675 /* Task.h */,
+				4CB016EC28B4D0A70039F675 /* TaskRunner.cpp */,
+				4CB016EA28B4D0A70039F675 /* TaskRunner.h */,
+				4CB016EB28B4D0A70039F675 /* TaskThread.cpp */,
+				4CB016ED28B4D0A70039F675 /* TaskThread.h */,
+			);
+			name = task;
+			sourceTree = "<group>";
+		};
+		4CB016D528B4D03F0039F675 /* time */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016E428B4D0910039F675 /* TimeDelta.h */,
+				4CB016E328B4D0910039F675 /* TimePoint.cpp */,
+				4CB016E528B4D0910039F675 /* TimePoint.h */,
+			);
+			name = time;
+			sourceTree = "<group>";
+		};
+		4CB016D628B4D0450039F675 /* event */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016DF28B4D0780039F675 /* WaitEvent.cpp */,
+				4CB016E028B4D0780039F675 /* WaitEvent.h */,
+			);
+			name = event;
+			sourceTree = "<group>";
+		};
+		4CB016F528B4D15E0039F675 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016F628B4D16F0039F675 /* BoymueApplication.cpp */,
+				4CB016F728B4D16F0039F675 /* BoymueApplication.h */,
+			);
+			name = app;
+			sourceTree = "<group>";
+		};
+		4CB016FA28B4D1780039F675 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				4CB016FC28B4D18D0039F675 /* BoymueView.cpp */,
+				4CB016FB28B4D18D0039F675 /* BoymueView.h */,
+			);
+			name = view;
+			sourceTree = "<group>";
+		};
+		4CB0170728B4D2BB0039F675 /* apis */ = {
+			isa = PBXGroup;
+			children = (
+				4CB0170828B4D2DB0039F675 /* JsLogApi.cpp */,
+				4CB0170928B4D2DB0039F675 /* JsLogApi.h */,
+				4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */,
+				4CB0170A28B4D2DB0039F675 /* JSTestApi.h */,
+			);
+			name = apis;
 			sourceTree = "<group>";
 		};
 		4CCD170F28B320B800B4D4FB = {
@@ -190,16 +333,32 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CB016E828B4D0910039F675 /* TimePoint.h in Headers */,
 				4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */,
 				4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */,
+				4CB016F928B4D16F0039F675 /* BoymueApplication.h in Headers */,
+				4CB016D028B4CF660039F675 /* JsApiInterface.h in Headers */,
+				4CB0170328B4D1A30039F675 /* TextLayout.h in Headers */,
 				4CB016C628B33C1A0039F675 /* StyleEngine.h in Headers */,
 				4CB016C728B33C1A0039F675 /* Style.h in Headers */,
+				4CB016F028B4D0A70039F675 /* TaskRunner.h in Headers */,
+				4CB016DB28B4D05D0039F675 /* ThreadExecutor.h in Headers */,
 				4CB016C528B33C1A0039F675 /* StyleParser.h in Headers */,
+				4CB016F328B4D0A70039F675 /* TaskThread.h in Headers */,
 				4CCD171D28B320B800B4D4FB /* core.h in Headers */,
+				4CB0170D28B4D2DB0039F675 /* JsLogApi.h in Headers */,
+				4CB0170E28B4D2DB0039F675 /* JSTestApi.h in Headers */,
+				4CB016FD28B4D18E0039F675 /* BoymueView.h in Headers */,
 				4CB016AA28B3242A0039F675 /* BoymueIOSGLContext.h in Headers */,
-				4CB016A528B323F80039F675 /* BoymueView.h in Headers */,
+				4CB016E228B4D0780039F675 /* WaitEvent.h in Headers */,
+				4CB016E728B4D0910039F675 /* TimeDelta.h in Headers */,
+				4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4CB016AF28B3243F0039F675 /* PaintContext.h in Headers */,
+				4CB0170228B4D1A30039F675 /* Layout.h in Headers */,
+				4CB016EF28B4D0A70039F675 /* Task.h in Headers */,
+				4CB016DD28B4D05D0039F675 /* Thread.h in Headers */,
+				4CB016D128B4CF660039F675 /* JsEngine.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,13 +431,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CB016D228B4CF660039F675 /* JsEngine.cpp in Sources */,
+				4CB0170628B4D2900039F675 /* BoymueAppView.m in Sources */,
 				4CB016AC28B3242A0039F675 /* PaintContextIOS.mm in Sources */,
 				4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */,
+				4CB016DE28B4D05D0039F675 /* Thread.cpp in Sources */,
 				4CB016C828B33C1A0039F675 /* StyleSheet.cpp in Sources */,
-				4CB016A328B323F80039F675 /* BoymueView.m in Sources */,
+				4CB016F128B4D0A70039F675 /* TaskThread.cpp in Sources */,
+				4CB016DC28B4D05D0039F675 /* ThreadExecutor.cpp in Sources */,
+				4CB016FE28B4D18E0039F675 /* BoymueView.cpp in Sources */,
+				4CB0170428B4D1A30039F675 /* Layout.cpp in Sources */,
+				4CB016F228B4D0A70039F675 /* TaskRunner.cpp in Sources */,
+				4CB016F428B4D0A80039F675 /* Task.cpp in Sources */,
+				4CB016E628B4D0910039F675 /* TimePoint.cpp in Sources */,
+				4CB016F828B4D16F0039F675 /* BoymueApplication.cpp in Sources */,
+				4CB016E128B4D0780039F675 /* WaitEvent.cpp in Sources */,
 				4CB016AD28B3242A0039F675 /* BoymueIOSGLContext.m in Sources */,
 				4CB016C928B33C1A0039F675 /* StyleEngine.cpp in Sources */,
+				4CB0170F28B4D2DB0039F675 /* JSTestApi.cpp in Sources */,
 				4CB016CA28B33C1A0039F675 /* StyleParser.cpp in Sources */,
+				4CB0170C28B4D2DB0039F675 /* JsLogApi.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,6 +588,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					GLES_SILENCE_DEPRECATION,
+					"ENABLE_BOYMUE_IOS=1",
 					"$(inherited)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
@@ -426,7 +599,15 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/config",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform/ios",
+					"$(PROJECT_DIR)/../../../framework/boymue/core/view",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/event",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/time",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/task",
+					"$(PROJECT_DIR)/../../../framework/boymue/app",
+					"$(PROJECT_DIR)/../../../framework/boymue/apis",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -455,6 +636,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					GLES_SILENCE_DEPRECATION,
+					"ENABLE_BOYMUE_IOS=1",
 					"$(inherited)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
@@ -465,7 +647,15 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/config",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform/ios",
+					"$(PROJECT_DIR)/../../../framework/boymue/core/view",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/event",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/time",
+					"$(PROJECT_DIR)/../../../framework/boymue/thread/task",
+					"$(PROJECT_DIR)/../../../framework/boymue/app",
+					"$(PROJECT_DIR)/../../../framework/boymue/apis",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

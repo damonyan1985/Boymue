@@ -8,7 +8,7 @@
 #include "PaintContextIOS.h"
 
 #import "BoymueViewController.h"
-#import "BoymueView.h"
+#import "BoymueAppView.h"
 #include "SkTypeface.h"
 
 #import <GLKit/GLKit.h>
@@ -16,7 +16,7 @@
 
 @interface BoymueViewController()
 
-@property (nonatomic, strong) BoymueView* boymueView;
+@property (nonatomic, strong) BoymueAppView* boymueView;
 
 @property (nonatomic, strong) BoymueIOSGLContext* glContext;
 @property (nonatomic, assign) GLuint framebuffer;
@@ -30,7 +30,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.boymueView = [[BoymueView alloc] initWithFrame:self.view.bounds];
+    self.boymueView = [[BoymueAppView alloc] initWithFrame:self.view.bounds];
     self.boymueView.eaLayer.frame = self.view.bounds;
     self.boymueView.eaLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking:@NO, kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8};
     self.boymueView.eaLayer.opaque = YES;

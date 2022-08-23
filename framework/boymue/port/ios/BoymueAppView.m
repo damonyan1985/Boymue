@@ -6,14 +6,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "BoymueView.h"
+#include "BoymueAppView.h"
 
-@interface BoymueView()
+@interface BoymueAppView()
 
 @end
 
 
-@implementation BoymueView
+@implementation BoymueAppView
 
 // 利用CAEAGLLayer类来创建CAEAGLLayer对象
 +(Class)layerClass {

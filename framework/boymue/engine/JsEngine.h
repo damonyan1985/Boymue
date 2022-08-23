@@ -8,7 +8,6 @@
 #include <string>
 
 #include "JsApiInterface.h"
-#include "v8.h"
 
 using namespace std;
 
@@ -26,8 +25,6 @@ class JsRuntime {
   virtual void doAction(const RuntimeClosure& action) = 0;
   virtual void evaluateJs(const std::string& jsSource) = 0;
   virtual void registerApi(JsApiInterface* api) = 0;
-  virtual v8::Isolate* getIsolate() = 0;
-  virtual v8::Local<v8::Context> getJsContext() = 0;
 };
 
 class JsInitor;

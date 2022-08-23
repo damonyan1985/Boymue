@@ -5,12 +5,12 @@
 //  Created by yanbo on 2022/8/17.
 //
 
-#ifndef BoymueView_h
-#define BoymueView_h
+#ifndef BoymueAppView_h
+#define BoymueAppView_h
 
 #import <UIKit/UIKit.h>
 
-@interface BoymueView : UIView
+@interface BoymueAppView : UIView
 
 -(CAEAGLLayer*)eaLayer;
 
