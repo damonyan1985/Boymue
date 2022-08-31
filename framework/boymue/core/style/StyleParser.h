@@ -18,7 +18,7 @@ public:
     StyleParser();
     ~StyleParser();
 
-    StyleSheet* parse(const std::string& cssText);    
+    StyleSheet* parse(const String& cssText);    
 };
     
 }

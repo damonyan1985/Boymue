@@ -3,6 +3,7 @@
 
 #include "JsEngine.h"
 #include "BoymueApplication.h"
+#include "StringUtil.h"
 
 #ifdef ENABLE_BOYMUE_IOS
 #include "qjs/include/cutils.h"
@@ -19,18 +20,43 @@ namespace boymue {
 
 #define KB (1024)
 #define MB (1024*1024)
+
+static JSValue JsApiHandlerImpl(JSContext *ctx, JSValueConst this_val,
+                int argc, JSValueConst *argv, void *external) {
+    JSValue obj;
+    size_t len;
+
+    const char *str = JS_ToCStringLen(ctx, &len, argv[0]);
+    
+    JsApiInterface* api = static_cast<JsApiInterface*>(external);
+    closure task = [api, str, len] {
+      if (api) {
+          api->execute(String(str, len), nullptr);
+      }
+    };
+    if (api->executor()) {
+        api->executor()->submitTask(task);
+    } else {
+        task();
+    }
+
+    return obj;
+}
+
 // 使用qjs
 class JsRuntimeImpl : public JsRuntime {
  public:
-    JsRuntimeImpl() {
+    JsRuntimeImpl()
+        : m_app(nullptr) {
         m_runtime = JS_NewRuntime();
         JS_SetMemoryLimit(m_runtime, 8 * MB);
         JS_SetMaxStackSize(m_runtime, 1 * MB);
-        //m_context = JS_NewCustomContext(m_runtime);
+        js_std_init_handlers(m_runtime);
         // 初始化JS context
         JSContext* ctx = JS_NewContext(m_runtime);
         if (!ctx)
             return;
+        // 在此处添加内置对象或者函数
         /* system modules */
         js_init_module_std(ctx, "std");
         js_init_module_os(ctx, "os");
@@ -38,24 +64,41 @@ class JsRuntimeImpl : public JsRuntime {
         m_context = ctx;
     }
     
+    // qjs使用js_call_c_function来执行native function
     virtual void setContext(BoymueApplication* app) {
+        m_app = app;
+        if (m_apiEntries.size() == 0) {
+            return;
+        }
         
+        JS_AddGlobalObject(m_context,
+                           "boymue",
+                           m_apiEntries.data(),
+                           (int)m_apiEntries.size());
     }
+    
     virtual ~JsRuntimeImpl() {}
 
     virtual void doAction(const RuntimeClosure& action) {
         
     };
-    virtual void evaluateJs(const std::string& jsSource) {
-        
-    };
-    virtual void registerApi(JsApiInterface* api) {
+    
+    virtual void evaluateJs(const String& jsSource) {
         
     };
     
+    virtual void registerApi(JsApiInterface* api) {
+        // JS_CFUNC_DEF中第2个表示参数个数
+        JSCFunctionListEntry entry = JS_CFUNC_EXTERNAL_DEF(api->name(), 2, JsApiHandlerImpl, api);
+        m_apiEntries.push_back(entry);
+    }
+    
 private:
+    
+    Vector<JSCFunctionListEntry> m_apiEntries;
     JSRuntime* m_runtime;
     JSContext* m_context;
+    BoymueApplication* m_app;
 };
 
 class JsInitor {

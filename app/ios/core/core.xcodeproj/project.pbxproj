@@ -56,6 +56,10 @@
 		4CB0170D28B4D2DB0039F675 /* JsLogApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0170928B4D2DB0039F675 /* JsLogApi.h */; };
 		4CB0170E28B4D2DB0039F675 /* JSTestApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0170A28B4D2DB0039F675 /* JSTestApi.h */; };
 		4CB0170F28B4D2DB0039F675 /* JSTestApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */; };
+		4CB0171328B5DD490039F675 /* StringUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB0171128B5DD490039F675 /* StringUtil.h */; };
+		4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0171228B5DD490039F675 /* StringUtil.cpp */; };
+		4CB0175628BF8A640039F675 /* example in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175528BF8A640039F675 /* example */; };
+		4CB0175728BF8AD30039F675 /* assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175028BF89070039F675 /* assets.bundle */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -108,11 +112,22 @@
 		4CB0170928B4D2DB0039F675 /* JsLogApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsLogApi.h; path = ../../../framework/boymue/apis/JsLogApi.h; sourceTree = "<group>"; };
 		4CB0170A28B4D2DB0039F675 /* JSTestApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTestApi.h; path = ../../../framework/boymue/apis/JSTestApi.h; sourceTree = "<group>"; };
 		4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSTestApi.cpp; path = ../../../framework/boymue/apis/JSTestApi.cpp; sourceTree = "<group>"; };
+		4CB0171128B5DD490039F675 /* StringUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StringUtil.h; path = ../../../framework/boymue/util/StringUtil.h; sourceTree = "<group>"; };
+		4CB0171228B5DD490039F675 /* StringUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StringUtil.cpp; path = ../../../framework/boymue/util/StringUtil.cpp; sourceTree = "<group>"; };
+		4CB0175028BF89070039F675 /* assets.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = assets.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CB0175528BF8A640039F675 /* example */ = {isa = PBXFileReference; lastKnownFileType = folder; name = example; path = ../../../../boymuejs/example; sourceTree = "<group>"; };
 		4CCD171928B320B800B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD171C28B320B800B4D4FB /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4CB0174D28BF89070039F675 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4CCD171628B320B800B4D4FB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,6 +144,8 @@
 		4CB0169928B323BD0039F675 /* boymue */ = {
 			isa = PBXGroup;
 			children = (
+				4CB016BC28B33A7D0039F675 /* engine */,
+				4CB0171028B5DD150039F675 /* util */,
 				4CB0170728B4D2BB0039F675 /* apis */,
 				4CB016F528B4D15E0039F675 /* app */,
 				4CB016D328B4D01F0039F675 /* thread */,
@@ -145,7 +162,6 @@
 				4CB016FA28B4D1780039F675 /* view */,
 				4CB016CC28B33C4B0039F675 /* layout */,
 				4CB016BD28B33BF90039F675 /* style */,
-				4CB016BC28B33A7D0039F675 /* engine */,
 				4CB0169D28B323DA0039F675 /* paint */,
 			);
 			name = core;
@@ -300,11 +316,29 @@
 			name = apis;
 			sourceTree = "<group>";
 		};
+		4CB0171028B5DD150039F675 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				4CB0171128B5DD490039F675 /* StringUtil.h */,
+				4CB0171228B5DD490039F675 /* StringUtil.cpp */,
+			);
+			name = util;
+			sourceTree = "<group>";
+		};
+		4CB0175428BF89860039F675 /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				4CB0175528BF8A640039F675 /* example */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
 		4CCD170F28B320B800B4D4FB = {
 			isa = PBXGroup;
 			children = (
 				4CB0169928B323BD0039F675 /* boymue */,
 				4CCD171B28B320B800B4D4FB /* core */,
+				4CB0175428BF89860039F675 /* assets */,
 				4CCD171A28B320B800B4D4FB /* Products */,
 				4CB016B028B325CA0039F675 /* Frameworks */,
 			);
@@ -314,6 +348,7 @@
 			isa = PBXGroup;
 			children = (
 				4CCD171928B320B800B4D4FB /* core.framework */,
+				4CB0175028BF89070039F675 /* assets.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -353,6 +388,7 @@
 				4CB016E228B4D0780039F675 /* WaitEvent.h in Headers */,
 				4CB016E728B4D0910039F675 /* TimeDelta.h in Headers */,
 				4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */,
+				4CB0171328B5DD490039F675 /* StringUtil.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4CB016AF28B3243F0039F675 /* PaintContext.h in Headers */,
 				4CB0170228B4D1A30039F675 /* Layout.h in Headers */,
@@ -365,6 +401,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		4CB0174F28BF89070039F675 /* assets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4CB0175128BF89070039F675 /* Build configuration list for PBXNativeTarget "assets" */;
+			buildPhases = (
+				4CB0174C28BF89070039F675 /* Sources */,
+				4CB0174D28BF89070039F675 /* Frameworks */,
+				4CB0174E28BF89070039F675 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = assets;
+			productName = assets;
+			productReference = 4CB0175028BF89070039F675 /* assets.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		4CCD171828B320B800B4D4FB /* core */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4CCD172028B320B800B4D4FB /* Build configuration list for PBXNativeTarget "core" */;
@@ -392,6 +445,9 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastUpgradeCheck = 1310;
 				TargetAttributes = {
+					4CB0174F28BF89070039F675 = {
+						CreatedOnToolsVersion = 13.1;
+					};
 					4CCD171828B320B800B4D4FB = {
 						CreatedOnToolsVersion = 13.1;
 					};
@@ -411,15 +467,25 @@
 			projectRoot = "";
 			targets = (
 				4CCD171828B320B800B4D4FB /* core */,
+				4CB0174F28BF89070039F675 /* assets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4CB0174E28BF89070039F675 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CB0175628BF8A640039F675 /* example in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4CCD171728B320B800B4D4FB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CB0175728BF8AD30039F675 /* assets.bundle in Resources */,
 				4CB016BA28B3277D0039F675 /* thirdparty.framework in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -427,11 +493,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4CB0174C28BF89070039F675 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4CCD171528B320B800B4D4FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				4CB016D228B4CF660039F675 /* JsEngine.cpp in Sources */,
+				4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */,
 				4CB0170628B4D2900039F675 /* BoymueAppView.m in Sources */,
 				4CB016AC28B3242A0039F675 /* PaintContextIOS.mm in Sources */,
 				4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */,
@@ -457,6 +531,56 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		4CB0175228BF89070039F675 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 11.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.boymue.assets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		4CB0175328BF89070039F675 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 11.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.boymue.assets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		4CCD171E28B320B800B4D4FB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -607,6 +731,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/thread/task",
 					"$(PROJECT_DIR)/../../../framework/boymue/app",
 					"$(PROJECT_DIR)/../../../framework/boymue/apis",
+					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -622,6 +747,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "";
 			};
 			name = Debug;
 		};
@@ -655,6 +781,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/thread/task",
 					"$(PROJECT_DIR)/../../../framework/boymue/app",
 					"$(PROJECT_DIR)/../../../framework/boymue/apis",
+					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -670,12 +797,22 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4CB0175128BF89070039F675 /* Build configuration list for PBXNativeTarget "assets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CB0175228BF89070039F675 /* Debug */,
+				4CB0175328BF89070039F675 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4CCD171328B320B800B4D4FB /* Build configuration list for PBXProject "core" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

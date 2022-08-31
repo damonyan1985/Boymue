@@ -921,6 +921,7 @@ struct JSObject {
             uint8_t length;
             uint8_t cproto;
             int16_t magic;
+            void* external;
         } cfunc;
         /* array part for fast arrays and typed arrays */
         struct { /* JS_CLASS_ARRAY, JS_CLASS_ARGUMENTS, JS_CLASS_UINT8C_ARRAY..JS_CLASS_FLOAT64_ARRAY */
@@ -5017,11 +5018,10 @@ static int js_method_set_properties(JSContext *ctx, JSValueConst func_obj,
     return 0;
 }
 
-/* Note: at least 'length' arguments will be readable in 'argv' */
-static JSValue JS_NewCFunction3(JSContext *ctx, JSCFunction *func,
-                                const char *name,
-                                int length, JSCFunctionEnum cproto, int magic,
-                                JSValueConst proto_val)
+JSValue JS_NewCFunctionImpl(JSContext *ctx, JSCFunction *func,
+                            const char *name,
+                            int length, JSCFunctionEnum cproto, int magic, void* external,
+                            JSValueConst proto_val)
 {
     JSValue func_obj;
     JSObject *p;
@@ -5036,6 +5036,7 @@ static JSValue JS_NewCFunction3(JSContext *ctx, JSCFunction *func,
     p->u.cfunc.length = length;
     p->u.cfunc.cproto = cproto;
     p->u.cfunc.magic = magic;
+    p->u.cfunc.external = external;
     p->is_constructor = (cproto == JS_CFUNC_constructor ||
                          cproto == JS_CFUNC_constructor_magic ||
                          cproto == JS_CFUNC_constructor_or_func ||
@@ -5046,6 +5047,39 @@ static JSValue JS_NewCFunction3(JSContext *ctx, JSCFunction *func,
     js_function_set_properties(ctx, func_obj, name_atom, length);
     JS_FreeAtom(ctx, name_atom);
     return func_obj;
+}
+
+/* Note: at least 'length' arguments will be readable in 'argv' */
+static JSValue JS_NewCFunction3(JSContext *ctx, JSCFunction *func,
+                                const char *name,
+                                int length, JSCFunctionEnum cproto, int magic,
+                                JSValueConst proto_val)
+{
+    return JS_NewCFunctionImpl(ctx, func, name, length, cproto, magic, NULL, proto_val);
+
+    // JSValue func_obj;
+    // JSObject *p;
+    // JSAtom name_atom;
+    
+    // func_obj = JS_NewObjectProtoClass(ctx, proto_val, JS_CLASS_C_FUNCTION);
+    // if (JS_IsException(func_obj))
+    //     return func_obj;
+    // p = JS_VALUE_GET_OBJ(func_obj);
+    // p->u.cfunc.realm = JS_DupContext(ctx);
+    // p->u.cfunc.c_function.generic = func;
+    // p->u.cfunc.length = length;
+    // p->u.cfunc.cproto = cproto;
+    // p->u.cfunc.magic = magic;
+    // p->is_constructor = (cproto == JS_CFUNC_constructor ||
+    //                      cproto == JS_CFUNC_constructor_magic ||
+    //                      cproto == JS_CFUNC_constructor_or_func ||
+    //                      cproto == JS_CFUNC_constructor_or_func_magic);
+    // if (!name)
+    //     name = "";
+    // name_atom = JS_NewAtom(ctx, name);
+    // js_function_set_properties(ctx, func_obj, name_atom, length);
+    // JS_FreeAtom(ctx, name_atom);
+    // return func_obj;
 }
 
 /* Note: at least 'length' arguments will be readable in 'argv' */
@@ -16075,6 +16109,9 @@ static JSValue js_call_c_function(JSContext *ctx, JSValueConst func_obj,
         /* fall thru */
     case JS_CFUNC_generic:
         ret_val = func.generic(ctx, this_obj, argc, arg_buf);
+        break;
+    case JS_CFUNC_generic_external:
+        ret_val = func.generic_external(ctx, this_obj, argc, arg_buf, p->u.cfunc.external);
         break;
     case JS_CFUNC_constructor_magic:
     case JS_CFUNC_constructor_or_func_magic:
@@ -35995,6 +36032,11 @@ static JSValue JS_InstantiateFunctionListItem2(JSContext *ctx, JSObject *p,
         val = JS_NewCFunction2(ctx, e->u.func.cfunc.generic,
                                e->name, e->u.func.length, e->u.func.cproto, e->magic);
         break;
+    case JS_DEF_CFUNC_EXT:
+        val = JS_NewCFunctionImpl(ctx, e->u.func.cfunc.generic, 
+                               e->name, e->u.func.length, e->u.func.cproto, e->magic, 
+                               e->external, ctx->function_proto);
+        break;    
     case JS_DEF_PROP_STRING:
         val = JS_NewAtomString(ctx, e->u.str);
         break;
@@ -36043,6 +36085,7 @@ static int JS_InstantiateFunctionListItem(JSContext *ctx, JSValueConst obj,
         }
         break;
     case JS_DEF_CFUNC:
+    case JS_DEF_CFUNC_EXT:
         if (atom == JS_ATOM_Symbol_toPrimitive) {
             /* Symbol.toPrimitive functions are not writable */
             prop_flags = JS_PROP_CONFIGURABLE;
@@ -54058,4 +54101,13 @@ void JS_AddIntrinsicTypedArrays(JSContext *ctx)
 #ifdef CONFIG_ATOMICS
     JS_AddIntrinsicAtomics(ctx);
 #endif
+}
+
+/* 添加全局对象 */
+void JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count)
+{
+    JSCFunctionListEntry js_global_obj[] = {
+        JS_OBJECT_DEF(name, method, count, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE ),
+    };
+    JS_SetPropertyFunctionList(ctx, ctx->global_obj, js_global_obj, countof(js_global_obj));
 }

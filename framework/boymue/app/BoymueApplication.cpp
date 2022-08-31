@@ -28,6 +28,7 @@ BoymueApplication::BoymueApplication()
         std::unique_ptr<JsRuntime>(self->m_jsEngine->createRuntime());
     self->m_mainRuntime->registerApi(new boymue::JsLogApi(self));
     self->m_mainRuntime->registerApi(new boymue::JsTestApi(self));
+    self->m_mainRuntime->setContext(self);
   });
 }
 
