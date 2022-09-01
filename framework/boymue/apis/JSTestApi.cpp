@@ -1,6 +1,6 @@
 // Copyright Boymue Authors. All rights reserved.
 // Author boymue on 2021.02.02
-#include "JsTestApi.h"
+#include "JSTestApi.h"
 
 namespace boymue {
 const char* JsTestApi::name() const { return "test"; }

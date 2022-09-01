@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C2C061928C05743005EE37F /* BoymueBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C2C061828C05743005EE37F /* BoymueBridge.mm */; };
+		4C2C061C28C08485005EE37F /* thirdparty.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CB016B128B325CA0039F675 /* thirdparty.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -19,7 +20,6 @@
 		4CB016B228B325CA0039F675 /* thirdparty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB016B128B325CA0039F675 /* thirdparty.framework */; };
 		4CB016B728B327250039F675 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB016B628B327250039F675 /* GLKit.framework */; };
 		4CB016B928B327310039F675 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CB016B828B327310039F675 /* OpenGLES.framework */; };
-		4CB016BA28B3277D0039F675 /* thirdparty.framework in Resources */ = {isa = PBXBuildFile; fileRef = 4CB016B128B325CA0039F675 /* thirdparty.framework */; };
 		4CB016C528B33C1A0039F675 /* StyleParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016BE28B33C190039F675 /* StyleParser.h */; };
 		4CB016C628B33C1A0039F675 /* StyleEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016BF28B33C190039F675 /* StyleEngine.h */; };
 		4CB016C728B33C1A0039F675 /* Style.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016C028B33C190039F675 /* Style.h */; };
@@ -63,6 +63,19 @@
 		4CB0175728BF8AD30039F675 /* assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175028BF89070039F675 /* assets.bundle */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4C2C061B28C0847A005EE37F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4C2C061C28C08485005EE37F /* thirdparty.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4C2C061828C05743005EE37F /* BoymueBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueBridge.mm; path = ../../../framework/boymue/platform/ios/BoymueBridge.mm; sourceTree = "<group>"; };
@@ -431,6 +444,7 @@
 				4CCD171528B320B800B4D4FB /* Sources */,
 				4CCD171628B320B800B4D4FB /* Frameworks */,
 				4CCD171728B320B800B4D4FB /* Resources */,
+				4C2C061B28C0847A005EE37F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -491,7 +505,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CB0175728BF8AD30039F675 /* assets.bundle in Resources */,
-				4CB016BA28B3277D0039F675 /* thirdparty.framework in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
