@@ -12,7 +12,7 @@ BoymueApplication* JsTestApi::context() const { return m_context; }
 void JsTestApi::execute(const std::string& params, JsApiCallback* callback) {
   printf("Boymue: %s\n", params.c_str());
   if (callback) {
-    callback->callback("");
+    callback->callback("heihei");
   }
 }
 }  // namespace boymue

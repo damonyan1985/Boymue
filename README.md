@@ -17,4 +17,12 @@
 2. 鉴于目前ios将opengles2标注为过期，使用GLES_SILENCE_DEPRECATION来忽略代码中的警告
 3. Windows与Android上将使用V8 JS引擎，IOS上由于不能开启JIT，所以采用包更小的QuickJS
 4. ios framework中创建bundle，直接使用target创建
+5. ios copy file中需要将framework的destination从File改为frameworks
+```
+
+## 相关知识点
+### QuickJS
+```
+1. 执行入口，JS_Eval实际上是使用了__JS_EvalInternal函数进行调用
+2. 字符串管理，JSAtom管理字符串，如关键字，标识符，常量字符串
 ```

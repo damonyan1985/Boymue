@@ -21,17 +21,54 @@ namespace boymue {
 #define KB (1024)
 #define MB (1024*1024)
 
+// JsApi回调实现
+class JsApiCallbackImpl : public JsApiCallback {
+public:
+    JsApiCallbackImpl(BoymueApplication* app,
+                      JSContext* context,
+                      JSValue obj,
+                      JSValue callback)
+        : m_app(app)
+        , m_context(context)
+        , m_object(JS_DupValue(context, obj))
+        , m_callback(JS_DupValue(context, callback)) {
+    }
+
+    ~JsApiCallbackImpl() {
+        JS_FreeValue(m_context, m_object);
+        JS_FreeValue(m_context, m_callback);
+    }
+
+    virtual void callback(const std::string& result) {
+        JSValue jsRet[1] =  {
+            JS_NewString(m_context, result.c_str())
+        };
+        JS_Call(m_context, m_callback, m_object, 1, jsRet);
+    }
+    
+private:
+    BoymueApplication* m_app;
+    JSContext* m_context;
+    JSValue m_object;
+    JSValue m_callback;
+};
+
 static JSValue JsApiHandlerImpl(JSContext *ctx, JSValueConst this_val,
                 int argc, JSValueConst *argv, void *external) {
     JSValue obj;
     size_t len;
 
     const char *str = JS_ToCStringLen(ctx, &len, argv[0]);
-    
     JsApiInterface* api = static_cast<JsApiInterface*>(external);
-    closure task = [api, str, len] {
+    
+    JsApiCallback* cb = nullptr;
+    if (argc > 1) {
+        cb = new JsApiCallbackImpl(api->context(), ctx, this_val, argv[1]);
+    }
+    
+    closure task = [api, str, len, cb] {
       if (api) {
-          api->execute(String(str, len), nullptr);
+          api->execute(String(str, len), cb);
       }
     };
     if (api->executor()) {
@@ -78,7 +115,10 @@ class JsRuntimeImpl : public JsRuntime {
                            (int)m_apiEntries.size());
     }
     
-    virtual ~JsRuntimeImpl() {}
+    virtual ~JsRuntimeImpl() {
+        JS_FreeContext(m_context);
+        JS_FreeRuntime(m_runtime);
+    }
 
     virtual void doAction(const RuntimeClosure& action) {
         
@@ -89,13 +129,12 @@ class JsRuntimeImpl : public JsRuntime {
     };
     
     virtual void registerApi(JsApiInterface* api) {
-        // JS_CFUNC_DEF中第2个表示参数个数
+        // JS_CFUNC_EXTERNAL_DEF中第2个表示参数个数, api中只有两个参数
         JSCFunctionListEntry entry = JS_CFUNC_EXTERNAL_DEF(api->name(), 2, JsApiHandlerImpl, api);
         m_apiEntries.push_back(entry);
     }
     
 private:
-    
     Vector<JSCFunctionListEntry> m_apiEntries;
     JSRuntime* m_runtime;
     JSContext* m_context;

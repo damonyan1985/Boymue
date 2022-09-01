@@ -3,7 +3,7 @@ function testFunc(a, b) {
   arr.push(5);
   boymue.log('test arr length=' + arr.length);
   boymue.test("only test", (res) => {
-    boymue.log('only test result');
+    boymue.log('only test result: ' + res);
   });
   return a * b * arr[2];
 }
