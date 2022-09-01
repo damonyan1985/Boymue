@@ -10,9 +10,14 @@
 #import "BoymueViewController.h"
 #import "BoymueAppView.h"
 #include "SkTypeface.h"
+#include "BoymueBridge.h"
+#include "BoymueApplication.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
+#include <fstream>
+
+static boymue::BoymueApplication* s_app;
 
 @interface BoymueViewController()
 
@@ -38,6 +43,15 @@
     //self.view.backgroundColor = [UIColor whiteColor];
     NSLog(@"hello boymue");
     [self drawTest];
+    
+    
+    boymue::String path = std::move(boymue::BoymueBridge::getSourcePath());
+    std::ifstream file(path);
+      std::string str((std::istreambuf_iterator<char>(file)),
+          std::istreambuf_iterator<char>());
+    
+    s_app = new boymue::BoymueApplication();
+    s_app->evaluateJs(str.c_str());
 }
 
 -(void)drawTest {

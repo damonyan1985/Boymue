@@ -48,6 +48,7 @@ class JsRuntimeImpl : public JsRuntime {
  public:
     JsRuntimeImpl()
         : m_app(nullptr) {
+        // 初始化js运行时
         m_runtime = JS_NewRuntime();
         JS_SetMemoryLimit(m_runtime, 8 * MB);
         JS_SetMaxStackSize(m_runtime, 1 * MB);
@@ -84,7 +85,7 @@ class JsRuntimeImpl : public JsRuntime {
     };
     
     virtual void evaluateJs(const String& jsSource) {
-        
+        JS_Eval(m_context, jsSource.data(), jsSource.length(), "main", 0);
     };
     
     virtual void registerApi(JsApiInterface* api) {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C2C061928C05743005EE37F /* BoymueBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C2C061828C05743005EE37F /* BoymueBridge.mm */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -64,6 +65,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C2C061828C05743005EE37F /* BoymueBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueBridge.mm; path = ../../../framework/boymue/platform/ios/BoymueBridge.mm; sourceTree = "<group>"; };
+		4C2C061A28C05776005EE37F /* BoymueBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueBridge.h; path = ../../../framework/boymue/platform/ios/BoymueBridge.h; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -174,6 +177,8 @@
 				4CB016A928B3242A0039F675 /* BoymueIOSGLContext.m */,
 				4CB016A728B3242A0039F675 /* PaintContextIOS.h */,
 				4CB016A828B3242A0039F675 /* PaintContextIOS.mm */,
+				4C2C061828C05743005EE37F /* BoymueBridge.mm */,
+				4C2C061A28C05776005EE37F /* BoymueBridge.h */,
 			);
 			name = platform;
 			sourceTree = "<group>";
@@ -515,6 +520,7 @@
 				4CB016DC28B4D05D0039F675 /* ThreadExecutor.cpp in Sources */,
 				4CB016FE28B4D18E0039F675 /* BoymueView.cpp in Sources */,
 				4CB0170428B4D1A30039F675 /* Layout.cpp in Sources */,
+				4C2C061928C05743005EE37F /* BoymueBridge.mm in Sources */,
 				4CB016F228B4D0A70039F675 /* TaskRunner.cpp in Sources */,
 				4CB016F428B4D0A80039F675 /* Task.cpp in Sources */,
 				4CB016E628B4D0910039F675 /* TimePoint.cpp in Sources */,

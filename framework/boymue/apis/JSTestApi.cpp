@@ -10,7 +10,7 @@ JsTestApi::JsTestApi(BoymueApplication* context) : m_context(context) {}
 BoymueApplication* JsTestApi::context() const { return m_context; }
 
 void JsTestApi::execute(const std::string& params, JsApiCallback* callback) {
-  printf("Boymue: %s", params.c_str());
+  printf("Boymue: %s\n", params.c_str());
   if (callback) {
     callback->callback("");
   }
