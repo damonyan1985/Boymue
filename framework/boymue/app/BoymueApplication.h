@@ -15,24 +15,23 @@
 namespace boymue {
 class BoymueApplication {
  public:
-  BoymueApplication();
+  BoymueApplication(BoymueAppInfo* info);
   ~BoymueApplication();
   TaskRunner& getUITaskRunner() const;
   TaskRunner& getIOTaskRunner() const;
   TaskRunner& getJSTaskRunner() const;
 
-  void evaluateJs(const std::string& jsSource);
+  void evaluateJs(const String& jsSource, const String& scriptId);
   void doRuntimeAction(RuntimeClosure& action);
 
  private:
-  static int s_applicationId;
   std::unique_ptr<JsEngine> m_jsEngine;
   // BoymueView can only used in ui thread
   std::unique_ptr<BoymueView> m_mainView;
   std::unique_ptr<JsRuntime> m_mainRuntime;
 
   // 应用信息
-  BoymueAppInfo m_appInfo;
+  BoymueAppInfo* m_appInfo;
   // ui thread处理UI事件，JS运行等
   TaskThread m_uiThread;
   // io thread处理资源文件加载，外部事件分发

@@ -17,11 +17,13 @@ class BoymueView {
  public:
   BoymueView(BoymueApplication* context);
 
+  void createPage();
  private:
   // 应用上下文
   BoymueApplication* m_context;
   // 栈式管理页面
   Stack<BoymuePage*> m_stack;
+  int m_pageCount;
 };
 }  // namespace boymue
 #endif

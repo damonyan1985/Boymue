@@ -50,9 +50,10 @@ static boymue::BoymueApplication* s_app;
     boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("/example/test.js"));
     boymue::String source = std::move(boymue::FileUtil::readFile(path));
     
-    s_app = new boymue::BoymueApplication();
-    s_app->evaluateJs(source.c_str());
-    
+    boymue::BoymueAppInfo* info = new boymue::BoymueAppInfo();
+    info->appName = "hello";
+    s_app = new boymue::BoymueApplication(info);
+    s_app->evaluateJs(source.c_str(), "page1");
     
     boymue::String uiPath = std::move(boymue::BoymueBridge::getSourcePath("/example/test.xml"));
     boymue::Document dom;

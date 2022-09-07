@@ -33764,6 +33764,7 @@ JSValue JS_EvalThis(JSContext *ctx, JSValueConst this_obj,
     return ret;
 }
 
+/* eval_flags, such as JS_EVAL_TYPE_GLOBAL and so on. */
 JSValue JS_Eval(JSContext *ctx, const char *input, size_t input_len,
                 const char *filename, int eval_flags)
 {

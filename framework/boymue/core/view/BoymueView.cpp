@@ -6,7 +6,12 @@
 
 namespace boymue {
 BoymueView::BoymueView(BoymueApplication* context)
-  : m_context(context) {
+  : m_context(context)
+  , m_pageCount(0) {
+}
+
+void BoymueView::createPage() {
+    
 }
 
 }  // namespace boymue

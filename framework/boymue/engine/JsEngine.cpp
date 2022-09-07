@@ -151,8 +151,8 @@ class JsRuntimeImpl : public JsRuntime {
         action(this);
     };
     
-    virtual void evaluateJs(const String& jsSource) {
-        JS_Eval(m_context, jsSource.data(), jsSource.length(), "main", 0);
+    virtual void evaluateJs(const String& jsSource, const String& scriptId) {
+        JS_Eval(m_context, jsSource.data(), jsSource.length(), scriptId.c_str(), 0);
     };
     
     virtual void registerApi(JsApiInterface* api) {
@@ -347,7 +347,7 @@ class JsRuntimeImpl : public JsRuntime {
                 Function::New(m_isolate, JsApiHandlerImpl, extension));
   }
 
-  virtual void evaluateJs(const std::string& jsSource) override {
+  virtual void evaluateJs(const String& jsSource, const String& scriptId) override {
     // Enter isolate scope
     Isolate::Scope isolateScope(m_isolate);
     // local stack

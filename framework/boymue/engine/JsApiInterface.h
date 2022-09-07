@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "StringUtil.h"
 #include "ThreadExecutor.h"
 
 namespace boymue {
@@ -15,7 +16,7 @@ class JsApiCallback {
  public:
   virtual ~JsApiCallback() {}
   // JS回调
-  virtual void callback(const std::string& result) = 0;
+  virtual void callback(const String& result) = 0;
 };
 // Native端Api接口
 class JsApiInterface {
@@ -30,7 +31,7 @@ class JsApiInterface {
   // 线程池接口
   virtual ThreadExecutor* executor() { return nullptr; }
   // JS接口执行方法
-  virtual void execute(const std::string& params, JsApiCallback* callback) = 0;
+  virtual void execute(const String& params, JsApiCallback* callback) = 0;
     
 private:
   BoymueApplication* m_app;

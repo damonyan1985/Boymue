@@ -8,8 +8,9 @@
 #include "BoymuePage.h"
 
 namespace boymue {
-BoymuePage::BoymuePage()
-  : m_root(std::make_unique<Layout>())
+BoymuePage::BoymuePage(int pageId)
+  : m_pageId(pageId)
+  , m_root(std::make_unique<Layout>())
   , m_dom(std::make_unique<Document>()) {
 }
 

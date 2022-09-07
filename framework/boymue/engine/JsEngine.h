@@ -23,7 +23,7 @@ class JsRuntime {
   virtual ~JsRuntime() {}
 
   virtual void doAction(const RuntimeClosure& action) = 0;
-  virtual void evaluateJs(const std::string& jsSource) = 0;
+  virtual void evaluateJs(const String& jsSource, const String& scriptId) = 0;
   virtual void registerApi(JsApiInterface* api) = 0;
 };
 

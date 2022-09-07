@@ -8,10 +8,11 @@
 
 namespace boymue {
 
-BoymueApplication::BoymueApplication()
-    : m_uiThread("ui_thread_" + m_appInfo.appName),
-      m_ioThread("io_thread_" + m_appInfo.appName),
-      m_jsThread("js_thread_" + m_appInfo.appName) {
+BoymueApplication::BoymueApplication(BoymueAppInfo* info)
+    : m_appInfo(info),
+      m_uiThread("ui_thread_" + info->appName),
+      m_ioThread("io_thread_" + info->appName),
+      m_jsThread("js_thread_" + info->appName) {
   m_jsEngine = std::make_unique<JsEngine>();
 
   m_uiThread.start();
@@ -30,9 +31,9 @@ BoymueApplication::BoymueApplication()
   });
 }
 
-void BoymueApplication::evaluateJs(const std::string& jsSource) {
+void BoymueApplication::evaluateJs(const String& jsSource, const String& scriptId) {
   getJSTaskRunner().postTask(
-      [=] { this->m_mainRuntime->evaluateJs(jsSource); });
+      [=] { this->m_mainRuntime->evaluateJs(jsSource, scriptId); });
 }
 
 void BoymueApplication::doRuntimeAction(RuntimeClosure& action) {
