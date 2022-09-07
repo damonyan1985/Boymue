@@ -5,9 +5,7 @@
 namespace boymue {
 const char* JsTestApi::name() const { return "test"; }
 
-JsTestApi::JsTestApi(BoymueApplication* context) : m_context(context) {}
-
-BoymueApplication* JsTestApi::context() const { return m_context; }
+JsTestApi::JsTestApi(BoymueApplication* context) : JsApiInterface(context) {}
 
 void JsTestApi::execute(const std::string& params, JsApiCallback* callback) {
   printf("Boymue: %s\n", params.c_str());

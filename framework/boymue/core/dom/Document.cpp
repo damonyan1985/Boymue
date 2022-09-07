@@ -6,18 +6,17 @@
 #include "DomTags.h"
 #include "ImageElement.h"
 #include "ViewElement.h"
+#include "ButtonElement.h"
 #include "expat.h"
 
 namespace boymue {
-// expat淡疼的一点是在多线程中调用会有问题，后期可以用threadlocal改造一下这个开源库
-// 或者部分重写
 // 处理标签开始
 static void XMLCALL OnStartElement(void* dom, const char* name,
                                    const char** atts) {
   Document* document = static_cast<Document*>(dom);
   int tag = DomTags::instance()->getTag(name);
   std::stack<DocumentElement*>* stack = document->getParseStack();
-  stack->push(document->createElement(tag, atts, stack->top()));
+  stack->push(document->createElement(tag, atts, stack->size() ? stack->top() : nullptr));
 }
 
 // 处理标签结束
@@ -34,11 +33,17 @@ static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
   }
 }
 
+Document::Document()
+  : m_root(nullptr) {}
+
 void Document::initDocument(const std::string& content) {
   XML_Parser parser = XML_ParserCreate(NULL);
+  // OnStartElement与OnEndElement都是XML_Parser中的属性
   XML_SetUserData(parser, this);
   XML_SetElementHandler(parser, &OnStartElement, &OnEndElement);
-  { XML_SetCharacterDataHandler(parser, &OnCharacters); }
+  {
+      XML_SetCharacterDataHandler(parser, &OnCharacters);
+  }
 
   XML_Parse(parser, content.c_str(), content.length(), 0);
 }
@@ -56,15 +61,19 @@ DocumentElement* Document::createElement(int tag, const char** atts,
       break;
     case DomTags::kImage:
       element = new ImageElement();
+      break;
+    case DomTags::kButton:
+      element = new ButtonElement();
+      break;
     default:
       break;
   }
 
-  if (parent) {
+  if (parent && element) {
     parent->addChild(element);
   }
 
-  return nullptr;
+  return element;
 }
 
 std::stack<DocumentElement*>* Document::getParseStack() {

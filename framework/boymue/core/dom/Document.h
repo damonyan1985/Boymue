@@ -14,6 +14,7 @@ namespace boymue {
 // Create and run in js thread
 class Document {
  public:
+  Document();
   // 利用XML内容来初始化document
   void initDocument(const std::string& content);
   std::stack<DocumentElement*>* getParseStack();

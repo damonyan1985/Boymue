@@ -4,14 +4,12 @@
 #ifndef DomTags_h
 #define DomTags_h
 
-#include <string>
-#include <unordered_map>
+#include "StringUtil.h"
 
 namespace boymue {
 class DomTags {
 public:
-    enum TagType
-    {
+    enum TagType {
         kView,
         kButton,
         kImage,
@@ -24,11 +22,11 @@ public:
 
     static DomTags* instance();
     void initDomTags();
-    int getTag(const std::string& key);
+    int getTag(const String& key);
 
 private:
     DomTags();
-    std::unordered_map<std::string, int> m_map;
+    HashMap<String, int> m_map;
 };
 }
 #endif

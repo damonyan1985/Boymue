@@ -14,7 +14,7 @@ namespace boymue {
 class BoymueBridge {
 public:
     static String getAppRoot();
-    static String getSourcePath();
+    static String getSourcePath(const String& path);
 };
 }
 

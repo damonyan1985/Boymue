@@ -7,13 +7,11 @@
 #include "JsLogApi.h"
 
 namespace boymue {
-int BoymueApplication::s_applicationId = 0;
 
 BoymueApplication::BoymueApplication()
-    : m_appId(std::to_string(++s_applicationId)),
-      m_uiThread("ui_thread_" + m_appId),
-      m_ioThread("io_thread_" + m_appId),
-      m_jsThread("js_thread_" + m_appId) {
+    : m_uiThread("ui_thread_" + m_appInfo.appName),
+      m_ioThread("io_thread_" + m_appInfo.appName),
+      m_jsThread("js_thread_" + m_appInfo.appName) {
   m_jsEngine = std::make_unique<JsEngine>();
 
   m_uiThread.start();

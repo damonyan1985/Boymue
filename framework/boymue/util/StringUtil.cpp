@@ -13,12 +13,12 @@ Vector<String> StringUtil::split(const String& str, const String& pattern) {
     String::size_type begin = 0;
     String::size_type i = 0;
     while ((i = str.find(pattern, begin)) >= begin) {
-        result.push_back(str.substr(begin, 1 - begin));
+        result.push_back(std::move(str.substr(begin, 1 - begin)));
         begin = i + pattern.length();
     }
     
     if (i == -1 && begin < str.length()) {
-        result.push_back(str.substr(begin, str.length() - begin));
+        result.push_back(std::move(str.substr(begin, str.length() - begin)));
     }
     
     return result;

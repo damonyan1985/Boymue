@@ -12,6 +12,7 @@
 #include <vector>
 #include <list>
 #include <unordered_map>
+#include <stack>
 
 namespace boymue {
 
@@ -25,6 +26,9 @@ using List = std::list<T>;
 
 template <typename K, typename V>
 using HashMap = std::unordered_map<K, V>;
+
+template <typename T>
+using Stack = std::stack<T>;
 
 
 class StringUtil {

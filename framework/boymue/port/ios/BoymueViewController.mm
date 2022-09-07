@@ -12,6 +12,8 @@
 #include "SkTypeface.h"
 #include "BoymueBridge.h"
 #include "BoymueApplication.h"
+#include "FileUtil.h"
+#include "Document.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -45,13 +47,17 @@ static boymue::BoymueApplication* s_app;
     [self drawTest];
     
     
-    boymue::String path = std::move(boymue::BoymueBridge::getSourcePath());
-    std::ifstream file(path);
-      std::string str((std::istreambuf_iterator<char>(file)),
-          std::istreambuf_iterator<char>());
+    boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("/example/test.js"));
+    boymue::String source = std::move(boymue::FileUtil::readFile(path));
     
     s_app = new boymue::BoymueApplication();
-    s_app->evaluateJs(str.c_str());
+    s_app->evaluateJs(source.c_str());
+    
+    
+    boymue::String uiPath = std::move(boymue::BoymueBridge::getSourcePath("/example/test.xml"));
+    boymue::Document dom;
+    dom.initDocument(boymue::FileUtil::readFile(uiPath));
+    
 }
 
 -(void)drawTest {

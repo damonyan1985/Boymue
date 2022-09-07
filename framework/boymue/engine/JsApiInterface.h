@@ -20,14 +20,20 @@ class JsApiCallback {
 // Native端Api接口
 class JsApiInterface {
  public:
-  virtual ~JsApiInterface(){};
+  JsApiInterface(BoymueApplication* app)
+    : m_app(app) {}
+    
+  virtual ~JsApiInterface() {};
   virtual const char* name() const = 0;
   // 获取JS应用上下文
-  virtual BoymueApplication* context() const = 0;
+  virtual BoymueApplication* context() const { return m_app; }
   // 线程池接口
   virtual ThreadExecutor* executor() { return nullptr; }
   // JS接口执行方法
   virtual void execute(const std::string& params, JsApiCallback* callback) = 0;
+    
+private:
+  BoymueApplication* m_app;
 };
 }  // namespace boymue
 

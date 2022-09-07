@@ -10,6 +10,7 @@
 #include "BoymueView.h"
 #include "TaskThread.h"
 #include "JsEngine.h"
+#include "BoymueAppInfo.h"
 
 namespace boymue {
 class BoymueApplication {
@@ -30,8 +31,8 @@ class BoymueApplication {
   std::unique_ptr<BoymueView> m_mainView;
   std::unique_ptr<JsRuntime> m_mainRuntime;
 
-  // 应用id
-  std::string m_appId;
+  // 应用信息
+  BoymueAppInfo m_appInfo;
   // ui thread处理UI事件，JS运行等
   TaskThread m_uiThread;
   // io thread处理资源文件加载，外部事件分发

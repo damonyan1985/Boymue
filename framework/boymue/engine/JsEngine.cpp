@@ -24,46 +24,73 @@ namespace boymue {
 // JsApi回调实现
 class JsApiCallbackImpl : public JsApiCallback {
 public:
-    JsApiCallbackImpl(BoymueApplication* app,
+    JsApiCallbackImpl(JsApiInterface* api,
                       JSContext* context,
                       JSValue obj,
                       JSValue callback)
-        : m_app(app)
+        : m_api(api)
         , m_context(context)
         , m_object(JS_DupValue(context, obj))
         , m_callback(JS_DupValue(context, callback)) {
     }
 
+    // 释放引用计数
     ~JsApiCallbackImpl() {
         JS_FreeValue(m_context, m_object);
         JS_FreeValue(m_context, m_callback);
     }
 
-    virtual void callback(const std::string& result) {
-        JSValue jsRet[1] =  {
-            JS_NewString(m_context, result.c_str())
-        };
-        JS_Call(m_context, m_callback, m_object, 1, jsRet);
+    // 需要保证callback在JS线程中被执行
+    virtual void callback(const String& result) {
+        // 如果是异步处理
+        if (m_api->executor()) {
+            RuntimeClosure task = [self = this, result](JsRuntime* runtime) {
+                self->callbackImpl(result);
+            };
+            m_api->context()->doRuntimeAction(task);
+        } else {
+            callbackImpl(result);
+        }
     }
     
 private:
-    BoymueApplication* m_app;
+    void callbackImpl(const String& result) {
+        JSValue jsRet[1] =  {
+            JS_NewString(m_context, result.c_str())
+        };
+        JS_Call(m_context,
+                m_callback,
+                m_object, 1, jsRet);
+
+        // 使用完之后清除内存
+        delete this;
+    }
+    
+    JsApiInterface* m_api;
+    // js运行时上下文
     JSContext* m_context;
+    // 回调所属的对象
     JSValue m_object;
+    // 回调函数
     JSValue m_callback;
 };
 
+// API扩展函数
 static JSValue JsApiHandlerImpl(JSContext *ctx, JSValueConst this_val,
                 int argc, JSValueConst *argv, void *external) {
-    JSValue obj;
+    //JSValue obj;
+    if (argc < 1) {
+        return JS_UNDEFINED;
+    }
+    
     size_t len;
-
     const char *str = JS_ToCStringLen(ctx, &len, argv[0]);
     JsApiInterface* api = static_cast<JsApiInterface*>(external);
     
     JsApiCallback* cb = nullptr;
+    // 第二个参数是回调，需要使用JsApiCallbackImpl进行包装
     if (argc > 1) {
-        cb = new JsApiCallbackImpl(api->context(), ctx, this_val, argv[1]);
+        cb = new JsApiCallbackImpl(api, ctx, this_val, argv[1]);
     }
     
     closure task = [api, str, len, cb] {
@@ -77,7 +104,7 @@ static JSValue JsApiHandlerImpl(JSContext *ctx, JSValueConst this_val,
         task();
     }
 
-    return obj;
+    return JS_UNDEFINED;
 }
 
 // 使用qjs
@@ -121,7 +148,7 @@ class JsRuntimeImpl : public JsRuntime {
     }
 
     virtual void doAction(const RuntimeClosure& action) {
-        
+        action(this);
     };
     
     virtual void evaluateJs(const String& jsSource) {

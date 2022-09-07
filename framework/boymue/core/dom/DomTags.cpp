@@ -24,8 +24,7 @@ void DomTags::initDomTags() {
     m_map["icon"] = DomTags::kIcon;
 }
 
-int DomTags::getTag(const std::string& key)
-{
+int DomTags::getTag(const String& key) {
     return m_map[key];
 }
 }

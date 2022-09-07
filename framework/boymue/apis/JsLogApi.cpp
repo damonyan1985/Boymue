@@ -3,9 +3,7 @@
 namespace boymue {
 const char* JsLogApi::name() const { return "log"; }
 
-JsLogApi::JsLogApi(BoymueApplication* context) : m_context(context) {}
-
-BoymueApplication* JsLogApi::context() const { return m_context; }
+JsLogApi::JsLogApi(BoymueApplication* context) : JsApiInterface(context) {}
 
 void JsLogApi::execute(const std::string& params, JsApiCallback* callback) {
   printf("Boymue: %s\n", params.c_str());

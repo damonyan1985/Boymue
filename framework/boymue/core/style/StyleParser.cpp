@@ -13,7 +13,7 @@ StyleSheet* StyleParser::parse(const String& css) {
     Vector<String> stringBuffer;
     while ((open = css.find("/*", begin)) != -1
            && (close = css.find("*/", begin)) != -1) {
-        stringBuffer.push_back(css.substr(begin, open));
+        stringBuffer.push_back(std::move(css.substr(begin, open)));
         open = close + 2;
         begin = open;
     }
@@ -25,14 +25,16 @@ StyleSheet* StyleParser::parse(const String& css) {
     while ((open = cssText.find("{", begin)) != -1
            && (close = cssText.find("}", begin) != -1)) {
 
-        String selectorText = cssText.substr(begin, open);
-        String declarationsText = cssText.substr(open + 1, close - 1);
+        String selectorText = std::move(cssText.substr(begin, open));
+        String declarationsText = std::move(cssText.substr(open + 1, close - 1));
 
         StringUtil::trim(selectorText);
         StringUtil::trim(declarationsText);
 
-        Vector<String> filters = StringUtil::split(selectorText, " ");
-        Vector<String> declarationText = StringUtil::split(selectorText, ";");
+        Vector<String> filters =
+            std::move(StringUtil::split(selectorText, " "));
+        Vector<String> declarationText =
+            std::move(StringUtil::split(selectorText, ";"));
         CSSRule* rule = new CSSRule();
     }
     return nullptr;
