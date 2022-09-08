@@ -16,6 +16,8 @@ class BoymueAppInfo {
 public:
     BoymueAppInfo();
     
+    void parseConfig();
+    
     int64_t appId;
     String appName;
 };

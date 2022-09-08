@@ -39,6 +39,7 @@
 		4C2C065C28C747EB005EE37F /* TextPainter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C2C065728C747EB005EE37F /* TextPainter.h */; };
 		4C2C065F28C74F1C005EE37F /* BoymuePage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C2C065D28C74F1C005EE37F /* BoymuePage.cpp */; };
 		4C2C066028C74F1C005EE37F /* BoymuePage.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C2C065E28C74F1C005EE37F /* BoymuePage.h */; };
+		4C2C066228CA039E005EE37F /* BoymueBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C2C066128CA039E005EE37F /* BoymueBridge.h */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -109,7 +110,6 @@
 
 /* Begin PBXFileReference section */
 		4C2C061828C05743005EE37F /* BoymueBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueBridge.mm; path = ../../../framework/boymue/platform/ios/BoymueBridge.mm; sourceTree = "<group>"; };
-		4C2C061A28C05776005EE37F /* BoymueBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymueBridge.h; path = ../../../framework/boymue/platform/ios/BoymueBridge.h; sourceTree = "<group>"; };
 		4C2C062328C1A77C005EE37F /* DocumentElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DocumentElement.h; path = ../../../framework/boymue/core/dom/DocumentElement.h; sourceTree = "<group>"; };
 		4C2C062428C1A77C005EE37F /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../../../framework/boymue/core/dom/Document.h; sourceTree = "<group>"; };
 		4C2C062528C1A77C005EE37F /* DomTags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DomTags.h; path = ../../../framework/boymue/core/dom/DomTags.h; sourceTree = "<group>"; };
@@ -141,6 +141,7 @@
 		4C2C065728C747EB005EE37F /* TextPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextPainter.h; path = ../../../framework/boymue/core/paint/TextPainter.h; sourceTree = "<group>"; };
 		4C2C065D28C74F1C005EE37F /* BoymuePage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BoymuePage.cpp; path = ../../../framework/boymue/core/view/BoymuePage.cpp; sourceTree = "<group>"; };
 		4C2C065E28C74F1C005EE37F /* BoymuePage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymuePage.h; path = ../../../framework/boymue/core/view/BoymuePage.h; sourceTree = "<group>"; };
+		4C2C066128CA039E005EE37F /* BoymueBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueBridge.h; path = ../../../framework/boymue/platform/BoymueBridge.h; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -269,6 +270,7 @@
 		4CB0169B28B323CB0039F675 /* platform */ = {
 			isa = PBXGroup;
 			children = (
+				4C2C066128CA039E005EE37F /* BoymueBridge.h */,
 				4C2C064328C5D406005EE37F /* UITaskRunnerIOS.mm */,
 				4C2C064428C5D406005EE37F /* UITaskRunnerIOS.h */,
 				4CB016A628B3242A0039F675 /* BoymueIOSGLContext.h */,
@@ -276,7 +278,6 @@
 				4CB016A728B3242A0039F675 /* PaintContextIOS.h */,
 				4CB016A828B3242A0039F675 /* PaintContextIOS.mm */,
 				4C2C061828C05743005EE37F /* BoymueBridge.mm */,
-				4C2C061A28C05776005EE37F /* BoymueBridge.h */,
 			);
 			name = platform;
 			sourceTree = "<group>";
@@ -522,6 +523,7 @@
 				4CB0171328B5DD490039F675 /* StringUtil.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4C2C065B28C747EB005EE37F /* PaintInfo.h in Headers */,
+				4C2C066228CA039E005EE37F /* BoymueBridge.h in Headers */,
 				4CB016AF28B3243F0039F675 /* PaintContext.h in Headers */,
 				4CB0170228B4D1A30039F675 /* Layout.h in Headers */,
 				4C2C064E28C5DBEF005EE37F /* UITaskThread.h in Headers */,
@@ -873,6 +875,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/expat",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform/ios",
+					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/view",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
 					"$(PROJECT_DIR)/../../../framework/boymue/thread",
@@ -883,6 +886,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/apis",
 					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -924,6 +928,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/skia/include/gpu",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/expat",
 					"$(PROJECT_DIR)/../../../framework/boymue/platform/ios",
+					"$(PROJECT_DIR)/../../../framework/boymue/platform",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/view",
 					"$(PROJECT_DIR)/../../../framework/boymue/core/paint",
 					"$(PROJECT_DIR)/../../../framework/boymue/thread",
@@ -934,6 +939,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/apis",
 					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

@@ -14,6 +14,7 @@
 #include "BoymueApplication.h"
 #include "FileUtil.h"
 #include "Document.h"
+#include "rapidjson/document.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -51,7 +52,8 @@ static boymue::BoymueApplication* s_app;
     boymue::String source = std::move(boymue::FileUtil::readFile(path));
     
     boymue::BoymueAppInfo* info = new boymue::BoymueAppInfo();
-    info->appName = "hello";
+    info->appName = "example";
+    info->parseConfig();
     s_app = new boymue::BoymueApplication(info);
     s_app->evaluateJs(source.c_str(), "page1");
     
@@ -59,6 +61,11 @@ static boymue::BoymueApplication* s_app;
     boymue::Document dom;
     dom.initDocument(boymue::FileUtil::readFile(uiPath));
     
+    boymue::String configPath = std::move(boymue::BoymueBridge::getSourcePath("/example/app.json"));
+    rapidjson::Document jsonDom;
+    jsonDom.Parse(boymue::FileUtil::readFile(configPath).c_str());
+    
+    printf("entry = %s\n", jsonDom["entry"].GetString());
 }
 
 -(void)drawTest {

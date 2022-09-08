@@ -25,4 +25,8 @@
 ```
 1. 执行入口，JS_Eval实际上是使用了__JS_EvalInternal函数进行调用
 2. 字符串管理，JSAtom管理字符串，如关键字，标识符，常量字符串
+3. 解释执行入口，JS_CallInternal，执行字节码，具体逻辑：
+   1）创建local_buf，容量包含函数参数个数arg_count，var_count，以及栈大小stack_size，采用alloca申请栈内存
+      函数结束后会自动释放
+   2) 字节码定义，字节码存储在opcode_info数组中
 ```
