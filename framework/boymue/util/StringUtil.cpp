@@ -46,5 +46,15 @@ String& StringUtil::trim(String& str) {
     str.erase(str.find_last_not_of(" ") + 1);
     return str;
 }
+
+bool StringUtil::isSpace(const char* str, int len) {
+    for (int i = 0; i < len; i++) {
+        if (!isspace(*(str + i))) {
+            return false;
+        }
+    }
+    
+    return true;
+}
     
 }

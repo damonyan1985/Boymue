@@ -19,7 +19,7 @@ public:
 private:
     // 页面dom结构
     std::unique_ptr<Document> m_dom;
-    // 根结构，用于页面切换使用，定义为一个UI栈
+    // 布局根结构
     std::unique_ptr<Layout> m_root;
     int m_pageId;
 };

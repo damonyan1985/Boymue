@@ -40,6 +40,8 @@ public:
     
     // 去除字符串两边的空格
     static String& trim(String& str);
+    
+    static bool isSpace(const char* str, int len);
 };
 }
 

@@ -7,6 +7,7 @@
 #include "ImageElement.h"
 #include "ViewElement.h"
 #include "ButtonElement.h"
+#include "StringUtil.h"
 #include "expat.h"
 
 namespace boymue {
@@ -26,7 +27,11 @@ static void XMLCALL OnEndElement(void* dom, const char* name) {
 
 // 处理文本
 static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
-  TextElement* element = new TextElement(text);
+  // 换行，以及空格都会返回，所以需要判断是否是空白文本
+  if (StringUtil::isSpace(text, len)) {
+    return;
+  }
+  TextElement* element = new TextElement(String(text, len));
   DocumentElement* parent = static_cast<Document*>(dom)->getParseStack()->top();
   if (parent) {
     parent->addChild(element);
@@ -46,6 +51,7 @@ void Document::initDocument(const std::string& content) {
   }
 
   XML_Parse(parser, content.c_str(), content.length(), 0);
+  XML_ParserFree(parser);
 }
 
 DocumentElement* Document::createElement(int tag, const char** atts,
