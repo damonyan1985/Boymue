@@ -11,7 +11,7 @@
 namespace boymue {
 class ImageElement : public DocumentElement {
  public:
-  ImageElement();
+  ImageElement(Document* dom);
 
  private:
   std::string m_url;

@@ -4,5 +4,7 @@
 #include "TextElement.h"
 
 namespace boymue {
-TextElement::TextElement(const std::string& text) : m_text(text) {}
+TextElement::TextElement(Document* dom, const std::string& text)
+    : DocumentElement(dom)
+    , m_text(text) {}
 }  // namespace boymue

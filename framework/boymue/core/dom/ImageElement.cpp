@@ -4,5 +4,6 @@
 #include "ImageElement.h"
 
 namespace boymue {
-ImageElement::ImageElement() {}
+ImageElement::ImageElement(Document* dom)
+    : DocumentElement(dom) {}
 }  // namespace boymue

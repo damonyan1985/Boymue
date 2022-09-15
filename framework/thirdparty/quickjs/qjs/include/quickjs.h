@@ -1046,7 +1046,7 @@ int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
 
 
 /* 添加全局对象 */
-void JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count);
+void* JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count);
 
 #undef js_unlikely
 #undef js_force_inline

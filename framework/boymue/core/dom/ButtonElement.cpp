@@ -8,5 +8,6 @@
 #include "ButtonElement.h"
 
 namespace boymue {
-
+ButtonElement::ButtonElement(Document* dom)
+: DocumentElement(dom) {}
 }

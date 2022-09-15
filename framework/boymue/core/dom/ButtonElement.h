@@ -12,7 +12,8 @@
 
 namespace boymue {
 class ButtonElement : public DocumentElement {
-    
+public:
+    ButtonElement(Document* dom);
 };
 }
 #endif /* ButtonElement_h */

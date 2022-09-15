@@ -5,8 +5,17 @@
 #define ViewElement_h
 
 #include "DocumentElement.h"
+#include "StringUtil.h"
 
 namespace boymue {
-class ViewElement : public DocumentElement {};
+class ViewElement : public DocumentElement {
+public:
+    ViewElement(Document* dom);
+    virtual void parseAttribute(const char** atts);
+    virtual void addChild(DocumentElement* element);
+    
+private:
+    List<SharedPtr<DocumentElement>> m_children;
+};
 }  // namespace boymue
 #endif  // !ViewElement

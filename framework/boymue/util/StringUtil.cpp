@@ -12,8 +12,8 @@ Vector<String> StringUtil::split(const String& str, const String& pattern) {
     Vector<String> result;
     String::size_type begin = 0;
     String::size_type i = 0;
-    while ((i = str.find(pattern, begin)) >= begin) {
-        result.push_back(std::move(str.substr(begin, 1 - begin)));
+    while ((i = str.find(pattern, begin)) != String::npos) {
+        result.push_back(std::move(str.substr(begin, i - begin)));
         begin = i + pattern.length();
     }
     
@@ -55,6 +55,14 @@ bool StringUtil::isSpace(const char* str, int len) {
     }
     
     return true;
+}
+
+bool StringUtil::startWidth(const String& str, const String& head) {
+    return str.compare(0, head.size(), head) == 0;
+}
+
+bool StringUtil::endWidth(const String& str, const String& tail) {
+    return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
 }
     
 }

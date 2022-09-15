@@ -11,8 +11,8 @@ StyleSheet* StyleParser::parse(const String& css) {
     String::size_type close = 0;
     
     Vector<String> stringBuffer;
-    while ((open = css.find("/*", begin)) != -1
-           && (close = css.find("*/", begin)) != -1) {
+    while ((open = css.find("/*", begin)) != String::npos
+           && (close = css.find("*/", begin)) != String::npos) {
         stringBuffer.push_back(std::move(css.substr(begin, open)));
         open = close + 2;
         begin = open;
@@ -22,8 +22,8 @@ StyleSheet* StyleParser::parse(const String& css) {
     StringUtil::join(stringBuffer, cssText, css);
 
     begin = 0;
-    while ((open = cssText.find("{", begin)) != -1
-           && (close = cssText.find("}", begin) != -1)) {
+    while ((open = cssText.find("{", begin)) != String::npos
+           && (close = cssText.find("}", begin) != String::npos)) {
 
         String selectorText = std::move(cssText.substr(begin, open));
         String declarationsText = std::move(cssText.substr(open + 1, close - 1));

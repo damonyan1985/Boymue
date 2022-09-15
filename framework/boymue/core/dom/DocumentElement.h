@@ -5,9 +5,19 @@
 #define DocumentElement_h
 
 namespace boymue {
+class Document;
+class Layout;
 class DocumentElement {
- public:
-  void addChild(DocumentElement* element);
+public:
+    DocumentElement(Document* dom);
+
+    virtual void parseAttribute(const char** atts) {}
+    void addChild(DocumentElement* element);
+    Layout* layout();
+    
+private:
+    Document* m_dom;
+    int m_elemId;
 };
 }  // namespace boymue
 #endif  // !DocumentElement_h

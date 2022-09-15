@@ -14,32 +14,38 @@ namespace boymue {
 // 处理标签开始
 static void XMLCALL OnStartElement(void* dom, const char* name,
                                    const char** atts) {
-  Document* document = static_cast<Document*>(dom);
-  int tag = DomTags::instance()->getTag(name);
-  std::stack<DocumentElement*>* stack = document->getParseStack();
-  stack->push(document->createElement(tag, atts, stack->size() ? stack->top() : nullptr));
+    Document* document = static_cast<Document*>(dom);
+    int tag = DomTags::instance()->getTag(name);
+
+    std::stack<DocumentElement*>* stack = document->getParseStack();
+    DocumentElement* elem = document->createElement(tag, atts, stack->size() ? stack->top() : nullptr);
+    stack->push(elem);
+
+    elem->parseAttribute(atts);
 }
 
 // 处理标签结束
 static void XMLCALL OnEndElement(void* dom, const char* name) {
-  static_cast<Document*>(dom)->getParseStack()->pop();
+    static_cast<Document*>(dom)->getParseStack()->pop();
 }
 
 // 处理文本
 static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
-  // 换行，以及空格都会返回，所以需要判断是否是空白文本
-  if (StringUtil::isSpace(text, len)) {
-    return;
-  }
-  TextElement* element = new TextElement(String(text, len));
-  DocumentElement* parent = static_cast<Document*>(dom)->getParseStack()->top();
-  if (parent) {
-    parent->addChild(element);
-  }
+    // 换行，以及空格都会返回，所以需要判断是否是空白文本
+    if (StringUtil::isSpace(text, len)) {
+        return;
+    }
+    Document* document = static_cast<Document*>(dom);
+    
+    TextElement* element = new TextElement(document, String(text, len));
+    DocumentElement* parent = static_cast<Document*>(dom)->getParseStack()->top();
+    if (parent) {
+        parent->addChild(element);
+    }
 }
 
 Document::Document()
-  : m_root(nullptr) {}
+    : m_root(nullptr) {}
 
 void Document::initDocument(const std::string& content) {
   XML_Parser parser = XML_ParserCreate(NULL);
@@ -59,17 +65,17 @@ DocumentElement* Document::createElement(int tag, const char** atts,
   DocumentElement* element = nullptr;
   switch (tag) {
     case DomTags::kView:
-      element = new ViewElement();
+      element = new ViewElement(this);
       // 如果Dom root不存在，则设置root
       if (!m_root) {
         m_root = element;
       }
       break;
     case DomTags::kImage:
-      element = new ImageElement();
+      element = new ImageElement(this);
       break;
     case DomTags::kButton:
-      element = new ButtonElement();
+      element = new ButtonElement(this);
       break;
     default:
       break;

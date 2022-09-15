@@ -11,7 +11,7 @@
 namespace boymue {
 class TextElement : public DocumentElement {
  public:
-  TextElement(const std::string& text);
+  TextElement(Document* dom, const std::string& text);
 
  private:
   std::string m_text;

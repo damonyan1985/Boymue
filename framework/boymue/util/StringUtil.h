@@ -13,6 +13,7 @@
 #include <list>
 #include <unordered_map>
 #include <stack>
+#include <memory>
 
 namespace boymue {
 
@@ -30,6 +31,14 @@ using HashMap = std::unordered_map<K, V>;
 template <typename T>
 using Stack = std::stack<T>;
 
+template <typename T>
+using SharedPtr = std::shared_ptr<T>;
+
+template <typename T>
+using OwnerPtr = std::unique_ptr<T>;
+
+const String kAppPrefix = "boymue";
+const String kAttrSplitFlag = ":";
 
 class StringUtil {
 public:
@@ -41,7 +50,14 @@ public:
     // 去除字符串两边的空格
     static String& trim(String& str);
     
+    // 判断整个字符串是否是空白串
     static bool isSpace(const char* str, int len);
+    
+    // 判断字符串开头是否包含
+    static bool startWidth(const String& str, const String& head);
+    
+    // 判断字符串结尾是否包含
+    static bool endWidth(const String& str, const String& tail);
 };
 }
 

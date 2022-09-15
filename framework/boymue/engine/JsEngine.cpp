@@ -136,13 +136,16 @@ class JsRuntimeImpl : public JsRuntime {
             return;
         }
         
-        JS_AddGlobalObject(m_context,
+        m_global = JS_AddGlobalObject(m_context,
                            "boymue",
                            m_apiEntries.data(),
                            (int)m_apiEntries.size());
     }
     
     virtual ~JsRuntimeImpl() {
+        // 释放全局对象
+        js_free(m_context, m_global);
+        
         JS_FreeContext(m_context);
         JS_FreeRuntime(m_runtime);
     }
@@ -166,6 +169,7 @@ private:
     JSRuntime* m_runtime;
     JSContext* m_context;
     BoymueApplication* m_app;
+    void* m_global;
 };
 
 class JsInitor {

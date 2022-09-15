@@ -54106,7 +54106,7 @@ void JS_AddIntrinsicTypedArrays(JSContext *ctx)
 
 /* 添加全局对象 */
 /* def_malloc_funcs定义了内存分配机制 */
-void JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count)
+void* JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count)
 {
     JSCFunctionListEntry *js_global_obj = (JSCFunctionListEntry *)js_malloc(ctx, sizeof(JSCFunctionListEntry));
     js_global_obj->name = name;
@@ -54117,4 +54117,6 @@ void JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *
     js_global_obj->u.prop_list.tab = method;
     js_global_obj->u.prop_list.len = count;
     JS_SetPropertyFunctionList(ctx, ctx->global_obj, js_global_obj, 1);
+
+    return js_global_obj;
 }
