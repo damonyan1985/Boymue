@@ -7,6 +7,7 @@
 #include "JsLogApi.h"
 #include "JsUIOperationApi.h"
 #include "JsXmlToJsonApi.h"
+#include "JsRequireModuleApi.h"
 
 namespace boymue {
 
@@ -31,6 +32,7 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
     self->m_mainRuntime->registerApi(new JsTestApi(self));
     self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
     self->m_mainRuntime->registerApi(new JsXmlToJsonApi(self));
+    self->m_mainRuntime->registerApi(new JsRequireModuleApi(self));
     self->m_mainRuntime->setContext(self);
   });
 }

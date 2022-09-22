@@ -56,7 +56,7 @@ static boymue::BoymueApplication* s_app;
     info->appName = "example";
     info->parseConfig();
     s_app = new boymue::BoymueApplication(info);
-    s_app->evaluateJs(source.c_str(), "page1");
+    s_app->evaluateJs(source.c_str(), path);
     
     boymue::String uiPath = std::move(boymue::BoymueBridge::getSourcePath("/example/test.xml"));
     boymue::Document dom;

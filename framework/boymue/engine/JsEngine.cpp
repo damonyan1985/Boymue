@@ -7,6 +7,7 @@
 
 #ifdef ENABLE_BOYMUE_IOS
 #include "qjs/include/cutils.h"
+#include "qjs/include/quickjs.h"
 #include "qjs/include/quickjs-libc.h"
 #else
 #include "v8.h"
@@ -123,6 +124,8 @@ class JsRuntimeImpl : public JsRuntime {
         /* system modules */
         js_init_module_std(ctx, "std");
         js_init_module_os(ctx, "os");
+                        
+        JS_SetModuleLoaderFunc(m_runtime, NULL, js_module_loader, NULL);
         
         m_context = ctx;
     }

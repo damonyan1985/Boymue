@@ -35,6 +35,10 @@ function addNode(parant, node) {
     return cmds;
 }
 
+function testimport() {
+    return "testimport func";
+}
+
 // 将cmd命令作为一个数组进行输出
 function diff(parant, newNode, oldNode) {
     if (!oldNode) {

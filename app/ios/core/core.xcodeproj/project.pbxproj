@@ -46,6 +46,8 @@
 		4C489D3628D9B8FA003E11E1 /* JsXmlToJsonApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */; };
 		4C489D3E28DB3F49003E11E1 /* xml2json.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D3C28DB3F49003E11E1 /* xml2json.h */; };
 		4C489D3F28DB3F49003E11E1 /* xml2json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D3D28DB3F49003E11E1 /* xml2json.cpp */; };
+		4C489D4228DC4247003E11E1 /* JsRequireModuleApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */; };
+		4C489D4328DC4247003E11E1 /* JsRequireModuleApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -156,6 +158,8 @@
 		4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsXmlToJsonApi.h; path = ../../../framework/boymue/apis/JsXmlToJsonApi.h; sourceTree = "<group>"; };
 		4C489D3C28DB3F49003E11E1 /* xml2json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml2json.h; path = ../../../framework/boymue/util/xml2json.h; sourceTree = "<group>"; };
 		4C489D3D28DB3F49003E11E1 /* xml2json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml2json.cpp; path = ../../../framework/boymue/util/xml2json.cpp; sourceTree = "<group>"; };
+		4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsRequireModuleApi.cpp; path = ../../../framework/boymue/apis/JsRequireModuleApi.cpp; sourceTree = "<group>"; };
+		4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsRequireModuleApi.h; path = ../../../framework/boymue/apis/JsRequireModuleApi.h; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -451,6 +455,8 @@
 				4C489D3028D85C3C003E11E1 /* JsUIOperationApi.h */,
 				4C489D3328D9B8FA003E11E1 /* JsXmlToJsonApi.cpp */,
 				4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */,
+				4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */,
+				4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */,
 			);
 			name = apis;
 			sourceTree = "<group>";
@@ -549,6 +555,7 @@
 				4C489D3E28DB3F49003E11E1 /* xml2json.h in Headers */,
 				4C2C063428C1A77D005EE37F /* ImageElement.h in Headers */,
 				4CB0171328B5DD490039F675 /* StringUtil.h in Headers */,
+				4C489D4328DC4247003E11E1 /* JsRequireModuleApi.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4C2C065B28C747EB005EE37F /* PaintInfo.h in Headers */,
 				4C2C066228CA039E005EE37F /* BoymueBridge.h in Headers */,
@@ -668,6 +675,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CB016D228B4CF660039F675 /* JsEngine.cpp in Sources */,
+				4C489D4228DC4247003E11E1 /* JsRequireModuleApi.cpp in Sources */,
 				4C2C065F28C74F1C005EE37F /* BoymuePage.cpp in Sources */,
 				4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */,
 				4C489D3128D85C3D003E11E1 /* JsUIOperationApi.cpp in Sources */,

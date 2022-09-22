@@ -1,3 +1,9 @@
+var require = boymue.require;
+
+require('/example/vdom.js');
+require('/example/vdom.js');
+require('/example/vdom.js');
+
 function testFunc(a, b) {
   let arr = [0, 1, 2];
   arr.push(5);
@@ -20,7 +26,14 @@ boymue.log(App.hello());
 
 boymue.xmlToJson('/example/test.xml', (res) => {
     boymue.log('json: ' + res);
+    let xmlObj = JSON.parse(res);
+    
+    boymue.log('json: ' + xmlObj.tag);
 })
+
+
+
+boymue.log(testimport());
 
 
 
