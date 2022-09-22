@@ -15,6 +15,7 @@
 #include "FileUtil.h"
 #include "Document.h"
 #include "rapidjson/document.h"
+#include "xml2json.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -60,6 +61,10 @@ static boymue::BoymueApplication* s_app;
     boymue::String uiPath = std::move(boymue::BoymueBridge::getSourcePath("/example/test.xml"));
     boymue::Document dom;
     dom.initDocument(boymue::FileUtil::readFile(uiPath));
+    
+//    boymue::String xmlstr = boymue::FileUtil::readFile(uiPath);
+//    boymue::String json = xml2json(xmlstr.c_str());
+//    printf("xml to json = %s\n", json.c_str());
     
     boymue::String configPath = std::move(boymue::BoymueBridge::getSourcePath("/example/app.json"));
     rapidjson::Document jsonDom;

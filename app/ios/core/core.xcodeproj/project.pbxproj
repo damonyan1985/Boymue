@@ -40,6 +40,12 @@
 		4C2C065F28C74F1C005EE37F /* BoymuePage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C2C065D28C74F1C005EE37F /* BoymuePage.cpp */; };
 		4C2C066028C74F1C005EE37F /* BoymuePage.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C2C065E28C74F1C005EE37F /* BoymuePage.h */; };
 		4C2C066228CA039E005EE37F /* BoymueBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C2C066128CA039E005EE37F /* BoymueBridge.h */; };
+		4C489D3128D85C3D003E11E1 /* JsUIOperationApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D2F28D85C3C003E11E1 /* JsUIOperationApi.cpp */; };
+		4C489D3228D85C3D003E11E1 /* JsUIOperationApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D3028D85C3C003E11E1 /* JsUIOperationApi.h */; };
+		4C489D3528D9B8FA003E11E1 /* JsXmlToJsonApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D3328D9B8FA003E11E1 /* JsXmlToJsonApi.cpp */; };
+		4C489D3628D9B8FA003E11E1 /* JsXmlToJsonApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */; };
+		4C489D3E28DB3F49003E11E1 /* xml2json.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D3C28DB3F49003E11E1 /* xml2json.h */; };
+		4C489D3F28DB3F49003E11E1 /* xml2json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D3D28DB3F49003E11E1 /* xml2json.cpp */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -92,6 +98,8 @@
 		4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0171228B5DD490039F675 /* StringUtil.cpp */; };
 		4CB0175628BF8A640039F675 /* example in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175528BF8A640039F675 /* example */; };
 		4CB0175728BF8AD30039F675 /* assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175028BF89070039F675 /* assets.bundle */; };
+		4CBFBA8428D4790700C1CDA0 /* TextFieldElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */; };
+		4CBFBA8528D4790700C1CDA0 /* TextFieldElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -142,6 +150,12 @@
 		4C2C065D28C74F1C005EE37F /* BoymuePage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BoymuePage.cpp; path = ../../../framework/boymue/core/view/BoymuePage.cpp; sourceTree = "<group>"; };
 		4C2C065E28C74F1C005EE37F /* BoymuePage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BoymuePage.h; path = ../../../framework/boymue/core/view/BoymuePage.h; sourceTree = "<group>"; };
 		4C2C066128CA039E005EE37F /* BoymueBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueBridge.h; path = ../../../framework/boymue/platform/BoymueBridge.h; sourceTree = "<group>"; };
+		4C489D2F28D85C3C003E11E1 /* JsUIOperationApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsUIOperationApi.cpp; path = ../../../framework/boymue/apis/JsUIOperationApi.cpp; sourceTree = "<group>"; };
+		4C489D3028D85C3C003E11E1 /* JsUIOperationApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsUIOperationApi.h; path = ../../../framework/boymue/apis/JsUIOperationApi.h; sourceTree = "<group>"; };
+		4C489D3328D9B8FA003E11E1 /* JsXmlToJsonApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsXmlToJsonApi.cpp; path = ../../../framework/boymue/apis/JsXmlToJsonApi.cpp; sourceTree = "<group>"; };
+		4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsXmlToJsonApi.h; path = ../../../framework/boymue/apis/JsXmlToJsonApi.h; sourceTree = "<group>"; };
+		4C489D3C28DB3F49003E11E1 /* xml2json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml2json.h; path = ../../../framework/boymue/util/xml2json.h; sourceTree = "<group>"; };
+		4C489D3D28DB3F49003E11E1 /* xml2json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml2json.cpp; path = ../../../framework/boymue/util/xml2json.cpp; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -194,6 +208,8 @@
 		4CB0171228B5DD490039F675 /* StringUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StringUtil.cpp; path = ../../../framework/boymue/util/StringUtil.cpp; sourceTree = "<group>"; };
 		4CB0175028BF89070039F675 /* assets.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = assets.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB0175528BF8A640039F675 /* example */ = {isa = PBXFileReference; lastKnownFileType = folder; name = example; path = ../../../../boymuejs/example; sourceTree = "<group>"; };
+		4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextFieldElement.cpp; path = ../../../framework/boymue/core/dom/TextFieldElement.cpp; sourceTree = "<group>"; };
+		4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextFieldElement.h; path = ../../../framework/boymue/core/dom/TextFieldElement.h; sourceTree = "<group>"; };
 		4CCD171928B320B800B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD171C28B320B800B4D4FB /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -236,6 +252,8 @@
 				4C2C062C28C1A77C005EE37F /* ViewElement.h */,
 				4C2C064F28C738B0005EE37F /* ButtonElement.cpp */,
 				4C2C065028C738B0005EE37F /* ButtonElement.h */,
+				4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */,
+				4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */,
 			);
 			name = dom;
 			sourceTree = "<group>";
@@ -429,6 +447,10 @@
 				4CB0170928B4D2DB0039F675 /* JsLogApi.h */,
 				4CB0170B28B4D2DB0039F675 /* JSTestApi.cpp */,
 				4CB0170A28B4D2DB0039F675 /* JSTestApi.h */,
+				4C489D2F28D85C3C003E11E1 /* JsUIOperationApi.cpp */,
+				4C489D3028D85C3C003E11E1 /* JsUIOperationApi.h */,
+				4C489D3328D9B8FA003E11E1 /* JsXmlToJsonApi.cpp */,
+				4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */,
 			);
 			name = apis;
 			sourceTree = "<group>";
@@ -436,6 +458,8 @@
 		4CB0171028B5DD150039F675 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				4C489D3D28DB3F49003E11E1 /* xml2json.cpp */,
+				4C489D3C28DB3F49003E11E1 /* xml2json.h */,
 				4CB0171128B5DD490039F675 /* StringUtil.h */,
 				4CB0171228B5DD490039F675 /* StringUtil.cpp */,
 				4C2C063F28C5A374005EE37F /* FileUtil.cpp */,
@@ -492,6 +516,7 @@
 				4C2C064228C5A374005EE37F /* FileUtil.h in Headers */,
 				4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */,
 				4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */,
+				4CBFBA8528D4790700C1CDA0 /* TextFieldElement.h in Headers */,
 				4CB016F928B4D16F0039F675 /* BoymueApplication.h in Headers */,
 				4CB016D028B4CF660039F675 /* JsApiInterface.h in Headers */,
 				4CB0170328B4D1A30039F675 /* TextLayout.h in Headers */,
@@ -499,6 +524,7 @@
 				4C2C065928C747EB005EE37F /* Painter.h in Headers */,
 				4C2C063128C1A77D005EE37F /* DomTags.h in Headers */,
 				4CB016C728B33C1A0039F675 /* Style.h in Headers */,
+				4C489D3628D9B8FA003E11E1 /* JsXmlToJsonApi.h in Headers */,
 				4C2C066028C74F1C005EE37F /* BoymuePage.h in Headers */,
 				4C2C063828C1A77D005EE37F /* ViewElement.h in Headers */,
 				4C2C062F28C1A77D005EE37F /* DocumentElement.h in Headers */,
@@ -514,11 +540,13 @@
 				4CB0170E28B4D2DB0039F675 /* JSTestApi.h in Headers */,
 				4C2C063528C1A77D005EE37F /* TextElement.h in Headers */,
 				4C2C065C28C747EB005EE37F /* TextPainter.h in Headers */,
+				4C489D3228D85C3D003E11E1 /* JsUIOperationApi.h in Headers */,
 				4CB016FD28B4D18E0039F675 /* BoymueView.h in Headers */,
 				4CB016AA28B3242A0039F675 /* BoymueIOSGLContext.h in Headers */,
 				4CB016E228B4D0780039F675 /* WaitEvent.h in Headers */,
 				4CB016E728B4D0910039F675 /* TimeDelta.h in Headers */,
 				4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */,
+				4C489D3E28DB3F49003E11E1 /* xml2json.h in Headers */,
 				4C2C063428C1A77D005EE37F /* ImageElement.h in Headers */,
 				4CB0171328B5DD490039F675 /* StringUtil.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
@@ -642,6 +670,7 @@
 				4CB016D228B4CF660039F675 /* JsEngine.cpp in Sources */,
 				4C2C065F28C74F1C005EE37F /* BoymuePage.cpp in Sources */,
 				4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */,
+				4C489D3128D85C3D003E11E1 /* JsUIOperationApi.cpp in Sources */,
 				4CB0170628B4D2900039F675 /* BoymueAppView.m in Sources */,
 				4CB016AC28B3242A0039F675 /* PaintContextIOS.mm in Sources */,
 				4C2C063728C1A77D005EE37F /* ImageElement.cpp in Sources */,
@@ -655,12 +684,15 @@
 				4C2C063E28C59A17005EE37F /* BoymueAppInfo.cpp in Sources */,
 				4C2C064928C5DA6A005EE37F /* UITaskRunner.cpp in Sources */,
 				4C2C063928C1A77D005EE37F /* DocumentElement.cpp in Sources */,
+				4C489D3F28DB3F49003E11E1 /* xml2json.cpp in Sources */,
 				4C2C065828C747EB005EE37F /* TextPainter.cpp in Sources */,
 				4CB016F128B4D0A70039F675 /* TaskThread.cpp in Sources */,
+				4CBFBA8428D4790700C1CDA0 /* TextFieldElement.cpp in Sources */,
 				4CB016DC28B4D05D0039F675 /* ThreadExecutor.cpp in Sources */,
 				4CB016FE28B4D18E0039F675 /* BoymueView.cpp in Sources */,
 				4C2C064528C5D406005EE37F /* UITaskRunnerIOS.mm in Sources */,
 				4CB0170428B4D1A30039F675 /* Layout.cpp in Sources */,
+				4C489D3528D9B8FA003E11E1 /* JsXmlToJsonApi.cpp in Sources */,
 				4C2C061928C05743005EE37F /* BoymueBridge.mm in Sources */,
 				4CB016F228B4D0A70039F675 /* TaskRunner.cpp in Sources */,
 				4C2C063628C1A77D005EE37F /* ViewElement.cpp in Sources */,
@@ -887,6 +919,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -940,6 +973,7 @@
 					"$(PROJECT_DIR)/../../../framework/boymue/util",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

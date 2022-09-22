@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<view boymue:if="{{show}}">
+<view>
     <button value="confirm">ddd</button>
+    <button value="cancel">ddd1</button>
+    <view>hoho</view>
+    <button value="cancel1">ddd2</button>
 </view>

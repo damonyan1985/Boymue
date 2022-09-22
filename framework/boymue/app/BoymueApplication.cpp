@@ -5,6 +5,8 @@
 
 #include "JSTestApi.h"
 #include "JsLogApi.h"
+#include "JsUIOperationApi.h"
+#include "JsXmlToJsonApi.h"
 
 namespace boymue {
 
@@ -25,8 +27,10 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
   getJSTaskRunner().postTask([self = this] {
     self->m_mainRuntime =
         std::unique_ptr<JsRuntime>(self->m_jsEngine->createRuntime());
-    self->m_mainRuntime->registerApi(new boymue::JsLogApi(self));
-    self->m_mainRuntime->registerApi(new boymue::JsTestApi(self));
+    self->m_mainRuntime->registerApi(new JsLogApi(self));
+    self->m_mainRuntime->registerApi(new JsTestApi(self));
+    self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
+    self->m_mainRuntime->registerApi(new JsXmlToJsonApi(self));
     self->m_mainRuntime->setContext(self);
   });
 }
@@ -39,6 +43,10 @@ void BoymueApplication::evaluateJs(const String& jsSource, const String& scriptI
 void BoymueApplication::doRuntimeAction(RuntimeClosure& action) {
     getJSTaskRunner().postTask(
         [=] { this->m_mainRuntime->doAction(action); });
+}
+
+JsRuntime* BoymueApplication::runtime() const {
+    return m_mainRuntime.get();
 }
 
 // 结束当前应用的线程

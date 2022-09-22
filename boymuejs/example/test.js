@@ -8,4 +8,20 @@ function testFunc(a, b) {
   return a * b * arr[2];
 }
 
+class App {
+  static hello() {
+    return 'hello app'
+  }
+}
+
 boymue.log(testFunc(2, 3));
+
+boymue.log(App.hello());
+
+boymue.xmlToJson('/example/test.xml', (res) => {
+    boymue.log('json: ' + res);
+})
+
+
+
+

@@ -9,20 +9,21 @@
 namespace boymue {
 class DomTags {
 public:
+    // 基础组件Tag
     enum TagType {
         kView,
         kButton,
         kImage,
         kText,
-        kRadio,
-        kCheckBox,
-        kInput,
-        kIcon,
+        kTextField,
     };
 
     static DomTags* instance();
     void initDomTags();
     int getTag(const String& key);
+    
+    // 支持自定义tag
+    void addExtensionTag(const String& key, int tag);
 
 private:
     DomTags();

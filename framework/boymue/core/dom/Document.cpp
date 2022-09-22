@@ -32,7 +32,7 @@ static void XMLCALL OnEndElement(void* dom, const char* name) {
 // 处理文本
 static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
     // 换行，以及空格都会返回，所以需要判断是否是空白文本
-    if (StringUtil::isSpace(text, len)) {
+    if (StringUtil::isspace(text, len)) {
         return;
     }
     Document* document = static_cast<Document*>(dom);
@@ -88,7 +88,63 @@ DocumentElement* Document::createElement(int tag, const char** atts,
   return element;
 }
 
-std::stack<DocumentElement*>* Document::getParseStack() {
+void Document::createElement(int tag, int eid, int pid) {
+    DocumentElement* element = nullptr;
+    switch (tag) {
+      case DomTags::kView:
+        element = new ViewElement(this);
+        // 如果Dom root不存在，则设置root
+        if (!m_root) {
+          m_root = element;
+        }
+        break;
+      case DomTags::kImage:
+        element = new ImageElement(this);
+        break;
+      case DomTags::kButton:
+        element = new ButtonElement(this);
+        break;
+      default:
+        break;
+    }
+    
+    if (element) {
+        element->setElementId(eid);
+    }
+    
+    if (pid != 0) {
+        DocumentElement* parent = m_uniqueElems[pid];
+        if (parent && element) {
+            parent->addChild(element);
+        }
+    }
+}
+
+void Document::removeElement(int pid, int eid) {
+    DocumentElement* parent = m_uniqueElems[pid];
+    DocumentElement* child = m_uniqueElems[eid];
+    
+    if (parent && child) {
+        parent->removeChild(child);
+    }
+}
+
+Stack<DocumentElement*>* Document::getParseStack() {
   return &m_parseStack;
+}
+
+void Document::addUniqueElement(DocumentElement* elem) {
+    m_uniqueElems.emplace(elem->elementId(), elem);
+}
+
+void Document::addStyleElement(DocumentElement* elem) {
+    m_styleElems.emplace(elem->styleId(),  elem);
+}
+
+void Document::setElementProperty(int eid, const String& key, const String& value) {
+    DocumentElement* elem = m_uniqueElems[eid];
+    if (elem) {
+        elem->setProperty(key, value);
+    }
 }
 }  // namespace boymue

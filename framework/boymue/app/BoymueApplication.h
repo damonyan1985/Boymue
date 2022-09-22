@@ -23,6 +23,8 @@ class BoymueApplication {
 
   void evaluateJs(const String& jsSource, const String& scriptId);
   void doRuntimeAction(RuntimeClosure& action);
+    
+  JsRuntime* runtime() const;
 
  private:
   std::unique_ptr<JsEngine> m_jsEngine;

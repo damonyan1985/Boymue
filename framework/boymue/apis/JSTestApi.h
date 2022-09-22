@@ -10,11 +10,8 @@ class JsTestApi : public JsApiInterface {
  public:
   JsTestApi(BoymueApplication* context);
   virtual const char* name() const override;
-  virtual void execute(const std::string& params,
+  virtual void execute(const String& params,
                        JsApiCallback* callback) override;
-
- private:
-  BoymueApplication* m_context;
 };
 }  // namespace boymue
 #endif

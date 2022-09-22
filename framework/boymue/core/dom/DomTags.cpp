@@ -5,6 +5,7 @@
 
 namespace boymue {
 DomTags* DomTags::instance() {
+    // 原子结构，支持多线程调用
     static DomTags sTags;
     return &sTags;
 }
@@ -16,12 +17,13 @@ DomTags::DomTags() {
 void DomTags::initDomTags() {
     m_map["view"] = DomTags::kView;
     m_map["button"] = DomTags::kButton;
-    m_map["checkbox"] = DomTags::kCheckBox;
-    m_map["radio"] = DomTags::kRadio;
     m_map["image"] = DomTags::kImage;
     m_map["text"] = DomTags::kText;
-    m_map["input"] = DomTags::kInput;
-    m_map["icon"] = DomTags::kIcon;
+    m_map["textfield"] = DomTags::kTextField;
+}
+
+void DomTags::addExtensionTag(const String& key, int tag) {
+    m_map[key] = tag;
 }
 
 int DomTags::getTag(const String& key) {

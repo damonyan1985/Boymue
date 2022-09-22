@@ -47,9 +47,9 @@ String& StringUtil::trim(String& str) {
     return str;
 }
 
-bool StringUtil::isSpace(const char* str, int len) {
+bool StringUtil::isspace(const char* str, int len) {
     for (int i = 0; i < len; i++) {
-        if (!isspace(*(str + i))) {
+        if (!::isspace(*(str + i))) {
             return false;
         }
     }

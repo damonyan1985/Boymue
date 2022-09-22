@@ -51,7 +51,7 @@ public:
     static String& trim(String& str);
     
     // 判断整个字符串是否是空白串
-    static bool isSpace(const char* str, int len);
+    static bool isspace(const char* str, int len);
     
     // 判断字符串开头是否包含
     static bool startWidth(const String& str, const String& head);

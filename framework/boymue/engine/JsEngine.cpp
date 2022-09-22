@@ -13,8 +13,6 @@
 #include "libplatform/libplatform.h"
 #endif
 
-#include <string>
-
 namespace boymue {
 #if ENABLE_BOYMUE_IOS
 
@@ -316,7 +314,7 @@ class JsRuntimeImpl : public JsRuntime {
 
   Local<Context> getJsContext() {
     return Local<Context>::New(m_isolate, m_context);
-  }
+  }    
 
   void doAction(const RuntimeClosure& action) {
     // Enter isolate scope

@@ -13,6 +13,7 @@ public:
     ViewElement(Document* dom);
     virtual void parseAttribute(const char** atts);
     virtual void addChild(DocumentElement* element);
+    virtual void removeChild(DocumentElement* element);
     
 private:
     List<SharedPtr<DocumentElement>> m_children;

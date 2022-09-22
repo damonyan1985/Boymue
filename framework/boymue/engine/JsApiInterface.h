@@ -4,8 +4,6 @@
 #ifndef JsApiInterface_h
 #define JsApiInterface_h
 
-#include <string>
-
 #include "StringUtil.h"
 #include "ThreadExecutor.h"
 

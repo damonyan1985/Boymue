@@ -9,21 +9,41 @@
 
 #include "DocumentElement.h"
 #include "TextElement.h"
+#include "StringUtil.h"
 
 namespace boymue {
-// Create and run in js thread
+// Create and run in ui thread
 class Document {
 public:
+    enum DOMCmdType {
+        kAddNode = 1,
+        kSetProp,
+        kRemoveNode,
+        kReplaceNode
+    };
+    
     Document();
     // 利用XML内容来初始化document
-    void initDocument(const std::string& content);
-    std::stack<DocumentElement*>* getParseStack();
+    void initDocument(const String& content);
+    Stack<DocumentElement*>* getParseStack();
     DocumentElement* createElement(int tag, const char** atts,
                                  DocumentElement* parent);
+    
+    void createElement(int tag, int eid, int pid);
+    void removeElement(int pid, int eid);
+    
+    void addUniqueElement(DocumentElement* elem);
+    void addStyleElement(DocumentElement* elem);
+    
+    void setElementProperty(int eid, const String& key, const String& value);
 
 private:
-    std::stack<DocumentElement*> m_parseStack;
+    Stack<DocumentElement*> m_parseStack;
     DocumentElement* m_root;
+    // 使用elem id查找DocumentElement
+    HashMap<int, DocumentElement*> m_uniqueElems;
+    // 使用style id查找DocumentElement
+    HashMap<String, DocumentElement*> m_styleElems;
 };
 }  // namespace boymue
 #endif  // !Document_h
