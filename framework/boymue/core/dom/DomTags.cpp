@@ -18,7 +18,7 @@ void DomTags::initDomTags() {
     m_map["view"] = DomTags::kView;
     m_map["button"] = DomTags::kButton;
     m_map["image"] = DomTags::kImage;
-    m_map["text"] = DomTags::kText;
+    m_map["#text"] = DomTags::kText; // TEXT并非真正的tag，加#以示区别
     m_map["textfield"] = DomTags::kTextField;
 }
 

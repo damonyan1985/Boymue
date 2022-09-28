@@ -1,5 +1,5 @@
 //
-//  FileUtil.hpp
+//  FileUtil.h
 //  core
 //
 //  Created by yanbo on 2022/9/5.
@@ -17,4 +17,4 @@ public:
 };
 }
 
-#endif /* FileUtil_hpp */
+#endif /* FileUtil_h */

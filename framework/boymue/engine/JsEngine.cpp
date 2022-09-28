@@ -138,7 +138,7 @@ class JsRuntimeImpl : public JsRuntime {
         }
         
         m_global = JS_AddGlobalObject(m_context,
-                           "boymue",
+                           kAppPrefix.c_str(),
                            m_apiEntries.data(),
                            (int)m_apiEntries.size());
     }

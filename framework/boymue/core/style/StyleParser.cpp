@@ -18,10 +18,12 @@ StyleSheet* StyleParser::parse(const String& css) {
         begin = open;
     }
 
+    // 提取出纯css样式文本，去除注释
     String cssText;
     StringUtil::join(stringBuffer, cssText, css);
 
     begin = 0;
+    // 解析css规则
     while ((open = cssText.find("{", begin)) != String::npos
            && (close = cssText.find("}", begin) != String::npos)) {
 
