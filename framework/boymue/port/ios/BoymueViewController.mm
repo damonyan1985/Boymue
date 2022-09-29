@@ -38,9 +38,23 @@ static boymue::BoymueApplication* s_app;
 
 @implementation BoymueViewController
 
-void bmCallback(const uint8_t *data, size_t len) {
-    printf("bmCallback=%s\n", boymue::String((const char*)data, len).c_str());
-}
+class Testbmnet {
+public:
+    static void bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
+        Testbmnet* test = reinterpret_cast<Testbmnet*>(ext);
+        test->myCallback(data, len);
+    }
+    
+    void init() {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^ {
+            bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", bmCallback, (uintptr_t)this);
+        });
+    }
+    
+    void myCallback(const uint8_t *data, size_t len) {
+        printf("Testbmnet bmCallback=%s\n", boymue::String((const char*)data, len).c_str());
+    }
+};
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -77,10 +91,8 @@ void bmCallback(const uint8_t *data, size_t len) {
     
     printf("entry = %s\n", jsonDom["entry"].GetString());
     
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^ {
-        bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", bmCallback);
-    });
+    auto ptr = new Testbmnet();
+    ptr->init();
 }
 
 

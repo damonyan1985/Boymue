@@ -5,9 +5,10 @@ use web::client::{get_url};
 use std::ffi::{CString, CStr, c_int};
 use std::os::raw::{c_char};
 
-type Callback = unsafe extern "C" fn(data: *const u8, len: usize);
+// ext扩展信息，如传递c++指针回调回去
+type Callback = unsafe extern "C" fn(data: *const u8, len: usize, ext: usize);
 
-fn exe_string_callback(cb: Option<Callback>, text: String) {
+fn exe_string_callback(cb: Option<Callback>, text: String, ext: usize) {
     if text.is_empty() {
         return
     }
@@ -17,7 +18,7 @@ fn exe_string_callback(cb: Option<Callback>, text: String) {
             // 转为[u8]数组切片
             let bytes = (&text).as_bytes();
             // 获取指针地址
-            unsafe { callback(bytes.as_ptr(), bytes.len()); }  
+            unsafe { callback(bytes.as_ptr(), bytes.len(), ext); }  
         },
         None => {
             println!("callback is null")
@@ -27,7 +28,7 @@ fn exe_string_callback(cb: Option<Callback>, text: String) {
 
 // http/https get请求
 #[no_mangle]
-pub extern "C" fn bmnet_get(url: *const c_char, cb: Option<Callback>) {
+pub extern "C" fn bmnet_get(url: *const c_char, cb: Option<Callback>, ext: usize) {
     let c_url = unsafe { CStr::from_ptr(url) };
 
     let str_url = match c_url.to_str() {
@@ -44,7 +45,7 @@ pub extern "C" fn bmnet_get(url: *const c_char, cb: Option<Callback>) {
     match result {
         Ok(text) => {
             println!("http get: {:?}", text);
-            exe_string_callback(cb, text);
+            exe_string_callback(cb, text, ext);
         },
         Err(e) => println!("http error: {:?}", e),
     }

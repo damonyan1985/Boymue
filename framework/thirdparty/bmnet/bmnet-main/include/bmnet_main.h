@@ -8,9 +8,9 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-typedef void (*bmnet_get_callback)(const uint8_t *data, size_t len);
+typedef void (*bmnet_get_callback)(const uint8_t *data, size_t len, uintptr_t ext);
 
-void bmnet_get(const char* url, bmnet_get_callback cb);
+void bmnet_get(const char* url, bmnet_get_callback cb, uintptr_t ext);
 
 #ifdef __cplusplus
 }
