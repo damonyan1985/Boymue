@@ -34,6 +34,7 @@
 /* Begin PBXFileReference section */
 		4C2C061D28C0853E005EE37F /* thirdparty.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = thirdparty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C2C062028C0859F005EE37F /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C489D4428E551DC003E11E1 /* libbmnet_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbmnet_main.a; path = "../../../framework/thirdparty/bmnet/bmnet-main/target/x86_64-apple-ios/debug/libbmnet_main.a"; sourceTree = "<group>"; };
 		4CB016B428B325F70039F675 /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD0AFC28A6325800B4D4FB /* shell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = shell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD0AFF28A6325800B4D4FB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -99,6 +100,7 @@
 		4CCD16CA28ACF72400B4D4FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C489D4428E551DC003E11E1 /* libbmnet_main.a */,
 				4C2C062028C0859F005EE37F /* core.framework */,
 				4C2C061D28C0853E005EE37F /* thirdparty.framework */,
 				4CB016B428B325F70039F675 /* core.framework */,

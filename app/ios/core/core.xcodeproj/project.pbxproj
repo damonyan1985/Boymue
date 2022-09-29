@@ -48,6 +48,8 @@
 		4C489D3F28DB3F49003E11E1 /* xml2json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D3D28DB3F49003E11E1 /* xml2json.cpp */; };
 		4C489D4228DC4247003E11E1 /* JsRequireModuleApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */; };
 		4C489D4328DC4247003E11E1 /* JsRequireModuleApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */; };
+		4C489D4828E5529F003E11E1 /* libbmnet_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C489D4728E5529F003E11E1 /* libbmnet_main.a */; };
+		4C489D4928E552B8003E11E1 /* libbmnet_main.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C489D4728E5529F003E11E1 /* libbmnet_main.a */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -112,6 +114,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4C489D4928E552B8003E11E1 /* libbmnet_main.a in CopyFiles */,
 				4C2C061C28C08485005EE37F /* thirdparty.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +163,7 @@
 		4C489D3D28DB3F49003E11E1 /* xml2json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml2json.cpp; path = ../../../framework/boymue/util/xml2json.cpp; sourceTree = "<group>"; };
 		4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsRequireModuleApi.cpp; path = ../../../framework/boymue/apis/JsRequireModuleApi.cpp; sourceTree = "<group>"; };
 		4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsRequireModuleApi.h; path = ../../../framework/boymue/apis/JsRequireModuleApi.h; sourceTree = "<group>"; };
+		4C489D4728E5529F003E11E1 /* libbmnet_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbmnet_main.a; path = "../../../framework/thirdparty/bmnet/bmnet-main/target/x86_64-apple-ios/debug/libbmnet_main.a"; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -230,6 +234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C489D4828E5529F003E11E1 /* libbmnet_main.a in Frameworks */,
 				4CB016B928B327310039F675 /* OpenGLES.framework in Frameworks */,
 				4CB016B728B327250039F675 /* GLKit.framework in Frameworks */,
 				4CB016B228B325CA0039F675 /* thirdparty.framework in Frameworks */,
@@ -331,6 +336,7 @@
 		4CB016B028B325CA0039F675 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C489D4728E5529F003E11E1 /* libbmnet_main.a */,
 				4CB016B828B327310039F675 /* OpenGLES.framework */,
 				4CB016B628B327250039F675 /* GLKit.framework */,
 				4CB016B128B325CA0039F675 /* thirdparty.framework */,
@@ -928,6 +934,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/bmnet/bmnet-main/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -936,6 +943,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../../framework/thirdparty/bmnet/bmnet-main/target/x86_64-apple-ios/debug";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.boymue.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -982,6 +990,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/quickjs/",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
+					"$(PROJECT_DIR)/../../../framework/thirdparty/bmnet/bmnet-main/include",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

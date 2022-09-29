@@ -16,6 +16,7 @@
 #include "Document.h"
 #include "rapidjson/document.h"
 #include "xml2json.h"
+#include "bmnet_main.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -36,6 +37,10 @@ static boymue::BoymueApplication* s_app;
 @end
 
 @implementation BoymueViewController
+
+void bmCallback(const uint8_t *data, size_t len) {
+    printf("bmCallback=%s\n", boymue::String((const char*)data, len).c_str());
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -71,7 +76,14 @@ static boymue::BoymueApplication* s_app;
     jsonDom.Parse(boymue::FileUtil::readFile(configPath).c_str());
     
     printf("entry = %s\n", jsonDom["entry"].GetString());
+    
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^ {
+        bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", bmCallback);
+    });
 }
+
+
 
 -(void)drawTest {
     boymue::PaintContextIOS* painter = new boymue::PaintContextIOS();
