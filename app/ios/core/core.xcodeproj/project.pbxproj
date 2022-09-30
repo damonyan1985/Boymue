@@ -50,6 +50,8 @@
 		4C489D4328DC4247003E11E1 /* JsRequireModuleApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */; };
 		4C489D4828E5529F003E11E1 /* libbmnet_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C489D4728E5529F003E11E1 /* libbmnet_main.a */; };
 		4C489D4928E552B8003E11E1 /* libbmnet_main.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C489D4728E5529F003E11E1 /* libbmnet_main.a */; };
+		4C489D4E28E6D0EF003E11E1 /* Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D4C28E6D0EF003E11E1 /* Loader.cpp */; };
+		4C489D4F28E6D0EF003E11E1 /* Loader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D4D28E6D0EF003E11E1 /* Loader.h */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -164,6 +166,8 @@
 		4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsRequireModuleApi.cpp; path = ../../../framework/boymue/apis/JsRequireModuleApi.cpp; sourceTree = "<group>"; };
 		4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsRequireModuleApi.h; path = ../../../framework/boymue/apis/JsRequireModuleApi.h; sourceTree = "<group>"; };
 		4C489D4728E5529F003E11E1 /* libbmnet_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbmnet_main.a; path = "../../../framework/thirdparty/bmnet/bmnet-main/target/x86_64-apple-ios/debug/libbmnet_main.a"; sourceTree = "<group>"; };
+		4C489D4C28E6D0EF003E11E1 /* Loader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Loader.cpp; path = ../../../framework/boymue/loader/Loader.cpp; sourceTree = "<group>"; };
+		4C489D4D28E6D0EF003E11E1 /* Loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Loader.h; path = ../../../framework/boymue/loader/Loader.h; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -267,9 +271,19 @@
 			name = dom;
 			sourceTree = "<group>";
 		};
+		4C489D4B28E6D09C003E11E1 /* loader */ = {
+			isa = PBXGroup;
+			children = (
+				4C489D4C28E6D0EF003E11E1 /* Loader.cpp */,
+				4C489D4D28E6D0EF003E11E1 /* Loader.h */,
+			);
+			name = loader;
+			sourceTree = "<group>";
+		};
 		4CB0169928B323BD0039F675 /* boymue */ = {
 			isa = PBXGroup;
 			children = (
+				4C489D4B28E6D09C003E11E1 /* loader */,
 				4CB016BC28B33A7D0039F675 /* engine */,
 				4CB0171028B5DD150039F675 /* util */,
 				4CB0170728B4D2BB0039F675 /* apis */,
@@ -564,6 +578,7 @@
 				4C489D4328DC4247003E11E1 /* JsRequireModuleApi.h in Headers */,
 				4CB016CB28B33C1A0039F675 /* StyleSheet.h in Headers */,
 				4C2C065B28C747EB005EE37F /* PaintInfo.h in Headers */,
+				4C489D4F28E6D0EF003E11E1 /* Loader.h in Headers */,
 				4C2C066228CA039E005EE37F /* BoymueBridge.h in Headers */,
 				4CB016AF28B3243F0039F675 /* PaintContext.h in Headers */,
 				4CB0170228B4D1A30039F675 /* Layout.h in Headers */,
@@ -717,6 +732,7 @@
 				4CB016F828B4D16F0039F675 /* BoymueApplication.cpp in Sources */,
 				4CB016E128B4D0780039F675 /* WaitEvent.cpp in Sources */,
 				4C2C064D28C5DBEF005EE37F /* UITaskThread.cpp in Sources */,
+				4C489D4E28E6D0EF003E11E1 /* Loader.cpp in Sources */,
 				4CB016AD28B3242A0039F675 /* BoymueIOSGLContext.m in Sources */,
 				4CB016C928B33C1A0039F675 /* StyleEngine.cpp in Sources */,
 				4CB0170F28B4D2DB0039F675 /* JSTestApi.cpp in Sources */,

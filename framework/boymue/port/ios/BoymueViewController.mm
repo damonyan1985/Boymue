@@ -15,6 +15,14 @@
 #include "FileUtil.h"
 #include "Document.h"
 #include "rapidjson/document.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/encodedstream.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/reader.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/filewritestream.h"
+#include "rapidjson/error/en.h"
 #include "xml2json.h"
 #include "bmnet_main.h"
 
@@ -47,7 +55,26 @@ public:
     
     void init() {
         dispatch_async(dispatch_get_global_queue(0, 0), ^ {
-            bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", bmCallback, (uintptr_t)this);
+            rapidjson::Document dom;
+            dom.SetObject();
+            rapidjson::Document::AllocatorType& allocator = dom.GetAllocator();
+            dom.AddMember(rapidjson::StringRef("Content-Type"),
+                          rapidjson::StringRef("application/x-www-form-urlencoded"), allocator);
+            
+            dom.AddMember(rapidjson::StringRef("User-Token"),
+                          rapidjson::StringRef("none"), allocator);
+            
+            rapidjson::StringBuffer buffer;
+            rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+            dom.Accept(writer);
+
+            const char* json = buffer.GetString();
+//            bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", json, bmCallback, (uintptr_t)this);
+            bmnet_post("https://127.0.0.1:8443/user/v1/login",
+                       json,
+                       "name=test&pwd=test",
+                       bmCallback, (uintptr_t)this);
+            //bmnet_get(nullptr, bmCallback, (uintptr_t)this);
         });
     }
     
