@@ -129,5 +129,5 @@ pub extern "C" fn bmnet_post(url: *const c_char,
         Err(e) => println!("http error: {:?}", e),
     }
 
-    println!("main get");
+    println!("main post");
 }

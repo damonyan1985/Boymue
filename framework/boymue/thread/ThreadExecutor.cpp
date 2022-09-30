@@ -10,6 +10,7 @@ public:
     ThreadExecutorDefaultImpl(const std::string& name)
         : m_thread(name)
     {
+        m_thread.start();
     }
 
     void submitTask(const closure& task) 

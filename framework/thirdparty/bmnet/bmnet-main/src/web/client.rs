@@ -49,11 +49,9 @@ pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Resu
         .unwrap()
         .get(&url)
         .send()
-        .await
-        .unwrap()
+        .await?
         .text()
-        .await
-        .unwrap();
+        .await?;
 
     Ok(resp)
 }
@@ -63,6 +61,7 @@ pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Resu
 pub async fn post_url(url: String, headerMap: Option<Map<String, Value>>, body: String) -> Result<String, Box<dyn std::error::Error>> {
     let headers = get_header_map(headerMap);
 
+    // 加了问号符，如果出错会自动return
     let resp = reqwest::Client::builder()
         .timeout(Duration::from_millis(10000))
         .default_headers(headers)
@@ -73,11 +72,9 @@ pub async fn post_url(url: String, headerMap: Option<Map<String, Value>>, body: 
         .post(&url)
         .body(body)
         .send()
-        .await
-        .unwrap()
+        .await?
         .text()
-        .await
-        .unwrap();
+        .await?;
 
     Ok(resp)
 }

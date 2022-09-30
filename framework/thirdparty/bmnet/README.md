@@ -12,6 +12,12 @@
 1. 禁用默认feature, 使用default-features = false
 ```
 
+## 问号的使用
+```
+1. 问号主要用于处理Result, Option的情况
+2. 使用问号后如果结果是Err/None，问号会自动return返回，因此函数的返回值也必须是Result/Option枚举
+```
+
 ## 编译
 ```
 1. IOS模拟器编译，cargo build --target x86_64-apple-ios --release

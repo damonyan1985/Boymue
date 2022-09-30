@@ -25,6 +25,7 @@
 #include "rapidjson/error/en.h"
 #include "xml2json.h"
 #include "bmnet_main.h"
+#include "Loader.h"
 
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES2/gl.h>
@@ -46,13 +47,8 @@ static boymue::BoymueApplication* s_app;
 
 @implementation BoymueViewController
 
-class Testbmnet {
+class Testbmnet : public boymue::LoaderClient {
 public:
-    static void bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
-        Testbmnet* test = reinterpret_cast<Testbmnet*>(ext);
-        test->myCallback(data, len);
-    }
-    
     void init() {
         dispatch_async(dispatch_get_global_queue(0, 0), ^ {
             rapidjson::Document dom;
@@ -69,18 +65,19 @@ public:
             dom.Accept(writer);
 
             const char* json = buffer.GetString();
-//            bmnet_get("https://127.0.0.1:8443/user/v1/testlogin", json, bmCallback, (uintptr_t)this);
-            bmnet_post("https://127.0.0.1:8443/user/v1/login",
-                       json,
-                       "name=test&pwd=test",
-                       bmCallback, (uintptr_t)this);
-            //bmnet_get(nullptr, bmCallback, (uintptr_t)this);
+            
+            loader.post("https://127.0.0.1:8443/user/v1/login",
+                        json,
+                        "name=test&pwd=test",
+                        this);
         });
     }
     
-    void myCallback(const uint8_t *data, size_t len) {
+    virtual void onResultCallback(const uint8_t *data, size_t len) override {
         printf("Testbmnet bmCallback=%s\n", boymue::String((const char*)data, len).c_str());
     }
+    
+    boymue::Loader loader;
 };
 
 - (void)viewDidLoad {
