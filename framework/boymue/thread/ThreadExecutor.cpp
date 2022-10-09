@@ -5,6 +5,7 @@
 #include "TaskThread.h"
 
 namespace boymue {
+// TODO 后期修改为多线程处理
 class ThreadExecutorDefaultImpl : public ThreadExecutor {
 public:
     ThreadExecutorDefaultImpl(const std::string& name)

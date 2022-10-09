@@ -11,6 +11,10 @@
 namespace boymue {
 String FileUtil::readFile(const String& path) {
     std::ifstream file(path);
+    if (file.fail()) {
+        return "";
+    }
+    
     return String((std::istreambuf_iterator<char>(file)),
       std::istreambuf_iterator<char>());
 }

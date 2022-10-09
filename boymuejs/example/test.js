@@ -31,7 +31,35 @@ boymue.xmlToJson('/example/test.xml', (res) => {
     boymue.log('json: ' + xmlObj.tag);
 })
 
+function request(obj) {
+    return new Promise((resolve, reject) => {
+        boymue.request(JSON.stringify(obj), (res) => {
+            boymue.log('request function result: ' + res + ', resolve:' + resolve)
+            resolve(res)
+        })
+        //resolve('hello Promise')
+    });
+}
 
+//boymue.request(JSON.stringify({
+//    'method': 'GET',
+//    'url': 'https://127.0.0.1:8443/user/v1/testlogin',
+//    'headers': {'token': 'none'}
+//}), (res) => {
+//    boymue.log('boymue.request result: ' + res)
+//})
+
+async function test() {
+    let data = await request({
+        'method': 'GET',
+        'url': 'https://127.0.0.1:8443/user/v1/testlogin',
+        'headers': {'token': 'none'}
+    });
+    
+    boymue.log('test async request: ' + data);
+}
+
+test()
 
 boymue.log(testimport());
 

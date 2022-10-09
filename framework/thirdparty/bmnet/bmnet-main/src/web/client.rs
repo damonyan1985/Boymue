@@ -40,6 +40,7 @@ pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Resu
 
     let headers = get_header_map(headerMap);
 
+    // .await一般返回result，适用于?表达式
     let resp = reqwest::Client::builder()
         .timeout(Duration::from_millis(10000))
         .default_headers(headers)

@@ -25,9 +25,9 @@ public:
     
     Loader();
     // get请求
-    void get(const String& url, const String& headers, LoaderClient* client);
+    void get(const String& url, const String& headers, LoaderClient* client) const;
     // post请求
-    void post(const String& url, const String& headers, const String& data, LoaderClient* client);
+    void post(const String& url, const String& headers, const String& data, LoaderClient* client) const;
     
 private:
     ThreadExecutor* m_executor;

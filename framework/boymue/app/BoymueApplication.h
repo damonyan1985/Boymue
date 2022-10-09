@@ -11,6 +11,7 @@
 #include "TaskThread.h"
 #include "JsEngine.h"
 #include "BoymueAppInfo.h"
+#include "Loader.h"
 
 namespace boymue {
 class BoymueApplication {
@@ -25,6 +26,7 @@ class BoymueApplication {
   void doRuntimeAction(RuntimeClosure& action);
     
   JsRuntime* runtime() const;
+  const Loader& loader() const;
 
  private:
   std::unique_ptr<JsEngine> m_jsEngine;
@@ -40,6 +42,8 @@ class BoymueApplication {
   TaskThread m_ioThread;
   // js thread用来执行js的线程
   TaskThread m_jsThread;
+    
+  Loader m_loader;
 };
 }  // namespace boymue
 #endif  // !BoymueApplication_h

@@ -151,12 +151,18 @@ class JsRuntimeImpl : public JsRuntime {
         JS_FreeRuntime(m_runtime);
     }
 
+    // 执行的回调也是宏任务
     virtual void doAction(const RuntimeClosure& action) {
         action(this);
+        // 宏任务结束处理微任务
+        doMicroTask();
     };
     
+    // 执行JS代码相当于处理一次宏任务
     virtual void evaluateJs(const String& jsSource, const String& scriptId) {
         JS_Eval(m_context, jsSource.data(), jsSource.length(), scriptId.c_str(), 0);
+        // 宏任务结束处理微任务
+        doMicroTask();
     };
     
     virtual void registerApi(JsApiInterface* api) {
@@ -166,6 +172,21 @@ class JsRuntimeImpl : public JsRuntime {
     }
     
 private:
+    // 处理微任务列表中的任务
+    // 当异步任务执行完成后会添加一个微任务到微任务列表
+    // 在宏任务执行完成后需要处理这些微任务
+    void doMicroTask() {
+        for (;;) {
+            int err = JS_ExecutePendingJob(m_runtime, &m_context);
+            if (err <= 0) {
+                if (err < 0) {
+                    js_std_dump_error(m_context);
+                }
+                break;
+            }
+        }
+    }
+    
     Vector<JSCFunctionListEntry> m_apiEntries;
     JSRuntime* m_runtime;
     JSContext* m_context;

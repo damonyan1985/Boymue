@@ -8,6 +8,7 @@
 #include "JsUIOperationApi.h"
 #include "JsXmlToJsonApi.h"
 #include "JsRequireModuleApi.h"
+#include "JsRequestApi.h"
 
 namespace boymue {
 
@@ -33,6 +34,7 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
     self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
     self->m_mainRuntime->registerApi(new JsXmlToJsonApi(self));
     self->m_mainRuntime->registerApi(new JsRequireModuleApi(self));
+    self->m_mainRuntime->registerApi(new JsRequestApi(self));
     self->m_mainRuntime->setContext(self);
   });
 }
@@ -52,11 +54,7 @@ JsRuntime* BoymueApplication::runtime() const {
 }
 
 // 结束当前应用的线程
-BoymueApplication::~BoymueApplication() {
-  m_uiThread.terminate();
-  m_ioThread.terminate();
-  m_jsThread.terminate();
-}
+BoymueApplication::~BoymueApplication() {}
 
 TaskRunner& BoymueApplication::getUITaskRunner() const {
   return m_uiThread.getTaskRunner();
@@ -69,4 +67,9 @@ TaskRunner& BoymueApplication::getIOTaskRunner() const {
 TaskRunner& BoymueApplication::getJSTaskRunner() const {
   return m_jsThread.getTaskRunner();
 }
+
+const Loader& BoymueApplication::loader() const {
+    return m_loader;
+}
+
 }  // namespace boymue

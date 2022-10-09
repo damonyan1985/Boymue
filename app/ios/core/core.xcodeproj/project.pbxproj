@@ -52,6 +52,8 @@
 		4C489D4928E552B8003E11E1 /* libbmnet_main.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C489D4728E5529F003E11E1 /* libbmnet_main.a */; };
 		4C489D4E28E6D0EF003E11E1 /* Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D4C28E6D0EF003E11E1 /* Loader.cpp */; };
 		4C489D4F28E6D0EF003E11E1 /* Loader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D4D28E6D0EF003E11E1 /* Loader.h */; };
+		4C489D5228F27C97003E11E1 /* JsRequestApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C489D5028F27C97003E11E1 /* JsRequestApi.cpp */; };
+		4C489D5328F27C97003E11E1 /* JsRequestApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C489D5128F27C97003E11E1 /* JsRequestApi.h */; };
 		4CB016A228B323F80039F675 /* BoymueViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0169E28B323F80039F675 /* BoymueViewController.mm */; };
 		4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A028B323F80039F675 /* BoymueViewController.h */; };
 		4CB016A528B323F80039F675 /* BoymueAppView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CB016A128B323F80039F675 /* BoymueAppView.h */; };
@@ -168,6 +170,8 @@
 		4C489D4728E5529F003E11E1 /* libbmnet_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbmnet_main.a; path = "../../../framework/thirdparty/bmnet/bmnet-main/target/x86_64-apple-ios/debug/libbmnet_main.a"; sourceTree = "<group>"; };
 		4C489D4C28E6D0EF003E11E1 /* Loader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Loader.cpp; path = ../../../framework/boymue/loader/Loader.cpp; sourceTree = "<group>"; };
 		4C489D4D28E6D0EF003E11E1 /* Loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Loader.h; path = ../../../framework/boymue/loader/Loader.h; sourceTree = "<group>"; };
+		4C489D5028F27C97003E11E1 /* JsRequestApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsRequestApi.cpp; path = ../../../framework/boymue/apis/JsRequestApi.cpp; sourceTree = "<group>"; };
+		4C489D5128F27C97003E11E1 /* JsRequestApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsRequestApi.h; path = ../../../framework/boymue/apis/JsRequestApi.h; sourceTree = "<group>"; };
 		4CB0169E28B323F80039F675 /* BoymueViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BoymueViewController.mm; path = ../../../framework/boymue/port/ios/BoymueViewController.mm; sourceTree = "<group>"; };
 		4CB016A028B323F80039F675 /* BoymueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueViewController.h; path = ../../../framework/boymue/port/ios/BoymueViewController.h; sourceTree = "<group>"; };
 		4CB016A128B323F80039F675 /* BoymueAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoymueAppView.h; path = ../../../framework/boymue/port/ios/BoymueAppView.h; sourceTree = "<group>"; };
@@ -477,6 +481,8 @@
 				4C489D3428D9B8FA003E11E1 /* JsXmlToJsonApi.h */,
 				4C489D4028DC4247003E11E1 /* JsRequireModuleApi.cpp */,
 				4C489D4128DC4247003E11E1 /* JsRequireModuleApi.h */,
+				4C489D5028F27C97003E11E1 /* JsRequestApi.cpp */,
+				4C489D5128F27C97003E11E1 /* JsRequestApi.h */,
 			);
 			name = apis;
 			sourceTree = "<group>";
@@ -539,6 +545,7 @@
 			files = (
 				4C2C063028C1A77D005EE37F /* Document.h in Headers */,
 				4CB016E828B4D0910039F675 /* TimePoint.h in Headers */,
+				4C489D5328F27C97003E11E1 /* JsRequestApi.h in Headers */,
 				4C2C064228C5A374005EE37F /* FileUtil.h in Headers */,
 				4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */,
 				4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */,
@@ -708,6 +715,7 @@
 				4C2C064128C5A374005EE37F /* FileUtil.cpp in Sources */,
 				4C2C063A28C1A77D005EE37F /* DomTags.cpp in Sources */,
 				4CB016C828B33C1A0039F675 /* StyleSheet.cpp in Sources */,
+				4C489D5228F27C97003E11E1 /* JsRequestApi.cpp in Sources */,
 				4C2C063328C1A77D005EE37F /* TextElement.cpp in Sources */,
 				4C2C065A28C747EB005EE37F /* Painter.cpp in Sources */,
 				4C2C063E28C59A17005EE37F /* BoymueAppInfo.cpp in Sources */,
@@ -951,6 +959,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/bmnet/bmnet-main/include",
+					"$(PROJECT_DIR)/../../../framework/boymue/loader",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1007,6 +1016,7 @@
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidjson/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/rapidxml/include",
 					"$(PROJECT_DIR)/../../../framework/thirdparty/bmnet/bmnet-main/include",
+					"$(PROJECT_DIR)/../../../framework/boymue/loader",
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

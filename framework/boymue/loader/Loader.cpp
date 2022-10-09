@@ -20,7 +20,7 @@ void Loader::bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
 }
 
 // get请求
-void Loader::get(const String& url, const String& headers, LoaderClient* client) {
+void Loader::get(const String& url, const String& headers, LoaderClient* client) const {
     m_executor->submitTask([url = std::move(url),
                             headers = std::move(headers),
                             client = client] {
@@ -29,7 +29,7 @@ void Loader::get(const String& url, const String& headers, LoaderClient* client)
 }
 
 // post请求
-void Loader::post(const String& url, const String& headers, const String& data, LoaderClient* client) {
+void Loader::post(const String& url, const String& headers, const String& data, LoaderClient* client) const {
     m_executor->submitTask([url = std::move(url),
                             headers = std::move(headers),
                             data = std::move(data),

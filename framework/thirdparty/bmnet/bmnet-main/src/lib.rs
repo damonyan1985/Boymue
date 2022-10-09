@@ -123,7 +123,7 @@ pub extern "C" fn bmnet_post(url: *const c_char,
     let result = post_url(str_url, header_map, str_data);
     match result {
         Ok(text) => {
-            println!("http get: {:?}", text);
+            println!("http post: {:?}", text);
             exec_string_callback(cb, text, ext);
         },
         Err(e) => println!("http error: {:?}", e),
