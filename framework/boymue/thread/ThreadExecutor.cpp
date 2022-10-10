@@ -14,7 +14,7 @@ public:
         m_thread.start();
     }
 
-    void submitTask(const closure& task) 
+    virtual void submitTask(const closure& task) override
     {
         m_thread.getTaskRunner().postTask(task);
     }

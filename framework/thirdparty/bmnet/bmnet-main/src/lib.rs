@@ -9,6 +9,10 @@ use std::os::raw::{c_char};
 use std::collections::HashMap;
 use serde_json;
 use serde_json::{Map, Value};
+use tokio::runtime::Runtime;
+use bmnet_timer::{Timer};
+
+static mut HAS_TOKIO_RUNTIME: bool = false;
 
 // 与c交互可能涉及会到一些unsafe操作
 // ext扩展信息，如传递c++指针回调回去
@@ -130,4 +134,9 @@ pub extern "C" fn bmnet_post(url: *const c_char,
     }
 
     println!("main post");
+}
+
+#[no_mangle]
+pub extern "C" fn bmnet_timeout(time: u64) {    
+    Timer::timeout(time);
 }

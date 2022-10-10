@@ -24,6 +24,8 @@ public:
     static void bmCallback(const uint8_t *data, size_t len, uintptr_t ext);
     
     Loader();
+    
+    ~Loader();
     // get请求
     void get(const String& url, const String& headers, LoaderClient* client) const;
     // post请求

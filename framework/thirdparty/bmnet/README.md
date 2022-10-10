@@ -18,6 +18,14 @@
 2. 使用问号后如果结果是Err/None，问号会自动return返回，因此函数的返回值也必须是Result/Option枚举
 ```
 
+## 智能指针
+```
+智能指针主要针对堆上对象分配
+1. Box所有权下的智能指针，类似unique_ptr
+2. Rc引用计数智能指针，类似shared_ptr
+3. Arc原子化的Rc智能指针，处理多线程并发，类似atomic_shared_ptr
+```
+
 ## 编译
 ```
 1. IOS模拟器编译，cargo build --target x86_64-apple-ios --release

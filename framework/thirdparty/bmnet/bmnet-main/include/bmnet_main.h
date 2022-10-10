@@ -21,6 +21,8 @@ void bmnet_post(const char* url,
     bmnet_get_callback cb,
     uintptr_t ext);
 
+void bmnet_timeout(uint64_t time);    
+
 #ifdef __cplusplus
 }
 #endif

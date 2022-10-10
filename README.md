@@ -30,4 +30,7 @@
    1）创建local_buf，容量包含函数参数个数arg_count，var_count，以及栈大小stack_size，采用alloca申请栈内存
       函数结束后会自动释放
    2) 字节码定义，字节码存储在opcode_info数组中
+4. 微任务
+   1）promise调用异步函数执行完后，会调用js_promise_resolve_function_call
+   将微任务加入队列，例如JS_EnqueueJob(ctx, promise_reaction_job, 5, args)
 ```

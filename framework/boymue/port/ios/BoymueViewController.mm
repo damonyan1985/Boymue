@@ -117,6 +117,8 @@ public:
     
     auto ptr = new Testbmnet();
     ptr->init();
+    
+    bmnet_timeout(10000);
 }
 
 

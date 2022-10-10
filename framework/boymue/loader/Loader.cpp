@@ -12,6 +12,8 @@ namespace boymue {
 Loader::Loader()
     : m_executor(ThreadExecutor::createDefault("loader")) {}
 
+Loader::~Loader() { delete m_executor; }
+
 void Loader::bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
     LoaderClient* client = reinterpret_cast<LoaderClient*>(ext);
     if (client) {

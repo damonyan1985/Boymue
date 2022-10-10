@@ -37,9 +37,6 @@ using SharedPtr = std::shared_ptr<T>;
 template <typename T>
 using OwnerPtr = std::unique_ptr<T>;
 
-const String kAppPrefix = "boymue";
-const String kAttrSplitFlag = ":";
-
 class StringUtil {
 public:
     // 分割字符串
@@ -58,6 +55,12 @@ public:
     
     // 判断字符串结尾是否包含
     static bool endWidth(const String& str, const String& tail);
+    
+    // App后缀
+    const static String kAppPrefix;
+    
+    // 属性分隔符
+    const static String kAttrSplitFlag;
 };
 }
 

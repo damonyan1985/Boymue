@@ -9,6 +9,8 @@
 namespace boymue {
 class ThreadExecutor {
 public:
+    virtual ~ThreadExecutor() {};
+    
     static ThreadExecutor* createDefault(const std::string& name);
     virtual void submitTask(const closure& task) = 0;
 };

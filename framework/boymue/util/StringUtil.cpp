@@ -8,6 +8,10 @@
 #include "StringUtil.h"
 
 namespace boymue {
+
+const String StringUtil::kAppPrefix = "boymue";
+const String StringUtil::kAttrSplitFlag = ":";
+
 Vector<String> StringUtil::split(const String& str, const String& pattern) {
     Vector<String> result;
     String::size_type begin = 0;
