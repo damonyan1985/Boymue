@@ -33,4 +33,7 @@
 4. 微任务
    1）promise调用异步函数执行完后，会调用js_promise_resolve_function_call
    将微任务加入队列，例如JS_EnqueueJob(ctx, promise_reaction_job, 5, args)
+   2）当前宏任务业务执行完毕后，会逐个处理队列中的微任务
+   3）函数执行过程中如果是异步函数，实际状态会存储在JSAsyncFunctionState的JSStackFrame中，而不是函数本地的JSStackFrame，
+   4）如果promise是JS_PROMISE_PENDING状态，则JSAsyncFunctionState所携带的状态将会被加入到链表，具体逻辑在perform_promise_then中实现
 ```

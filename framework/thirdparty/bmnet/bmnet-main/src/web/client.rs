@@ -46,8 +46,7 @@ pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Resu
         .default_headers(headers)
         .danger_accept_invalid_certs(true) // 忽略证书验证
         .use_rustls_tls()
-        .build()
-        .unwrap()
+        .build()?
         .get(&url)
         .send()
         .await?
@@ -68,8 +67,7 @@ pub async fn post_url(url: String, headerMap: Option<Map<String, Value>>, body: 
         .default_headers(headers)
         .danger_accept_invalid_certs(true) // 忽略证书验证
         .use_rustls_tls()
-        .build()
-        .unwrap()
+        .build()?
         .post(&url)
         .body(body)
         .send()

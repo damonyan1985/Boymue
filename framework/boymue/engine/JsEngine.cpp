@@ -144,6 +144,11 @@ class JsRuntimeImpl : public JsRuntime {
     }
     
     virtual ~JsRuntimeImpl() {
+        for (auto it = m_apiEntries.begin(); it != m_apiEntries.end(); it++) {
+            JsApiInterface* api = static_cast<JsApiInterface*>((*it).external);
+            delete api;
+        }
+        
         // 释放全局对象
         js_free(m_context, m_global);
         

@@ -22,10 +22,17 @@ JsXmlToJsonApi::JsXmlToJsonApi(BoymueApplication* context)
 // 将xml转换成虚拟dom
 void JsXmlToJsonApi::execute(const String& params,
                              JsApiCallback* callback) {
-    if (callback) {
-        String xmlPath = std::move(BoymueBridge::getSourcePath(params));
-        String xmlText = std::move(FileUtil::readFile(xmlPath));
-        callback->callback(xml2json(xmlText.c_str()));
+    if (!callback) {
+        return;
     }
+    
+    String xmlPath = std::move(BoymueBridge::getSourcePath(params));
+    String xmlText = std::move(FileUtil::readFile(xmlPath));
+    if (xmlPath.empty()) {
+        return;
+    }
+    
+    callback->callback(xml2json(xmlText.c_str()));
+    
 }
 }
