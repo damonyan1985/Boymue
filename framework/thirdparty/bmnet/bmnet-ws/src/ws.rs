@@ -14,18 +14,21 @@ pub trait StringSend {
     fn send_string(&self, msg: String);
 }
 
+// 回调给C++
+type SocketCallback = unsafe extern "C" fn(data: *const u8, len: usize, ext: usize);
+
 impl BMWebSocket {
     // url: "ws://xxx"
-    pub fn create(url: String) -> Self {
+    pub fn create(url: String, cb: Option<SocketCallback>, ext: usize) -> Self {
         let (sender, receiver) = mpsc::channel::<String>();
-        Self::start(url, receiver);
+        Self::ws_start(url, receiver, cb, ext);
         Self {
             sender: sender,
         }
     }
 
     // 启动websocket
-    fn start(url: String, receiver: mpsc::Receiver<String>) {
+    fn ws_start(url: String, receiver: mpsc::Receiver<String>, cb: Option<SocketCallback>, ext: usize) {
         std::thread::spawn(move || {
             Runtime::new()
                 .expect("start tokio runtime error")
@@ -43,7 +46,18 @@ impl BMWebSocket {
                     // 接受socket消息
                     let ws_to_stdout = {
                         read.for_each(|message| async {
-                            println!("message: {}", message.unwrap());
+                            // 转为[u8]数组切片
+                            let bytes = message.unwrap().into_data();
+                            println!("message: {}", String::from_utf8(bytes.clone()).expect("Found invalid UTF-8"));
+                            match cb {
+                                Some(callback) => {
+                                    // 获取指针地址， 回调给c++方法接受数据
+                                    unsafe { callback(bytes.as_ptr(), bytes.len(), ext); } 
+                                },
+                                None => {
+                                    println!("callback is null")
+                                }
+                            }
                         })
                     };
     
