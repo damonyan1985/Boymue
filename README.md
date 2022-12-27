@@ -37,3 +37,8 @@
    3）函数执行过程中如果是异步函数，实际状态会存储在JSAsyncFunctionState的JSStackFrame中，而不是函数本地的JSStackFrame，
    4）如果promise是JS_PROMISE_PENDING状态，则JSAsyncFunctionState所携带的状态将会被加入到链表，具体逻辑在perform_promise_then中实现
 ```
+
+## Donate
+### 打赏辛苦费
+![image](https://github.com/damonyan1985/Boymue/blob/dev/tools/donate/weixin.jpg)
+![image](https://github.com/damonyan1985/Boymue/blob/dev/tools/donate/alipay.jpg)
