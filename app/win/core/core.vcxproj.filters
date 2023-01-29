@@ -67,6 +67,12 @@
     <Filter Include="example">
       <UniqueIdentifier>{907b6dd3-fa6b-48ad-a939-7cc858cfa145}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{d798d561-0082-4451-acbf-2eaa60d088c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="loader">
+      <UniqueIdentifier>{15e2c79f-c4bc-4250-9b0f-7219d261426e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -162,6 +168,42 @@
     <ClInclude Include="..\..\..\framework\boymue\apis\JSTestApi.h">
       <Filter>apis</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsRequestApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsRequireModuleApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsUIOperationApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsXmlToJsonApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\util\FileUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\util\StringUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\util\xml2json.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\loader\Loader.h">
+      <Filter>loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\platform\BoymueBridge.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\app\BoymueAppInfo.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\ButtonElement.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\TextFieldElement.h">
+      <Filter>core\dom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -238,6 +280,42 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\apis\JSTestApi.cpp">
       <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsRequestApi.cpp">
+      <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsRequireModuleApi.cpp">
+      <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsUIOperationApi.cpp">
+      <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsXmlToJsonApi.cpp">
+      <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\util\FileUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\util\StringUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\util\xml2json.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\loader\Loader.cpp">
+      <Filter>loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\platform\win\BoymueBridgeWin.cpp">
+      <Filter>platform\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\app\BoymueAppInfo.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\ButtonElement.cpp">
+      <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\TextFieldElement.cpp">
+      <Filter>core\dom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

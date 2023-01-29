@@ -88,7 +88,9 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   boymue::PaintContextWin* painter = new boymue::PaintContextWin();
   painter->initContext(hwnd, width, height);
   s_uiRuntime = new UIRuntime(painter, width, height);
-  s_app = new boymue::BoymueApplication();
+  boymue::BoymueAppInfo* info = new boymue::BoymueAppInfo();
+  info->appName = "example";
+  s_app = new boymue::BoymueApplication(info);
 
   s_app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
 
@@ -99,7 +101,7 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   std::ifstream file(testPath);
   std::string str((std::istreambuf_iterator<char>(file)),
       std::istreambuf_iterator<char>());
-  s_app->evaluateJs(str.c_str());
+  s_app->evaluateJs(str.c_str(), testPath);
 }
 
 void BoymueOnLoadWin::repaint() {

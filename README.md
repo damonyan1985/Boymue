@@ -11,6 +11,7 @@
 2. 自渲染跨端应用开发引擎的深入探索与实验
 3. 主要使用C++17来进行调研，开发平台目前仅限于android，windows以及IOS
 4. 网络请求等具体功能将采用rust实现，减少跨平台代码编写带来的成本
+5. rustup安装完后，需要执行rustup toolchain install stable
 ```
 ## 相关编译事项
 ```

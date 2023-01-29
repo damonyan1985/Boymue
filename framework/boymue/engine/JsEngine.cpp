@@ -221,6 +221,9 @@ JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
   
 using namespace v8;
 
+// JsApiHandler模板函数实现
+void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args);
+
 class ArrayBufferAllocator : public ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {
@@ -229,6 +232,115 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
   }
   virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
   virtual void Free(void* data, size_t) { free(data); }
+};
+
+// 属性对象回调，返回属性对象
+static void JsGlobalObjectAccessor(Local<v8::String> property,
+    const PropertyCallbackInfo<Value>& info) {
+    info.GetReturnValue().Set(info.GetIsolate()->GetCurrentContext()->Global());
+}
+
+class JsRuntimeImpl : public JsRuntime {
+public:
+    JsRuntimeImpl() {
+        m_arrayBufferAllocator = new ArrayBufferAllocator;
+        Isolate::CreateParams create_params;
+        create_params.array_buffer_allocator = m_arrayBufferAllocator;
+        m_isolate = Isolate::New(create_params);
+
+        initRuntime();
+    }
+
+    ~JsRuntimeImpl() {
+        m_context.Reset();
+        m_isolate->Dispose();
+        delete m_arrayBufferAllocator;
+    }
+
+    v8::Isolate* getIsolate() { return m_isolate; }
+
+    Local<Context> getJsContext() {
+        return Local<Context>::New(m_isolate, m_context);
+    }
+
+    void doAction(const RuntimeClosure& action) {
+        // Enter isolate scope
+        Isolate::Scope isolateScope(m_isolate);
+        // local stack
+        HandleScope handleScope(m_isolate);
+        // Create local context
+        // Local<Context> context = Local<Context>::New(m_isolate, m_context);
+        // Enter current context
+        // Context::Scope contextScope(context);
+        // Do what you want
+        action(this);
+    }
+
+    void setContext(BoymueApplication* app) { m_app = app; }
+
+    virtual void registerApi(JsApiInterface* api) override {
+        // Enter isolate scope
+        Isolate::Scope isolateScope(m_isolate);
+        // local stack
+        HandleScope handleScope(m_isolate);
+        // Create local context
+        Local<Context> context = Local<Context>::New(m_isolate, m_context);
+        // Enter current context
+        Context::Scope contextScope(context);
+
+        Handle<Object> object = Local<Object>::New(m_isolate, m_global);
+
+        Local<External> extension = External::New(m_isolate, api);
+
+        object->Set(v8::String::NewFromUtf8(m_isolate, api->name()),
+            Function::New(m_isolate, JsApiHandlerImpl, extension));
+    }
+
+    virtual void evaluateJs(const String& jsSource, const String& scriptId) override {
+        // Enter isolate scope
+        Isolate::Scope isolateScope(m_isolate);
+        // local stack
+        HandleScope handleScope(m_isolate);
+        Local<Context> context = Local<Context>::New(m_isolate, m_context);
+        // Enter current context
+        Context::Scope contextScope(context);
+
+        // Create a string containing the JavaScript source code.
+        Local<v8::String> source =
+            v8::String::NewFromUtf8(m_isolate, jsSource.c_str(), NewStringType::kNormal)
+            .ToLocalChecked();
+
+        // Compile the source code.
+        Local<Script> script = Script::Compile(source);
+
+        // Run the script to get the result.
+        Local<Value> result = script->Run();
+    }
+
+private:
+    void initRuntime() {
+        Isolate::Scope isolateScope(m_isolate);
+        HandleScope handleScope(m_isolate);
+        // Create a template for the global object.
+        Handle<ObjectTemplate> global = ObjectTemplate::New(m_isolate);
+
+        // 给Global对象设置一个属性，属性返回global对象自己
+        Local<v8::String> globalName = v8::String::NewFromUtf8(m_isolate, "boymue");
+        // 设置global对象的名字为boymue
+        global->SetAccessor(globalName, JsGlobalObjectAccessor);
+
+        Handle<Context> context = Context::New(m_isolate, nullptr, global);
+
+        m_global.Reset(m_isolate,
+            context->Global()->GetPrototype()->ToObject(m_isolate));
+        m_context.Reset(m_isolate, context);
+    }
+
+    Isolate* m_isolate;
+    Persistent<Context> m_context;
+    Persistent<Object> m_global;
+    ArrayBufferAllocator* m_arrayBufferAllocator;
+    BoymueApplication* m_app;
 };
 
 // JsApi回调实现
@@ -252,18 +364,20 @@ class JsApiCallbackImpl : public JsApiCallback {
   // callback中的内容必须回调给JS线程
   virtual void callback(const std::string& result) {
     RuntimeClosure task = [self = this, result](JsRuntime* runtime) {
+      JsRuntimeImpl* runtimeImpl = static_cast<JsRuntimeImpl*>(runtime);
+
       // 实现异步回调
       Local<Value> argv[] = {
-          String::NewFromUtf8(runtime->getIsolate(), result.c_str())};
-      Local<Context> context = runtime->getJsContext();
+          v8::String::NewFromUtf8(runtimeImpl->getIsolate(), result.c_str())};
+      Local<Context> context = runtimeImpl->getJsContext();
 
       Context::Scope contextScope(context);
       // selfm_callback->Call(context, context->Global(), 1, argv);
       Local<Function> jsCallback =
-          Local<Function>::New(runtime->getIsolate(), self->m_callback);
+          Local<Function>::New(runtimeImpl->getIsolate(), self->m_callback);
 
       Local<Object> jsReceiver =
-          Local<Object>::New(runtime->getIsolate(), self->m_receiver);
+          Local<Object>::New(runtimeImpl->getIsolate(), self->m_receiver);
       jsCallback->Call(context, jsReceiver, 1, argv);
 
       delete self;
@@ -271,8 +385,8 @@ class JsApiCallbackImpl : public JsApiCallback {
 
     if (m_callback.IsEmpty()) {
       if (result.length()) {
-        Local<String> jsResult =
-            String::NewFromUtf8(m_args.GetIsolate(), result.c_str());
+        Local<v8::String> jsResult =
+            v8::String::NewFromUtf8(m_args.GetIsolate(), result.c_str());
         m_args.GetReturnValue().Set(jsResult);
       } else {
         m_args.GetReturnValue().SetUndefined();
@@ -305,7 +419,7 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
 
   closure task = [jsApi, args] {
     if (jsApi) {
-      String::Utf8Value str(args[0]);
+      v8::String::Utf8Value str(args[0]);
       jsApi->execute(*str, new JsApiCallbackImpl(args, jsApi->context()));
     }
   };
@@ -315,115 +429,6 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
     task();
   }
 }
-
-// 属性对象回调，返回属性对象
-static void JsGlobalObjectAccessor(Local<String> property,
-                                   const PropertyCallbackInfo<Value>& info) {
-  info.GetReturnValue().Set(info.GetIsolate()->GetCurrentContext()->Global());
-}
-
-class JsRuntimeImpl : public JsRuntime {
- public:
-  JsRuntimeImpl() {
-    m_arrayBufferAllocator = new ArrayBufferAllocator;
-    Isolate::CreateParams create_params;
-    create_params.array_buffer_allocator = m_arrayBufferAllocator;
-    m_isolate = Isolate::New(create_params);
-
-    initRuntime();
-  }
-
-  ~JsRuntimeImpl() {
-    m_context.Reset();
-    m_isolate->Dispose();
-    delete m_arrayBufferAllocator;
-  }
-
-  v8::Isolate* getIsolate() { return m_isolate; }
-
-  Local<Context> getJsContext() {
-    return Local<Context>::New(m_isolate, m_context);
-  }    
-
-  void doAction(const RuntimeClosure& action) {
-    // Enter isolate scope
-    Isolate::Scope isolateScope(m_isolate);
-    // local stack
-    HandleScope handleScope(m_isolate);
-    // Create local context
-    // Local<Context> context = Local<Context>::New(m_isolate, m_context);
-    // Enter current context
-    // Context::Scope contextScope(context);
-    // Do what you want
-    action(this);
-  }
-
-  void setContext(BoymueApplication* app) { m_app = app; }
-
-  virtual void registerApi(JsApiInterface* api) override {
-    // Enter isolate scope
-    Isolate::Scope isolateScope(m_isolate);
-    // local stack
-    HandleScope handleScope(m_isolate);
-    // Create local context
-    Local<Context> context = Local<Context>::New(m_isolate, m_context);
-    // Enter current context
-    Context::Scope contextScope(context);
-
-    Handle<Object> object = Local<Object>::New(m_isolate, m_global);
-
-    Local<External> extension = External::New(m_isolate, api);
-
-    object->Set(String::NewFromUtf8(m_isolate, api->name()),
-                Function::New(m_isolate, JsApiHandlerImpl, extension));
-  }
-
-  virtual void evaluateJs(const String& jsSource, const String& scriptId) override {
-    // Enter isolate scope
-    Isolate::Scope isolateScope(m_isolate);
-    // local stack
-    HandleScope handleScope(m_isolate);
-    Local<Context> context = Local<Context>::New(m_isolate, m_context);
-    // Enter current context
-    Context::Scope contextScope(context);
-
-    // Create a string containing the JavaScript source code.
-    Local<String> source =
-        String::NewFromUtf8(m_isolate, jsSource.c_str(), NewStringType::kNormal)
-            .ToLocalChecked();
-
-    // Compile the source code.
-    Local<Script> script = Script::Compile(source);
-
-    // Run the script to get the result.
-    Local<Value> result = script->Run();
-  }
-
- private:
-  void initRuntime() {
-    Isolate::Scope isolateScope(m_isolate);
-    HandleScope handleScope(m_isolate);
-    // Create a template for the global object.
-    Handle<ObjectTemplate> global = ObjectTemplate::New(m_isolate);
-
-    // 给Global对象设置一个属性，属性返回global对象自己
-    Local<String> globalName = String::NewFromUtf8(m_isolate, "boymue");
-    // 设置global对象的名字为boymue
-    global->SetAccessor(globalName, JsGlobalObjectAccessor);
-
-    Handle<Context> context = Context::New(m_isolate, nullptr, global);
-
-    m_global.Reset(m_isolate,
-                   context->Global()->GetPrototype()->ToObject(m_isolate));
-    m_context.Reset(m_isolate, context);
-  }
-
-  Isolate* m_isolate;
-  Persistent<Context> m_context;
-  Persistent<Object> m_global;
-  ArrayBufferAllocator* m_arrayBufferAllocator;
-  BoymueApplication* m_app;
-};
 
 class JsInitor {
  public:
