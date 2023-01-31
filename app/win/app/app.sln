@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "app.vcxproj", "{C9F182D2-0DF5-47B5-BAE4-A4B9E3FB1352}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gif", "..\gif\gif.vcxproj", "{6AF4FB7B-32D3-4219-AF81-4E1C0337A6AD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "v8", "..\v8\v8.vcxproj", "{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yoga", "..\yoga\yoga.vcxproj", "{45BD6593-5D70-4D7F-B616-7F38E13EFB48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,14 @@ Global
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x64.Build.0 = Release|x64
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x86.ActiveCfg = Release|Win32
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x86.Build.0 = Release|Win32
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Debug|x64.ActiveCfg = Debug|x64
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Debug|x64.Build.0 = Debug|x64
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Debug|x86.ActiveCfg = Debug|Win32
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Debug|x86.Build.0 = Debug|Win32
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Release|x64.ActiveCfg = Release|x64
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Release|x64.Build.0 = Release|x64
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Release|x86.ActiveCfg = Release|Win32
+		{45BD6593-5D70-4D7F-B616-7F38E13EFB48}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

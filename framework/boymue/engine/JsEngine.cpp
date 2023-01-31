@@ -247,6 +247,7 @@ public:
         Isolate::CreateParams create_params;
         create_params.array_buffer_allocator = m_arrayBufferAllocator;
         m_isolate = Isolate::New(create_params);
+        m_isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kExplicit);
 
         initRuntime();
     }
@@ -274,6 +275,8 @@ public:
         // Context::Scope contextScope(context);
         // Do what you want
         action(this);
+
+        m_isolate->RunMicrotasks();
     }
 
     void setContext(BoymueApplication* app) { m_app = app; }
