@@ -21,5 +21,13 @@
     <ClCompile Include="BoymueMain.cpp">
       <Filter>main</Filter>
     </ClCompile>
+    <ClCompile Include="BoyiaConsole.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BoyiaConsole.h">
+      <Filter>main</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

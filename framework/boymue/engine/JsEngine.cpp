@@ -328,7 +328,7 @@ private:
         Handle<ObjectTemplate> global = ObjectTemplate::New(m_isolate);
 
         // 给Global对象设置一个属性，属性返回global对象自己
-        Local<v8::String> globalName = v8::String::NewFromUtf8(m_isolate, "boymue");
+        Local<v8::String> globalName = v8::String::NewFromUtf8(m_isolate, StringUtil::kAppPrefix.c_str());
         // 设置global对象的名字为boymue
         global->SetAccessor(globalName, JsGlobalObjectAccessor);
 

@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "BoymueOnLoadWin.h"
+#include "BoyiaConsole.h"
 
 LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 int WINAPI wWinMain(
@@ -9,6 +10,7 @@ int WINAPI wWinMain(
     int nCmdShow
 )
 {
+    yanbo::BoyiaConsole console;
     DWORD dwStyle = WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME;
     
     WNDCLASS wndClass;

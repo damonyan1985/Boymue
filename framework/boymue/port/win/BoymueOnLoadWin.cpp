@@ -17,6 +17,8 @@
 #include "SkSurface.h"
 #include "TaskThread.h"
 #include "Thread.h"
+#include "BoymueBridge.h"
+#include "FileUtil.h"
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
@@ -97,11 +99,12 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   // s_engine = new boymue::JsEngine();
   // boymue::JsRuntime* runtime = s_engine->createRuntime();
   // runtime->registerApi(new boymue::JsLogApi());
-  std::string testPath = s_projectPath + "\\boymuejs\\example\\test.js";
-  std::ifstream file(testPath);
-  std::string str((std::istreambuf_iterator<char>(file)),
-      std::istreambuf_iterator<char>());
-  s_app->evaluateJs(str.c_str(), testPath);
+  //std::string testPath = s_projectPath + "\\boymuejs\\example\\test.js";
+  
+  boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("\\example\\test1.js"));
+  boymue::String source = std::move(boymue::FileUtil::readFile(path));
+
+  s_app->evaluateJs(source.c_str(), path);
 }
 
 void BoymueOnLoadWin::repaint() {
