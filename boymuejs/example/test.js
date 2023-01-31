@@ -57,6 +57,8 @@ async function test() {
     });
     
     boymue.log('test async request: ' + data);
+
+    return data;
 }
 
 test()

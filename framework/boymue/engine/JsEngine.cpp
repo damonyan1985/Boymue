@@ -308,6 +308,8 @@ public:
         // Enter current context
         Context::Scope contextScope(context);
 
+        TryCatch tryCatch(m_isolate);
+
         // Create a string containing the JavaScript source code.
         Local<v8::String> source =
             v8::String::NewFromUtf8(m_isolate, jsSource.c_str(), NewStringType::kNormal)
@@ -318,6 +320,16 @@ public:
 
         // Run the script to get the result.
         Local<Value> result = script->Run();
+
+        if (tryCatch.HasCaught()) {
+            throwRuntimeException(tryCatch);
+        }
+    }
+
+    void throwRuntimeException(TryCatch& tryCatch) {
+        Local<Message> msg = tryCatch.Message();
+        v8::String::Utf8Value exception(tryCatch.Exception());
+        printf("exception: %s line: %d", *exception, msg->GetLineNumber());
     }
 
 private:
