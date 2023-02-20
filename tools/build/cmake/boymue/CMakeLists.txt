@@ -84,6 +84,7 @@ target_include_directories(
   ${BOYMUE_SRC}/platform/android/gpu
   ${BOYMUE_SRC}/platform/android
   ${BOYMUE_SRC}/platform
+  ${BOYMUE_SRC}/port/android
   ${BOYMUE_SRC}/core/view
   ${BOYMUE_SRC}/core/paint
   ${BOYMUE_SRC}/core/layout

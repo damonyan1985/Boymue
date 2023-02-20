@@ -1,2 +1,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.boymue.app.core" />
+    package="com.boymue.app.core">
+    <application>
+        <activity
+            android:name="com.boymue.app.core.BoymueActivity$BoymueActivity1"
+            android:process=":boymue_app_1"
+            android:taskAffinity="com.boymue.task1"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.boymue.app1.action" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.boymue.app.core.BoymueActivity$BoymueActivity2"
+            android:process=":boymue_app_2"
+            android:taskAffinity="com.boymue.task2"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.boymue.app2.action" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.boymue.app.core.BoymueActivity$BoymueActivity3"
+            android:process=":boymue_app_3"
+            android:taskAffinity="com.boymue.task3"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.boymue.app3.action" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

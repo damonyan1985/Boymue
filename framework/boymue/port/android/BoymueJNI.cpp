@@ -17,8 +17,9 @@
 #include "skia/include/core/SkRect.h"
 #include "skia/include/core/SkSurface.h"
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_boymue_app_core_BoymueJNI_initSurface(JNIEnv* env, jobject thiz,
+const char* kBoymueJNIClassName = "com/boymue/app/core/BoymueJNI";
+
+static void nativeInitSurface(JNIEnv* env, jobject thiz,
                                                jobject jsurface, jint width,
                                                jint height) {
   auto window = ANativeWindow_fromSurface(env, jsurface);
@@ -56,4 +57,31 @@ Java_com_boymue_app_core_BoymueJNI_initSurface(JNIEnv* env, jobject thiz,
       SkIntToScalar(2));  // This makes the lines have a thickness of 2 pixels
 
   painter->submit();
+}
+
+static jlong nativeCreateApplication(JNIEnv* env, jobject thiz,
+                                               jobject jsurface, jint width,
+                                               jint height) {
+    return 0;                                            
+}
+
+static JNINativeMethod sBoymueAppMethods[] = {
+    { "nativeInitSurface", "(Landroid/view/Surface;II)V", (void*)nativeInitSurface },
+    { "nativeCreateApplication", "(Landroid/view/Surface;II)J", (void*)nativeCreateApplication },
+};
+
+extern int registerNativeMethods(JNIEnv* env, const char* className,
+    JNINativeMethod* methods, int numMethods);
+
+/*
+* Register native methods for all classes we know about.
+*/
+int registerBoymueAppNatives(JNIEnv* env)
+{
+    if (!registerNativeMethods(env, kBoymueJNIClassName, sBoymueAppMethods,
+            sizeof(sBoymueAppMethods) / sizeof(sBoymueAppMethods[0]))) {
+        return JNI_FALSE;
+    }
+
+    return JNI_TRUE;
 }

@@ -1,2 +1,3 @@
 include ':app', ':core'
 rootProject.name='android'
+include ':util'

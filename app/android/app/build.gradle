@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply from: "$rootDir/config/library.gradle"
 
 android {
@@ -18,18 +19,52 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            java.srcDirs = [
+                'src/main/java',
+                'src/main/aidl',
+                'src/main/kotlin'
+            ]
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion gradle.constants.composeVersion
+        kotlinCompilerVersion '1.6.10'
+    }
+
+    buildFeatures {
+        compose true
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':core')
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation project(':util')
+    implementation gradle.library.multidexLib
+    implementation gradle.library.androidX
+    // compose lib
+    implementation gradle.library.compose_ui
+    implementation gradle.library.compose_foundation
+    implementation gradle.library.compose_material
+    implementation gradle.library.compose_livedata
+    implementation gradle.library.compose_uitool
+    implementation gradle.library.compose_rxjava
+    implementation gradle.library.compose_activity
+    // compose coil
+    implementation gradle.library.coil_lib
+    implementation gradle.library.compose_coil_lib
+
+    debugImplementation gradle.library.leakcanary_debug
 }
