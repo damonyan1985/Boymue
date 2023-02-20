@@ -8,7 +8,7 @@
 #include "Loader.h"
 #include "bmnet_main.h"
 
-#ifdef  _WINDOWS
+#if  defined(_WINDOWS) || defined(ANDROID)
 // TODO link to rust dll
 void bmnet_get(const char* url,
     const char* headers,

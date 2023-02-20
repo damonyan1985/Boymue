@@ -13,7 +13,7 @@
 namespace boymue {
 class UITaskRunner {
 public:
-    static UITaskRunner* createRunner();
+    static UITaskRunner* createRunner() { return nullptr; };
     
     virtual ~UITaskRunner() {};
     

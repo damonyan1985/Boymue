@@ -94,8 +94,15 @@ char* RelativePath(char** buffer, const char* exec_path, const char* name) {
     strncat(*buffer, exec_path, path_separator + 1);
     strncat(*buffer, name, name_length);
   } else {
+#ifdef _WINDOWS
     *buffer = _strdup(name);
+#else
+    *buffer = strdup(name);
+#endif
+
+    
   }
+
   return *buffer;
 }
 

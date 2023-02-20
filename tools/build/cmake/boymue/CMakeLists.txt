@@ -27,10 +27,17 @@ file(
   core_src_list
   ${BOYMUE_SRC}/core/paint/*.cpp
   ${BOYMUE_SRC}/core/view/*.cpp
+  ${BOYMUE_SRC}/core/layout/*.cpp
+  ${BOYMUE_SRC}/core/dom/*.cpp
   ${BOYMUE_SRC}/thread/*.cpp
   ${BOYMUE_SRC}/thread/event/*.cpp
   ${BOYMUE_SRC}/thread/task/*.cpp
   ${BOYMUE_SRC}/thread/time/*.cpp
+  ${BOYMUE_SRC}/app/*.cpp
+  ${BOYMUE_SRC}/util/*.cpp
+  ${BOYMUE_SRC}/loader/*.cpp
+  ${BOYMUE_SRC}/engine/*.cpp
+  ${BOYMUE_SRC}/apis/*.cpp
 )
 
 file(
@@ -51,6 +58,8 @@ add_library(
 target_link_libraries(
   boymue
   skia
+  v8
+  expat
   jnigraphics
   EGL
   GLESv2
@@ -65,12 +74,28 @@ target_include_directories(
   ${THIRDPARTY_SRC}/skia/include/core
   ${THIRDPARTY_SRC}/skia/include/gpu
   ${THIRDPARTY_SRC}/skia/include/utils
+  ${THIRDPARTY_SRC}/rapidjson/include
+  ${THIRDPARTY_SRC}/rapidxml/include
+  ${THIRDPARTY_SRC}/bmnet/bmnet-main/include
+  ${THIRDPARTY_SRC}/v8
+  ${THIRDPARTY_SRC}/v8/include
+  ${THIRDPARTY_SRC}/expat
+  ${THIRDPARTY_SRC}/expat/lib
   ${BOYMUE_SRC}/platform/android/gpu
   ${BOYMUE_SRC}/platform/android
+  ${BOYMUE_SRC}/platform
   ${BOYMUE_SRC}/core/view
   ${BOYMUE_SRC}/core/paint
+  ${BOYMUE_SRC}/core/layout
+  ${BOYMUE_SRC}/core/style
+  ${BOYMUE_SRC}/core/dom
   ${BOYMUE_SRC}/thread
   ${BOYMUE_SRC}/thread/event
   ${BOYMUE_SRC}/thread/task
   ${BOYMUE_SRC}/thread/time
+  ${BOYMUE_SRC}/app
+  ${BOYMUE_SRC}/engine
+  ${BOYMUE_SRC}/loader
+  ${BOYMUE_SRC}/util
+  ${BOYMUE_SRC}/apis
 )

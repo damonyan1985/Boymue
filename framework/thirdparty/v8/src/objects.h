@@ -26,7 +26,7 @@
 #if V8_TARGET_ARCH_ARM
 #include "src/arm/constants-arm.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM64
-#include "src/arm64/constants-arm64.h"  // NOLINT
+#include "src/asm/arm64/constants-arm64.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS
 #include "src/mips/constants-mips.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS64

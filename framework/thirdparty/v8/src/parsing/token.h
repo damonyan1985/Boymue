@@ -157,6 +157,9 @@ namespace internal {
   K(IMPORT, "import", 0)                                             \
   K(LET, "let", 0)                                                   \
   K(STATIC, "static", 0)                                             \
+  K(ASYNC, "async", 0)                                               \
+  /* `await` is a reserved word in module code only */               \
+  K(AWAIT, "await", 0)                                               \
   K(YIELD, "yield", 0)                                               \
   K(SUPER, "super", 0)                                               \
                                                                      \

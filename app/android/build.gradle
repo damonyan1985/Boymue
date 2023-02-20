@@ -1,24 +1,44 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.kotlin_version = '1.6.10'
+    System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true'
     repositories {
+        mavenCentral()
         google()
         jcenter()
-        
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
-        
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.19'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //classpath ext.kotlin
     }
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         jcenter()
-        
+        maven { url uri("$rootDir/maven/BoymueMaven") } // 优先读本地仓库
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/" }
+        maven { url "https://maven.oschina.net/content/groups/public/" }
+        maven { url 'https://dl.bintray.com/umsdk/release' } // umeng sdk maven
+
+        //maven { url "https://raw.githubusercontent.com/damonyan1985/BoyiaMaven/master/" }
+        //maven { url "https://raw.githubusercontent.com/damonyan1985/BoyiaUI/dev/maven/" }
+    }
+
+    // all use a version androidx.core:core-ktx
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.core:core-ktx:1.6.0'
+        }
     }
 }
 

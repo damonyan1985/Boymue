@@ -838,7 +838,7 @@ INTERFACE_DESCRIPTOR_LIST(DEF_KEY)
 
 
 #if V8_TARGET_ARCH_ARM64
-#include "src/arm64/interface-descriptors-arm64.h"
+#include "src/asm/arm64/interface-descriptors-arm64.h"
 #elif V8_TARGET_ARCH_ARM
 #include "src/arm/interface-descriptors-arm.h"
 #endif

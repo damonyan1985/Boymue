@@ -1,3 +1,30 @@
+def initExtension() {
+    def localLibDir = file("$rootDir/local.properties")
+    if (localLibDir.exists()) {
+        def properties = new Properties()
+        properties.load(localLibDir.newDataInputStream())
+        ext.library_dir = properties.getProperty("library_dir")
+        ext.maven_dir = properties.getProperty("maven_dir")
+    }
+
+    if (!ext.library_dir) {
+        ext.library_dir = "$rootDir/library"
+    }
+
+    if (!ext.maven_dir) {
+        ext.maven_dir = "$rootDir/maven/BoymueMaven"
+    }
+
+    ext.use_cmake = true
+}
+
+gradle.ext.constants = [
+    sdkVersion: 31,
+    composeVersion: '1.1.0',
+    coilVersion: '1.4.0',
+    protoVersion: '3.21.11',
+]
+
 gradle.ext.library = [
   framework_cmake: "$rootDir/../../tools/build/cmake/CMakeLists.txt",
 ]
