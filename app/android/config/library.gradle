@@ -60,4 +60,5 @@ gradle.ext.library = [
   compose_uitool: "androidx.compose.ui:ui-tooling:${gradle.constants.composeVersion}",
   coil_lib: "io.coil-kt:coil:${gradle.constants.coilVersion}",
   compose_coil_lib: "io.coil-kt:coil-compose:${gradle.constants.coilVersion}",
+  retrofit: 'com.squareup.retrofit2:retrofit:2.9.0',
 ]

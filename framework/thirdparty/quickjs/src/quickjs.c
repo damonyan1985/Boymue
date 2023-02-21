@@ -16240,7 +16240,7 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValueConst func_obj,
     JSContext *ctx;
     JSObject *p;
     JSFunctionBytecode *b;
-    JSStackFrame sf_s, *sf = &sf_s;
+    JSStackFrame sf_s, *sf = &sf_s; /* 普通函数使用局部变量栈帧 */
     const uint8_t *pc;
     int opcode, arg_allocated_size, i;
     JSValue *local_buf, *stack_buf, *var_buf, *arg_buf, *sp, ret_val, *pval;
@@ -16276,7 +16276,7 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValueConst func_obj,
             JSAsyncFunctionState *s = JS_VALUE_GET_PTR(func_obj);
             /* func_obj get contains a pointer to JSFuncAsyncState */
             /* the stack frame is already allocated */
-            sf = &s->frame;
+            sf = &s->frame; /* 异步函数在这里处理栈帧，栈帧不再是局部变量 */
             p = JS_VALUE_GET_OBJ(sf->cur_func);
             b = p->u.func.function_bytecode;
             ctx = b->realm;
@@ -46404,6 +46404,7 @@ void JS_SetHostPromiseRejectionTracker(JSRuntime *rt,
     rt->host_promise_rejection_tracker_opaque = opaque;
 }
 
+/* 任务完成会加入微任务队列中，例如网络请求结束，会执行到这里来 */
 static void fulfill_or_reject_promise(JSContext *ctx, JSValueConst promise,
                                       JSValueConst value, BOOL is_reject)
 {

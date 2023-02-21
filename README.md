@@ -33,10 +33,27 @@
    2) 字节码定义，字节码存储在opcode_info数组中
 4. 微任务
    1）promise调用异步函数执行完后，会调用js_promise_resolve_function_call
-   将微任务加入队列，例如JS_EnqueueJob(ctx, promise_reaction_job, 5, args)
+      将微任务加入队列，例如JS_EnqueueJob(ctx, promise_reaction_job, 5, args)
    2）当前宏任务业务执行完毕后，会逐个处理队列中的微任务
    3）函数执行过程中如果是异步函数，实际状态会存储在JSAsyncFunctionState的JSStackFrame中，而不是函数本地的JSStackFrame，
    4）如果promise是JS_PROMISE_PENDING状态，则JSAsyncFunctionState所携带的状态将会被加入到链表，具体逻辑在perform_promise_then中实现
+   5）微任务队列只会存在已经完成和拒绝完成的任务
+   6）await操作会中断程序，并将当前执行的sp和pc保存到JSObject的JSAsyncFunctionState结构中
+5，函数
+   1）JSFunctionDef，函数定义
+   2）func_kind，表示函数类型, 包含JS_FUNC_NORMAL，JS_FUNC_ASYNC等类型
+   3）异步函数与同步函数的区别，同步函数的栈帧是局部变量JSStackFrame sf_s， 而异步函数对象则会自带栈帧，例如
+      JSAsyncFunctionState *s = JS_VALUE_GET_PTR(func_obj);
+      sf = &s->frame;
+      栈帧存储在JSAsyncFunctionState结构中  
+```
+
+### V8
+```
+1. V8字节码执行
+   1）入口，Execution::Call
+2. V8宏开关
+   1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器   
 ```
 
 ## Donate

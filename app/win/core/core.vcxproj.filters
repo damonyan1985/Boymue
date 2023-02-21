@@ -328,6 +328,9 @@
     <None Include="..\..\..\boymuejs\example\config.json">
       <Filter>example</Filter>
     </None>
+    <None Include="..\..\..\boymuejs\example\test1.js">
+      <Filter>example</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\..\boymuejs\example\test.xml">

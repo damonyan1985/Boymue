@@ -101,7 +101,7 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   // runtime->registerApi(new boymue::JsLogApi());
   //std::string testPath = s_projectPath + "\\boymuejs\\example\\test.js";
   
-  boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("\\example\\test.js"));
+  boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("\\example\\test1.js"));
   boymue::String source = std::move(boymue::FileUtil::readFile(path));
 
   s_app->evaluateJs(source.c_str(), path);
