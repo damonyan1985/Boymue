@@ -15,7 +15,6 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.protobuf.ProtoConverterFactory
 import io.reactivex.functions.Function
 import retrofit2.Response
@@ -24,6 +23,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.create
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
@@ -62,7 +62,8 @@ object ModelUtil {
                 .client(client)
                 .baseUrl(BASE_URL)
                 .addConverterFactory(ProtoConverterFactory.createWithRegistry(ExtensionRegistry.newInstance()))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                //.addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
     }
 
@@ -86,19 +87,7 @@ object ModelUtil {
 
 
     fun login(name: String, password: String) {
-        val retrofit = createRetrofit()
-        val service = retrofit.create(LoginService::class.java)
-        val observable = service.login("","")
-        observable.map(object : Function<Response<ResponseData>, UserData> {
-            override fun apply(t: Response<ResponseData>): UserData? {
-                val resp = t.body()
-                return resp?.data?.unpack(UserData::class.java)
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Consumer<UserData> {
-                    override fun accept(t: UserData?) {
-                    }
-                })
+        val params = mapOf("name" to "", "password" to "")
+        request<UserData>(params)
     }
 }
