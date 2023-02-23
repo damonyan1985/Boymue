@@ -11,7 +11,6 @@
 2. 自渲染跨端应用开发引擎的深入探索与实验
 3. 主要使用C++17来进行调研，开发平台目前仅限于android，windows以及IOS
 4. 网络请求等具体功能将采用rust实现，减少跨平台代码编写带来的成本
-5. rustup安装完后，需要执行rustup toolchain install stable
 ```
 ## 相关编译事项
 ```
@@ -20,6 +19,7 @@
 3. Windows与Android上将使用V8 JS引擎，IOS上由于不能开启JIT，所以采用包更小的QuickJS
 4. ios framework中创建bundle，直接使用target创建
 5. ios copy file中需要将framework的destination从File改为frameworks
+6. rustup安装完后，需要执行rustup toolchain install stable
 ```
 
 ## 相关知识点
@@ -52,8 +52,11 @@
 ```
 1. V8字节码执行
    1）入口，Execution::Call
+   2) 解释执行，Runtime_InterpreterNewClosure
+   3）RUNTIME_FUNCTION宏
+      a）会生成一个__RT_impl_开头的静态方法
 2. V8宏开关
-   1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器   
+   1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器    
 ```
 
 ## Donate

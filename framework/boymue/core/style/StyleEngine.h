@@ -5,13 +5,28 @@
 #define StyleEngine_h
 
 #include "StyleParser.h"
-#include <list>
 
 namespace boymue {
 class StyleEngine {
+public:
+    enum StyleType {
+        kWidth,
+        kHeight,
+        kStyleInherit, // 以下都是可以被继承的属性
+        kColor,
+        kFont,
+    };
+
+    StyleEngine();
+    int getType(const String& tag);
+    void apply();
+
 private:
+    void initTags();
+
     StyleParser m_parser;
-    std::list<StyleSheet> m_sheets;
+    List<SharedPtr<StyleSheet>> m_sheets;
+    HashMap<String, int> m_tags;
 };
 }  // namespace boymue
 #endif  // !StyleEngine_h

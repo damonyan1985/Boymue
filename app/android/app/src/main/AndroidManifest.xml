@@ -3,14 +3,14 @@
     package="com.boymue.app" >
 
     <application
-        android:name="com.boymue.app.BoymueApplication"
+        android:name="com.boymue.app.shell.BoymueApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".BoymueHomeActivity"
+        <activity android:name="com.boymue.shell.BoymueHomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.boymue.shell.app.proto;
+
+message UserInfo {
+  int32 id = 1;
+  string name = 2;
+  string nickname = 3;
+  string avatar = 4;
+  string email = 5;
+  string phone = 6;
+}
+
+message UserData {
+  UserInfo info = 1;
+  string userToken = 2;
+}

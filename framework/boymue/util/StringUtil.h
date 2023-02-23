@@ -51,10 +51,13 @@ public:
     static bool isspace(const char* str, int len);
     
     // 判断字符串开头是否包含
-    static bool startWidth(const String& str, const String& head);
+    static bool startWith(const String& str, const String& head);
     
     // 判断字符串结尾是否包含
-    static bool endWidth(const String& str, const String& tail);
+    static bool endWith(const String& str, const String& tail);
+
+    // 字符串转整型
+    static int stringToInt(const String& str);
     
     // App后缀
     const static String kAppPrefix;

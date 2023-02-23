@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.protobuf'
 apply from: "$rootDir/config/library.gradle"
 
 android {
     compileSdkVersion gradle.constants.sdkVersion
     defaultConfig {
-        applicationId "com.boymue.app"
+        applicationId "com.boymue.app.shell"
         minSdkVersion 26
         targetSdkVersion gradle.constants.sdkVersion
         versionCode 1
@@ -48,11 +49,27 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${gradle.constants.protoVersion}"
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                remove java
+            }
+            task.builtins {
+                java {}
+            }
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':core')
     implementation project(':util')
-    implementation gradle.library.multidexLib
+    implementation gradle.library.multidex_lib
     implementation gradle.library.androidX
     // compose lib
     implementation gradle.library.compose_ui
@@ -65,6 +82,16 @@ dependencies {
     // compose coil
     implementation gradle.library.coil_lib
     implementation gradle.library.compose_coil_lib
+    // retrofit
+    implementation gradle.library.retrofit_lib
+    implementation gradle.library.retrofit_proto_lib
+    implementation gradle.library.retrofit_rxjava_lib
+    // use protobuf
+    implementation gradle.library.protobuf_lib
+    // rxjava
+    implementation gradle.library.rx_java_lib
+    implementation gradle.library.rx_android_lib
+
 
     debugImplementation gradle.library.leakcanary_debug
 }

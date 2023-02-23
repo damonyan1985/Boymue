@@ -1,8 +1,10 @@
-package com.boymue.app
+package com.boymue.app.shell
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.boymue.shell.app.proto.Base.ResponseData
+import io.reactivex.Observable
 
 class BoymueHomeActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

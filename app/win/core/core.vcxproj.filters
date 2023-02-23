@@ -204,6 +204,15 @@
     <ClInclude Include="..\..\..\framework\boymue\core\dom\TextFieldElement.h">
       <Filter>core\dom</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\style\Style.h">
+      <Filter>core\style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\style\StyleParser.h">
+      <Filter>core\style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\style\StyleSheet.h">
+      <Filter>core\style</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -316,6 +325,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\dom\TextFieldElement.cpp">
       <Filter>core\dom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\style\StyleEngine.cpp">
+      <Filter>core\style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\style\StyleParser.cpp">
+      <Filter>core\style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\style\StyleSheet.cpp">
+      <Filter>core\style</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

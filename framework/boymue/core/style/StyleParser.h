@@ -9,16 +9,19 @@
 #define StyleParser_h
 
 #include "StyleSheet.h"
-#include <string>
 
 namespace boymue {
+class StyleEngine;
 class StyleParser
 {
 public:
-    StyleParser();
+    StyleParser(StyleEngine* engine);
     ~StyleParser();
 
-    StyleSheet* parse(const String& cssText);    
+    SharedPtr<StyleSheet> parse(const String& cssText);
+private:
+    void addDeclaration(CSSRule* rule, Vector<String>& kv);
+    StyleEngine* m_engine;
 };
     
 }

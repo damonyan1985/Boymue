@@ -61,12 +61,15 @@ bool StringUtil::isspace(const char* str, int len) {
     return true;
 }
 
-bool StringUtil::startWidth(const String& str, const String& head) {
+bool StringUtil::startWith(const String& str, const String& head) {
     return str.compare(0, head.size(), head) == 0;
 }
 
-bool StringUtil::endWidth(const String& str, const String& tail) {
+bool StringUtil::endWith(const String& str, const String& tail) {
     return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
 }
-    
+
+int StringUtil::stringToInt(const String& str) {
+    return atoi(str.c_str());
+}
 }
