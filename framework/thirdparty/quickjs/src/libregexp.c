@@ -27,6 +27,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
+#include <malloc.h>
 
 #include "qjs/include/cutils.h"
 #include "qjs/include/libregexp.h"
@@ -427,7 +428,7 @@ static void re_emit_op_u16(REParseState *s, int op, uint32_t val)
     dbuf_put_u16(&s->byte_code, val);
 }
 
-static int __attribute__((format(printf, 2, 3))) re_parse_error(REParseState *s, const char *fmt, ...)
+static int CHECK_FMT(2, 3) re_parse_error(REParseState *s, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -2555,7 +2556,7 @@ const char *lre_get_groupnames(const uint8_t *bc_buf)
     return (const char *)(bc_buf + 7 + re_bytecode_len);
 }
 
-#ifdef TEST
+#ifndef TEST
 
 BOOL lre_check_stack_overflow(void *opaque, size_t alloca_size)
 {
