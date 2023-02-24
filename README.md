@@ -50,12 +50,23 @@
 
 ### V8
 ```
-1. V8字节码执行
+1. V8字节码生成
+   1）BytecodeGenerator字节码生成器
+      a）MakeBytecode为语法树生成字节码
+      b) ConstantArrayBuilder常量表的构建
+   2）V8引擎解释器中每个字节码对应一个handler
+      a）handler是字节码处理器
+      b）handler存储在解释器的dispatch_table_表中 
+      c）V8引擎没有虚拟执行环境，每个字节码的操作都会被翻译成抽象汇编存储在handler调用中，
+         最终执行都会使用TurboFan编译器翻译成机器码
+      d）新版V8引擎的handler实现是包裹在IGNITION_HANDLER宏中进行实现，而此版本是直接代码实现
+2. V8字节码执行
    1）入口，Execution::Call
-   2) 解释执行，Runtime_InterpreterNewClosure
-   3）RUNTIME_FUNCTION宏
+   2）运行时任务主要集中在V8的runtime模块
+   3) 解释执行，Runtime_InterpreterNewClosure
+   4）RUNTIME_FUNCTION宏
       a）会生成一个__RT_impl_开头的静态方法
-2. V8宏开关
+3. V8宏开关
    1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器    
 ```
 

@@ -2,29 +2,20 @@ package com.boymue.app.shell.model
 
 import com.boymue.app.shell.model.handler.BaseHandler
 import com.boymue.app.shell.model.handler.LoginHandler
-import com.boymue.app.shell.model.service.BaseService
-import com.boymue.app.shell.model.service.LoginService
 import com.boymue.app.shell.model.ssl.SSlHepler
-import com.boymue.shell.app.proto.Base
 import com.boymue.shell.app.proto.Base.ResponseData
 import com.boymue.shell.app.proto.User.UserData
 import com.google.protobuf.ExtensionRegistry
-import com.google.protobuf.Any
 import com.google.protobuf.Message
-import io.reactivex.Observable
-import io.reactivex.Observer
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.protobuf.ProtoConverterFactory
 import io.reactivex.functions.Function
 import retrofit2.Response
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.create
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object ModelUtil {
     const val TAG = "ModelUtil"
-    const val BASE_URL = "https://127.0.0.1:8443"
-    const val API_VERSION = "v1"
+    private const val BASE_URL = "https://127.0.0.1:8443"
+    private const val API_VERSION = "v1"
     const val LOGIN_URL: String = "user/${API_VERSION}/login"
     const val LOGOUT_URL: String = "user/${API_VERSION}/logout"
 
@@ -82,12 +73,5 @@ object ModelUtil {
                     override fun accept(t: T?) {
                     }
                 })
-    }
-
-
-
-    fun login(name: String, password: String) {
-        val params = mapOf("name" to "", "password" to "")
-        request<UserData>(params)
     }
 }

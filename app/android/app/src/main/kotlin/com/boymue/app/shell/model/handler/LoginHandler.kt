@@ -1,9 +1,7 @@
 package com.boymue.app.shell.model.handler
 
-import com.boymue.app.shell.model.service.BaseService
 import com.boymue.app.shell.model.service.LoginService
 import com.boymue.shell.app.proto.Base
-import com.boymue.shell.app.proto.User.UserData
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.Retrofit

@@ -18,6 +18,10 @@ int StyleEngine::getType(const String& tag) {
     return m_tags[tag];
 }
 
-void StyleEngine::apply() {
+void StyleEngine::parseCSS(const String& sheetText) {
+    m_sheets.push_back(m_parser.parse(sheetText));
+}
+
+void StyleEngine::apply(DocumentElement* elem) {
 }
 }

@@ -8,7 +8,7 @@ import retrofit2.http.Field
 import retrofit2.http.POST
 //import rx.Observable
 
-interface LoginService : BaseService {
+interface LoginService {
     @POST(ModelUtil.LOGIN_URL)
     fun login(@Field("name") name: String, @Field("pwd") password: String) : Observable<Response<ResponseData>>
 

@@ -5,6 +5,7 @@
 #define StyleEngine_h
 
 #include "StyleParser.h"
+#include "DocumentElement.h"
 
 namespace boymue {
 class StyleEngine {
@@ -18,14 +19,17 @@ public:
     };
 
     StyleEngine();
+
+    // ½âÎöCSSÎÄ±¾
+    void parseCSS(const String& sheetText);
     int getType(const String& tag);
-    void apply();
+    void apply(DocumentElement* elem);
 
 private:
     void initTags();
 
     StyleParser m_parser;
-    List<SharedPtr<StyleSheet>> m_sheets;
+    Vector<SharedPtr<StyleSheet>> m_sheets;
     HashMap<String, int> m_tags;
 };
 }  // namespace boymue
