@@ -5,7 +5,7 @@
 #include "BoymueApplication.h"
 #include "StringUtil.h"
 
-#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS)
+#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS) || defined(ANDROID)
 #include "qjs/include/cutils.h"
 #include "qjs/include/quickjs.h"
 #include "qjs/include/quickjs-libc.h"
@@ -15,7 +15,7 @@
 #endif
 
 namespace boymue {
-#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS)
+#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS) || defined(ANDROID)
 
 #define KB (1024)
 #define MB (1024*1024)

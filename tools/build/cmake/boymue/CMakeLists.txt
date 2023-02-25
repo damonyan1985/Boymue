@@ -7,6 +7,11 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wextra -Wno-unused-parameter")
 set(BOYMUE_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../framework/boymue")
 set(THIRDPARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../../framework/thirdparty")
 
+# add bmnet so
+add_library(bmnet SHARED IMPORTED)
+set_target_properties(bmnet PROPERTIES IMPORTED_LOCATION 
+  ${THIRDPARTY_SRC}/bmnet/bmnet-main/target/aarch64-linux-android/release/libbmnet_main.so)
+
 if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
 	include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
 elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
@@ -59,7 +64,9 @@ target_link_libraries(
   boymue
   skia
   v8
+  qjs
   expat
+  bmnet
   jnigraphics
   EGL
   GLESv2
@@ -81,6 +88,7 @@ target_include_directories(
   ${THIRDPARTY_SRC}/v8/include
   ${THIRDPARTY_SRC}/expat
   ${THIRDPARTY_SRC}/expat/lib
+  ${THIRDPARTY_SRC}/quickjs
   ${BOYMUE_SRC}/platform/android/gpu
   ${BOYMUE_SRC}/platform/android
   ${BOYMUE_SRC}/platform

@@ -52,7 +52,7 @@ typedef size_t ssize_t;
 #define __maybe_unused __attribute__((unused))
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
-#define INFINITE_MAX (double(1.0 / 0.0))
+#define INFINITE_MAX ((double)(1.0 / 0.0))
 #endif
 
 #define xglue(x, y) x ## y

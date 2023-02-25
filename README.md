@@ -20,6 +20,7 @@
 4. ios framework中创建bundle，直接使用target创建
 5. ios copy file中需要将framework的destination从File改为frameworks
 6. rustup安装完后，需要执行rustup toolchain install stable
+7. Android下可以执行./gradlew assembleDebug --rerun-tasks
 ```
 
 ## 相关知识点

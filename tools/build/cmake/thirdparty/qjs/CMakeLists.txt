@@ -21,11 +21,11 @@ file(
     GLOB
     qjs_src
     ${QJS_DIR}/src/cutils.c
-    ${QJS_DIR}/src/libbf.cc
-    ${QJS_DIR}/src/libregexp.cc
-    ${QJS_DIR}/src/libunicode.cc
-    ${QJS_DIR}/src/quickjs.cc
-    ${QJS_DIR}/src/quickjs-libc.cc
+    ${QJS_DIR}/src/libbf.c
+    ${QJS_DIR}/src/libregexp.c
+    ${QJS_DIR}/src/libunicode.c
+    ${QJS_DIR}/src/quickjs.c
+    ${QJS_DIR}/src/quickjs-libc.c
 )
 
 add_library(

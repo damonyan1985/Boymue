@@ -8,20 +8,6 @@
 #include "Loader.h"
 #include "bmnet_main.h"
 
-#if defined(ANDROID)
-// TODO link to rust dll
-void bmnet_get(const char* url,
-    const char* headers,
-    bmnet_get_callback cb,
-    uintptr_t ext) {}
-void bmnet_post(const char* url,
-    const char* headers,
-    const char* data,
-    bmnet_get_callback cb,
-    uintptr_t ext) {}
-
-#endif //  _WINDOWS
-
 namespace boymue {
 Loader::Loader()
     : m_executor(ThreadExecutor::createDefault("loader")) {}

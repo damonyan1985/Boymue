@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.boymue.app" >
+    package="com.boymue.app.shell" >
 
     <application
         android:name="com.boymue.app.shell.BoymueApplication"
@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name="com.boymue.shell.BoymueHomeActivity"
+        <activity android:name="com.boymue.app.shell.BoymueHomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
