@@ -28,20 +28,25 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
-#include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/time.h>
 #include <time.h>
 #include <signal.h>
 #include <limits.h>
 #include <sys/stat.h>
-#include <dirent.h>
-#if defined(_WIN32)
+
+#if defined(_WINDOWS)
 #include <windows.h>
 #include <conio.h>
-#include <utime.h>
+#include <sys/utime.h>
+#include "qjs/include/win/dirent.h"
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
 #else
+#include <unistd.h>
+#include <sys/time.h>
+#include <dirent.h>
 #include <dlfcn.h>
 #include <termios.h>
 #include <sys/ioctl.h>

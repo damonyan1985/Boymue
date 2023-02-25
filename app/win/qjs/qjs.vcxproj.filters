@@ -83,6 +83,15 @@
     <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\libbf.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\quickjs-libc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\quickjs.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\times.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="qjs.def">

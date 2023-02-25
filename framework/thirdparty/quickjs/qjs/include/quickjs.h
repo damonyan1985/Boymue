@@ -28,6 +28,18 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#ifdef _WINDOWS
+#ifdef _WINDLL
+#define BOYMUE_PORTING_API __declspec(dllexport)
+#else
+#define BOYMUE_PORTING_API __declspec(dllimport)
+#endif
+#else
+#define BOYMUE_PORTING_API
+#endif
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -205,6 +217,15 @@ typedef struct JSValue {
     int64_t tag;
 } JSValue;
 
+#ifdef _WINDOWS
+#define CONVERT_JSVALUE(value) value
+#define CONVERT_CJSVALUE(value) value
+#else
+#define CONVERT_JSVALUE(value) ((JSValue)value)
+#define CONVERT_CJSVALUE(value) ((JSValueConst)value)
+#endif
+
+
 #define JSValueConst JSValue
 
 #define JS_VALUE_GET_TAG(v) ((int32_t)(v).tag)
@@ -215,8 +236,22 @@ typedef struct JSValue {
 #define JS_VALUE_GET_FLOAT64(v) ((v).u.float64)
 #define JS_VALUE_GET_PTR(v) ((v).u.ptr)
 
+#ifdef _WINDOWS
+inline JSValue JS_MakeValue(int64_t tag, int32_t val) {
+    JSValue r = { .u = { .int32 = val }, .tag = tag };
+    return r;
+}
+inline JSValue JS_MakePtr(int64_t tag, void* ptr) {
+    JSValue r = { .u = { .ptr = ptr }, .tag = tag };
+    return r;
+}
+#define JS_MKVAL(tag, val) JS_MakeValue(tag, val)
+#define JS_MKPTR(tag, p) JS_MakePtr(tag, p)
+#else
 #define JS_MKVAL(tag, val) (JSValue){ (JSValueUnion){ .int32 = val }, tag }
 #define JS_MKPTR(tag, p) (JSValue){ (JSValueUnion){ .ptr = p }, tag }
+#endif
+
 
 #define JS_TAG_IS_FLOAT64(tag) ((unsigned)(tag) == JS_TAG_FLOAT64)
 
@@ -328,18 +363,18 @@ typedef struct JSMallocFunctions {
 
 typedef struct JSGCObjectHeader JSGCObjectHeader;
 
-JSRuntime *JS_NewRuntime(void);
+BOYMUE_PORTING_API JSRuntime *JS_NewRuntime(void);
 /* info lifetime must exceed that of rt */
 void JS_SetRuntimeInfo(JSRuntime *rt, const char *info);
-void JS_SetMemoryLimit(JSRuntime *rt, size_t limit);
+BOYMUE_PORTING_API void JS_SetMemoryLimit(JSRuntime *rt, size_t limit);
 void JS_SetGCThreshold(JSRuntime *rt, size_t gc_threshold);
 /* use 0 to disable maximum stack size check */
-void JS_SetMaxStackSize(JSRuntime *rt, size_t stack_size);
+BOYMUE_PORTING_API void JS_SetMaxStackSize(JSRuntime *rt, size_t stack_size);
 /* should be called when changing thread to update the stack top value
    used to check stack overflow. */
 void JS_UpdateStackTop(JSRuntime *rt);
 JSRuntime *JS_NewRuntime2(const JSMallocFunctions *mf, void *opaque);
-void JS_FreeRuntime(JSRuntime *rt);
+BOYMUE_PORTING_API void JS_FreeRuntime(JSRuntime *rt);
 void *JS_GetRuntimeOpaque(JSRuntime *rt);
 void JS_SetRuntimeOpaque(JSRuntime *rt, void *opaque);
 typedef void JS_MarkFunc(JSRuntime *rt, JSGCObjectHeader *gp);
@@ -347,8 +382,8 @@ void JS_MarkValue(JSRuntime *rt, JSValueConst val, JS_MarkFunc *mark_func);
 void JS_RunGC(JSRuntime *rt);
 JS_BOOL JS_IsLiveObject(JSRuntime *rt, JSValueConst obj);
 
-JSContext *JS_NewContext(JSRuntime *rt);
-void JS_FreeContext(JSContext *s);
+BOYMUE_PORTING_API JSContext *JS_NewContext(JSRuntime *rt);
+BOYMUE_PORTING_API void JS_FreeContext(JSContext *s);
 JSContext *JS_DupContext(JSContext *ctx);
 void *JS_GetContextOpaque(JSContext *ctx);
 void JS_SetContextOpaque(JSContext *ctx, void *opaque);
@@ -388,7 +423,7 @@ size_t js_malloc_usable_size_rt(JSRuntime *rt, const void *ptr);
 void *js_mallocz_rt(JSRuntime *rt, size_t size);
 
 void *js_malloc(JSContext *ctx, size_t size);
-void js_free(JSContext *ctx, void *ptr);
+BOYMUE_PORTING_API void js_free(JSContext *ctx, void *ptr);
 void *js_realloc(JSContext *ctx, void *ptr, size_t size);
 size_t js_malloc_usable_size(JSContext *ctx, const void *ptr);
 void *js_realloc2(JSContext *ctx, void *ptr, size_t size, size_t *pslack);
@@ -639,7 +674,7 @@ JSValue __js_printf_like(2, 3) JS_ThrowRangeError(JSContext *ctx, const char *fm
 JSValue __js_printf_like(2, 3) JS_ThrowInternalError(JSContext *ctx, const char *fmt, ...);
 JSValue JS_ThrowOutOfMemory(JSContext *ctx);
 
-void __JS_FreeValue(JSContext *ctx, JSValue v);
+BOYMUE_PORTING_API void __JS_FreeValue(JSContext *ctx, JSValue v);
 static inline void JS_FreeValue(JSContext *ctx, JSValue v)
 {
     if (JS_VALUE_HAS_REF_COUNT(v)) {
@@ -649,7 +684,7 @@ static inline void JS_FreeValue(JSContext *ctx, JSValue v)
         }
     }
 }
-void __JS_FreeValueRT(JSRuntime *rt, JSValue v);
+BOYMUE_PORTING_API void __JS_FreeValueRT(JSRuntime *rt, JSValue v);
 static inline void JS_FreeValueRT(JSRuntime *rt, JSValue v)
 {
     if (JS_VALUE_HAS_REF_COUNT(v)) {
@@ -666,7 +701,7 @@ static inline JSValue JS_DupValue(JSContext *ctx, JSValueConst v)
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
     }
-    return (JSValue)v;
+    return CONVERT_JSVALUE(v);
 }
 
 static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
@@ -675,7 +710,7 @@ static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
     }
-    return (JSValue)v;
+    return CONVERT_JSVALUE(v);
 }
 
 int JS_ToBool(JSContext *ctx, JSValueConst val); /* return -1 for JS_EXCEPTION */
@@ -693,11 +728,11 @@ int JS_ToBigInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 int JS_ToInt64Ext(JSContext *ctx, int64_t *pres, JSValueConst val);
 
 JSValue JS_NewStringLen(JSContext *ctx, const char *str1, size_t len1);
-JSValue JS_NewString(JSContext *ctx, const char *str);
+BOYMUE_PORTING_API JSValue JS_NewString(JSContext *ctx, const char *str);
 JSValue JS_NewAtomString(JSContext *ctx, const char *str);
 JSValue JS_ToString(JSContext *ctx, JSValueConst val);
 JSValue JS_ToPropertyKey(JSContext *ctx, JSValueConst val);
-const char *JS_ToCStringLen2(JSContext *ctx, size_t *plen, JSValueConst val1, JS_BOOL cesu8);
+BOYMUE_PORTING_API const char *JS_ToCStringLen2(JSContext *ctx, size_t *plen, JSValueConst val1, JS_BOOL cesu8);
 static inline const char *JS_ToCStringLen(JSContext *ctx, size_t *plen, JSValueConst val1)
 {
     return JS_ToCStringLen2(ctx, plen, val1, 0);
@@ -767,7 +802,7 @@ int JS_GetOwnPropertyNames(JSContext *ctx, JSPropertyEnum **ptab,
 int JS_GetOwnProperty(JSContext *ctx, JSPropertyDescriptor *desc,
                       JSValueConst obj, JSAtom prop);
 
-JSValue JS_Call(JSContext *ctx, JSValueConst func_obj, JSValueConst this_obj,
+BOYMUE_PORTING_API JSValue JS_Call(JSContext *ctx, JSValueConst func_obj, JSValueConst this_obj,
                 int argc, JSValueConst *argv);
 JSValue JS_Invoke(JSContext *ctx, JSValueConst this_val, JSAtom atom,
                   int argc, JSValueConst *argv);
@@ -778,7 +813,7 @@ JSValue JS_CallConstructor2(JSContext *ctx, JSValueConst func_obj,
                             int argc, JSValueConst *argv);
 JS_BOOL JS_DetectModule(const char *input, size_t input_len);
 /* 'input' must be zero terminated i.e. input[input_len] = '\0'. */
-JSValue JS_Eval(JSContext *ctx, const char *input, size_t input_len,
+BOYMUE_PORTING_API JSValue JS_Eval(JSContext *ctx, const char *input, size_t input_len,
                 const char *filename, int eval_flags);
 /* same as JS_Eval() but with an explicit 'this_obj' parameter */
 JSValue JS_EvalThis(JSContext *ctx, JSValueConst this_obj,
@@ -859,7 +894,7 @@ typedef JSModuleDef *JSModuleLoaderFunc(JSContext *ctx,
 
 /* module_normalize = NULL is allowed and invokes the default module
    filename normalizer */
-void JS_SetModuleLoaderFunc(JSRuntime *rt,
+BOYMUE_PORTING_API void JS_SetModuleLoaderFunc(JSRuntime *rt,
                             JSModuleNormalizeFunc *module_normalize,
                             JSModuleLoaderFunc *module_loader, void *opaque);
 /* return the import.meta object of a module */
@@ -872,7 +907,7 @@ typedef JSValue JSJobFunc(JSContext *ctx, int argc, JSValueConst *argv);
 int JS_EnqueueJob(JSContext *ctx, JSJobFunc *job_func, int argc, JSValueConst *argv);
 
 JS_BOOL JS_IsJobPending(JSRuntime *rt);
-int JS_ExecutePendingJob(JSRuntime *rt, JSContext **pctx);
+BOYMUE_PORTING_API int JS_ExecutePendingJob(JSRuntime *rt, JSContext **pctx);
 
 /* Object Writer/Reader (currently only used to handle precompiled code) */
 #define JS_WRITE_OBJ_BYTECODE  (1 << 0) /* allow function/module */
@@ -1008,8 +1043,12 @@ typedef struct JSCFunctionListEntry {
 #define JS_DEF_CFUNC_EXT      10
 
 /* Note: c++ does not like nested designators */
-#define JS_CFUNC_DEF(name, length, func1) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC, 0, .u = { .func = { length, JS_CFUNC_generic, { .generic = func1 } } }, NULL }
+#ifdef _WINDOWS
+#define JS_CFUNC_EXTERNAL_DEF(name, length, func1, external) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC_EXT, 0, { .func = { length, JS_CFUNC_generic_external, { .generic_external = func1 } } }, external}
+#else
 #define JS_CFUNC_EXTERNAL_DEF(name, length, func1, external) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC_EXT, 0, .u = { .func = { length, JS_CFUNC_generic_external, { .generic_external = func1 } } }, external}
+#endif
+#define JS_CFUNC_DEF(name, length, func1) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC, 0, .u = { .func = { length, JS_CFUNC_generic, { .generic = func1 } } }, NULL }
 #define JS_CFUNC_MAGIC_DEF(name, length, func1, magic) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC, magic, .u = { .func = { length, JS_CFUNC_generic_magic, { .generic_magic = func1 } } }, NULL }
 #define JS_CFUNC_SPECIAL_DEF(name, length, cproto, func1) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC, 0, .u = { .func = { length, JS_CFUNC_ ## cproto, { .cproto = func1 } } } }
 #define JS_ITERATOR_NEXT_DEF(name, length, func1, magic) { name, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE, JS_DEF_CFUNC, magic, .u = { .func = { length, JS_CFUNC_iterator_next, { .iterator_next = func1 } } }, NULL }
@@ -1046,7 +1085,7 @@ int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
 
 
 /* 添加全局对象 */
-void* JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count);
+BOYMUE_PORTING_API void* JS_AddGlobalObject(JSContext *ctx, const char *name, JSCFunctionListEntry *method, int count);
 
 #undef js_unlikely
 #undef js_force_inline

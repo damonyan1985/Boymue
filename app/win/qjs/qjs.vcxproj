@@ -115,6 +115,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\quickjs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,6 +166,9 @@
     <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\libbf.c" />
     <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\libregexp.c" />
     <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\libunicode.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\quickjs-libc.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\quickjs.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\quickjs\src\times.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

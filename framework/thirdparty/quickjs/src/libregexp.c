@@ -2556,7 +2556,7 @@ const char *lre_get_groupnames(const uint8_t *bc_buf)
     return (const char *)(bc_buf + 7 + re_bytecode_len);
 }
 
-#ifndef TEST
+#ifdef TEST
 
 BOOL lre_check_stack_overflow(void *opaque, size_t alloca_size)
 {

@@ -37,15 +37,22 @@
 #ifdef _WINDOWS
 #define likely(x) (x)
 #define unlikely(x) (x)
-#define force_inline inline
-#define no_inline
+#define force_inline __forceinline
+#define no_inline __declspec(noinline)
 #define __maybe_unused
+#define __attribute__(x)
+#define __attribute(x)
+#define INFINITE_MAX ((double)INFINITE)
+#define pclose _pclose
+#define popen _popen
+typedef size_t ssize_t;
 #else
 #define force_inline inline __attribute__((always_inline))
 #define no_inline __attribute__((noinline))
 #define __maybe_unused __attribute__((unused))
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
+#define INFINITE_MAX (double(1.0 / 0.0))
 #endif
 
 #define xglue(x, y) x ## y
