@@ -2,6 +2,7 @@
 #include "StyleEngine.h"
 
 namespace boymue {
+namespace css {
 StyleEngine::StyleEngine()
     : m_parser(this){
     initTags();
@@ -24,4 +25,6 @@ void StyleEngine::parseCSS(const String& sheetText) {
 
 void StyleEngine::apply(DocumentElement* elem) {
 }
+}
+
 }

@@ -17,6 +17,7 @@ JsUIOperationApi::JsUIOperationApi(BoymueApplication* context)
     : JsApiInterface(context) {
 }
 
+// 处理js层虚拟vdom比较之后的diff
 void JsUIOperationApi::execute(const String& params,
                                JsApiCallback* callback) {
     rapidjson::Document cmds;

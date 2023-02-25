@@ -22,8 +22,11 @@ class JsRuntime {
   virtual void setContext(BoymueApplication* app) = 0;
   virtual ~JsRuntime() {}
 
+  // macro task
   virtual void doAction(const RuntimeClosure& action) = 0;
+  // 执行JS代码
   virtual void evaluateJs(const String& jsSource, const String& scriptId) = 0;
+  // 注册JS Api
   virtual void registerApi(JsApiInterface* api) = 0;
 };
 

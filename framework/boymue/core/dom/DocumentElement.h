@@ -5,6 +5,7 @@
 #define DocumentElement_h
 
 #include "StringUtil.h"
+#include "Layout.h"
 
 namespace boymue {
 class Document;
@@ -34,6 +35,8 @@ private:
     String m_styleId;
     // 属性
     HashMap<String, String> m_properties;
+    // Layout属性
+    OwnerPtr<Layout> m_layout;
 };
 }  // namespace boymue
 #endif  // !DocumentElement_h

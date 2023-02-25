@@ -8,16 +8,31 @@
 #ifndef Style_h
 #define Style_h
 
-#include <string>
+#include "StringUtil.h"
 
 namespace boymue {
+namespace css {
+class Color {
+public:
+    Color(ColorValue value = 0);
+    Color(BMByte a, BMByte r, BMByte g, BMByte b);
+    Color(const String& colorText);
+    BMByte alpha() const;
+    BMByte red() const;
+    BMByte green() const;
+    BMByte blue() const;
+
+private:
+    ColorValue m_value;
+};
+
 class Style
 {
 public:
     Style();
     ~Style();
 };
-    
+}    
 }
 
 #endif

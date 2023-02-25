@@ -2,6 +2,7 @@
 #include "StyleEngine.h"
 
 namespace boymue {
+namespace css {
 StyleParser::StyleParser(StyleEngine* engine) : m_engine(engine) {}
 StyleParser::~StyleParser() {}  
 
@@ -98,4 +99,6 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
 
     rule->declarations.propertyMap[type] = prop;
 }
-}
+} // css
+
+} // boymue

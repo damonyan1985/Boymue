@@ -8,6 +8,7 @@
 #include "DocumentElement.h"
 
 namespace boymue {
+namespace css {
 class StyleEngine {
 public:
     enum StyleType {
@@ -32,5 +33,6 @@ private:
     Vector<SharedPtr<StyleSheet>> m_sheets;
     HashMap<String, int> m_tags;
 };
+}
 }  // namespace boymue
 #endif  // !StyleEngine_h

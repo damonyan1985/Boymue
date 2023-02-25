@@ -34,6 +34,7 @@ file(
   ${BOYMUE_SRC}/core/view/*.cpp
   ${BOYMUE_SRC}/core/layout/*.cpp
   ${BOYMUE_SRC}/core/dom/*.cpp
+  ${BOYMUE_SRC}/core/style/*.cpp
   ${BOYMUE_SRC}/thread/*.cpp
   ${BOYMUE_SRC}/thread/event/*.cpp
   ${BOYMUE_SRC}/thread/task/*.cpp

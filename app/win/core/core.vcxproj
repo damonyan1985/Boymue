@@ -191,6 +191,7 @@
     <ClInclude Include="..\..\..\framework\boymue\core\style\StyleEngine.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\style\StyleParser.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\style\StyleSheet.h" />
+    <ClInclude Include="..\..\..\framework\boymue\core\view\BoymuePage.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\view\BoymueView.h" />
     <ClInclude Include="..\..\..\framework\boymue\engine\JsEngine.h" />
     <ClInclude Include="..\..\..\framework\boymue\engine\JsApiInterface.h" />
@@ -232,9 +233,11 @@
     <ClCompile Include="..\..\..\framework\boymue\core\layout\Layout.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\paint\Painter.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\paint\TextPainter.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\core\style\Style.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\style\StyleEngine.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\style\StyleParser.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\style\StyleSheet.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\core\view\BoymuePage.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\view\BoymueView.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\engine\JsEngine.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\loader\Loader.cpp" />

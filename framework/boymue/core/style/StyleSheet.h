@@ -11,6 +11,7 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace css {
 class SimpleSelector {
 public:
     SimpleSelector(const String& text);
@@ -31,12 +32,12 @@ class CSSDeclarations {
 public:
     CSSDeclarations() {};
     ~CSSDeclarations() {};
-    
+
     struct CSSProperty {
         int intVal;
         String strVal;
     };
-    
+
     HashMap<int, CSSProperty> propertyMap;
 };
 
@@ -45,7 +46,7 @@ class CSSRule {
 public:
     CSSRule() {};
     ~CSSRule() {};
-    
+
     CSSSelectorGroup selectors;
     CSSDeclarations declarations;
 };
@@ -63,7 +64,7 @@ public:
 private:
     List<SharedPtr<CSSRule>> m_ruleList;
 };
-    
+}
 }
 
 #endif

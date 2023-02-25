@@ -1,11 +1,11 @@
 #include "StyleSheet.h"
 
 namespace boymue {
+namespace css {
 SimpleSelector::SimpleSelector(const String& text)
     : filter(text) {}
 
 StyleSheet::StyleSheet() {
-    
 }
 
 StyleSheet::~StyleSheet() {
@@ -22,5 +22,6 @@ bool StyleSheet::empty() {
 
 void StyleSheet::apply() {
 
+}
 }
 }

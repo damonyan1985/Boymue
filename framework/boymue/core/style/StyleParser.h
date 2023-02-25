@@ -11,6 +11,7 @@
 #include "StyleSheet.h"
 
 namespace boymue {
+namespace css {
 class StyleEngine;
 class StyleParser
 {
@@ -23,7 +24,7 @@ private:
     void addDeclaration(CSSRule* rule, Vector<String>& kv);
     StyleEngine* m_engine;
 };
-    
+}    
 }
 
 #endif

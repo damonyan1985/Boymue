@@ -17,6 +17,9 @@
 
 namespace boymue {
 
+using ColorValue = unsigned int;
+using BMByte = unsigned char;
+
 using String = std::string;
 
 template <typename T>
@@ -57,7 +60,7 @@ public:
     static bool endWith(const String& str, const String& tail);
 
     // 字符串转整型
-    static int stringToInt(const String& str);
+    static int stringToInt(const String& str, int base = 10);
     
     // App后缀
     const static String kAppPrefix;

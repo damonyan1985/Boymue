@@ -213,6 +213,9 @@
     <ClInclude Include="..\..\..\framework\boymue\core\style\StyleSheet.h">
       <Filter>core\style</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\view\BoymuePage.h">
+      <Filter>core\view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -333,6 +336,12 @@
       <Filter>core\style</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\style\StyleSheet.cpp">
+      <Filter>core\style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\view\BoymuePage.cpp">
+      <Filter>core\view</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\style\Style.cpp">
       <Filter>core\style</Filter>
     </ClCompile>
   </ItemGroup>

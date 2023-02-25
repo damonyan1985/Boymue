@@ -69,7 +69,7 @@ bool StringUtil::endWith(const String& str, const String& tail) {
     return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
 }
 
-int StringUtil::stringToInt(const String& str) {
-    return atoi(str.c_str());
+int StringUtil::stringToInt(const String& str, int base) {
+    return std::stoi(str, 0, base);
 }
 }

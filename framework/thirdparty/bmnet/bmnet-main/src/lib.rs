@@ -36,6 +36,7 @@ fn exec_string_callback(cb: Option<Callback>, text: String, ext: usize) {
     }
 }
 
+// json字符串转键值对
 fn get_header(headers: *const c_char) -> Option<Map<String, Value>> {
     let mut header_map: Option<Map<String, Value>> = None;
     // 如果header字串不为空
@@ -57,6 +58,7 @@ fn get_header(headers: *const c_char) -> Option<Map<String, Value>> {
     return header_map;
 }
 
+// c字符串转String
 fn get_bmnet_string(nc_str: *const c_char) -> String {
     // c传入的指针需要判空
     if nc_str.is_null() {
