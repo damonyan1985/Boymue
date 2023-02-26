@@ -18,9 +18,7 @@ public:
     
 private:
     // 页面dom结构
-    std::unique_ptr<Document> m_dom;
-    // 布局根结构
-    std::unique_ptr<Layout> m_root;
+    std::unique_ptr<dom::Document> m_dom;
     int m_pageId;
 };
 }

@@ -216,6 +216,18 @@
     <ClInclude Include="..\..\..\framework\boymue\core\view\BoymuePage.h">
       <Filter>core\view</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\layout\BlockLayout.h">
+      <Filter>core\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\layout\ImageLayout.h">
+      <Filter>core\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\layout\InputLayout.h">
+      <Filter>core\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\paint\BoxPainter.h">
+      <Filter>core\paint</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -343,6 +355,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\style\Style.cpp">
       <Filter>core\style</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\layout\BlockLayout.cpp">
+      <Filter>core\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\layout\TextLayout.cpp">
+      <Filter>core\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\layout\ImageLayout.cpp">
+      <Filter>core\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\layout\InputLayout.cpp">
+      <Filter>core\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\paint\BoxPainter.cpp">
+      <Filter>core\paint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

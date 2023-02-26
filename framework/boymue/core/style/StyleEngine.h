@@ -24,7 +24,7 @@ public:
     // ½âÎöCSSÎÄ±¾
     void parseCSS(const String& sheetText);
     int getType(const String& tag);
-    void apply(DocumentElement* elem);
+    void apply(dom::DocumentElement* elem);
 
 private:
     void initTags();

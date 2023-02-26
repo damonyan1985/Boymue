@@ -8,6 +8,7 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace dom {
 class ViewElement : public DocumentElement {
 public:
     ViewElement(Document* dom);
@@ -18,5 +19,6 @@ public:
 private:
     List<SharedPtr<DocumentElement>> m_children;
 };
+}
 }  // namespace boymue
 #endif  // !ViewElement

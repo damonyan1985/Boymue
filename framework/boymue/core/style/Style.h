@@ -21,6 +21,7 @@ public:
     BMByte red() const;
     BMByte green() const;
     BMByte blue() const;
+    ColorValue value() const;
 
 private:
     ColorValue m_value;
@@ -31,6 +32,11 @@ class Style
 public:
     Style();
     ~Style();
+
+    // css color
+    Color color;
+    // css background-color
+    Color bgColor;
 };
 }    
 }

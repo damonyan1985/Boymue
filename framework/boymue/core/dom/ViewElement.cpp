@@ -5,6 +5,7 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace dom {
 ViewElement::ViewElement(Document* dom)
     : DocumentElement(dom) {}
 
@@ -21,5 +22,6 @@ void ViewElement::addChild(DocumentElement* element) {
 
 void ViewElement::removeChild(DocumentElement* element) {
     m_children.remove(SharedPtr<DocumentElement>(element));
+}
 }
 }

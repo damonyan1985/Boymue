@@ -11,10 +11,12 @@
 #include "DocumentElement.h"
 
 namespace boymue {
+namespace dom {
 class TextFieldElement : DocumentElement {
 public:
     TextFieldElement(Document* dom);
 };
+}
 }
 
 #endif /* TextFieldElement_h */

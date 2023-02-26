@@ -4,7 +4,7 @@
 #include "TextPainter.h"
 
 namespace boymue {
-void TextPainter::paint(PaintInfo& context) {}
-
-void TextPainter::paintImpl(SkCanvas* canvas) {}
+namespace painter {
+void TextPainter::paintImpl(SkCanvas* canvas, PaintInfo& info) {}
+}
 }  // namespace boymue

@@ -23,7 +23,7 @@ void StyleEngine::parseCSS(const String& sheetText) {
     m_sheets.push_back(m_parser.parse(sheetText));
 }
 
-void StyleEngine::apply(DocumentElement* elem) {
+void StyleEngine::apply(dom::DocumentElement* elem) {
 }
 }
 

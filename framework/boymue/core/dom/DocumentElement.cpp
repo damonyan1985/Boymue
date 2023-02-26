@@ -6,12 +6,13 @@
 #include "Layout.h"
 
 namespace boymue {
+namespace dom {
 DocumentElement::DocumentElement(Document* dom)
     : m_dom(dom)
     , m_elemId(0) {}
 
 void DocumentElement::addChild(DocumentElement* element) {}
-Layout* DocumentElement::layout() { return nullptr; }
+layout::Layout* DocumentElement::layout() { return nullptr; }
 
 void DocumentElement::setElementId(int elemId) {
     m_elemId = elemId;
@@ -33,5 +34,6 @@ const String& DocumentElement::styleId() const {
 
 void DocumentElement::setProperty(const String& key, const String& value) {
     m_properties[key] = value;
+}
 }
 }

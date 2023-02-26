@@ -7,6 +7,7 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace dom {
 class DomTags {
 public:
     // 基础组件Tag
@@ -29,5 +30,6 @@ private:
     DomTags();
     HashMap<String, int> m_map;
 };
+}
 }
 #endif

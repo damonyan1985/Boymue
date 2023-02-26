@@ -28,7 +28,7 @@ void JsUIOperationApi::execute(const String& params,
         return;
     }
     
-    Document* dom = new Document();
+    dom::Document* dom = new dom::Document();
     for (rapidjson::SizeType i = 0; i < cmds.Size(); i++) {
         if (!cmds[i]["type"].IsInt()) {
             return;
@@ -36,15 +36,15 @@ void JsUIOperationApi::execute(const String& params,
         
         int type = cmds[i]["type"].GetInt();
         switch (type) {
-            case Document::kAddNode: {
+            case dom::Document::kAddNode: {
                 dom->createElement(type, cmds[i]["id"].GetInt(), cmds[i]["pid"].GetInt());
             } break;
-            case Document::kSetProp: {
+            case dom::Document::kSetProp: {
                 dom->setElementProperty(cmds[i]["id"].GetInt(),
                                         cmds[i]["key"].GetString(),
                                         cmds[i]["value"].GetString());
             } break;
-            case Document::kRemoveNode: {
+            case dom::Document::kRemoveNode: {
                 dom->removeElement(cmds[i]["pid"].GetInt(), cmds[i]["id"].GetInt());
             } break;
             default:

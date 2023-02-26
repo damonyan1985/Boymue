@@ -11,6 +11,7 @@
 #include "expat.h"
 
 namespace boymue {
+namespace dom {
 // 处理标签开始
 static void XMLCALL OnStartElement(void* dom, const char* name,
                                    const char** atts) {
@@ -146,5 +147,6 @@ void Document::setElementProperty(int eid, const String& key, const String& valu
     if (elem) {
         elem->setProperty(key, value);
     }
+}
 }
 }  // namespace boymue

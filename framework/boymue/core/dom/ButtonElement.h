@@ -11,9 +11,11 @@
 #include "DocumentElement.h"
 
 namespace boymue {
+namespace dom {
 class ButtonElement : public DocumentElement {
 public:
     ButtonElement(Document* dom);
 };
+}
 }
 #endif /* ButtonElement_h */

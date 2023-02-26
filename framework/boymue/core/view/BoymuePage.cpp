@@ -10,8 +10,7 @@
 namespace boymue {
 BoymuePage::BoymuePage(int pageId)
   : m_pageId(pageId)
-  , m_root(std::make_unique<Layout>())
-  , m_dom(std::make_unique<Document>()) {
+  , m_dom(std::make_unique<dom::Document>()) {
 }
 
 }

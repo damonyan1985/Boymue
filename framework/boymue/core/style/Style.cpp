@@ -24,6 +24,7 @@ BMByte Color::alpha() const { return (m_value >> 24) & 0xFF; }
 BMByte Color::red() const { return (m_value >> 16) & 0xFF; }
 BMByte Color::green() const { return (m_value >> 8) & 0xFF; }
 BMByte Color::blue() const { return m_value & 0xFF; }
+ColorValue Color::value() const { return m_value;  }
 
 Style::Style() {}
 Style::~Style() {}

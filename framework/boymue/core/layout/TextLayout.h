@@ -7,6 +7,8 @@
 #include "Layout.h"
 
 namespace boymue {
+namespace layout {
 class TextLayout : public Layout {};
+}
 }  // namespace boymue
 #endif  // !TextLayout_h

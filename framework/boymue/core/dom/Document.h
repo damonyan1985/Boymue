@@ -12,6 +12,7 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace dom {
 // Create and run in ui thread
 class Document {
 public:
@@ -45,5 +46,6 @@ private:
     // 使用style id查找DocumentElement
     HashMap<String, DocumentElement*> m_styleElems;
 };
+}
 }  // namespace boymue
 #endif  // !Document_h

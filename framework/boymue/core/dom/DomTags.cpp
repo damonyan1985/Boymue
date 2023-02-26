@@ -4,6 +4,7 @@
 #include "DomTags.h"
 
 namespace boymue {
+namespace dom {
 DomTags* DomTags::instance() {
     // 原子结构，支持多线程调用
     static DomTags sTags;
@@ -28,5 +29,6 @@ void DomTags::addExtensionTag(const String& key, int tag) {
 
 int DomTags::getTag(const String& key) {
     return m_map[key];
+}
 }
 }

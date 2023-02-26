@@ -9,6 +9,7 @@
 #include "DocumentElement.h"
 
 namespace boymue {
+namespace dom {
 class ImageElement : public DocumentElement {
  public:
   ImageElement(Document* dom);
@@ -16,5 +17,6 @@ class ImageElement : public DocumentElement {
  private:
   std::string m_url;
 };
+}
 }  // namespace boymue
 #endif  // !ImageElement_h

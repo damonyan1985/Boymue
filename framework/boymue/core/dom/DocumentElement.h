@@ -8,8 +8,8 @@
 #include "Layout.h"
 
 namespace boymue {
+namespace dom {
 class Document;
-class Layout;
 class DocumentElement {
 public:
     DocumentElement(Document* dom);
@@ -18,7 +18,7 @@ public:
     void addChild(DocumentElement* element);
     virtual void removeChild(DocumentElement* element) {};
     // layout与element一一对应
-    Layout* layout();
+    layout::Layout* layout();
     
     int elementId() const;
     const String& styleId() const;
@@ -36,7 +36,8 @@ private:
     // 属性
     HashMap<String, String> m_properties;
     // Layout属性
-    OwnerPtr<Layout> m_layout;
+    OwnerPtr<layout::Layout> m_layout;
 };
+}
 }  // namespace boymue
 #endif  // !DocumentElement_h

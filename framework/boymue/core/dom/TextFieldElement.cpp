@@ -8,6 +8,8 @@
 #include "TextFieldElement.h"
 
 namespace boymue {
+namespace dom {
 TextFieldElement::TextFieldElement(Document* dom)
     : DocumentElement(dom) {}
+}
 }

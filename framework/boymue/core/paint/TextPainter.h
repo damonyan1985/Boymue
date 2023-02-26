@@ -7,12 +7,11 @@
 #include "Painter.h"
 
 namespace boymue {
+namespace painter {
 class TextPainter : public Painter {
- public:
-  virtual void paint(PaintInfo& context);
-
  protected:
-  virtual void paintImpl(SkCanvas* canvas) override;
+  virtual void paintImpl(SkCanvas* canvas, PaintInfo& info) override;
 };
+}
 }  // namespace boymue
 #endif  // !TextPainter_h

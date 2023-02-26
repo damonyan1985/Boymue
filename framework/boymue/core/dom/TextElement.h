@@ -9,12 +9,14 @@
 #include "DocumentElement.h"
 
 namespace boymue {
+namespace dom {
 class TextElement : public DocumentElement {
  public:
-  TextElement(Document* dom, const std::string& text);
+  TextElement(Document* dom, const String& text);
 
  private:
-  std::string m_text;
+  String m_text;
 };
+}
 }  // namespace boymue
 #endif  // !TextElement
