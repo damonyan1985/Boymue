@@ -19,6 +19,11 @@ JsXmlToJsonApi::JsXmlToJsonApi(BoymueApplication* context)
     : JsApiInterface(context) {
 }
 
+// 使用io thread进行解析
+ThreadExecutor* JsXmlToJsonApi::executor() {
+    return context()->ioExecutor();
+}
+
 // 将xml转换成虚拟dom
 void JsXmlToJsonApi::execute(const String& params,
                              JsApiCallback* callback) {
@@ -33,6 +38,5 @@ void JsXmlToJsonApi::execute(const String& params,
     }
     
     callback->callback(xml2json(xmlText.c_str()));
-    
 }
 }

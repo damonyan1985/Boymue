@@ -9,7 +9,6 @@
 #include "Painter.h"
 
 namespace boymue {
-using LayoutUnit = int;
 namespace layout {
 // Create and run in ui thread
 class Layout {

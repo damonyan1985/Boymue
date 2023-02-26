@@ -20,17 +20,17 @@ public:
     // layout与element一一对应
     layout::Layout* layout();
     
-    int elementId() const;
+    int uid() const;
     const String& styleId() const;
     
-    void setElementId(int elemId);
+    void setUid(int uid);
     void setStyleId(const String& styleId);
     void setProperty(const String& key, const String& value);
     
 private:
     Document* m_dom;
-    // 0是无效id, elemId为js端分配的唯一id
-    int m_elemId;
+    // 0是无效id, uid为js端分配的唯一id
+    int m_uid;
     // 样式id, 通过styleId可以匹配样式
     String m_styleId;
     // 属性

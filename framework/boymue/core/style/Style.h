@@ -37,6 +37,11 @@ public:
     Color color;
     // css background-color
     Color bgColor;
+
+    LayoutUnit left;
+    LayoutUnit top;
+    LayoutUnit width;
+    LayoutUnit height;
 };
 }    
 }

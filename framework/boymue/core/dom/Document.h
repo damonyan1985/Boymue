@@ -25,18 +25,18 @@ public:
     
     Document();
     // 利用XML内容来初始化document
-    void initDocument(const String& content);
+    void parseFromXML(const String& content);
     Stack<DocumentElement*>* getParseStack();
     DocumentElement* createElement(int tag, const char** atts,
                                  DocumentElement* parent);
     
-    void createElement(int tag, int eid, int pid);
-    void removeElement(int pid, int eid);
+    void createElement(int tag, int uid, int pid);
+    void removeElement(int pid, int uid);
     
     void addUniqueElement(DocumentElement* elem);
     void addStyleElement(DocumentElement* elem);
     
-    void setElementProperty(int eid, const String& key, const String& value);
+    void setElementProperty(int uid, const String& key, const String& value);
 
 private:
     Stack<DocumentElement*> m_parseStack;

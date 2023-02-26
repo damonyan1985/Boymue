@@ -18,6 +18,8 @@ public:
     virtual const char* name() const override;
     void execute(const String& params,
                  JsApiCallback* callback) override;
+
+    ThreadExecutor* executor();
 };
 }
 

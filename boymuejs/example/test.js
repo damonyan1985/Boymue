@@ -24,12 +24,17 @@ boymue.log(testFunc(2, 3));
 
 boymue.log(App.hello());
 
-boymue.xmlToJson('/example/test.xml', (res) => {
-    boymue.log('json: ' + res);
-    let xmlObj = JSON.parse(res);
-    
-    boymue.log('json: ' + xmlObj.tag);
-})
+function parseDom(xml) {
+    return new Promise((resolve, reject) => {
+        boymue.xmlToJson('/example/test.xml', (res) => {
+            boymue.log('json: ' + res)
+            let xmlObj = JSON.parse(res)
+
+            boymue.log('count: ' + xmlObj.count)
+            resolve(xmlObj)
+        })
+    })
+}
 
 function request(obj) {
     return new Promise((resolve, reject) => {
@@ -37,8 +42,7 @@ function request(obj) {
             boymue.log('request function result: ' + res + ', resolve:' + resolve)
             resolve(res)
         })
-        //resolve('hello Promise')
-    });
+    })
 }
 
 //boymue.request(JSON.stringify({
@@ -61,7 +65,14 @@ async function test() {
     return data;
 }
 
+async function testParseXml() {
+    let obj = await parseDom('/example/test.xml')
+    let vdom = new VDom(obj);
+    boymue.log('testParseXml: ' + JSON.stringify(obj))
+}
+
 test()
+testParseXml()
 
 boymue.log(testimport());
 

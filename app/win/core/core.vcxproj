@@ -272,9 +272,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\boymuejs\example\config.json" />
+    <None Include="..\..\..\boymuejs\example\app.json" />
     <None Include="..\..\..\boymuejs\example\test.js" />
     <None Include="..\..\..\boymuejs\example\test1.js" />
+    <None Include="..\..\..\boymuejs\example\vdom.js" />
     <None Include="core.def" />
   </ItemGroup>
   <ItemGroup>

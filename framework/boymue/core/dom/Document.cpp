@@ -48,7 +48,7 @@ static void XMLCALL OnCharacters(void* dom, const char* text, int len) {
 Document::Document()
     : m_root(nullptr) {}
 
-void Document::initDocument(const std::string& content) {
+void Document::parseFromXML(const String& content) {
   XML_Parser parser = XML_ParserCreate(NULL);
   // OnStartElement与OnEndElement都是XML_Parser中的属性
   XML_SetUserData(parser, this);
@@ -89,7 +89,7 @@ DocumentElement* Document::createElement(int tag, const char** atts,
   return element;
 }
 
-void Document::createElement(int tag, int eid, int pid) {
+void Document::createElement(int tag, int uid, int pid) {
     DocumentElement* element = nullptr;
     switch (tag) {
       case DomTags::kView:
@@ -110,7 +110,7 @@ void Document::createElement(int tag, int eid, int pid) {
     }
     
     if (element) {
-        element->setElementId(eid);
+        element->setUid(uid);
     }
     
     if (pid != 0) {
@@ -121,9 +121,9 @@ void Document::createElement(int tag, int eid, int pid) {
     }
 }
 
-void Document::removeElement(int pid, int eid) {
+void Document::removeElement(int pid, int uid) {
     DocumentElement* parent = m_uniqueElems[pid];
-    DocumentElement* child = m_uniqueElems[eid];
+    DocumentElement* child = m_uniqueElems[uid];
     
     if (parent && child) {
         parent->removeChild(child);
@@ -135,15 +135,15 @@ Stack<DocumentElement*>* Document::getParseStack() {
 }
 
 void Document::addUniqueElement(DocumentElement* elem) {
-    m_uniqueElems.emplace(elem->elementId(), elem);
+    m_uniqueElems.emplace(elem->uid(), elem);
 }
 
 void Document::addStyleElement(DocumentElement* elem) {
     m_styleElems.emplace(elem->styleId(),  elem);
 }
 
-void Document::setElementProperty(int eid, const String& key, const String& value) {
-    DocumentElement* elem = m_uniqueElems[eid];
+void Document::setElementProperty(int uid, const String& key, const String& value) {
+    DocumentElement* elem = m_uniqueElems[uid];
     if (elem) {
         elem->setProperty(key, value);
     }

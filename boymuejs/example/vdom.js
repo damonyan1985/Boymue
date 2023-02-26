@@ -78,6 +78,7 @@ class VNode {
         this.props = props ?? {}
         this.children = children ?? []
         this.key = key
+        // 对应C++端的uid
         this.id = ++idGen;
     }
 
@@ -87,8 +88,11 @@ class VNode {
 }
 
 class VDom {
-    constructor() {
-        this.root = new VNode('view', {}, [], null);
+    constructor(xmlObj) {
+        //this.root = new VNode('view', {}, [], null);
+        this.root = xmlObj
+        // 获取uid计数
+        this.count = xmlObj.count
     }
 
     diffDom(newNode) {

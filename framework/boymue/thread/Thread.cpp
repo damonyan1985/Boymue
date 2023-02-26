@@ -3,7 +3,7 @@
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 namespace boymue {
-Thread::Thread(const std::string& name)
+Thread::Thread(const String& name)
     : m_name(name)
 {
 }

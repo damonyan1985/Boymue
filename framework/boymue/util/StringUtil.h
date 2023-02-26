@@ -40,6 +40,11 @@ using SharedPtr = std::shared_ptr<T>;
 template <typename T>
 using OwnerPtr = std::unique_ptr<T>;
 
+template <typename T>
+using WeakPtr = std::weak_ptr<T>;
+
+using LayoutUnit = int;
+
 class StringUtil {
 public:
     // 分割字符串

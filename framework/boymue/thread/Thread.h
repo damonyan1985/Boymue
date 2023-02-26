@@ -1,16 +1,15 @@
 #ifndef Thread_h
 #define Thread_h
 
-#include <memory>
 #include <thread>
-#include <string>
+#include "StringUtil.h"
 
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 namespace boymue {
 class Thread {
 public:
-    Thread(const std::string& name);
+    Thread(const String& name);
     ~Thread();
     void start();
     void join();
@@ -20,8 +19,8 @@ public:
 
 private:
     static void startThread(void* ptr);
-    std::unique_ptr<std::thread> m_thread;
-    std::string m_name;
+    OwnerPtr<std::thread> m_thread;
+    String m_name;
 };
 }
 #endif // !Thread_h

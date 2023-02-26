@@ -9,13 +9,13 @@ namespace boymue {
 namespace dom {
 DocumentElement::DocumentElement(Document* dom)
     : m_dom(dom)
-    , m_elemId(0) {}
+    , m_uid(0) {}
 
 void DocumentElement::addChild(DocumentElement* element) {}
 layout::Layout* DocumentElement::layout() { return nullptr; }
 
-void DocumentElement::setElementId(int elemId) {
-    m_elemId = elemId;
+void DocumentElement::setUid(int uid) {
+    m_uid = uid;
     m_dom->addUniqueElement(this);
 }
 
@@ -24,8 +24,8 @@ void DocumentElement::setStyleId(const String& styleId) {
     m_dom->addStyleElement(this);
 }
 
-int DocumentElement::elementId() const {
-    return m_elemId;
+int DocumentElement::uid() const {
+    return m_uid;
 }
 
 const String& DocumentElement::styleId() const {

@@ -8,7 +8,7 @@ namespace boymue {
 // TODO 后期修改为多线程处理
 class ThreadExecutorDefaultImpl : public ThreadExecutor {
 public:
-    ThreadExecutorDefaultImpl(const std::string& name)
+    ThreadExecutorDefaultImpl(const String& name)
         : m_thread(name)
     {
         m_thread.start();
@@ -23,7 +23,25 @@ private:
     TaskThread m_thread;
 };
 
-ThreadExecutor* ThreadExecutor::createDefault(const std::string& name) {
+class ThreadExecutorSingleTaskImpl : public ThreadExecutor {
+public:
+    ThreadExecutorSingleTaskImpl(TaskThread* thread)
+        : m_thread(thread) { }
+
+    virtual void submitTask(const closure& task) override
+    {
+        m_thread->getTaskRunner().postTask(task);
+    }
+
+private:
+    TaskThread* m_thread;
+};
+
+ThreadExecutor* ThreadExecutor::createDefault(const String& name) {
     return new ThreadExecutorDefaultImpl(name);
+}
+
+ThreadExecutor* ThreadExecutor::createSingleTaskExecutor(TaskThread* thread) {
+    return new ThreadExecutorSingleTaskImpl(thread);
 }
 }

@@ -21,6 +21,8 @@
 static const char xml2json_text_additional_name[] = "#text";
 static const char xml2json_text_additional_value[] = "text";
 static const char xml2json_tag_label[] = "tag";
+static const char xml2json_uid[] = "uid";
+static const char xml2json_id_count[] = "count";
 static const char xml2json_props_label[] = "props";
 static const char xml2json_children_label[] = "children";
 static const bool xml2json_numeric_support = false;
@@ -111,7 +113,7 @@ void xml2json_add_attributes(rapidxml::xml_node<> *xmlnode, rapidjson::Value &js
     }
 }
 
-void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsvalue, rapidjson::Document::AllocatorType& allocator)
+void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsvalue, rapidjson::Document::AllocatorType& allocator, int* uid)
 {
     // 处理text节点
     if (xmlnode->type() == rapidxml::node_data) {
@@ -124,7 +126,7 @@ void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsv
 
     // 添加tag属性
     jsvalue.AddMember(rapidjson::StringRef(xml2json_tag_label), rapidjson::StringRef(xmlnode->name()), allocator);
-
+    jsvalue.AddMember(rapidjson::StringRef(xml2json_uid), ++(*uid), allocator);
     if ((xmlnode->type() == rapidxml::node_data || xmlnode->type() == rapidxml::node_cdata) && xmlnode->value())
     {
         // case: pure_text
@@ -149,7 +151,7 @@ void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsv
             {
                 // 创建子元素
                 rapidjson::Value jchild(rapidjson::kObjectType);
-                xml2json_traverse_node(xmlnode_chd, jchild, allocator);
+                xml2json_traverse_node(xmlnode_chd, jchild, allocator, uid);
                 
                 // 添加到数组
                 children.PushBack(jchild, allocator);
@@ -167,15 +169,19 @@ void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsv
 std::string xml2json(const char *xml_str)
 {
     rapidxml::xml_document<> xml_doc;
-    xml_doc.parse<0> (const_cast<char *>(xml_str));
+    xml_doc.parse<0>(const_cast<char *>(xml_str));
 
     rapidjson::Document js_doc;
     js_doc.SetObject();
     rapidjson::Document::AllocatorType& allocator = js_doc.GetAllocator();
     
+    // 为vdom设置uid
+    int uid = 0;
     for (rapidxml::xml_node<> *xmlnode_chd = xml_doc.first_node(); xmlnode_chd; xmlnode_chd = xmlnode_chd->next_sibling())
     {
-        xml2json_traverse_node(xmlnode_chd, js_doc, allocator);
+        xml2json_traverse_node(xmlnode_chd, js_doc, allocator, &uid);
+        // 最后将计数存到dom对象中
+        js_doc.AddMember(rapidjson::StringRef(xml2json_id_count), uid, allocator);
     }
 
     rapidjson::StringBuffer buffer;

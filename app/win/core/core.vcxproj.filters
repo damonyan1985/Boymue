@@ -379,10 +379,13 @@
     <None Include="..\..\..\boymuejs\example\test.js">
       <Filter>example</Filter>
     </None>
-    <None Include="..\..\..\boymuejs\example\config.json">
+    <None Include="..\..\..\boymuejs\example\test1.js">
       <Filter>example</Filter>
     </None>
-    <None Include="..\..\..\boymuejs\example\test1.js">
+    <None Include="..\..\..\boymuejs\example\app.json">
+      <Filter>example</Filter>
+    </None>
+    <None Include="..\..\..\boymuejs\example\vdom.js">
       <Filter>example</Filter>
     </None>
   </ItemGroup>

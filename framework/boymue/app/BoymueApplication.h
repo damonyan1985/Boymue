@@ -12,6 +12,7 @@
 #include "JsEngine.h"
 #include "BoymueAppInfo.h"
 #include "Loader.h"
+#include "ThreadExecutor.h"
 
 namespace boymue {
 class BoymueApplication {
@@ -28,6 +29,8 @@ class BoymueApplication {
   JsRuntime* runtime() const;
   const Loader& loader() const;
 
+  ThreadExecutor* ioExecutor() const;
+
  private:
   std::unique_ptr<JsEngine> m_jsEngine;
   // BoymueView can only used in ui thread
@@ -42,6 +45,8 @@ class BoymueApplication {
   TaskThread m_ioThread;
   // js thread用来执行js的线程
   TaskThread m_jsThread;
+
+  ThreadExecutor* m_ioExecutor;
     
   Loader m_loader;
 };

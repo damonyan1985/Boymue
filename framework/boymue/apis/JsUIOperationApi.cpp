@@ -47,6 +47,9 @@ void JsUIOperationApi::execute(const String& params,
             case dom::Document::kRemoveNode: {
                 dom->removeElement(cmds[i]["pid"].GetInt(), cmds[i]["id"].GetInt());
             } break;
+            case dom::Document::kReplaceNode: {
+
+            } break;
             default:
                 break;
         }
