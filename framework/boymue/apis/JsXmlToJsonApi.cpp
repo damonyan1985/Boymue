@@ -24,7 +24,7 @@ ThreadExecutor* JsXmlToJsonApi::executor() {
     return context()->ioExecutor();
 }
 
-// 将xml转换成虚拟dom
+// 将xml转换成虚拟dom的配置信息
 void JsXmlToJsonApi::execute(const String& params,
                              JsApiCallback* callback) {
     if (!callback) {

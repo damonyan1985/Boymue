@@ -16,20 +16,21 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
     : m_appInfo(info),
       m_uiThread("ui_thread_" + info->appName),
       m_ioThread("io_thread_" + info->appName),
-      m_jsThread("js_thread_" + info->appName) {
+      m_jsThread("js_thread_" + info->appName),
+      m_ioExecutor(ThreadExecutor::createSingleTaskExecutor(&m_ioThread)) {
   m_jsEngine = std::make_unique<JsEngine>();
   
   m_uiThread.start();
   m_ioThread.start();
   m_jsThread.start();
 
-  m_ioExecutor = ThreadExecutor::createSingleTaskExecutor(&m_ioThread);
+  
   getUITaskRunner().postTask(
       [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
 
   getJSTaskRunner().postTask([self = this] {
     self->m_mainRuntime =
-        std::unique_ptr<JsRuntime>(self->m_jsEngine->createRuntime());
+        OwnerPtr<JsRuntime>(self->m_jsEngine->createRuntime());
     self->m_mainRuntime->registerApi(new JsLogApi(self));
     self->m_mainRuntime->registerApi(new JsTestApi(self));
     self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
@@ -41,7 +42,7 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
 }
 
 ThreadExecutor* BoymueApplication::ioExecutor() const {
-    return m_ioExecutor;
+    return m_ioExecutor.get();
 }
 
 void BoymueApplication::evaluateJs(const String& jsSource, const String& scriptId) {

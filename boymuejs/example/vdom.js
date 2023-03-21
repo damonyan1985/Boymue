@@ -1,3 +1,27 @@
+/* Example:
+   <view>
+       <button value="v">hello</button>
+   </view>
+ 
+   translate to config json
+   {
+    "tag": "view",
+    "children": [
+        {
+            "tag": "button",
+            "props": {"value": "v"},
+            "children": [
+                {"tag": "#text", "text": "hello"}
+            ]
+        }
+    ]
+   }
+*/
+
+const VNodeTagMap = {
+
+}
+
 const VCmdType = {
     kAddNode: 1,
     kSetProp: 2,
@@ -88,11 +112,55 @@ class VNode {
 }
 
 class VDom {
-    constructor(xmlObj) {
-        //this.root = new VNode('view', {}, [], null);
-        this.root = xmlObj
-        // 获取uid计数
-        this.count = xmlObj.count
+    constructor(xmlConfig, data = {}) {
+        this.config = xmlConfig
+        this.data = {}
+        this.root = this.genVDom()
+        this.nodeCreateMap = {
+            'view': this._createNodeView,
+            'image': this._createNodeImage,
+            '#text': this._createNodeText,
+            'button': this._createNodeButton,
+            'textfield': this._createNodeTextField
+        }
+    }
+
+    _createNodeView = (node) => {
+        // 如果有迭代
+        if (node.props.for) {
+
+        }
+
+        if (node.props.if) {
+
+        }
+    }
+
+    _createNodeImage = (node) => {
+
+    }
+
+    _createNodeText = (node) => {
+
+    }
+
+    _createNodeButton = (node) => {
+
+    }
+
+    _createNodeTextField = (node) => {
+
+    }
+
+    // 创建渲染树
+    createRender() {
+        boymue.operation(JSON.stringify({}))
+    }
+
+    // 使用配置信息生成dom树
+    genVDom() {
+        let node = this.config
+        this.nodeCreateMap[node.tag](node)
     }
 
     diffDom(newNode) {

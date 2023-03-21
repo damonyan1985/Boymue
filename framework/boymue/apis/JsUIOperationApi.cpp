@@ -37,7 +37,10 @@ void JsUIOperationApi::execute(const String& params,
         int type = cmds[i]["type"].GetInt();
         switch (type) {
             case dom::Document::kAddNode: {
-                dom->createElement(type, cmds[i]["id"].GetInt(), cmds[i]["pid"].GetInt());
+                dom->createElement(dom::DomTags::instance()->getTag(
+                    cmds[i]["tag"].GetString()), 
+                    cmds[i]["id"].GetInt(), 
+                    cmds[i]["pid"].GetInt());
             } break;
             case dom::Document::kSetProp: {
                 dom->setElementProperty(cmds[i]["id"].GetInt(),

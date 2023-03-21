@@ -32,10 +32,10 @@ class BoymueApplication {
   ThreadExecutor* ioExecutor() const;
 
  private:
-  std::unique_ptr<JsEngine> m_jsEngine;
+  OwnerPtr<JsEngine> m_jsEngine;
   // BoymueView can only used in ui thread
-  std::unique_ptr<BoymueView> m_mainView;
-  std::unique_ptr<JsRuntime> m_mainRuntime;
+  OwnerPtr<BoymueView> m_mainView;
+  OwnerPtr<JsRuntime> m_mainRuntime;
 
   // 应用信息
   BoymueAppInfo* m_appInfo;
@@ -46,7 +46,7 @@ class BoymueApplication {
   // js thread用来执行js的线程
   TaskThread m_jsThread;
 
-  ThreadExecutor* m_ioExecutor;
+  OwnerPtr<ThreadExecutor> m_ioExecutor;
     
   Loader m_loader;
 };
