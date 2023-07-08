@@ -31,7 +31,7 @@
 3. 解释执行入口，JS_CallInternal，执行字节码，具体逻辑：
    1）创建local_buf，容量包含函数参数个数arg_count，var_count，以及栈大小stack_size，采用alloca申请栈内存
       函数结束后会自动释放
-   2) 字节码定义，字节码存储在opcode_info数组中
+   2）字节码定义，字节码存储在opcode_info数组中
 4. 微任务
    1）promise调用异步函数执行完后，会调用js_promise_resolve_function_call
       将微任务加入队列，例如JS_EnqueueJob(ctx, promise_reaction_job, 5, args)
@@ -40,6 +40,19 @@
    4）如果promise是JS_PROMISE_PENDING状态，则JSAsyncFunctionState所携带的状态将会被加入到链表，具体逻辑在perform_promise_then中实现
    5）微任务队列只会存在已经完成和拒绝完成的任务
    6）await操作会中断程序，并将当前执行的sp和pc保存到JSObject的JSAsyncFunctionState结构中
+   7）async function默认会返回一个promise，这个处理部分在qjs中也有体现，具体实现在js_async_function_call函数中，
+      ```
+      static JSValue js_async_function_call(JSContext *ctx, JSValueConst func_obj,
+                                      JSValueConst this_obj,
+                                      int argc, JSValueConst *argv, int flags) 
+      {
+         ...
+         promise = JS_NewPromiseCapability(ctx, s->resolving_funcs);
+         ...
+         return promise;
+      }
+      
+      ```
 5，函数
    1）JSFunctionDef，函数定义
    2）func_kind，表示函数类型, 包含JS_FUNC_NORMAL，JS_FUNC_ASYNC等类型
@@ -54,7 +67,7 @@
 1. V8字节码生成
    1）BytecodeGenerator字节码生成器
       a）MakeBytecode为语法树生成字节码
-      b) ConstantArrayBuilder常量表的构建
+      b）ConstantArrayBuilder常量表的构建
    2）V8引擎解释器中每个字节码对应一个handler
       a）handler是字节码处理器
       b）handler存储在解释器的dispatch_table_表中 
@@ -64,7 +77,7 @@
 2. V8字节码执行
    1）入口，Execution::Call
    2）运行时任务主要集中在V8的runtime模块
-   3) 解释执行，Runtime_InterpreterNewClosure
+   3）解释执行，Runtime_InterpreterNewClosure
    4）RUNTIME_FUNCTION宏
       a）会生成一个__RT_impl_开头的静态方法
 3. V8宏开关

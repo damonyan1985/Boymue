@@ -57,7 +57,7 @@ object SSlHepler {
                     }
 
                     override fun getAcceptedIssuers(): Array<X509Certificate> {
-                        return arrayOf<X509Certificate>()
+                        return arrayOf()
                     }
                 }
 

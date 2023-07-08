@@ -145,11 +145,12 @@ void xml2json_traverse_node(rapidxml::xml_node<> *xmlnode, rapidjson::Value &jsv
         {
             rapidjson::Value children(rapidjson::kArrayType);
                         
-            for(rapidxml::xml_node<> *xmlnode_chd = xmlnode->first_node(); xmlnode_chd; xmlnode_chd = xmlnode_chd->next_sibling())
+            for (rapidxml::xml_node<> *xmlnode_chd = xmlnode->first_node(); xmlnode_chd; xmlnode_chd = xmlnode_chd->next_sibling())
             {
                 // 创建子元素
                 rapidjson::Value jchild(rapidjson::kObjectType);
-                
+                // 递归处理子元素信息
+                xml2json_traverse_node(xmlnode_chd, jchild, allocator);
                 // 添加到数组
                 children.PushBack(jchild, allocator);
             }
