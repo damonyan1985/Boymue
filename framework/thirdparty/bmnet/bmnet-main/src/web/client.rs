@@ -5,6 +5,8 @@ use std::str::FromStr;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use std::time::Duration;
 use std::borrow::Cow;
+use tokio_util::io::ReaderStream;
+use tokio_stream::StreamExt;
 
 fn get_header_map(headerMap: Option<Map<String, Value>>) -> HeaderMap {
     let mut headers = HeaderMap::new();
@@ -120,6 +122,44 @@ pub async fn upload_put(url: String, file_path: String, headerMap: Option<Map<St
         .build()?
         .put(&url)
         .body(body)
+        .send()
+        .await?
+        .text()
+        .await?;
+
+    Ok(resp)
+}
+
+#[tokio::main]
+pub async fn upload_progress_put(url: String, file_path: String, headerMap: Option<Map<String, Value>>, body: String) -> Result<String, Box<dyn std::error::Error>> {
+    let headers = get_header_map(headerMap);
+
+    // 打开文件
+    let file = tokio::fs::File::open(&file_path).await.unwrap();
+    // 获取文件大小
+    let total_size = file.metadata().await.unwrap().len();
+    // 创建文件读取流
+    let mut reader_stream = ReaderStream::new(file);
+
+    let mut uploaded_size: u64 = 0;
+    let async_stream = async_stream::stream! {
+        while let Some(chunk) = reader_stream.next().await {
+            if let Ok(chunk) = &chunk {
+                uploaded_size = uploaded_size + (chunk.len() as u64);
+                println!("uploaded_size is {}", uploaded_size);
+            }
+            yield chunk;
+        }
+    };
+    // 加了问号符，如果出错会自动return
+    let resp = reqwest::Client::builder()
+        .timeout(Duration::from_millis(10000))
+        .default_headers(headers)
+        .danger_accept_invalid_certs(true) // 忽略证书验证
+        .use_rustls_tls()
+        .build()?
+        .put(&url)
+        .body(reqwest::Body::wrap_stream(async_stream))
         .send()
         .await?
         .text()
