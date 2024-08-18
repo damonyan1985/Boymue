@@ -200,9 +200,10 @@ class Token {
   }
 
   static bool IsIdentifier(Value tok, LanguageMode language_mode,
-                           bool is_generator) {
+                           bool is_generator, bool disallow_await) {
     switch (tok) {
       case IDENTIFIER:
+      case ASYNC:
         return true;
       case ESCAPED_STRICT_RESERVED_WORD:
       case FUTURE_STRICT_RESERVED_WORD:
@@ -211,6 +212,8 @@ class Token {
         return is_sloppy(language_mode);
       case YIELD:
         return !is_generator && is_sloppy(language_mode);
+      case AWAIT:
+        return !disallow_await;  
       default:
         return false;
     }

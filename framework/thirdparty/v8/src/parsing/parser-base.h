@@ -106,6 +106,7 @@ class ParserBase : public Traits {
         ast_value_factory_(ast_value_factory),
         log_(log),
         mode_(PARSE_EAGERLY),  // Lazy mode must be set explicitly.
+        parsing_module_(false),
         stack_limit_(stack_limit),
         zone_(zone),
         scanner_(scanner),
@@ -230,6 +231,8 @@ class ParserBase : public Traits {
     }
 
     bool is_generator() const { return IsGeneratorFunction(kind_); }
+    bool is_async_function() const { return IsAsyncFunction(kind_); }
+    bool is_resumable() const { return is_generator() || is_async_function(); }
 
     FunctionKind kind() const { return kind_; }
     FunctionState* outer() const { return outer_function_state_; }
@@ -563,6 +566,9 @@ class ParserBase : public Traits {
 
   LanguageMode language_mode() { return scope_->language_mode(); }
   bool is_generator() const { return function_state_->is_generator(); }
+  bool is_async_function() const {
+    return function_state_->is_async_function();
+  }
 
   bool allow_const() {
     return is_strict(language_mode()) || allow_harmony_sloppy();
@@ -910,6 +916,7 @@ class ParserBase : public Traits {
   AstValueFactory* ast_value_factory_;  // Not owned.
   ParserRecorder* log_;
   Mode mode_;
+  bool parsing_module_;
   uintptr_t stack_limit_;
 
  private:
@@ -1054,7 +1061,8 @@ typename ParserBase<Traits>::IdentifierT
 ParserBase<Traits>::ParseAndClassifyIdentifier(ExpressionClassifier* classifier,
                                                bool* ok) {
   Token::Value next = Next();
-  if (next == Token::IDENTIFIER) {
+  if (next == Token::IDENTIFIER || next == Token::ASYNC ||
+      (next == Token::AWAIT && !parsing_module_ && !is_async_function())) {
     IdentifierT name = this->GetSymbol(scanner());
     // When this function is used to read a formal parameter, we don't always
     // know whether the function is going to be strict or sloppy.  Indeed for
@@ -1610,7 +1618,7 @@ ParserBase<Traits>::ParsePropertyDefinition(
     }
 
     if (Token::IsIdentifier(name_token, language_mode(),
-                            this->is_generator()) &&
+                            this->is_generator(), parsing_module_ || is_async_function()) &&
         (peek() == Token::COMMA || peek() == Token::RBRACE ||
          peek() == Token::ASSIGN)) {
       // PropertyDefinition

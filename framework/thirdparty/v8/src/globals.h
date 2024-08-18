@@ -945,6 +945,7 @@ enum FunctionKind {
   kBaseConstructor = 1 << 5,
   kGetterFunction = 1 << 6,
   kSetterFunction = 1 << 7,
+  kAsyncFunction = 1 << 8,
   kAccessorFunction = kGetterFunction | kSetterFunction,
   kDefaultBaseConstructor = kDefaultConstructor | kBaseConstructor,
   kDefaultSubclassConstructor = kDefaultConstructor | kSubclassConstructor,
@@ -977,6 +978,11 @@ inline bool IsArrowFunction(FunctionKind kind) {
 inline bool IsGeneratorFunction(FunctionKind kind) {
   DCHECK(IsValidFunctionKind(kind));
   return kind & FunctionKind::kGeneratorFunction;
+}
+
+inline bool IsAsyncFunction(FunctionKind kind) {
+  DCHECK(IsValidFunctionKind(kind));
+  return kind & FunctionKind::kAsyncFunction;
 }
 
 
