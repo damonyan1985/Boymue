@@ -432,10 +432,12 @@ void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args) {
     return;
   }
 
-  closure task = [jsApi, args] {
+  v8::String::Utf8Value strVal(args[0]);
+  const boymue::String str = *strVal;
+  JsApiCallbackImpl* callbackImpl = new JsApiCallbackImpl(args, jsApi->context());
+  closure task = [jsApi, args, strArg = std::move(str), callbackImpl] {
     if (jsApi) {
-      v8::String::Utf8Value str(args[0]);
-      jsApi->execute(*str, new JsApiCallbackImpl(args, jsApi->context()));
+      jsApi->execute(strArg, callbackImpl);
     }
   };
   if (jsApi->executor()) {

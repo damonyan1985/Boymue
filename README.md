@@ -81,7 +81,8 @@
    4）RUNTIME_FUNCTION宏
       a）会生成一个__RT_impl_开头的静态方法
 3. V8宏开关
-   1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器    
+   1）flags，flag开关在flag-definitions.h中进行声明, 例如如果需要开启ignition解释器  
+   2）async, await开关修改FLAG_STAGED_FEATURES为true
 ```
 
 ## Donate

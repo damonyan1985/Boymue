@@ -59,16 +59,19 @@ function request(obj) {
 //         'url': 'https://127.0.0.1:8443/user/v1/testlogin',
 //         'headers': {'token': 'none'}
 //     });
-    
+
 //     boymue.log('test async request: ' + data);
 
 //     return data;
 // }
 
+
+
  async function testParseXml() {
      let obj = await parseDom('/example/test.xml')
 //     let vdom = new VDom(obj);
      boymue.log('testParseXml: ' + JSON.stringify(obj))
+     //boymue.log('testParseXml: ')
  }
 
 // test()
