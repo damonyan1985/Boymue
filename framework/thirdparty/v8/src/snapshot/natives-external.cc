@@ -11,7 +11,7 @@
 #include "src/vector.h"
 
 #ifndef V8_USE_EXTERNAL_STARTUP_DATA
-//#error natives-external.cc is used only for the external snapshot build.
+#error natives-external.cc is used only for the external snapshot build.
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
 

@@ -47,14 +47,12 @@ RandomNumberGenerator::RandomNumberGenerator() {
 #if V8_OS_CYGWIN || V8_OS_WIN
   // Use rand_s() to gather entropy on Windows. See:
   // https://code.google.com/p/v8/issues/detail?id=2905
-#if 0
   unsigned first_half, second_half;
   errno_t result = rand_s(&first_half);
   DCHECK_EQ(0, result);
   result = rand_s(&second_half);
   DCHECK_EQ(0, result);
   SetSeed((static_cast<int64_t>(first_half) << 32) + second_half);
-#endif
 #else
   // Gather entropy from /dev/urandom if available.
   FILE* fp = fopen("/dev/urandom", "rb");
@@ -130,10 +128,10 @@ int RandomNumberGenerator::Next(int bits) {
 
 
 void RandomNumberGenerator::SetSeed(int64_t seed) {
-  if (seed == 0) seed = 1;
   initial_seed_ = seed;
   state0_ = MurmurHash3(bit_cast<uint64_t>(seed));
-  state1_ = MurmurHash3(state0_);
+  state1_ = MurmurHash3(~state0_);
+  CHECK(state0_ != 0 || state1_ != 0);
 }
 
 

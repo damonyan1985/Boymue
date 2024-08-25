@@ -12,27 +12,12 @@
 //   http://www.agner.org/optimize/calling_conventions.pdf
 //   or with gcc, run: "echo | gcc -E -dM -"
 #if defined(_M_X64) || defined(__x86_64__)
-#if defined(__native_client__)
-// For Native Client builds of V8, use V8_TARGET_ARCH_ARM, so that V8
-// generates ARM machine code, together with a portable ARM simulator
-// compiled for the host architecture in question.
-//
-// Since Native Client is ILP-32 on all architectures we use
-// V8_HOST_ARCH_IA32 on both 32- and 64-bit x86.
-#define V8_HOST_ARCH_IA32 1
-#define V8_HOST_ARCH_32_BIT 1
-#else
 #define V8_HOST_ARCH_X64 1
 #if defined(__x86_64__) && __SIZEOF_POINTER__ == 4  // Check for x32.
 #define V8_HOST_ARCH_32_BIT 1
 #else
 #define V8_HOST_ARCH_64_BIT 1
 #endif
-#endif  // __native_client__
-#elif defined(__pnacl__)
-// PNaCl is also ILP-32.
-#define V8_HOST_ARCH_IA32 1
-#define V8_HOST_ARCH_32_BIT 1
 #elif defined(_M_IX86) || defined(__i386__)
 #define V8_HOST_ARCH_IA32 1
 #define V8_HOST_ARCH_32_BIT 1
@@ -215,7 +200,7 @@
 // Bump up for Power Linux due to larger (64K) page size.
 const int kPageSizeBits = 22;
 #else
-const int kPageSizeBits = 20;
+const int kPageSizeBits = 19;
 #endif
 
 #endif  // V8_BASE_BUILD_CONFIG_H_

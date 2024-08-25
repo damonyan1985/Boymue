@@ -5,6 +5,7 @@
 #ifndef V8_LIBPLATFORM_LIBPLATFORM_H_
 #define V8_LIBPLATFORM_LIBPLATFORM_H_
 
+#include "libplatform/v8-tracing.h"
 #include "v8-platform.h"  // NOLINT(build/include)
 
 namespace v8 {
@@ -20,6 +21,7 @@ namespace platform {
  */
 v8::Platform* CreateDefaultPlatform(int thread_pool_size = 0);
 
+
 /**
  * Pumps the message loop for the given isolate.
  *
@@ -29,6 +31,15 @@ v8::Platform* CreateDefaultPlatform(int thread_pool_size = 0);
  * |CreateDefaultPlatform|.
  */
 bool PumpMessageLoop(v8::Platform* platform, v8::Isolate* isolate);
+
+/**
+ * Attempts to set the tracing controller for the given platform.
+ *
+ * The |platform| has to be created using |CreateDefaultPlatform|.
+ */
+void SetTracingController(
+    v8::Platform* platform,
+    v8::platform::tracing::TracingController* tracing_controller);
 
 }  // namespace platform
 }  // namespace v8

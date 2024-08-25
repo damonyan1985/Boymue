@@ -1,8 +1,8 @@
 var require = boymue.require;
 
-require('/example/vdom.js');
-require('/example/vdom.js');
-require('/example/vdom.js');
+require('/example/import.js');
+require('/example/import.js');
+require('/example/import.js');
 
 function testFunc(a, b) {
   let arr = [0, 1, 2];
@@ -53,25 +53,25 @@ function request(obj) {
 //    boymue.log('boymue.request result: ' + res)
 //})
 
-async function test() {
-    let data = await request({
-        'method': 'GET',
-        'url': 'https://127.0.0.1:8443/user/v1/testlogin',
-        'headers': {'token': 'none'}
-    });
+// async function test() {
+//     let data = await request({
+//         'method': 'GET',
+//         'url': 'https://127.0.0.1:8443/user/v1/testlogin',
+//         'headers': {'token': 'none'}
+//     });
     
-    boymue.log('test async request: ' + data);
+//     boymue.log('test async request: ' + data);
 
-    return data;
-}
+//     return data;
+// }
 
-async function testParseXml() {
-    let obj = await parseDom('/example/test.xml')
-    let vdom = new VDom(obj);
-    boymue.log('testParseXml: ' + JSON.stringify(obj))
-}
+ async function testParseXml() {
+     let obj = await parseDom('/example/test.xml')
+//     let vdom = new VDom(obj);
+     boymue.log('testParseXml: ' + JSON.stringify(obj))
+ }
 
-test()
+// test()
 testParseXml()
 
 boymue.log(testimport());

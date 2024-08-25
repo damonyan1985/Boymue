@@ -4,7 +4,7 @@
 
 #if V8_TARGET_ARCH_ARM64
 
-#include "src/asm/arm64/frames-arm64.h"
+#include "src/arm64/frames-arm64.h"
 #include "src/codegen.h"
 #include "src/debug/debug.h"
 
@@ -12,6 +12,7 @@ namespace v8 {
 namespace internal {
 
 #define __ ACCESS_MASM(masm)
+
 
 void EmitDebugBreakSlot(Assembler* masm) {
   Label check_size;
@@ -23,6 +24,7 @@ void EmitDebugBreakSlot(Assembler* masm) {
             static_cast<int>(masm->InstructionsGeneratedSince(&check_size)));
 }
 
+
 void DebugCodegen::GenerateSlot(MacroAssembler* masm, RelocInfo::Mode mode) {
   // Generate enough nop's to make space for a call instruction. Avoid emitting
   // the constant pool in the debug break slot code.
@@ -31,15 +33,17 @@ void DebugCodegen::GenerateSlot(MacroAssembler* masm, RelocInfo::Mode mode) {
   EmitDebugBreakSlot(masm);
 }
 
+
 void DebugCodegen::ClearDebugBreakSlot(Isolate* isolate, Address pc) {
   PatchingAssembler patcher(isolate, reinterpret_cast<Instruction*>(pc),
                             Assembler::kDebugBreakSlotInstructions);
   EmitDebugBreakSlot(&patcher);
 }
 
+
 void DebugCodegen::PatchDebugBreakSlot(Isolate* isolate, Address pc,
                                        Handle<Code> code) {
-  DCHECK_EQ(Code::BUILTIN, code->kind());
+  DCHECK(code->is_debug_stub());
   PatchingAssembler patcher(isolate, reinterpret_cast<Instruction*>(pc),
                             Assembler::kDebugBreakSlotInstructions);
   // Patch the code emitted by DebugCodegen::GenerateSlots, changing the debug
@@ -130,6 +134,7 @@ void DebugCodegen::GenerateDebugBreakStub(MacroAssembler* masm,
   __ Br(scratch);
 }
 
+
 void DebugCodegen::GenerateFrameDropperLiveEdit(MacroAssembler* masm) {
   // We do not know our frame height, but set sp based on fp.
   __ Add(masm->StackPointer(), fp, FrameDropperFrameConstants::kFunctionOffset);
@@ -159,6 +164,7 @@ void DebugCodegen::GenerateFrameDropperLiveEdit(MacroAssembler* masm) {
   // Re-run JSFunction, x1 is function, cp is context.
   __ Br(scratch);
 }
+
 
 const bool LiveEdit::kFrameDropperSupported = true;
 

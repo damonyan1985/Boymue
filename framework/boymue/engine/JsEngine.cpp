@@ -5,20 +5,20 @@
 #include "BoymueApplication.h"
 #include "StringUtil.h"
 
-#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS) || defined(ANDROID)
+#if defined(ENABLE_BOYMUE_IOS) || defined(ANDROID)
 #include "qjs/include/cutils.h"
 #include "qjs/include/quickjs.h"
 #include "qjs/include/quickjs-libc.h"
-#else
+#elif defined(_WINDOWS)
 #include "v8.h"
 #include "libplatform/libplatform.h"
 #endif
 
-namespace boymue {
-#if defined(ENABLE_BOYMUE_IOS) || defined(_WINDOWS) || defined(ANDROID)
-
 #define KB (1024)
 #define MB (1024*1024)
+
+namespace boymue {
+#if defined(ENABLE_BOYMUE_IOS) || defined(ANDROID)
 
 // JsApi回调实现
 class JsApiCallbackImpl : public JsApiCallback {
@@ -217,7 +217,7 @@ JsEngine::~JsEngine() {}
 
 JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
 
-#else
+#elif defined(_WINDOWS)
   
 using namespace v8;
 
@@ -326,12 +326,6 @@ public:
         }
     }
 
-    void throwRuntimeException(TryCatch& tryCatch) {
-        Local<Message> msg = tryCatch.Message();
-        v8::String::Utf8Value exception(tryCatch.Exception());
-        printf("exception: %s line: %d", *exception, msg->GetLineNumber());
-    }
-
 private:
     void initRuntime() {
         Isolate::Scope isolateScope(m_isolate);
@@ -349,6 +343,12 @@ private:
         m_global.Reset(m_isolate,
             context->Global()->GetPrototype()->ToObject(m_isolate));
         m_context.Reset(m_isolate, context);
+    }
+
+    void throwRuntimeException(TryCatch& tryCatch) {
+        Local<Message> msg = tryCatch.Message();
+        v8::String::Utf8Value exception(tryCatch.Exception());
+        printf("exception: %s line: %d", *exception, msg->GetLineNumber());
     }
 
     Isolate* m_isolate;

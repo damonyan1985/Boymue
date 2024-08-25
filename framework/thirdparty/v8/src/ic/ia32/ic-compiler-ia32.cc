@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define V8_TARGET_ARCH_IA32 1
 #if V8_TARGET_ARCH_IA32
 
 #include "src/ic/ic.h"

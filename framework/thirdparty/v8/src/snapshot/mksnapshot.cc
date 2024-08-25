@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if 0
-
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -152,7 +150,7 @@ int main(int argc, char** argv) {
   }
 
   i::CpuFeatures::Probe(true);
-  V8::InitializeICU();
+  V8::InitializeICUDefaultLocation(argv[0]);
   v8::Platform* platform = v8::platform::CreateDefaultPlatform();
   v8::V8::InitializePlatform(platform);
   v8::V8::Initialize();
@@ -184,5 +182,3 @@ int main(int argc, char** argv) {
   delete platform;
   return 0;
 }
-
-#endif

@@ -14,9 +14,9 @@
 #include "src/elements.h"
 #include "src/frames.h"
 #include "src/isolate.h"
+#include "src/libsampler/sampler.h"
 #include "src/objects.h"
 #include "src/profiler/heap-profiler.h"
-#include "src/profiler/sampler.h"
 #include "src/runtime-profiler.h"
 #include "src/snapshot/natives.h"
 #include "src/snapshot/snapshot.h"
@@ -45,10 +45,9 @@ void V8::TearDown() {
   Bootstrapper::TearDownExtensions();
   ElementsAccessor::TearDown();
   LOperand::TearDownCaches();
-  ExternalReference::TearDownMathExpData();
   RegisteredExtension::UnregisterAll();
   Isolate::GlobalTearDown();
-  Sampler::TearDown();
+  sampler::Sampler::TearDown();
   FlagList::ResetAllFlags();  // Frees memory held by string arguments.
 }
 
@@ -76,7 +75,7 @@ void V8::InitializeOncePerProcessImpl() {
 
   Isolate::InitializeOncePerProcess();
 
-  Sampler::SetUp();
+  sampler::Sampler::SetUp();
   CpuFeatures::Probe(false);
   ElementsAccessor::InitializeOncePerProcess();
   LOperand::SetUpCaches();
@@ -123,7 +122,7 @@ void V8::SetNativesBlob(StartupData* natives_blob) {
 
 
 void V8::SetSnapshotBlob(StartupData* snapshot_blob) {
-#ifdef EXTERNAL_STARTUP_DATA
+#ifdef V8_USE_EXTERNAL_STARTUP_DATA
   base::CallOnce(&init_snapshot_once, &SetSnapshotFromFile, snapshot_blob);
 #else
   CHECK(false);

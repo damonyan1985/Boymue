@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define V8_TARGET_ARCH_IA32 1
 #if V8_TARGET_ARCH_IA32
 
 #include "src/codegen.h"
@@ -39,7 +38,7 @@ void DebugCodegen::ClearDebugBreakSlot(Isolate* isolate, Address pc) {
 
 void DebugCodegen::PatchDebugBreakSlot(Isolate* isolate, Address pc,
                                        Handle<Code> code) {
-  DCHECK_EQ(Code::BUILTIN, code->kind());
+  DCHECK(code->is_debug_stub());
   static const int kSize = Assembler::kDebugBreakSlotLength;
   CodePatcher patcher(isolate, pc, kSize);
 

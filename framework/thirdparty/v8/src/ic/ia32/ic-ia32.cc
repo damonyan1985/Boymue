@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define V8_TARGET_ARCH_IA32 1
 #if V8_TARGET_ARCH_IA32
 
 #include "src/codegen.h"
@@ -337,10 +336,8 @@ void KeyedLoadIC::GenerateMegamorphic(MacroAssembler* masm) {
   __ push(Immediate(Smi::FromInt(slot)));
   __ push(Immediate(dummy_vector));
 
-  Code::Flags flags = Code::RemoveTypeAndHolderFromFlags(
-      Code::ComputeHandlerFlags(Code::LOAD_IC));
-  masm->isolate()->stub_cache()->GenerateProbe(masm, Code::KEYED_LOAD_IC, flags,
-                                               receiver, key, ebx, edi);
+  masm->isolate()->load_stub_cache()->GenerateProbe(masm, receiver, key, ebx,
+                                                    edi);
 
   __ pop(LoadWithVectorDescriptor::VectorRegister());
   __ pop(LoadDescriptor::SlotRegister());
@@ -520,10 +517,10 @@ void KeyedStoreIC::GenerateMegamorphic(MacroAssembler* masm,
   __ JumpIfSmi(receiver, &slow);
   // Get the map from the receiver.
   __ mov(edi, FieldOperand(receiver, HeapObject::kMapOffset));
-  // Check that the receiver does not require access checks and is not observed.
-  // The generic stub does not perform map checks or handle observed objects.
+  // Check that the receiver does not require access checks.
+  // The generic stub does not perform map checks.
   __ test_b(FieldOperand(edi, Map::kBitFieldOffset),
-            Immediate(1 << Map::kIsAccessCheckNeeded | 1 << Map::kIsObserved));
+            Immediate(1 << Map::kIsAccessCheckNeeded));
   __ j(not_zero, &slow);
   // Check that the key is a smi.
   __ JumpIfNotSmi(key, &maybe_name_key);
@@ -564,13 +561,11 @@ void KeyedStoreIC::GenerateMegamorphic(MacroAssembler* masm,
   __ push(Immediate(Smi::FromInt(slot)));
   __ push(Immediate(dummy_vector));
 
-  Code::Flags flags = Code::RemoveTypeAndHolderFromFlags(
-      Code::ComputeHandlerFlags(Code::STORE_IC));
-  masm->isolate()->stub_cache()->GenerateProbe(masm, Code::STORE_IC, flags,
-                                               receiver, key, edi, no_reg);
+  masm->isolate()->store_stub_cache()->GenerateProbe(masm, receiver, key, edi,
+                                                     no_reg);
 
-  __ pop(VectorStoreICDescriptor::VectorRegister());
-  __ pop(VectorStoreICDescriptor::SlotRegister());
+  __ pop(StoreWithVectorDescriptor::VectorRegister());
+  __ pop(StoreWithVectorDescriptor::SlotRegister());
 
   // Cache miss.
   __ jmp(&miss);
@@ -709,21 +704,12 @@ void KeyedLoadIC::GenerateRuntimeGetProperty(MacroAssembler* masm) {
   __ TailCallRuntime(Runtime::kKeyedGetProperty);
 }
 
-
-void StoreIC::GenerateMegamorphic(MacroAssembler* masm) {
-  // This shouldn't be called.
-  // TODO(mvstanton): remove this method.
-  __ int3();
-  return;
-}
-
-
 static void StoreIC_PushArgs(MacroAssembler* masm) {
   Register receiver = StoreDescriptor::ReceiverRegister();
   Register name = StoreDescriptor::NameRegister();
   Register value = StoreDescriptor::ValueRegister();
-  Register slot = VectorStoreICDescriptor::SlotRegister();
-  Register vector = VectorStoreICDescriptor::VectorRegister();
+  Register slot = StoreWithVectorDescriptor::SlotRegister();
+  Register vector = StoreWithVectorDescriptor::VectorRegister();
 
   __ xchg(receiver, Operand(esp, 0));
   __ push(name);
@@ -748,8 +734,8 @@ void StoreIC::GenerateNormal(MacroAssembler* masm) {
   Register receiver = StoreDescriptor::ReceiverRegister();
   Register name = StoreDescriptor::NameRegister();
   Register value = StoreDescriptor::ValueRegister();
-  Register vector = VectorStoreICDescriptor::VectorRegister();
-  Register slot = VectorStoreICDescriptor::SlotRegister();
+  Register vector = StoreWithVectorDescriptor::VectorRegister();
+  Register slot = StoreWithVectorDescriptor::SlotRegister();
 
   // A lot of registers are needed for storing to slow case
   // objects. Push and restore receiver but rely on
@@ -837,8 +823,9 @@ void PatchInlinedSmiCode(Isolate* isolate, Address address,
   // condition code uses at the patched jump.
   uint8_t delta = *reinterpret_cast<uint8_t*>(delta_address);
   if (FLAG_trace_ic) {
-    PrintF("[  patching ic at %p, test=%p, delta=%d\n", address,
-           test_instruction_address, delta);
+    PrintF("[  patching ic at %p, test=%p, delta=%d\n",
+           static_cast<void*>(address),
+           static_cast<void*>(test_instruction_address), delta);
   }
 
   // Patch with a short conditional jump. Enabling means switching from a short

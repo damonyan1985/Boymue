@@ -43,23 +43,23 @@
 //   CodeForSourcePosition
 
 #if V8_TARGET_ARCH_IA32
-#include "src/asm/ia32/codegen-ia32.h"  // NOLINT
+#include "src/ia32/codegen-ia32.h"  // NOLINT
 #elif V8_TARGET_ARCH_X64
 #include "src/asm/x64/codegen-x64.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM64
-#include "src/asm/arm64/codegen-arm64.h"  // NOLINT
+#include "src/arm64/codegen-arm64.h"  // NOLINT
 #elif V8_TARGET_ARCH_ARM
-#include "src/asm/arm/codegen-arm.h"  // NOLINT
+#include "src/arm/codegen-arm.h"  // NOLINT
 #elif V8_TARGET_ARCH_PPC
-#include "src/asm/ppc/codegen-ppc.h"  // NOLINT
+#include "src/ppc/codegen-ppc.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS
-#include "src/asm/mips/codegen-mips.h"  // NOLINT
+#include "src/mips/codegen-mips.h"  // NOLINT
 #elif V8_TARGET_ARCH_MIPS64
-#include "src/asm/mips64/codegen-mips64.h"  // NOLINT
+#include "src/mips64/codegen-mips64.h"  // NOLINT
 #elif V8_TARGET_ARCH_S390
-#include "src/asm/s390/codegen-s390.h"  // NOLINT
+#include "src/s390/codegen-s390.h"  // NOLINT
 #elif V8_TARGET_ARCH_X87
-#include "src/asm/x87/codegen-x87.h"  // NOLINT
+#include "src/x87/codegen-x87.h"  // NOLINT
 #else
 #error Unsupported target architecture.
 #endif
@@ -69,7 +69,7 @@ namespace internal {
 
 
 class CompilationInfo;
-
+class EhFrameWriter;
 
 class CodeGenerator {
  public:
@@ -78,7 +78,9 @@ class CodeGenerator {
 
   // Allocate and install the code.
   static Handle<Code> MakeCodeEpilogue(MacroAssembler* masm,
-                                       CompilationInfo* info);
+                                       EhFrameWriter* unwinding,
+                                       CompilationInfo* info,
+                                       Handle<Object> self_reference);
 
   // Print the code after compiling it.
   static void PrintCode(Handle<Code> code, CompilationInfo* info);
@@ -93,16 +95,13 @@ class CodeGenerator {
 // generated code both in runtime and compiled code.
 typedef double (*UnaryMathFunctionWithIsolate)(double x, Isolate* isolate);
 
-UnaryMathFunctionWithIsolate CreateExpFunction(Isolate* isolate);
 UnaryMathFunctionWithIsolate CreateSqrtFunction(Isolate* isolate);
 
 
 double modulo(double x, double y);
 
 // Custom implementation of math functions.
-double fast_exp(double input, Isolate* isolate);
 double fast_sqrt(double input, Isolate* isolate);
-void lazily_initialize_fast_exp(Isolate* isolate);
 void lazily_initialize_fast_sqrt(Isolate* isolate);
 
 

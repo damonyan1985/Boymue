@@ -12,7 +12,7 @@
 
 
 #ifndef V8_USE_EXTERNAL_STARTUP_DATA
-//#error snapshot-external.cc is used only for the external snapshot build.
+#error snapshot-external.cc is used only for the external snapshot build.
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
 

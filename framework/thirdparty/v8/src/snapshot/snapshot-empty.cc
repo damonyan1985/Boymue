@@ -21,6 +21,7 @@ void ReadNatives() {}
 void DisposeNatives() {}
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
+
 const v8::StartupData* Snapshot::DefaultSnapshotBlob() { return NULL; }
 }  // namespace internal
 }  // namespace v8

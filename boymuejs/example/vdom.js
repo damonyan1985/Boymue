@@ -9,7 +9,7 @@
     "children": [
         {
             "tag": "button",
-            "props": {"value": "v"},
+            "props": {"value": "v"， "for": "variable", "if": "boolean"},
             "children": [
                 {"tag": "#text", "text": "hello"}
             ]
@@ -17,6 +17,8 @@
     ]
    }
 */
+
+require('/example/util.js');
 
 const VNodeTagMap = {
 
@@ -125,10 +127,14 @@ class VDom {
         }
     }
 
+    render() {
+
+    }
+
     _createNodeView = (node) => {
         // 如果有迭代
         if (node.props.for) {
-
+            let view = Util.deepCopy(node);
         }
 
         if (node.props.if) {

@@ -51,7 +51,7 @@ class ElementsAccessor {
                          PropertyFilter filter = ALL_PROPERTIES) {
     return HasElement(holder, index, handle(holder->elements()), filter);
   }
-  
+
   virtual Handle<Object> Get(Handle<JSObject> holder, uint32_t entry) = 0;
 
   virtual PropertyDetails GetDetails(JSObject* holder, uint32_t entry) = 0;
@@ -81,18 +81,12 @@ class ElementsAccessor {
   // whose PropertyAttribute match |filter|.
   virtual void CollectElementIndices(Handle<JSObject> object,
                                      Handle<FixedArrayBase> backing_store,
-                                     KeyAccumulator* keys,
-                                     uint32_t range = kMaxUInt32,
-                                     PropertyFilter filter = ALL_PROPERTIES,
-                                     uint32_t offset = 0) = 0;
+                                     KeyAccumulator* keys) = 0;
 
   inline void CollectElementIndices(Handle<JSObject> object,
-                                    KeyAccumulator* keys,
-                                    uint32_t range = kMaxUInt32,
-                                    PropertyFilter filter = ALL_PROPERTIES,
-                                    uint32_t offset = 0) {
-    CollectElementIndices(object, handle(object->elements()), keys, range,
-                          filter, offset);
+                                    KeyAccumulator* keys) {
+    CollectElementIndices(object, handle(object->elements(), keys->isolate()),
+                          keys);
   }
 
   virtual Maybe<bool> CollectValuesOrEntries(
@@ -100,13 +94,12 @@ class ElementsAccessor {
       Handle<FixedArray> values_or_entries, bool get_entries, int* nof_items,
       PropertyFilter filter = ALL_PROPERTIES) = 0;
 
-  //
-  virtual Handle<FixedArray> PrependElementIndices(
+  virtual MaybeHandle<FixedArray> PrependElementIndices(
       Handle<JSObject> object, Handle<FixedArrayBase> backing_store,
       Handle<FixedArray> keys, GetKeysConversion convert,
       PropertyFilter filter = ALL_PROPERTIES) = 0;
 
-  inline Handle<FixedArray> PrependElementIndices(
+  inline MaybeHandle<FixedArray> PrependElementIndices(
       Handle<JSObject> object, Handle<FixedArray> keys,
       GetKeysConversion convert, PropertyFilter filter = ALL_PROPERTIES) {
     return PrependElementIndices(object, handle(object->elements()), keys,
@@ -117,8 +110,13 @@ class ElementsAccessor {
                                            KeyAccumulator* accumulator,
                                            AddKeyConversion convert) = 0;
 
+  virtual void TransitionElementsKind(Handle<JSObject> object,
+                                      Handle<Map> map) = 0;
   virtual void GrowCapacityAndConvert(Handle<JSObject> object,
                                       uint32_t capacity) = 0;
+  // Unlike GrowCapacityAndConvert do not attempt to convert the backing store
+  // and simply return false in this case.
+  virtual bool GrowCapacity(Handle<JSObject> object, uint32_t index) = 0;
 
   static void InitializeOncePerProcess();
   static void TearDown();
@@ -135,7 +133,7 @@ class ElementsAccessor {
                    uint32_t new_capacity) = 0;
 
   static Handle<JSArray> Concat(Isolate* isolate, Arguments* args,
-                                uint32_t concat_size);
+                                uint32_t concat_size, uint32_t result_length);
 
   virtual uint32_t Push(Handle<JSArray> receiver, Arguments* args,
                         uint32_t push_size) = 0;
@@ -158,6 +156,19 @@ class ElementsAccessor {
 
   virtual uint32_t GetCapacity(JSObject* holder,
                                FixedArrayBase* backing_store) = 0;
+
+  // Check an Object's own elements for an element (using SameValueZero
+  // semantics)
+  virtual Maybe<bool> IncludesValue(Isolate* isolate, Handle<JSObject> receiver,
+                                    Handle<Object> value, uint32_t start,
+                                    uint32_t length) = 0;
+
+  // Check an Object's own elements for the index of an element (using SameValue
+  // semantics)
+  virtual Maybe<int64_t> IndexOfValue(Isolate* isolate,
+                                      Handle<JSObject> receiver,
+                                      Handle<Object> value, uint32_t start,
+                                      uint32_t length) = 0;
 
  protected:
   friend class LookupIterator;

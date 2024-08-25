@@ -118,6 +118,24 @@
     <Filter Include="src\debug\x64">
       <UniqueIdentifier>{6595cb2e-d828-4504-b21c-b173907c7edb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\asmjs">
+      <UniqueIdentifier>{02f89534-3ab2-4ba8-8fb7-134fb67f0e53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\builtins">
+      <UniqueIdentifier>{9c1d1c13-57b1-4f90-b7ae-59ca59686f86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\builtins\x64">
+      <UniqueIdentifier>{94cdbd3c-8449-4327-9a0b-396fb96db782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\base\debug">
+      <UniqueIdentifier>{b4e128c7-a0ac-467a-a2ed-b03e57822da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compiler-dispatcher">
+      <UniqueIdentifier>{294713aa-05be-4e0a-8ff3-ffec0a5a52ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libsampler">
+      <UniqueIdentifier>{deccdcc7-0737-43e9-9346-805cdf60d990}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -130,9 +148,6 @@
       <Filter>src\ast</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\ast-expression-rewriter.h">
-      <Filter>src\ast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\ast-expression-visitor.h">
       <Filter>src\ast</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\ast-literal-reindexer.h">
@@ -205,15 +220,6 @@
       <Filter>src\base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomicops.h">
-      <Filter>src\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomicops_internals_atomicword_compat.h">
-      <Filter>src\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomicops_internals_portable.h">
-      <Filter>src\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomicops_internals_tsan.h">
       <Filter>src\base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomicops_internals_x86_msvc.h">
@@ -309,19 +315,10 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\bytecode-graph-builder.h">
       <Filter>src\compiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\change-lowering.h">
-      <Filter>src\compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\coalesced-live-ranges.h">
-      <Filter>src\compiler</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\code-generator.h">
       <Filter>src\compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\code-generator-impl.h">
-      <Filter>src\compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\code-stub-assembler.h">
       <Filter>src\compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\common-node-cache.h">
@@ -379,9 +376,6 @@
       <Filter>src\compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\graph-visualizer.h">
-      <Filter>src\compiler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\greedy-allocator.h">
       <Filter>src\compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\instruction.h">
@@ -681,21 +675,6 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\crankshaft\unique.h">
       <Filter>src\crankshaft</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\externalize-string-extension.h">
-      <Filter>src\extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\free-buffer-extension.h">
-      <Filter>src\extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\gc-extension.h">
-      <Filter>src\extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\statistics-extension.h">
-      <Filter>src\extensions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\trigger-failure-extension.h">
-      <Filter>src\extensions</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\full-codegen\full-codegen.h">
       <Filter>src\full-codegen</Filter>
     </ClInclude>
@@ -828,9 +807,6 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\interpreter-intrinsics.h">
       <Filter>src\interpreter</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\source-position-table.h">
-      <Filter>src\interpreter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\libplatform\default-platform.h">
       <Filter>src\libplatform</Filter>
     </ClInclude>
@@ -904,9 +880,6 @@
       <Filter>src\profiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\profiler\profile-generator-inl.h">
-      <Filter>src\profiler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\profiler\sampler.h">
       <Filter>src\profiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\profiler\sampling-heap-profiler.h">
@@ -1014,39 +987,6 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\tracing\trace-event.h">
       <Filter>src\tracing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\asm-wasm-builder.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\ast-decoder.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\decoder.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\encoder.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\module-decoder.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-external-refs.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-js.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-macro-gen.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-module.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-opcodes.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-result.h">
-      <Filter>src\wasm</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\accessors.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -1102,9 +1042,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\bootstrapper.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\builtins.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\cached-powers.h">
@@ -1344,9 +1281,6 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\objects-inl.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\optimizing-compile-dispatcher.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ostreams.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -1431,12 +1365,6 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\types.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\typing-asm.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\typing-reset.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\unicode.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -1503,6 +1431,225 @@
     <ClInclude Include="..\..\..\framework\thirdparty\v8\src\debug\liveedit.h">
       <Filter>src\debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\parsing\duplicate-finder.h">
+      <Filter>src\parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\hashmap.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-js.h">
+      <Filter>src\asmjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-typer.h">
+      <Filter>src\asmjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-types.h">
+      <Filter>src\asmjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-wasm-builder.h">
+      <Filter>src\asmjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins.h">
+      <Filter>src\builtins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-utils.h">
+      <Filter>src\builtins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\debug\stack_trace.h">
+      <Filter>src\base\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ic\handler-configuration.h">
+      <Filter>src\ic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\profiler\profiler-listener.h">
+      <Filter>src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\ast-decoder.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\decoder.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\encoder.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\leb-helper.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\module-decoder.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\switch-logic.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-debug.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-external-refs.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-function-name-table.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-interpreter.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-js.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-macro-gen.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-module.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-opcodes.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-result.h">
+      <Filter>src\wasm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler-dispatcher\compiler-dispatcher-job.h">
+      <Filter>src\compiler-dispatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler-dispatcher\optimizing-compile-dispatcher.h">
+      <Filter>src\compiler-dispatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\externalize-string-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\free-buffer-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\gc-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\ignition-statistics-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\statistics-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\extensions\trigger-failure-extension.h">
+      <Filter>src\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\libsampler\sampler.h">
+      <Filter>src\libsampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\profiler\tick-sample.h">
+      <Filter>src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\parsing\parse-info.h">
+      <Filter>src\parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\atomic-utils.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\file-utils.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\format-macros.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\free_deleter.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\base\ieee754.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\ast-traversal-visitor.h">
+      <Filter>src\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\ast-type-bounds.h">
+      <Filter>src\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\ast\context-slot-cache.h">
+      <Filter>src\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\bytecode-loop-analysis.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\checkpoint-elimination.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\code-assembler.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\effect-control-linearizer.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\loop-variable-optimizer.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\memory-optimizer.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\operation-typer.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\redundancy-elimination.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\store-store-elimination.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\typed-optimization.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\unwinding-info-writer.h">
+      <Filter>src\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\code-stub-assembler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\uri.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-array-writer.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-dead-code-optimizer.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-decoder.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-flags.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-label.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-pipeline.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-register.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-register-optimizer.h">
+      <Filter>src\interpreter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\source-position-table.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\eh-frame.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\compiler\x64\unwinding-info-writer-x64.h">
+      <Filter>src\compiler\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\deoptimize-reason.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\heap\array-buffer-tracker-inl.h">
+      <Filter>src\heap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\heap\code-stats.h">
+      <Filter>src\heap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\v8\src\heap\marking.h">
+      <Filter>src\heap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -1515,9 +1662,6 @@
       <Filter>src\ast</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\ast\ast-expression-rewriter.cc">
-      <Filter>src\ast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\ast\ast-expression-visitor.cc">
       <Filter>src\ast</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\ast\ast-literal-reindexer.cc">
@@ -1545,9 +1689,6 @@
       <Filter>src\ast</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asm\x64\assembler-x64.cc">
-      <Filter>src\asm\x64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asm\x64\builtins-x64.cc">
       <Filter>src\asm\x64</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asm\x64\codegen-x64.cc">
@@ -1652,19 +1793,10 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\bytecode-graph-builder.cc">
       <Filter>src\compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\change-lowering.cc">
-      <Filter>src\compiler</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\c-linkage.cc">
       <Filter>src\compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\coalesced-live-ranges.cc">
-      <Filter>src\compiler</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\code-generator.cc">
-      <Filter>src\compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\code-stub-assembler.cc">
       <Filter>src\compiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\common-node-cache.cc">
@@ -1719,9 +1851,6 @@
       <Filter>src\compiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\graph-visualizer.cc">
-      <Filter>src\compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\greedy-allocator.cc">
       <Filter>src\compiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\instruction.cc">
@@ -2000,21 +2129,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\crankshaft\typing.cc">
       <Filter>src\crankshaft</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\externalize-string-extension.cc">
-      <Filter>src\extensions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\free-buffer-extension.cc">
-      <Filter>src\extensions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\gc-extension.cc">
-      <Filter>src\extensions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\statistics-extension.cc">
-      <Filter>src\extensions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\trigger-failure-extension.cc">
-      <Filter>src\extensions</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\full-codegen\x64\full-codegen-x64.cc">
       <Filter>src\full-codegen\x64</Filter>
     </ClCompile>
@@ -2135,9 +2249,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\interpreter-intrinsics.cc">
       <Filter>src\interpreter</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\source-position-table.cc">
-      <Filter>src\interpreter</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\libplatform\default-platform.cc">
       <Filter>src\libplatform</Filter>
     </ClCompile>
@@ -2190,9 +2301,6 @@
       <Filter>src\profiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\profiler\profile-generator.cc">
-      <Filter>src\profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\profiler\sampler.cc">
       <Filter>src\profiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\profiler\sampling-heap-profiler.cc">
@@ -2273,9 +2381,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-interpreter.cc">
       <Filter>src\runtime</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-json.cc">
-      <Filter>src\runtime</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-literals.cc">
       <Filter>src\runtime</Filter>
     </ClCompile>
@@ -2289,9 +2394,6 @@
       <Filter>src\runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-object.cc">
-      <Filter>src\runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-observe.cc">
       <Filter>src\runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-operators.cc">
@@ -2319,9 +2421,6 @@
       <Filter>src\runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-typedarray.cc">
-      <Filter>src\runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-uri.cc">
       <Filter>src\runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\code-serializer.cc">
@@ -2362,30 +2461,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\tracing\trace-event.cc">
       <Filter>src\tracing</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\asm-wasm-builder.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\ast-decoder.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\encoder.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\module-decoder.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-js.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-module.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-opcodes.cc">
-      <Filter>src\wasm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-result.cc">
-      <Filter>src\wasm</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\accessors.cc">
       <Filter>src</Filter>
@@ -2439,9 +2514,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\bootstrapper.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins.cc">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\cached-powers.cc">
@@ -2597,9 +2669,6 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\objects-printer.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\optimizing-compile-dispatcher.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\ostreams.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -2649,12 +2718,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\types.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\typing-asm.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\typing-reset.cc">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\unicode.cc">
@@ -2711,24 +2774,294 @@
     <ClCompile Include="..\..\..\framework\thirdparty\v8\src\snapshot\snapshot-empty.cc">
       <Filter>src\snapshot</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\parsing\duplicate-finder.cc">
+      <Filter>src\parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-js.cc">
+      <Filter>src\asmjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-typer.cc">
+      <Filter>src\asmjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-types.cc">
+      <Filter>src\asmjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asmjs\asm-wasm-builder.cc">
+      <Filter>src\asmjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-api.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-array.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-arraybuffer.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-boolean.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-call.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-callsite.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-conversion.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-dataview.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-date.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-debug.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-error.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-function.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-generator.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-global.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-handler.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-internal.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-interpreter.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-json.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-math.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-number.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-object.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-proxy.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-reflect.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-sharedarraybuffer.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-string.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-symbol.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\builtins-typedarray.cc">
+      <Filter>src\builtins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\builtins\x64\builtins-x64.cc">
+      <Filter>src\builtins\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\base\debug\stack_trace.cc">
+      <Filter>src\base\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\base\debug\stack_trace_win.cc">
+      <Filter>src\base\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\profiler\profiler-listener.cc">
+      <Filter>src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\ast-decoder.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\encoder.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\module-decoder.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\switch-logic.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-debug.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-external-refs.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-function-name-table.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-interpreter.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-js.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-module.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-opcodes.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\wasm\wasm-result.cc">
+      <Filter>src\wasm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler-dispatcher\compiler-dispatcher-job.cc">
+      <Filter>src\compiler-dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler-dispatcher\optimizing-compile-dispatcher.cc">
+      <Filter>src\compiler-dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\externalize-string-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\free-buffer-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\gc-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\ignition-statistics-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\statistics-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\extensions\trigger-failure-extension.cc">
+      <Filter>src\extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\libsampler\sampler.cc">
+      <Filter>src\libsampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\profiler\tick-sample.cc">
+      <Filter>src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\parsing\parse-info.cc">
+      <Filter>src\parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\json-parser.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\json-stringifier.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\value-serializer.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\base\file-utils.cc">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\base\ieee754.cc">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\ast\context-slot-cache.cc">
+      <Filter>src\ast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\bytecode-loop-analysis.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\checkpoint-elimination.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\code-assembler.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\effect-control-linearizer.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\loop-variable-optimizer.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\memory-optimizer.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\operation-typer.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\redundancy-elimination.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\store-store-elimination.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\typed-optimization.cc">
+      <Filter>src\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\code-stub-assembler.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\uri.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-array-writer.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-dead-code-optimizer.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-decoder.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-flags.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-label.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-pipeline.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-register.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\interpreter\bytecode-register-optimizer.cc">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\source-position-table.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\eh-frame.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\compiler\x64\unwinding-info-writer-x64.cc">
+      <Filter>src\compiler\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\asm\x64\eh-frame-x64.cc">
+      <Filter>src\asm\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-error.cc">
+      <Filter>src\runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\runtime\runtime-wasm.cc">
+      <Filter>src\runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\deoptimize-reason.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\v8\src\heap\code-stats.cc">
+      <Filter>src\heap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\framework\thirdparty\v8\src\compiler\OWNERS">
-      <Filter>src\compiler</Filter>
-    </None>
-    <None Include="..\..\..\framework\thirdparty\v8\src\compiler\STYLE">
-      <Filter>src\compiler</Filter>
-    </None>
-    <None Include="..\..\..\framework\thirdparty\v8\src\interpreter\OWNERS">
-      <Filter>src\interpreter</Filter>
-    </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\base.isolate">
       <Filter>src</Filter>
     </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\DEPS">
-      <Filter>src</Filter>
-    </None>
-    <None Include="..\..\..\framework\thirdparty\v8\src\OWNERS">
       <Filter>src</Filter>
     </None>
     <None Include="..\..\..\framework\thirdparty\v8\src\debug\debug.js">
@@ -2742,6 +3075,9 @@
     </None>
     <None Include="v8.def">
       <Filter>源文件</Filter>
+    </None>
+    <None Include="..\..\..\framework\thirdparty\v8\src\wasm\OWNERS">
+      <Filter>src\wasm</Filter>
     </None>
   </ItemGroup>
 </Project>

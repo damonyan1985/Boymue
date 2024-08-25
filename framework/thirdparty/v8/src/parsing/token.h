@@ -148,18 +148,18 @@ namespace internal {
   T(IDENTIFIER, NULL, 0)                                             \
                                                                      \
   /* Future reserved words (ECMA-262, section 7.6.1.2). */           \
-  T(FUTURE_RESERVED_WORD, NULL, 0)                                   \
   T(FUTURE_STRICT_RESERVED_WORD, NULL, 0)                            \
+  K(ASYNC, "async", 0)                                               \
+  /* `await` is a reserved word in module code only */               \
+  K(AWAIT, "await", 0)                                               \
   K(CLASS, "class", 0)                                               \
   K(CONST, "const", 0)                                               \
+  K(ENUM, "enum", 0)                                                 \
   K(EXPORT, "export", 0)                                             \
   K(EXTENDS, "extends", 0)                                           \
   K(IMPORT, "import", 0)                                             \
   K(LET, "let", 0)                                                   \
   K(STATIC, "static", 0)                                             \
-  K(ASYNC, "async", 0)                                               \
-  /* `await` is a reserved word in module code only */               \
-  K(AWAIT, "await", 0)                                               \
   K(YIELD, "yield", 0)                                               \
   K(SUPER, "super", 0)                                               \
                                                                      \
@@ -171,11 +171,11 @@ namespace internal {
   /* Scanner-internal use only. */                                   \
   T(WHITESPACE, NULL, 0)                                             \
   T(UNINITIALIZED, NULL, 0)                                          \
+  T(REGEXP_LITERAL, NULL, 0)                                         \
                                                                      \
   /* ES6 Template Literals */                                        \
   T(TEMPLATE_SPAN, NULL, 0)                                          \
   T(TEMPLATE_TAIL, NULL, 0)
-
 
 class Token {
  public:
@@ -213,7 +213,7 @@ class Token {
       case YIELD:
         return !is_generator && is_sloppy(language_mode);
       case AWAIT:
-        return !disallow_await;  
+        return !disallow_await;
       default:
         return false;
     }
@@ -326,6 +326,11 @@ class Token {
     return string_[tok];
   }
 
+  static uint8_t StringLength(Value tok) {
+    DCHECK(tok < NUM_TOKENS);
+    return string_length_[tok];
+  }
+
   // Returns the precedence > 0 for binary and compare
   // operators; returns 0 otherwise.
   static int Precedence(Value tok) {
@@ -336,6 +341,7 @@ class Token {
  private:
   static const char* const name_[NUM_TOKENS];
   static const char* const string_[NUM_TOKENS];
+  static const uint8_t string_length_[NUM_TOKENS];
   static const int8_t precedence_[NUM_TOKENS];
   static const char token_type[NUM_TOKENS];
 };

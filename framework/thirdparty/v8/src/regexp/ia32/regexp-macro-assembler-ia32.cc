@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define V8_TARGET_ARCH_IA32 1
 #if V8_TARGET_ARCH_IA32
 
 #include "src/regexp/ia32/regexp-macro-assembler-ia32.h"
 
 #include "src/log.h"
 #include "src/macro-assembler.h"
-#include "src/profiler/cpu-profiler.h"
 #include "src/regexp/regexp-macro-assembler.h"
 #include "src/regexp/regexp-stack.h"
 #include "src/unicode.h"
