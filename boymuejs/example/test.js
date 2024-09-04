@@ -72,13 +72,15 @@ function request(obj) {
 //     let vdom = new VDom(obj);
      boymue.log('testParseXml: ' + JSON.stringify(obj))
      //boymue.log('testParseXml: ')
- }
+}
+
+class P {
+    //get = () => "123"
+}
 
 // test()
 testParseXml()
 
 boymue.log(testimport());
 
-
-
-
+//boymue.log("test get=" + (new P().get()))
