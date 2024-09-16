@@ -25,7 +25,6 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
   m_ioThread.start();
   m_jsThread.start();
 
-  
   getUITaskRunner().postTask(
       [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
 

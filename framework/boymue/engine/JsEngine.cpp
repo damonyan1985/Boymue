@@ -177,6 +177,10 @@ class JsRuntimeImpl : public JsRuntime {
         JSCFunctionListEntry entry = JS_CFUNC_EXTERNAL_DEF(api->name(), 2, JsApiHandlerImpl, api);
         m_apiEntries.push_back(entry);
     }
+
+    void gc() override {
+        JS_RunGC(m_runtime);
+    }
     
 private:
     // 处理微任务列表中的任务
@@ -203,21 +207,15 @@ private:
 
 class JsInitor {
  public:
-  JsInitor() {
-  }
+  JsInitor()
+    : m_runtime(make_unique<JsRuntimeImpl>()) {}
 
-  ~JsInitor() {
-  }
+  ~JsInitor() {}
 
  private:
+  OwnerPtr<JsRuntimeImpl> m_runtime;
+  friend class JsEngine;
 };
-
-// unique_ptr can be return for right reference by compiler
-JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
-
-JsEngine::~JsEngine() {}
-
-JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
 
 #else
   
@@ -477,6 +475,7 @@ class JsInitor {
 
   friend class JsEngine;
 };
+#endif
 
 // unique_ptr can be return for right reference by compiler
 JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
@@ -486,6 +485,5 @@ JsEngine::~JsEngine() {}
 JsRuntime* JsEngine::getJSRuntime() {
     return m_initor->m_runtime.get();
 }
-#endif
 
 }  // namespace boymue
