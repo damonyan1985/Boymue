@@ -32,11 +32,10 @@ class BoymueApplication {
   ThreadExecutor* ioExecutor() const;
 
  private:
-  OwnerPtr<JsEngine> m_jsEngine;
+  
   // BoymueView can only used in ui thread
   OwnerPtr<BoymueView> m_mainView;
-  JsRuntime* m_mainRuntime;
-
+  
   // 应用信息
   BoymueAppInfo* m_appInfo;
   // ui thread处理UI事件，JS运行等
@@ -45,6 +44,9 @@ class BoymueApplication {
   TaskThread m_ioThread;
   // js thread用来执行js的线程
   TaskThread m_jsThread;
+
+  OwnerPtr<JsRuntime> m_mainRuntime;
+  OwnerPtr<JsEngine> m_jsEngine;
 
   OwnerPtr<ThreadExecutor> m_ioExecutor;
     

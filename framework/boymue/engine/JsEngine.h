@@ -38,7 +38,7 @@ class JsEngine {
   JsEngine();
   ~JsEngine();
 
-  JsRuntime* getJSRuntime();
+  JsRuntime* createRuntime();
 
  private:
   unique_ptr<JsInitor> m_initor;

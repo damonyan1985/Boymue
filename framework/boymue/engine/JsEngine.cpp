@@ -207,13 +207,10 @@ private:
 
 class JsInitor {
  public:
-  JsInitor()
-    : m_runtime(make_unique<JsRuntimeImpl>()) {}
-
+  JsInitor() {}
   ~JsInitor() {}
 
  private:
-  OwnerPtr<JsRuntimeImpl> m_runtime;
   friend class JsEngine;
 };
 
@@ -459,8 +456,6 @@ class JsInitor {
     m_platform = V8::InitializeDefaultPlatform();
     // V8::InitializePlatform(m_platform);
     V8::Initialize();
-
-    m_runtime = make_unique<JsRuntimeImpl>();
   }
 
   ~JsInitor() {
@@ -471,8 +466,6 @@ class JsInitor {
 
  private:
   Platform* m_platform;
-  OwnerPtr<JsRuntimeImpl> m_runtime;
-
   friend class JsEngine;
 };
 #endif
@@ -482,8 +475,8 @@ JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
 
 JsEngine::~JsEngine() {}
 
-JsRuntime* JsEngine::getJSRuntime() {
-    return m_initor->m_runtime.get();
+JsRuntime* JsEngine::createRuntime() {
+    return new JsRuntimeImpl();
 }
 
 }  // namespace boymue

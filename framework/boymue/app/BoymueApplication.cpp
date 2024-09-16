@@ -29,7 +29,7 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
       [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
 
   getJSTaskRunner().postTask([self = this] {
-    self->m_mainRuntime = self->m_jsEngine->getJSRuntime();
+    self->m_mainRuntime = OwnerPtr<JsRuntime>(self->m_jsEngine->createRuntime());
     self->m_mainRuntime->registerApi(new JsLogApi(self));
     self->m_mainRuntime->registerApi(new JsTestApi(self));
     self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
@@ -56,7 +56,7 @@ void BoymueApplication::doRuntimeAction(RuntimeClosure& action) {
 }
 
 JsRuntime* BoymueApplication::runtime() const {
-    return m_mainRuntime;
+    return m_mainRuntime.get();
 }
 
 // 结束当前应用的线程
