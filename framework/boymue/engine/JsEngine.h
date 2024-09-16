@@ -28,6 +28,8 @@ class JsRuntime {
   virtual void evaluateJs(const String& jsSource, const String& scriptId) = 0;
   // 注册JS Api
   virtual void registerApi(JsApiInterface* api) = 0;
+  // 垃圾回收
+  virtual void gc() = 0;
 };
 
 class JsInitor;
@@ -36,7 +38,7 @@ class JsEngine {
   JsEngine();
   ~JsEngine();
 
-  JsRuntime* createRuntime();
+  JsRuntime* getJSRuntime();
 
  private:
   unique_ptr<JsInitor> m_initor;

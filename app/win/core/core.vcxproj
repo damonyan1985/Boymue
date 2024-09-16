@@ -168,6 +168,7 @@
     <ClInclude Include="..\..\..\framework\boymue\apis\JsLogApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\apis\JsRequestApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\apis\JsRequireModuleApi.h" />
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsSystemGcApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\apis\JSTestApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\apis\JsUIOperationApi.h" />
     <ClInclude Include="..\..\..\framework\boymue\apis\JsXmlToJsonApi.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="..\..\..\framework\boymue\apis\JsLogApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\apis\JsRequestApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\apis\JsRequireModuleApi.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsSystemGcApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\apis\JSTestApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\apis\JsUIOperationApi.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\apis\JsXmlToJsonApi.cpp" />

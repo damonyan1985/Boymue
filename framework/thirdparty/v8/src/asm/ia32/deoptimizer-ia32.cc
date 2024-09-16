@@ -1,13 +1,13 @@
 // Copyright 2012 the V8 project authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#define V8_TARGET_ARCH_IA32 1
+
 #if V8_TARGET_ARCH_IA32
 
 #include "src/codegen.h"
 #include "src/deoptimizer.h"
 #include "src/full-codegen/full-codegen.h"
-#include "src/asm/ia32/frames-ia32.h"
+#include "src/ia32/frames-ia32.h"
 #include "src/register-configuration.h"
 #include "src/safepoint-table.h"
 
@@ -35,6 +35,7 @@ void Deoptimizer::EnsureRelocSpaceForLazyDeoptimization(Handle<Code> code) {
   for (int i = 0; i < deopt_data->DeoptCount(); i++) {
     int pc_offset = deopt_data->Pc(i)->value();
     if (pc_offset == -1) continue;
+    pc_offset = pc_offset + 1;  // We will encode the pc offset after the call.
     DCHECK_GE(pc_offset, prev_pc_offset);
     int pc_delta = pc_offset - prev_pc_offset;
     // We use RUNTIME_ENTRY reloc info which has a size of 2 bytes
@@ -196,8 +197,7 @@ void Deoptimizer::TableEntryGenerator::Generate() {
 
   const int kDoubleRegsSize = kDoubleSize * XMMRegister::kMaxNumRegisters;
   __ sub(esp, Immediate(kDoubleRegsSize));
-  const RegisterConfiguration* config =
-      RegisterConfiguration::ArchDefault(RegisterConfiguration::CRANKSHAFT);
+  const RegisterConfiguration* config = RegisterConfiguration::Crankshaft();
   for (int i = 0; i < config->num_allocatable_double_registers(); ++i) {
     int code = config->GetAllocatableDoubleCode(i);
     XMMRegister xmm_reg = XMMRegister::from_code(code);

@@ -35,7 +35,7 @@ class BoymueApplication {
   OwnerPtr<JsEngine> m_jsEngine;
   // BoymueView can only used in ui thread
   OwnerPtr<BoymueView> m_mainView;
-  OwnerPtr<JsRuntime> m_mainRuntime;
+  JsRuntime* m_mainRuntime;
 
   // 应用信息
   BoymueAppInfo* m_appInfo;

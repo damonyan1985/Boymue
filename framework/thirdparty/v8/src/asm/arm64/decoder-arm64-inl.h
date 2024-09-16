@@ -5,29 +5,27 @@
 #ifndef V8_ARM64_DECODER_ARM64_INL_H_
 #define V8_ARM64_DECODER_ARM64_INL_H_
 
-#include "src/asm/arm64/decoder-arm64.h"
+#include "src/arm64/decoder-arm64.h"
 #include "src/globals.h"
 #include "src/utils.h"
+
 
 namespace v8 {
 namespace internal {
 
+
 // Top-level instruction decode function.
-template <typename V>
-void Decoder<V>::Decode(Instruction* instr) {
+template<typename V>
+void Decoder<V>::Decode(Instruction *instr) {
   if (instr->Bits(28, 27) == 0) {
     V::VisitUnallocated(instr);
   } else {
     switch (instr->Bits(27, 24)) {
       // 0:   PC relative addressing.
-      case 0x0:
-        DecodePCRelAddressing(instr);
-        break;
+      case 0x0: DecodePCRelAddressing(instr); break;
 
       // 1:   Add/sub immediate.
-      case 0x1:
-        DecodeAddSubImmediate(instr);
-        break;
+      case 0x1: DecodeAddSubImmediate(instr); break;
 
       // A:   Logical shifted register.
       //      Add/sub with carry.
@@ -40,21 +38,15 @@ void Decoder<V>::Decode(Instruction* instr) {
       //      Add/sub extended register.
       //      Data processing 3 source.
       case 0xA:
-      case 0xB:
-        DecodeDataProcessing(instr);
-        break;
+      case 0xB: DecodeDataProcessing(instr); break;
 
       // 2:   Logical immediate.
       //      Move wide immediate.
-      case 0x2:
-        DecodeLogical(instr);
-        break;
+      case 0x2: DecodeLogical(instr); break;
 
       // 3:   Bitfield.
       //      Extract.
-      case 0x3:
-        DecodeBitfieldExtract(instr);
-        break;
+      case 0x3: DecodeBitfieldExtract(instr); break;
 
       // 4:   Unconditional branch immediate.
       //      Exception generation.
@@ -67,9 +59,7 @@ void Decoder<V>::Decode(Instruction* instr) {
       case 0x4:
       case 0x5:
       case 0x6:
-      case 0x7:
-        DecodeBranchSystemException(instr);
-        break;
+      case 0x7: DecodeBranchSystemException(instr); break;
 
       // 8,9: Load/store register pair post-index.
       //      Load register literal.
@@ -84,9 +74,7 @@ void Decoder<V>::Decode(Instruction* instr) {
       case 0x8:
       case 0x9:
       case 0xC:
-      case 0xD:
-        DecodeLoadStore(instr);
-        break;
+      case 0xD: DecodeLoadStore(instr); break;
 
       // E:   FP fixed point conversion.
       //      FP integer conversion.
@@ -100,14 +88,13 @@ void Decoder<V>::Decode(Instruction* instr) {
       // F:   FP data processing 3 source.
       //      Advanced SIMD.
       case 0xE:
-      case 0xF:
-        DecodeFP(instr);
-        break;
+      case 0xF: DecodeFP(instr); break;
     }
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodePCRelAddressing(Instruction* instr) {
   DCHECK(instr->Bits(27, 24) == 0x0);
   // We know bit 28 is set, as <b28:b27> = 0 is filtered out at the top level
@@ -116,10 +103,13 @@ void Decoder<V>::DecodePCRelAddressing(Instruction* instr) {
   V::VisitPCRelAddressing(instr);
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeBranchSystemException(Instruction* instr) {
-  DCHECK((instr->Bits(27, 24) == 0x4) || (instr->Bits(27, 24) == 0x5) ||
-         (instr->Bits(27, 24) == 0x6) || (instr->Bits(27, 24) == 0x7));
+  DCHECK((instr->Bits(27, 24) == 0x4) ||
+         (instr->Bits(27, 24) == 0x5) ||
+         (instr->Bits(27, 24) == 0x6) ||
+         (instr->Bits(27, 24) == 0x7) );
 
   switch (instr->Bits(31, 29)) {
     case 0:
@@ -194,9 +184,12 @@ void Decoder<V>::DecodeBranchSystemException(Instruction* instr) {
           }
         }
       } else {
-        if ((instr->Bit(24) == 0x1) || (instr->Bits(20, 16) != 0x1F) ||
-            (instr->Bits(15, 10) != 0) || (instr->Bits(4, 0) != 0) ||
-            (instr->Bits(24, 21) == 0x3) || (instr->Bits(24, 22) == 0x3)) {
+        if ((instr->Bit(24) == 0x1) ||
+            (instr->Bits(20, 16) != 0x1F) ||
+            (instr->Bits(15, 10) != 0) ||
+            (instr->Bits(4, 0) != 0) ||
+            (instr->Bits(24, 21) == 0x3) ||
+            (instr->Bits(24, 22) == 0x3)) {
           V::VisitUnallocated(instr);
         } else {
           V::VisitUnconditionalBranchToRegister(instr);
@@ -212,17 +205,27 @@ void Decoder<V>::DecodeBranchSystemException(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeLoadStore(Instruction* instr) {
-  DCHECK((instr->Bits(27, 24) == 0x8) || (instr->Bits(27, 24) == 0x9) ||
-         (instr->Bits(27, 24) == 0xC) || (instr->Bits(27, 24) == 0xD));
+  DCHECK((instr->Bits(27, 24) == 0x8) ||
+         (instr->Bits(27, 24) == 0x9) ||
+         (instr->Bits(27, 24) == 0xC) ||
+         (instr->Bits(27, 24) == 0xD) );
 
   if (instr->Bit(24) == 0) {
     if (instr->Bit(28) == 0) {
       if (instr->Bit(29) == 0) {
         if (instr->Bit(26) == 0) {
-          // TODO(all): VisitLoadStoreExclusive.
-          V::VisitUnimplemented(instr);
+          if (instr->Mask(0xA08000) == 0x800000 ||
+              instr->Mask(0xA00000) == 0xA00000) {
+            V::VisitUnallocated(instr);
+          } else if (instr->Mask(0x808000) == 0) {
+            // Load/Store exclusive without acquire/release are unimplemented.
+            V::VisitUnimplemented(instr);
+          } else {
+            V::VisitLoadStoreAcquireRelease(instr);
+          }
         } else {
           DecodeAdvSIMDLoadStore(instr);
         }
@@ -330,7 +333,8 @@ void Decoder<V>::DecodeLoadStore(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeLogical(Instruction* instr) {
   DCHECK(instr->Bits(27, 24) == 0x2);
 
@@ -349,7 +353,8 @@ void Decoder<V>::DecodeLogical(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeBitfieldExtract(Instruction* instr) {
   DCHECK(instr->Bits(27, 24) == 0x3);
 
@@ -374,7 +379,8 @@ void Decoder<V>::DecodeBitfieldExtract(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeAddSubImmediate(Instruction* instr) {
   DCHECK(instr->Bits(27, 24) == 0x1);
   if (instr->Bit(23) == 1) {
@@ -384,9 +390,11 @@ void Decoder<V>::DecodeAddSubImmediate(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
-  DCHECK((instr->Bits(27, 24) == 0xA) || (instr->Bits(27, 24) == 0xB));
+  DCHECK((instr->Bits(27, 24) == 0xA) ||
+         (instr->Bits(27, 24) == 0xB) );
 
   if (instr->Bit(24) == 0) {
     if (instr->Bit(28) == 0) {
@@ -406,7 +414,8 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
           break;
         }
         case 2: {
-          if ((instr->Bit(29) == 0) || (instr->Mask(0x00000410) != 0)) {
+          if ((instr->Bit(29) == 0) ||
+              (instr->Mask(0x00000410) != 0)) {
             V::VisitUnallocated(instr);
           } else {
             if (instr->Bit(11) == 0) {
@@ -430,7 +439,8 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
             V::VisitUnallocated(instr);
           } else {
             if (instr->Bit(30) == 0) {
-              if ((instr->Bit(15) == 0x1) || (instr->Bits(15, 11) == 0) ||
+              if ((instr->Bit(15) == 0x1) ||
+                  (instr->Bits(15, 11) == 0) ||
                   (instr->Bits(15, 12) == 0x1) ||
                   (instr->Bits(15, 12) == 0x3) ||
                   (instr->Bits(15, 13) == 0x3) ||
@@ -442,7 +452,8 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
                 V::VisitDataProcessing2Source(instr);
               }
             } else {
-              if ((instr->Bit(13) == 1) || (instr->Bits(20, 16) != 0) ||
+              if ((instr->Bit(13) == 1) ||
+                  (instr->Bits(20, 16) != 0) ||
                   (instr->Bits(15, 14) != 0) ||
                   (instr->Mask(0xA01FFC00) == 0x00000C00) ||
                   (instr->Mask(0x201FF800) == 0x00001800)) {
@@ -457,14 +468,12 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
         case 1:
         case 3:
         case 5:
-        case 7:
-          V::VisitUnallocated(instr);
-          break;
+        case 7: V::VisitUnallocated(instr); break;
       }
     }
   } else {
     if (instr->Bit(28) == 0) {
-      if (instr->Bit(21) == 0) {
+     if (instr->Bit(21) == 0) {
         if ((instr->Bits(23, 22) == 0x3) ||
             (instr->Mask(0x80008000) == 0x00008000)) {
           V::VisitUnallocated(instr);
@@ -481,7 +490,8 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
         }
       }
     } else {
-      if ((instr->Bit(30) == 0x1) || (instr->Bits(30, 29) == 0x1) ||
+      if ((instr->Bit(30) == 0x1) ||
+          (instr->Bits(30, 29) == 0x1) ||
           (instr->Mask(0xE0600000) == 0x00200000) ||
           (instr->Mask(0xE0608000) == 0x00400000) ||
           (instr->Mask(0x60608000) == 0x00408000) ||
@@ -496,9 +506,11 @@ void Decoder<V>::DecodeDataProcessing(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeFP(Instruction* instr) {
-  DCHECK((instr->Bits(27, 24) == 0xE) || (instr->Bits(27, 24) == 0xF));
+  DCHECK((instr->Bits(27, 24) == 0xE) ||
+         (instr->Bits(27, 24) == 0xF) );
 
   if (instr->Bit(28) == 0) {
     DecodeAdvSIMDDataProcessing(instr);
@@ -513,7 +525,8 @@ void Decoder<V>::DecodeFP(Instruction* instr) {
       } else {
         if (instr->Bit(24) == 0) {
           if (instr->Bit(21) == 0) {
-            if ((instr->Bit(23) == 1) || (instr->Bit(18) == 1) ||
+            if ((instr->Bit(23) == 1) ||
+                (instr->Bit(18) == 1) ||
                 (instr->Mask(0x80008000) == 0x00000000) ||
                 (instr->Mask(0x000E0000) == 0x00000000) ||
                 (instr->Mask(0x000E0000) == 0x000A0000) ||
@@ -565,7 +578,8 @@ void Decoder<V>::DecodeFP(Instruction* instr) {
                 V::VisitFPDataProcessing1Source(instr);
               }
             } else if (instr->Bits(13, 10) == 8) {
-              if ((instr->Bits(15, 14) != 0) || (instr->Bits(2, 0) != 0) ||
+              if ((instr->Bits(15, 14) != 0) ||
+                  (instr->Bits(2, 0) != 0) ||
                   (instr->Mask(0x80800000) != 0x00000000)) {
                 V::VisitUnallocated(instr);
               } else {
@@ -601,8 +615,7 @@ void Decoder<V>::DecodeFP(Instruction* instr) {
                     V::VisitFPConditionalSelect(instr);
                     break;
                   }
-                  default:
-                    UNREACHABLE();
+                  default: UNREACHABLE();
                 }
               }
             }
@@ -621,19 +634,22 @@ void Decoder<V>::DecodeFP(Instruction* instr) {
   }
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeAdvSIMDLoadStore(Instruction* instr) {
   // TODO(all): Implement Advanced SIMD load/store instruction decode.
   DCHECK(instr->Bits(29, 25) == 0x6);
   V::VisitUnimplemented(instr);
 }
 
-template <typename V>
+
+template<typename V>
 void Decoder<V>::DecodeAdvSIMDDataProcessing(Instruction* instr) {
   // TODO(all): Implement Advanced SIMD data processing instruction decode.
   DCHECK(instr->Bits(27, 25) == 0x7);
   V::VisitUnimplemented(instr);
 }
+
 
 }  // namespace internal
 }  // namespace v8

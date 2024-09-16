@@ -10,13 +10,15 @@
 #include <map>
 #include <vector>
 
-#include "src/asm/arm64/instructions-arm64.h"
+#include "src/arm64/instructions-arm64.h"
 #include "src/assembler.h"
 #include "src/globals.h"
 #include "src/utils.h"
 
+
 namespace v8 {
 namespace internal {
+
 
 // -----------------------------------------------------------------------------
 // Registers.
@@ -38,11 +40,21 @@ namespace internal {
   R(x8)  R(x9)  R(x10) R(x11) R(x12) R(x13) R(x14) R(x15) \
   R(x18) R(x19) R(x20) R(x21) R(x22) R(x23) R(x24) R(x27)
 
+#define FLOAT_REGISTERS(V)                                \
+  V(s0)  V(s1)  V(s2)  V(s3)  V(s4)  V(s5)  V(s6)  V(s7)  \
+  V(s8)  V(s9)  V(s10) V(s11) V(s12) V(s13) V(s14) V(s15) \
+  V(s16) V(s17) V(s18) V(s19) V(s20) V(s21) V(s22) V(s23) \
+  V(s24) V(s25) V(s26) V(s27) V(s28) V(s29) V(s30) V(s31)
+
 #define DOUBLE_REGISTERS(R)                               \
   R(d0)  R(d1)  R(d2)  R(d3)  R(d4)  R(d5)  R(d6)  R(d7)  \
   R(d8)  R(d9)  R(d10) R(d11) R(d12) R(d13) R(d14) R(d15) \
   R(d16) R(d17) R(d18) R(d19) R(d20) R(d21) R(d22) R(d23) \
   R(d24) R(d25) R(d26) R(d27) R(d28) R(d29) R(d30) R(d31)
+
+#define SIMD128_REGISTERS(V)                              \
+  V(q0)  V(q1)  V(q2)  V(q3)  V(q4)  V(q5)  V(q6)  V(q7)  \
+  V(q8)  V(q9)  V(q10) V(q11) V(q12) V(q13) V(q14) V(q15)
 
 #define ALLOCATABLE_DOUBLE_REGISTERS(R)                   \
   R(d0)  R(d1)  R(d2)  R(d3)  R(d4)  R(d5)  R(d6)  R(d7)  \
@@ -53,10 +65,12 @@ namespace internal {
 
 static const int kRegListSizeInBits = sizeof(RegList) * kBitsPerByte;
 
+
 // Some CPURegister methods can return Register and FPRegister types, so we
 // need to declare them in advance.
 struct Register;
 struct FPRegister;
+
 
 struct CPURegister {
   enum Code {
@@ -118,6 +132,7 @@ struct CPURegister {
   RegisterType reg_type;
 };
 
+
 struct Register : public CPURegister {
   static Register Create(int code, int size) {
     return Register(CPURegister::Create(code, size, CPURegister::kRegister));
@@ -143,8 +158,6 @@ struct Register : public CPURegister {
     DCHECK(IsValidOrNone());
   }
 
-  const char* ToString();
-  bool IsAllocatable() const;
   bool IsValid() const {
     DCHECK(IsRegister() || IsNone());
     return IsValidRegister();
@@ -184,6 +197,8 @@ struct Register : public CPURegister {
   // End of V8 compatibility section -----------------------
 };
 
+static const bool kSimpleFPAliasing = true;
+
 struct FPRegister : public CPURegister {
   enum Code {
 #define REGISTER_CODE(R) kCode_##R,
@@ -218,8 +233,6 @@ struct FPRegister : public CPURegister {
     DCHECK(IsValidOrNone());
   }
 
-  const char* ToString();
-  bool IsAllocatable() const;
   bool IsValid() const {
     DCHECK(IsFPRegister() || IsNone());
     return IsValidFPRegister();
@@ -243,17 +256,19 @@ struct FPRegister : public CPURegister {
   // End of V8 compatibility section -----------------------
 };
 
+
 STATIC_ASSERT(sizeof(CPURegister) == sizeof(Register));
 STATIC_ASSERT(sizeof(CPURegister) == sizeof(FPRegister));
+
 
 #if defined(ARM64_DEFINE_REG_STATICS)
 #define INITIALIZE_REGISTER(register_class, name, code, size, type)      \
   const CPURegister init_##register_class##_##name = {code, size, type}; \
   const register_class& name = *reinterpret_cast<const register_class*>( \
-      &init_##register_class##_##name)
+                                    &init_##register_class##_##name)
 #define ALIAS_REGISTER(register_class, alias, name)                       \
   const register_class& alias = *reinterpret_cast<const register_class*>( \
-      &init_##register_class##_##name)
+                                     &init_##register_class##_##name)
 #else
 #define INITIALIZE_REGISTER(register_class, name, code, size, type) \
   extern const register_class& name
@@ -271,11 +286,11 @@ INITIALIZE_REGISTER(CPURegister, NoCPUReg, 0, 0, CPURegister::kNoRegister);
 // v8 compatibility.
 INITIALIZE_REGISTER(Register, no_reg, 0, 0, CPURegister::kNoRegister);
 
-#define DEFINE_REGISTERS(N)                               \
-  INITIALIZE_REGISTER(Register, w##N, N, kWRegSizeInBits, \
-                      CPURegister::kRegister);            \
-  INITIALIZE_REGISTER(Register, x##N, N, kXRegSizeInBits, \
-                      CPURegister::kRegister);
+#define DEFINE_REGISTERS(N)                                                  \
+  INITIALIZE_REGISTER(Register, w##N, N,                                     \
+                      kWRegSizeInBits, CPURegister::kRegister);              \
+  INITIALIZE_REGISTER(Register, x##N, N,                                     \
+                      kXRegSizeInBits, CPURegister::kRegister);
 GENERAL_REGISTER_CODE_LIST(DEFINE_REGISTERS)
 #undef DEFINE_REGISTERS
 
@@ -284,11 +299,11 @@ INITIALIZE_REGISTER(Register, wcsp, kSPRegInternalCode, kWRegSizeInBits,
 INITIALIZE_REGISTER(Register, csp, kSPRegInternalCode, kXRegSizeInBits,
                     CPURegister::kRegister);
 
-#define DEFINE_FPREGISTERS(N)                               \
-  INITIALIZE_REGISTER(FPRegister, s##N, N, kSRegSizeInBits, \
-                      CPURegister::kFPRegister);            \
-  INITIALIZE_REGISTER(FPRegister, d##N, N, kDRegSizeInBits, \
-                      CPURegister::kFPRegister);
+#define DEFINE_FPREGISTERS(N)                                                  \
+  INITIALIZE_REGISTER(FPRegister, s##N, N,                                     \
+                      kSRegSizeInBits, CPURegister::kFPRegister);              \
+  INITIALIZE_REGISTER(FPRegister, d##N, N,                                     \
+                      kDRegSizeInBits, CPURegister::kFPRegister);
 GENERAL_REGISTER_CODE_LIST(DEFINE_FPREGISTERS)
 #undef DEFINE_FPREGISTERS
 
@@ -327,14 +342,17 @@ ALIAS_REGISTER(FPRegister, fp_scratch2, d31);
 
 #undef ALIAS_REGISTER
 
+
 Register GetAllocatableRegisterThatIsNotOneOf(Register reg1,
                                               Register reg2 = NoReg,
                                               Register reg3 = NoReg,
                                               Register reg4 = NoReg);
 
+
 // AreAliased returns true if any of the named registers overlap. Arguments set
 // to NoReg are ignored. The system stack pointer may be specified.
-bool AreAliased(const CPURegister& reg1, const CPURegister& reg2,
+bool AreAliased(const CPURegister& reg1,
+                const CPURegister& reg2,
                 const CPURegister& reg3 = NoReg,
                 const CPURegister& reg4 = NoReg,
                 const CPURegister& reg5 = NoReg,
@@ -346,7 +364,8 @@ bool AreAliased(const CPURegister& reg1, const CPURegister& reg2,
 // same size, and are of the same type. The system stack pointer may be
 // specified. Arguments set to NoReg are ignored, as are any subsequent
 // arguments. At least one argument (reg1) must be valid (not NoCPUReg).
-bool AreSameSizeAndType(const CPURegister& reg1, const CPURegister& reg2,
+bool AreSameSizeAndType(const CPURegister& reg1,
+                        const CPURegister& reg2,
                         const CPURegister& reg3 = NoCPUReg,
                         const CPURegister& reg4 = NoCPUReg,
                         const CPURegister& reg5 = NoCPUReg,
@@ -354,6 +373,7 @@ bool AreSameSizeAndType(const CPURegister& reg1, const CPURegister& reg2,
                         const CPURegister& reg7 = NoCPUReg,
                         const CPURegister& reg8 = NoCPUReg);
 
+typedef FPRegister FloatRegister;
 typedef FPRegister DoubleRegister;
 
 // TODO(arm64) Define SIMD registers.
@@ -363,11 +383,12 @@ typedef FPRegister Simd128Register;
 // Lists of registers.
 class CPURegList {
  public:
-  explicit CPURegList(CPURegister reg1, CPURegister reg2 = NoCPUReg,
-                      CPURegister reg3 = NoCPUReg, CPURegister reg4 = NoCPUReg)
+  explicit CPURegList(CPURegister reg1,
+                      CPURegister reg2 = NoCPUReg,
+                      CPURegister reg3 = NoCPUReg,
+                      CPURegister reg4 = NoCPUReg)
       : list_(reg1.Bit() | reg2.Bit() | reg3.Bit() | reg4.Bit()),
-        size_(reg1.SizeInBits()),
-        type_(reg1.type()) {
+        size_(reg1.SizeInBits()), type_(reg1.type()) {
     DCHECK(AreSameSizeAndType(reg1, reg2, reg3, reg4));
     DCHECK(IsValid());
   }
@@ -380,10 +401,10 @@ class CPURegList {
   CPURegList(CPURegister::RegisterType type, int size, int first_reg,
              int last_reg)
       : size_(size), type_(type) {
-    DCHECK(
-        ((type == CPURegister::kRegister) && (last_reg < kNumberOfRegisters)) ||
-        ((type == CPURegister::kFPRegister) &&
-         (last_reg < kNumberOfFPRegisters)));
+    DCHECK(((type == CPURegister::kRegister) &&
+            (last_reg < kNumberOfRegisters)) ||
+           ((type == CPURegister::kFPRegister) &&
+            (last_reg < kNumberOfFPRegisters)));
     DCHECK(last_reg >= first_reg);
     list_ = (1UL << (last_reg + 1)) - 1;
     list_ &= ~((1UL << first_reg) - 1);
@@ -417,7 +438,8 @@ class CPURegList {
 
   // Variants of Combine and Remove which take CPURegisters.
   void Combine(const CPURegister& other);
-  void Remove(const CPURegister& other1, const CPURegister& other2 = NoCPUReg,
+  void Remove(const CPURegister& other1,
+              const CPURegister& other2 = NoCPUReg,
               const CPURegister& other3 = NoCPUReg,
               const CPURegister& other4 = NoCPUReg);
 
@@ -505,9 +527,11 @@ class CPURegList {
   }
 };
 
+
 // AAPCS64 callee-saved registers.
 #define kCalleeSaved CPURegList::GetCalleeSaved()
 #define kCalleeSavedFP CPURegList::GetCalleeSavedFP()
+
 
 // AAPCS64 caller-saved registers. Note that this includes lr.
 #define kCallerSaved CPURegList::GetCallerSaved()
@@ -517,15 +541,15 @@ class CPURegList {
 // Immediates.
 class Immediate {
  public:
-  template <typename T>
+  template<typename T>
   inline explicit Immediate(Handle<T> handle);
 
   // This is allowed to be an implicit constructor because Immediate is
   // a wrapper class that doesn't normally perform any type conversion.
-  template <typename T>
+  template<typename T>
   inline Immediate(T value);  // NOLINT(runtime/explicit)
 
-  template <typename T>
+  template<typename T>
   inline Immediate(T value, RelocInfo::Mode rmode);
 
   int64_t value() const { return value_; }
@@ -537,6 +561,7 @@ class Immediate {
   int64_t value_;
   RelocInfo::Mode rmode_;
 };
+
 
 // -----------------------------------------------------------------------------
 // Operands.
@@ -553,23 +578,26 @@ class Operand {
   //       <shift_amount> is uint6_t.
   // This is allowed to be an implicit constructor because Operand is
   // a wrapper class that doesn't normally perform any type conversion.
-  inline Operand(Register reg, Shift shift = LSL,
+  inline Operand(Register reg,
+                 Shift shift = LSL,
                  unsigned shift_amount = 0);  // NOLINT(runtime/explicit)
 
   // rm, <extend> {#<shift_amount>}
   // where <extend> is one of {UXTB, UXTH, UXTW, UXTX, SXTB, SXTH, SXTW, SXTX}.
   //       <shift_amount> is uint2_t.
-  inline Operand(Register reg, Extend extend, unsigned shift_amount = 0);
+  inline Operand(Register reg,
+                 Extend extend,
+                 unsigned shift_amount = 0);
 
-  template <typename T>
+  template<typename T>
   inline explicit Operand(Handle<T> handle);
 
   // Implicit constructor for all int types, ExternalReference, and Smi.
-  template <typename T>
+  template<typename T>
   inline Operand(T t);  // NOLINT(runtime/explicit)
 
   // Implicit constructor for int types.
-  template <typename T>
+  template<typename T>
   inline Operand(T t, RelocInfo::Mode rmode);
 
   inline bool IsImmediate() const;
@@ -603,17 +631,24 @@ class Operand {
   unsigned shift_amount_;
 };
 
+
 // MemOperand represents a memory operand in a load or store instruction.
 class MemOperand {
  public:
   inline MemOperand();
-  inline explicit MemOperand(Register base, int64_t offset = 0,
+  inline explicit MemOperand(Register base,
+                             int64_t offset = 0,
                              AddrMode addrmode = Offset);
-  inline explicit MemOperand(Register base, Register regoffset,
-                             Shift shift = LSL, unsigned shift_amount = 0);
-  inline explicit MemOperand(Register base, Register regoffset, Extend extend,
+  inline explicit MemOperand(Register base,
+                             Register regoffset,
+                             Shift shift = LSL,
                              unsigned shift_amount = 0);
-  inline explicit MemOperand(Register base, const Operand& offset,
+  inline explicit MemOperand(Register base,
+                             Register regoffset,
+                             Extend extend,
+                             unsigned shift_amount = 0);
+  inline explicit MemOperand(Register base,
+                             const Operand& offset,
                              AddrMode addrmode = Offset);
 
   const Register& base() const { return base_; }
@@ -633,9 +668,9 @@ class MemOperand {
   inline Operand OffsetAsOperand() const;
 
   enum PairResult {
-    kNotPair,  // Can't use a pair instruction.
-    kPairAB,   // Can use a pair instruction (operandA has lower address).
-    kPairBA    // Can use a pair instruction (operandB has lower address).
+    kNotPair,   // Can't use a pair instruction.
+    kPairAB,    // Can use a pair instruction (operandA has lower address).
+    kPairBA     // Can use a pair instruction (operandB has lower address).
   };
   // Check if two MemOperand are consistent for stp/ldp use.
   static PairResult AreConsistentForPair(const MemOperand& operandA,
@@ -652,10 +687,13 @@ class MemOperand {
   unsigned shift_amount_;
 };
 
+
 class ConstPool {
  public:
   explicit ConstPool(Assembler* assm)
-      : assm_(assm), first_use_(-1), shared_entries_count(0) {}
+      : assm_(assm),
+        first_use_(-1),
+        shared_entries_count(0) {}
   void RecordEntry(intptr_t data, RelocInfo::Mode mode);
   int EntryCount() const {
     return shared_entries_count + static_cast<int>(unique_entries_.size());
@@ -698,6 +736,7 @@ class ConstPool {
   std::vector<std::pair<uint64_t, int> > unique_entries_;
 };
 
+
 // -----------------------------------------------------------------------------
 // Assembler.
 
@@ -720,7 +759,9 @@ class Assembler : public AssemblerBase {
 
   virtual ~Assembler();
 
-  virtual void AbortedCodeGeneration() { constpool_.Clear(); }
+  virtual void AbortedCodeGeneration() {
+    constpool_.Clear();
+  }
 
   // System functions ---------------------------------------------------------
   // Start generating code from the beginning of the buffer, discarding any code
@@ -753,6 +794,7 @@ class Assembler : public AssemblerBase {
   // and if labels are linked to other instructions, they _must_ be bound
   // before they go out of scope.
   void bind(Label* label);
+
 
   // RelocInfo and pools ------------------------------------------------------
 
@@ -841,12 +883,12 @@ class Assembler : public AssemblerBase {
     return SizeOfCodeGeneratedSince(label) / kInstructionSize;
   }
 
-  static const int kPatchDebugBreakSlotAddressOffset = 0;
+  static const int kPatchDebugBreakSlotAddressOffset =  0;
 
   // Number of instructions necessary to be able to later patch it to a call.
   static const int kDebugBreakSlotInstructions = 5;
   static const int kDebugBreakSlotLength =
-      kDebugBreakSlotInstructions * kInstructionSize;
+    kDebugBreakSlotInstructions * kInstructionSize;
 
   // Prevent contant pool emission until EndBlockConstPool is called.
   // Call to this function can be nested but must be followed by an equal
@@ -887,14 +929,11 @@ class Assembler : public AssemblerBase {
   }
 
   // Debugging ----------------------------------------------------------------
-  AssemblerPositionsRecorder* positions_recorder() {
-    return &positions_recorder_;
-  }
   void RecordComment(const char* msg);
 
   // Record a deoptimization reason that can be used by a log or cpu profiler.
   // Use --trace-deopt to enable.
-  void RecordDeoptReason(const int reason, int raw_position);
+  void RecordDeoptReason(DeoptimizeReason reason, int raw_position, int id);
 
   int buffer_space() const;
 
@@ -922,6 +961,7 @@ class Assembler : public AssemblerBase {
   // The parameter indicates the size of the pool (in bytes), including
   // the marker and branch over the data.
   void RecordConstPool(int size);
+
 
   // Instruction set functions ------------------------------------------------
 
@@ -976,62 +1016,90 @@ class Assembler : public AssemblerBase {
 
   // Data Processing instructions.
   // Add.
-  void add(const Register& rd, const Register& rn, const Operand& operand);
+  void add(const Register& rd,
+           const Register& rn,
+           const Operand& operand);
 
   // Add and update status flags.
-  void adds(const Register& rd, const Register& rn, const Operand& operand);
+  void adds(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Compare negative.
   void cmn(const Register& rn, const Operand& operand);
 
   // Subtract.
-  void sub(const Register& rd, const Register& rn, const Operand& operand);
+  void sub(const Register& rd,
+           const Register& rn,
+           const Operand& operand);
 
   // Subtract and update status flags.
-  void subs(const Register& rd, const Register& rn, const Operand& operand);
+  void subs(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Compare.
   void cmp(const Register& rn, const Operand& operand);
 
   // Negate.
-  void neg(const Register& rd, const Operand& operand);
+  void neg(const Register& rd,
+           const Operand& operand);
 
   // Negate and update status flags.
-  void negs(const Register& rd, const Operand& operand);
+  void negs(const Register& rd,
+            const Operand& operand);
 
   // Add with carry bit.
-  void adc(const Register& rd, const Register& rn, const Operand& operand);
+  void adc(const Register& rd,
+           const Register& rn,
+           const Operand& operand);
 
   // Add with carry bit and update status flags.
-  void adcs(const Register& rd, const Register& rn, const Operand& operand);
+  void adcs(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Subtract with carry bit.
-  void sbc(const Register& rd, const Register& rn, const Operand& operand);
+  void sbc(const Register& rd,
+           const Register& rn,
+           const Operand& operand);
 
   // Subtract with carry bit and update status flags.
-  void sbcs(const Register& rd, const Register& rn, const Operand& operand);
+  void sbcs(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Negate with carry bit.
-  void ngc(const Register& rd, const Operand& operand);
+  void ngc(const Register& rd,
+           const Operand& operand);
 
   // Negate with carry bit and update status flags.
-  void ngcs(const Register& rd, const Operand& operand);
+  void ngcs(const Register& rd,
+            const Operand& operand);
 
   // Logical instructions.
   // Bitwise and (A & B).
-  void and_(const Register& rd, const Register& rn, const Operand& operand);
+  void and_(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Bitwise and (A & B) and update status flags.
-  void ands(const Register& rd, const Register& rn, const Operand& operand);
+  void ands(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Bit test, and set flags.
   void tst(const Register& rn, const Operand& operand);
 
   // Bit clear (A & ~B).
-  void bic(const Register& rd, const Register& rn, const Operand& operand);
+  void bic(const Register& rd,
+           const Register& rn,
+           const Operand& operand);
 
   // Bit clear (A & ~B) and update status flags.
-  void bics(const Register& rd, const Register& rn, const Operand& operand);
+  void bics(const Register& rd,
+            const Register& rn,
+            const Operand& operand);
 
   // Bitwise or (A | B).
   void orr(const Register& rd, const Register& rn, const Operand& operand);
@@ -1104,13 +1172,19 @@ class Assembler : public AssemblerBase {
   }
 
   // Signed extend byte.
-  void sxtb(const Register& rd, const Register& rn) { sbfm(rd, rn, 0, 7); }
+  void sxtb(const Register& rd, const Register& rn) {
+    sbfm(rd, rn, 0, 7);
+  }
 
   // Signed extend halfword.
-  void sxth(const Register& rd, const Register& rn) { sbfm(rd, rn, 0, 15); }
+  void sxth(const Register& rd, const Register& rn) {
+    sbfm(rd, rn, 0, 15);
+  }
 
   // Signed extend word.
-  void sxtw(const Register& rd, const Register& rn) { sbfm(rd, rn, 0, 31); }
+  void sxtw(const Register& rd, const Register& rn) {
+    sbfm(rd, rn, 0, 31);
+  }
 
   // Ubfm aliases.
   // Logical shift left.
@@ -1141,32 +1215,46 @@ class Assembler : public AssemblerBase {
   }
 
   // Unsigned extend byte.
-  void uxtb(const Register& rd, const Register& rn) { ubfm(rd, rn, 0, 7); }
+  void uxtb(const Register& rd, const Register& rn) {
+    ubfm(rd, rn, 0, 7);
+  }
 
   // Unsigned extend halfword.
-  void uxth(const Register& rd, const Register& rn) { ubfm(rd, rn, 0, 15); }
+  void uxth(const Register& rd, const Register& rn) {
+    ubfm(rd, rn, 0, 15);
+  }
 
   // Unsigned extend word.
-  void uxtw(const Register& rd, const Register& rn) { ubfm(rd, rn, 0, 31); }
+  void uxtw(const Register& rd, const Register& rn) {
+    ubfm(rd, rn, 0, 31);
+  }
 
   // Extract.
   void extr(const Register& rd, const Register& rn, const Register& rm,
             int lsb);
 
   // Conditional select: rd = cond ? rn : rm.
-  void csel(const Register& rd, const Register& rn, const Register& rm,
+  void csel(const Register& rd,
+            const Register& rn,
+            const Register& rm,
             Condition cond);
 
   // Conditional select increment: rd = cond ? rn : rm + 1.
-  void csinc(const Register& rd, const Register& rn, const Register& rm,
+  void csinc(const Register& rd,
+             const Register& rn,
+             const Register& rm,
              Condition cond);
 
   // Conditional select inversion: rd = cond ? rn : ~rm.
-  void csinv(const Register& rd, const Register& rn, const Register& rm,
+  void csinv(const Register& rd,
+             const Register& rn,
+             const Register& rm,
              Condition cond);
 
   // Conditional select negation: rd = cond ? rn : -rm.
-  void csneg(const Register& rd, const Register& rn, const Register& rm,
+  void csneg(const Register& rd,
+             const Register& rn,
+             const Register& rm,
              Condition cond);
 
   // Conditional set: rd = cond ? 1 : 0.
@@ -1191,11 +1279,15 @@ class Assembler : public AssemblerBase {
 
   // Conditional comparison.
   // Conditional compare negative.
-  void ccmn(const Register& rn, const Operand& operand, StatusFlags nzcv,
+  void ccmn(const Register& rn,
+            const Operand& operand,
+            StatusFlags nzcv,
             Condition cond);
 
   // Conditional compare.
-  void ccmp(const Register& rn, const Operand& operand, StatusFlags nzcv,
+  void ccmp(const Register& rn,
+            const Operand& operand,
+            StatusFlags nzcv,
             Condition cond);
 
   // Multiplication.
@@ -1203,14 +1295,18 @@ class Assembler : public AssemblerBase {
   void mul(const Register& rd, const Register& rn, const Register& rm);
 
   // 32 + 32 x 32 -> 32-bit and 64 + 64 x 64 -> 64-bit multiply accumulate.
-  void madd(const Register& rd, const Register& rn, const Register& rm,
+  void madd(const Register& rd,
+            const Register& rn,
+            const Register& rm,
             const Register& ra);
 
   // -(32 x 32) -> 32-bit and -(64 x 64) -> 64-bit multiply.
   void mneg(const Register& rd, const Register& rn, const Register& rm);
 
   // 32 - 32 x 32 -> 32-bit and 64 - 64 x 64 -> 64-bit multiply subtract.
-  void msub(const Register& rd, const Register& rn, const Register& rm,
+  void msub(const Register& rd,
+            const Register& rn,
+            const Register& rm,
             const Register& ra);
 
   // 32 x 32 -> 64-bit multiply.
@@ -1220,19 +1316,27 @@ class Assembler : public AssemblerBase {
   void smulh(const Register& rd, const Register& rn, const Register& rm);
 
   // Signed 32 x 32 -> 64-bit multiply and accumulate.
-  void smaddl(const Register& rd, const Register& rn, const Register& rm,
+  void smaddl(const Register& rd,
+              const Register& rn,
+              const Register& rm,
               const Register& ra);
 
   // Unsigned 32 x 32 -> 64-bit multiply and accumulate.
-  void umaddl(const Register& rd, const Register& rn, const Register& rm,
+  void umaddl(const Register& rd,
+              const Register& rn,
+              const Register& rm,
               const Register& ra);
 
   // Signed 32 x 32 -> 64-bit multiply and subtract.
-  void smsubl(const Register& rd, const Register& rn, const Register& rm,
+  void smsubl(const Register& rd,
+              const Register& rn,
+              const Register& rm,
               const Register& ra);
 
   // Unsigned 32 x 32 -> 64-bit multiply and subtract.
-  void umsubl(const Register& rd, const Register& rn, const Register& rm,
+  void umsubl(const Register& rd,
+              const Register& rn,
+              const Register& rm,
               const Register& ra);
 
   // Signed integer divide.
@@ -1294,6 +1398,42 @@ class Assembler : public AssemblerBase {
 
   // Load literal to register.
   void ldr(const CPURegister& rt, const Immediate& imm);
+
+  // Load-acquire word.
+  void ldar(const Register& rt, const Register& rn);
+
+  // Load-acquire exclusive word.
+  void ldaxr(const Register& rt, const Register& rn);
+
+  // Store-release word.
+  void stlr(const Register& rt, const Register& rn);
+
+  // Store-release exclusive word.
+  void stlxr(const Register& rs, const Register& rt, const Register& rn);
+
+  // Load-acquire byte.
+  void ldarb(const Register& rt, const Register& rn);
+
+  // Load-acquire exclusive byte.
+  void ldaxrb(const Register& rt, const Register& rn);
+
+  // Store-release byte.
+  void stlrb(const Register& rt, const Register& rn);
+
+  // Store-release exclusive byte.
+  void stlxrb(const Register& rs, const Register& rt, const Register& rn);
+
+  // Load-acquire half-word.
+  void ldarh(const Register& rt, const Register& rn);
+
+  // Load-acquire exclusive half-word.
+  void ldaxrh(const Register& rt, const Register& rn);
+
+  // Store-release half-word.
+  void stlrh(const Register& rt, const Register& rn);
+
+  // Store-release exclusive half-word.
+  void stlxrh(const Register& rs, const Register& rt, const Register& rn);
 
   // Move instructions. The default shift of -1 indicates that the move
   // instruction will calculate an appropriate 16-bit immediate and left shift
@@ -1394,19 +1534,27 @@ class Assembler : public AssemblerBase {
   void fmul(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm);
 
   // FP fused multiply and add.
-  void fmadd(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm,
+  void fmadd(const FPRegister& fd,
+             const FPRegister& fn,
+             const FPRegister& fm,
              const FPRegister& fa);
 
   // FP fused multiply and subtract.
-  void fmsub(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm,
+  void fmsub(const FPRegister& fd,
+             const FPRegister& fn,
+             const FPRegister& fm,
              const FPRegister& fa);
 
   // FP fused multiply, add and negate.
-  void fnmadd(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm,
+  void fnmadd(const FPRegister& fd,
+              const FPRegister& fn,
+              const FPRegister& fm,
               const FPRegister& fa);
 
   // FP fused multiply, subtract and negate.
-  void fnmsub(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm,
+  void fnmsub(const FPRegister& fd,
+              const FPRegister& fn,
+              const FPRegister& fm,
               const FPRegister& fa);
 
   // FP divide.
@@ -1455,15 +1603,20 @@ class Assembler : public AssemblerBase {
   void fcmp(const FPRegister& fn, double value);
 
   // FP conditional compare.
-  void fccmp(const FPRegister& fn, const FPRegister& fm, StatusFlags nzcv,
+  void fccmp(const FPRegister& fn,
+             const FPRegister& fm,
+             StatusFlags nzcv,
              Condition cond);
 
   // FP conditional select.
-  void fcsel(const FPRegister& fd, const FPRegister& fn, const FPRegister& fm,
+  void fcsel(const FPRegister& fd,
+             const FPRegister& fn,
+             const FPRegister& fm,
              Condition cond);
 
   // Common FP Convert function
-  void FPConvertToInt(const Register& rd, const FPRegister& fn,
+  void FPConvertToInt(const Register& rd,
+                      const FPRegister& fn,
                       FPIntegerConvertOp op);
 
   // FP convert between single and double precision.
@@ -1576,6 +1729,11 @@ class Assembler : public AssemblerBase {
     return rt2.code() << Rt2_offset;
   }
 
+  static Instr Rs(CPURegister rs) {
+    DCHECK(rs.code() != kSPRegInternalCode);
+    return rs.code() << Rs_offset;
+  }
+
   // These encoding functions allow the stack pointer to be encoded, and
   // disallow the zero register.
   static Instr RdSP(Register rd) {
@@ -1619,8 +1777,11 @@ class Assembler : public AssemblerBase {
   inline static Instr Nzcv(StatusFlags nzcv);
 
   static bool IsImmAddSub(int64_t immediate);
-  static bool IsImmLogical(uint64_t value, unsigned width, unsigned* n,
-                           unsigned* imm_s, unsigned* imm_r);
+  static bool IsImmLogical(uint64_t value,
+                           unsigned width,
+                           unsigned* n,
+                           unsigned* imm_s,
+                           unsigned* imm_r);
 
   // MemOperand offset encoding.
   inline static Instr ImmLSUnsigned(int imm12);
@@ -1656,7 +1817,9 @@ class Assembler : public AssemblerBase {
     explicit BlockConstPoolScope(Assembler* assem) : assem_(assem) {
       assem_->StartBlockConstPool();
     }
-    ~BlockConstPoolScope() { assem_->EndBlockConstPool(); }
+    ~BlockConstPoolScope() {
+      assem_->EndBlockConstPool();
+    }
 
    private:
     Assembler* assem_;
@@ -1704,7 +1867,9 @@ class Assembler : public AssemblerBase {
     explicit BlockPoolsScope(Assembler* assem) : assem_(assem) {
       assem_->StartBlockPools();
     }
-    ~BlockPoolsScope() { assem_->EndBlockPools(); }
+    ~BlockPoolsScope() {
+      assem_->EndBlockPools();
+    }
 
    private:
     Assembler* assem_;
@@ -1715,35 +1880,54 @@ class Assembler : public AssemblerBase {
  protected:
   inline const Register& AppropriateZeroRegFor(const CPURegister& reg) const;
 
-  void LoadStore(const CPURegister& rt, const MemOperand& addr, LoadStoreOp op);
+  void LoadStore(const CPURegister& rt,
+                 const MemOperand& addr,
+                 LoadStoreOp op);
 
   void LoadStorePair(const CPURegister& rt, const CPURegister& rt2,
                      const MemOperand& addr, LoadStorePairOp op);
   static bool IsImmLSPair(int64_t offset, LSDataSize size);
 
-  void Logical(const Register& rd, const Register& rn, const Operand& operand,
+  void Logical(const Register& rd,
+               const Register& rn,
+               const Operand& operand,
                LogicalOp op);
-  void LogicalImmediate(const Register& rd, const Register& rn, unsigned n,
-                        unsigned imm_s, unsigned imm_r, LogicalOp op);
+  void LogicalImmediate(const Register& rd,
+                        const Register& rn,
+                        unsigned n,
+                        unsigned imm_s,
+                        unsigned imm_r,
+                        LogicalOp op);
 
-  void ConditionalCompare(const Register& rn, const Operand& operand,
-                          StatusFlags nzcv, Condition cond,
+  void ConditionalCompare(const Register& rn,
+                          const Operand& operand,
+                          StatusFlags nzcv,
+                          Condition cond,
                           ConditionalCompareOp op);
   static bool IsImmConditionalCompare(int64_t immediate);
 
-  void AddSubWithCarry(const Register& rd, const Register& rn,
-                       const Operand& operand, FlagsUpdate S,
+  void AddSubWithCarry(const Register& rd,
+                       const Register& rn,
+                       const Operand& operand,
+                       FlagsUpdate S,
                        AddSubWithCarryOp op);
 
   // Functions for emulating operands not directly supported by the instruction
   // set.
-  void EmitShift(const Register& rd, const Register& rn, Shift shift,
+  void EmitShift(const Register& rd,
+                 const Register& rn,
+                 Shift shift,
                  unsigned amount);
-  void EmitExtendShift(const Register& rd, const Register& rn, Extend extend,
+  void EmitExtendShift(const Register& rd,
+                       const Register& rn,
+                       Extend extend,
                        unsigned left_shift);
 
-  void AddSub(const Register& rd, const Register& rn, const Operand& operand,
-              FlagsUpdate S, AddSubOp op);
+  void AddSub(const Register& rd,
+              const Register& rn,
+              const Operand& operand,
+              FlagsUpdate S,
+              AddSubOp op);
 
   static bool IsImmFP32(float imm);
   static bool IsImmFP64(double imm);
@@ -1762,33 +1946,50 @@ class Assembler : public AssemblerBase {
   // Remove the specified branch from the unbound label link chain.
   // If available, a veneer for this label can be used for other branches in the
   // chain if the link chain cannot be fixed up without this branch.
-  void RemoveBranchFromLabelLinkChain(Instruction* branch, Label* label,
+  void RemoveBranchFromLabelLinkChain(Instruction* branch,
+                                      Label* label,
                                       Instruction* label_veneer = NULL);
 
  private:
   // Instruction helpers.
-  void MoveWide(const Register& rd, uint64_t imm, int shift,
+  void MoveWide(const Register& rd,
+                uint64_t imm,
+                int shift,
                 MoveWideImmediateOp mov_op);
-  void DataProcShiftedRegister(const Register& rd, const Register& rn,
-                               const Operand& operand, FlagsUpdate S, Instr op);
-  void DataProcExtendedRegister(const Register& rd, const Register& rn,
-                                const Operand& operand, FlagsUpdate S,
+  void DataProcShiftedRegister(const Register& rd,
+                               const Register& rn,
+                               const Operand& operand,
+                               FlagsUpdate S,
+                               Instr op);
+  void DataProcExtendedRegister(const Register& rd,
+                                const Register& rn,
+                                const Operand& operand,
+                                FlagsUpdate S,
                                 Instr op);
-  void ConditionalSelect(const Register& rd, const Register& rn,
-                         const Register& rm, Condition cond,
+  void ConditionalSelect(const Register& rd,
+                         const Register& rn,
+                         const Register& rm,
+                         Condition cond,
                          ConditionalSelectOp op);
-  void DataProcessing1Source(const Register& rd, const Register& rn,
+  void DataProcessing1Source(const Register& rd,
+                             const Register& rn,
                              DataProcessing1SourceOp op);
-  void DataProcessing3Source(const Register& rd, const Register& rn,
-                             const Register& rm, const Register& ra,
+  void DataProcessing3Source(const Register& rd,
+                             const Register& rn,
+                             const Register& rm,
+                             const Register& ra,
                              DataProcessing3SourceOp op);
-  void FPDataProcessing1Source(const FPRegister& fd, const FPRegister& fn,
+  void FPDataProcessing1Source(const FPRegister& fd,
+                               const FPRegister& fn,
                                FPDataProcessing1SourceOp op);
-  void FPDataProcessing2Source(const FPRegister& fd, const FPRegister& fn,
+  void FPDataProcessing2Source(const FPRegister& fd,
+                               const FPRegister& fn,
                                const FPRegister& fm,
                                FPDataProcessing2SourceOp op);
-  void FPDataProcessing3Source(const FPRegister& fd, const FPRegister& fn,
-                               const FPRegister& fm, const FPRegister& fa,
+  void FPDataProcessing3Source(const FPRegister& fd,
+                               const FPRegister& fn,
+                               const FPRegister& fm,
+                               const FPRegister& fa,
                                FPDataProcessing3SourceOp op);
 
   // Label helpers.
@@ -1803,7 +2004,7 @@ class Assembler : public AssemblerBase {
   static const int kStartOfLabelLinkChain = 0;
 
   // Verify that a label's link chain is intact.
-  void CheckLabelLinkChain(Label const* label);
+  void CheckLabelLinkChain(Label const * label);
 
   void RecordLiteral(int64_t imm, unsigned size);
 
@@ -1828,7 +2029,7 @@ class Assembler : public AssemblerBase {
   }
 
   // Emit data inline in the instruction stream.
-  void EmitData(void const* data, unsigned size) {
+  void EmitData(void const * data, unsigned size) {
     DCHECK(sizeof(*pc_) == 1);
     DCHECK((pc_ + size) <= (buffer_ + buffer_size_));
 
@@ -1875,7 +2076,7 @@ class Assembler : public AssemblerBase {
 
   // Emission of the constant pool may be blocked in some code sequences.
   int const_pool_blocked_nesting_;  // Block emission if this is not zero.
-  int no_const_pool_before_;        // Block emission before this pc offset.
+  int no_const_pool_before_;  // Block emission before this pc offset.
 
   // Emission of the veneer pools may be blocked in some code sequences.
   int veneer_pool_blocked_nesting_;  // Block emission if this is not zero.
@@ -1957,7 +2158,7 @@ class Assembler : public AssemblerBase {
   // protective branch.
   static const int kVeneerNoProtectionFactor = 2;
   static const int kVeneerDistanceCheckMargin =
-      kVeneerNoProtectionFactor * kVeneerDistanceMargin;
+    kVeneerNoProtectionFactor * kVeneerDistanceMargin;
   int unresolved_branches_first_limit() const {
     DCHECK(!unresolved_branches_.empty());
     return unresolved_branches_.begin()->first;
@@ -1981,8 +2182,6 @@ class Assembler : public AssemblerBase {
   void DeleteUnresolvedBranchInfoForLabelTraverse(Label* label);
 
  private:
-  AssemblerPositionsRecorder positions_recorder_;
-  friend class AssemblerPositionsRecorder;
   friend class EnsureSpace;
   friend class ConstPool;
 };
@@ -2028,9 +2227,12 @@ class PatchingAssembler : public Assembler {
   void PatchAdrFar(int64_t target_offset);
 };
 
+
 class EnsureSpace BASE_EMBEDDED {
  public:
-  explicit EnsureSpace(Assembler* assembler) { assembler->CheckBufferSpace(); }
+  explicit EnsureSpace(Assembler* assembler) {
+    assembler->CheckBufferSpace();
+  }
 };
 
 }  // namespace internal

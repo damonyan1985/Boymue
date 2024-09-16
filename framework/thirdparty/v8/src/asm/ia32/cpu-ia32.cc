@@ -7,7 +7,7 @@
 #ifdef __GNUC__
 #include "src/third_party/valgrind/valgrind.h"
 #endif
-#define V8_TARGET_ARCH_IA32 1
+
 #if V8_TARGET_ARCH_IA32
 
 #include "src/assembler.h"

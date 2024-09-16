@@ -4,19 +4,23 @@
 
 #if V8_TARGET_ARCH_X87
 
-#include "src/asm/x87/frames-x87.h"
 #include "src/codegen.h"
 #include "src/deoptimizer.h"
 #include "src/full-codegen/full-codegen.h"
 #include "src/register-configuration.h"
 #include "src/safepoint-table.h"
+#include "src/x87/frames-x87.h"
 
 namespace v8 {
 namespace internal {
 
 const int Deoptimizer::table_entry_size_ = 10;
 
-int Deoptimizer::patch_size() { return Assembler::kCallInstructionLength; }
+
+int Deoptimizer::patch_size() {
+  return Assembler::kCallInstructionLength;
+}
+
 
 void Deoptimizer::EnsureRelocSpaceForLazyDeoptimization(Handle<Code> code) {
   Isolate* isolate = code->GetIsolate();
@@ -31,6 +35,7 @@ void Deoptimizer::EnsureRelocSpaceForLazyDeoptimization(Handle<Code> code) {
   for (int i = 0; i < deopt_data->DeoptCount(); i++) {
     int pc_offset = deopt_data->Pc(i)->value();
     if (pc_offset == -1) continue;
+    pc_offset = pc_offset + 1;  // We will encode the pc offset after the call.
     DCHECK_GE(pc_offset, prev_pc_offset);
     int pc_delta = pc_offset - prev_pc_offset;
     // We use RUNTIME_ENTRY reloc info which has a size of 2 bytes
@@ -69,8 +74,8 @@ void Deoptimizer::EnsureRelocSpaceForLazyDeoptimization(Handle<Code> code) {
     // space. Use position 0 for everything to ensure short encoding.
     RelocInfoWriter reloc_info_writer(
         new_reloc->GetDataStartAddress() + padding, 0);
-    intptr_t comment_string =
-        reinterpret_cast<intptr_t>(RelocInfo::kFillerCommentString);
+    intptr_t comment_string
+        = reinterpret_cast<intptr_t>(RelocInfo::kFillerCommentString);
     RelocInfo rinfo(isolate, 0, RelocInfo::COMMENT, comment_string, NULL);
     for (int i = 0; i < additional_comments; ++i) {
 #ifdef DEBUG
@@ -84,6 +89,7 @@ void Deoptimizer::EnsureRelocSpaceForLazyDeoptimization(Handle<Code> code) {
     code->set_relocation_info(*new_reloc);
   }
 }
+
 
 void Deoptimizer::PatchCodeForDeoptimization(Isolate* isolate, Code* code) {
   Address code_start_address = code->instruction_start();
@@ -163,6 +169,7 @@ void Deoptimizer::PatchCodeForDeoptimization(Isolate* isolate, Code* code) {
   }
 }
 
+
 void Deoptimizer::SetPlatformCompiledStubRegisters(
     FrameDescription* output_frame, CodeStubDescriptor* descriptor) {
   intptr_t handler =
@@ -171,6 +178,7 @@ void Deoptimizer::SetPlatformCompiledStubRegisters(
   output_frame->SetRegister(eax.code(), params);
   output_frame->SetRegister(ebx.code(), handler);
 }
+
 
 void Deoptimizer::CopyDoubleRegisters(FrameDescription* output_frame) {
   for (int i = 0; i < X87Register::kMaxNumRegisters; ++i) {
@@ -245,9 +253,9 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   __ JumpIfSmi(edi, &context_check);
   __ mov(eax, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
   __ bind(&context_check);
-  __ mov(Operand(esp, 0 * kPointerSize), eax);                // Function.
+  __ mov(Operand(esp, 0 * kPointerSize), eax);  // Function.
   __ mov(Operand(esp, 1 * kPointerSize), Immediate(type()));  // Bailout type.
-  __ mov(Operand(esp, 2 * kPointerSize), ebx);                // Bailout id.
+  __ mov(Operand(esp, 2 * kPointerSize), ebx);  // Bailout id.
   __ mov(Operand(esp, 3 * kPointerSize), ecx);  // Code address or 0.
   __ mov(Operand(esp, 4 * kPointerSize), edx);  // Fp-to-sp delta.
   __ mov(Operand(esp, 5 * kPointerSize),
@@ -270,8 +278,7 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   }
 
   int double_regs_offset = FrameDescription::double_registers_offset();
-  const RegisterConfiguration* config =
-      RegisterConfiguration::ArchDefault(RegisterConfiguration::CRANKSHAFT);
+  const RegisterConfiguration* config = RegisterConfiguration::Crankshaft();
   // Fill in the double input registers.
   for (int i = 0; i < X87Register::kMaxNumAllocatableRegisters; ++i) {
     int code = config->GetAllocatableDoubleCode(i);
@@ -323,7 +330,8 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   __ mov(esp, Operand(eax, Deoptimizer::caller_frame_top_offset()));
 
   // Replace the current (input) frame with the output frames.
-  Label outer_push_loop, inner_push_loop, outer_loop_header, inner_loop_header;
+  Label outer_push_loop, inner_push_loop,
+      outer_loop_header, inner_loop_header;
   // Outer loop state: eax = current FrameDescription**, edx = one past the
   // last FrameDescription**.
   __ mov(edx, Operand(eax, Deoptimizer::output_count_offset()));
@@ -345,6 +353,7 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   __ bind(&outer_loop_header);
   __ cmp(eax, edx);
   __ j(below, &outer_push_loop);
+
 
   // In case of a failed STUB, we have to restore the x87 stack.
   // x87 stack layout is in edi.
@@ -369,6 +378,7 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   __ push(Operand(ebx, FrameDescription::pc_offset()));
   __ push(Operand(ebx, FrameDescription::continuation_offset()));
 
+
   // Push the registers from the last output frame.
   for (int i = 0; i < kNumberOfRegisters; i++) {
     int offset = (i * kPointerSize) + FrameDescription::registers_offset();
@@ -381,6 +391,7 @@ void Deoptimizer::TableEntryGenerator::Generate() {
   // Return to the continuation point.
   __ ret(0);
 }
+
 
 void Deoptimizer::TableEntryGenerator::GeneratePrologue() {
   // Create a sequence of deoptimization entries.
@@ -395,20 +406,25 @@ void Deoptimizer::TableEntryGenerator::GeneratePrologue() {
   __ bind(&done);
 }
 
+
 void FrameDescription::SetCallerPc(unsigned offset, intptr_t value) {
   SetFrameSlot(offset, value);
 }
 
+
 void FrameDescription::SetCallerFp(unsigned offset, intptr_t value) {
   SetFrameSlot(offset, value);
 }
+
 
 void FrameDescription::SetCallerConstantPool(unsigned offset, intptr_t value) {
   // No embedded constant pool support.
   UNREACHABLE();
 }
 
+
 #undef __
+
 
 }  // namespace internal
 }  // namespace v8

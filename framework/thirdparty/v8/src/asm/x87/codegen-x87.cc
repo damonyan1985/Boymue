@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/asm/x87/codegen-x87.h"
+#include "src/x87/codegen-x87.h"
 
 #if V8_TARGET_ARCH_X87
 
@@ -13,6 +13,7 @@
 namespace v8 {
 namespace internal {
 
+
 // -------------------------------------------------------------------------
 // Platform-specific RuntimeCallHelper functions.
 
@@ -22,17 +23,16 @@ void StubRuntimeCallHelper::BeforeCall(MacroAssembler* masm) const {
   masm->set_has_frame(true);
 }
 
+
 void StubRuntimeCallHelper::AfterCall(MacroAssembler* masm) const {
   masm->LeaveFrame(StackFrame::INTERNAL);
   DCHECK(masm->has_frame());
   masm->set_has_frame(false);
 }
 
+
 #define __ masm.
 
-UnaryMathFunctionWithIsolate CreateExpFunction(Isolate* isolate) {
-  return nullptr;
-}
 
 UnaryMathFunctionWithIsolate CreateSqrtFunction(Isolate* isolate) {
   size_t actual_size;
@@ -59,6 +59,7 @@ UnaryMathFunctionWithIsolate CreateSqrtFunction(Isolate* isolate) {
   return FUNCTION_CAST<UnaryMathFunctionWithIsolate>(buffer);
 }
 
+
 // Helper functions for CreateMemMoveFunction.
 #undef __
 #define __ ACCESS_MASM(masm)
@@ -66,14 +67,17 @@ UnaryMathFunctionWithIsolate CreateSqrtFunction(Isolate* isolate) {
 enum Direction { FORWARD, BACKWARD };
 enum Alignment { MOVE_ALIGNED, MOVE_UNALIGNED };
 
+
 void MemMoveEmitPopAndReturn(MacroAssembler* masm) {
   __ pop(esi);
   __ pop(edi);
   __ ret(0);
 }
 
+
 #undef __
 #define __ masm.
+
 
 class LabelConverter {
  public:
@@ -81,10 +85,10 @@ class LabelConverter {
   int32_t address(Label* l) const {
     return reinterpret_cast<int32_t>(buffer_) + l->pos();
   }
-
  private:
   byte* buffer_;
 };
+
 
 MemMoveFunction CreateMemMoveFunction(Isolate* isolate) {
   size_t actual_size;
@@ -200,6 +204,7 @@ MemMoveFunction CreateMemMoveFunction(Isolate* isolate) {
   return FUNCTION_CAST<MemMoveFunction>(buffer);
 }
 
+
 #undef __
 
 // -------------------------------------------------------------------------
@@ -207,17 +212,22 @@ MemMoveFunction CreateMemMoveFunction(Isolate* isolate) {
 
 #define __ ACCESS_MASM(masm)
 
+
 void ElementsTransitionGenerator::GenerateMapChangeElementsTransition(
-    MacroAssembler* masm, Register receiver, Register key, Register value,
-    Register target_map, AllocationSiteMode mode,
+    MacroAssembler* masm,
+    Register receiver,
+    Register key,
+    Register value,
+    Register target_map,
+    AllocationSiteMode mode,
     Label* allocation_memento_found) {
   Register scratch = edi;
   DCHECK(!AreAliased(receiver, key, value, target_map, scratch));
 
   if (mode == TRACK_ALLOCATION_SITE) {
     DCHECK(allocation_memento_found != NULL);
-    __ JumpIfJSArrayHasAllocationMemento(receiver, scratch,
-                                         allocation_memento_found);
+    __ JumpIfJSArrayHasAllocationMemento(
+        receiver, scratch, allocation_memento_found);
   }
 
   // Set transitioned map.
@@ -226,9 +236,15 @@ void ElementsTransitionGenerator::GenerateMapChangeElementsTransition(
                       kDontSaveFPRegs, EMIT_REMEMBERED_SET, OMIT_SMI_CHECK);
 }
 
+
 void ElementsTransitionGenerator::GenerateSmiToDouble(
-    MacroAssembler* masm, Register receiver, Register key, Register value,
-    Register target_map, AllocationSiteMode mode, Label* fail) {
+    MacroAssembler* masm,
+    Register receiver,
+    Register key,
+    Register value,
+    Register target_map,
+    AllocationSiteMode mode,
+    Label* fail) {
   // Return address is on the stack.
   DCHECK(receiver.is(edx));
   DCHECK(key.is(ecx));
@@ -249,14 +265,14 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
 
   __ push(eax);
   __ push(ebx);
+  __ push(esi);
 
   __ mov(edi, FieldOperand(edi, FixedArray::kLengthOffset));
 
   // Allocate new FixedDoubleArray.
   // edx: receiver
   // edi: length of source FixedArray (smi-tagged)
-  AllocationFlags flags =
-      static_cast<AllocationFlags>(TAG_OBJECT | DOUBLE_ALIGNMENT);
+  AllocationFlags flags = static_cast<AllocationFlags>(DOUBLE_ALIGNMENT);
   __ Allocate(FixedDoubleArray::kHeaderSize, times_8, edi,
               REGISTER_VALUE_IS_SMI, eax, ebx, no_reg, &gc_required, flags);
 
@@ -282,8 +298,9 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
 
   // Call into runtime if GC is required.
   __ bind(&gc_required);
+
   // Restore registers before jumping into runtime.
-  __ mov(esi, Operand(ebp, StandardFrameConstants::kContextOffset));
+  __ pop(esi);
   __ pop(ebx);
   __ pop(eax);
   __ jmp(fail);
@@ -319,11 +336,10 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
   __ sub(edi, Immediate(Smi::FromInt(1)));
   __ j(not_sign, &loop);
 
+  // Restore registers.
+  __ pop(esi);
   __ pop(ebx);
   __ pop(eax);
-
-  // Restore esi.
-  __ mov(esi, Operand(ebp, StandardFrameConstants::kContextOffset));
 
   __ bind(&only_change_map);
   // eax: value
@@ -334,9 +350,15 @@ void ElementsTransitionGenerator::GenerateSmiToDouble(
                       OMIT_REMEMBERED_SET, OMIT_SMI_CHECK);
 }
 
+
 void ElementsTransitionGenerator::GenerateDoubleToObject(
-    MacroAssembler* masm, Register receiver, Register key, Register value,
-    Register target_map, AllocationSiteMode mode, Label* fail) {
+    MacroAssembler* masm,
+    Register receiver,
+    Register key,
+    Register value,
+    Register target_map,
+    AllocationSiteMode mode,
+    Label* fail) {
   // Return address is on the stack.
   DCHECK(receiver.is(edx));
   DCHECK(key.is(ecx));
@@ -365,7 +387,7 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
   // Allocate new FixedArray.
   // ebx: length of source FixedDoubleArray (smi-tagged)
   __ lea(edi, Operand(ebx, times_2, FixedArray::kHeaderSize));
-  __ Allocate(edi, eax, esi, no_reg, &gc_required, TAG_OBJECT);
+  __ Allocate(edi, eax, esi, no_reg, &gc_required, NO_ALLOCATION_FLAGS);
 
   // eax: destination FixedArray
   // ebx: number of elements
@@ -457,9 +479,13 @@ void ElementsTransitionGenerator::GenerateDoubleToObject(
   __ bind(&success);
 }
 
-void StringCharLoadGenerator::Generate(MacroAssembler* masm, Factory* factory,
-                                       Register string, Register index,
-                                       Register result, Label* call_runtime) {
+
+void StringCharLoadGenerator::Generate(MacroAssembler* masm,
+                                       Factory* factory,
+                                       Register string,
+                                       Register index,
+                                       Register result,
+                                       Label* call_runtime) {
   // Fetch the instance type of the receiver into result register.
   __ mov(result, FieldOperand(string, HeapObject::kMapOffset));
   __ movzx_b(result, FieldOperand(result, Map::kInstanceTypeOffset));
@@ -541,19 +567,25 @@ void StringCharLoadGenerator::Generate(MacroAssembler* masm, Factory* factory,
 
   // Two-byte string.
   // Load the two-byte character code into the result register.
-  __ movzx_w(result, FieldOperand(string, index, times_2,
+  __ movzx_w(result, FieldOperand(string,
+                                  index,
+                                  times_2,
                                   SeqTwoByteString::kHeaderSize));
   __ jmp(&done, Label::kNear);
 
   // One-byte string.
   // Load the byte into the result register.
   __ bind(&one_byte);
-  __ movzx_b(result, FieldOperand(string, index, times_1,
+  __ movzx_b(result, FieldOperand(string,
+                                  index,
+                                  times_1,
                                   SeqOneByteString::kHeaderSize));
   __ bind(&done);
 }
 
+
 #undef __
+
 
 CodeAgingHelper::CodeAgingHelper(Isolate* isolate) {
   USE(isolate);
@@ -566,17 +598,20 @@ CodeAgingHelper::CodeAgingHelper(Isolate* isolate) {
   patcher.masm()->push(edi);
 }
 
+
 #ifdef DEBUG
 bool CodeAgingHelper::IsOld(byte* candidate) const {
   return *candidate == kCallOpcode;
 }
 #endif
 
+
 bool Code::IsYoungSequence(Isolate* isolate, byte* sequence) {
   bool result = isolate->code_aging_helper()->IsYoung(sequence);
   DCHECK(result || isolate->code_aging_helper()->IsOld(sequence));
   return result;
 }
+
 
 void Code::GetCodeAgeAndParity(Isolate* isolate, byte* sequence, Age* age,
                                MarkingParity* parity) {
@@ -586,13 +621,16 @@ void Code::GetCodeAgeAndParity(Isolate* isolate, byte* sequence, Age* age,
   } else {
     sequence++;  // Skip the kCallOpcode byte
     Address target_address = sequence + *reinterpret_cast<int*>(sequence) +
-                             Assembler::kCallTargetAddressOffset;
+        Assembler::kCallTargetAddressOffset;
     Code* stub = GetCodeFromTargetAddress(target_address);
     GetCodeAgeAndParity(stub, age, parity);
   }
 }
 
-void Code::PatchPlatformCodeAge(Isolate* isolate, byte* sequence, Code::Age age,
+
+void Code::PatchPlatformCodeAge(Isolate* isolate,
+                                byte* sequence,
+                                Code::Age age,
                                 MarkingParity parity) {
   uint32_t young_length = isolate->code_aging_helper()->young_sequence_length();
   if (age == kNoAgeCodeAge) {
@@ -604,6 +642,7 @@ void Code::PatchPlatformCodeAge(Isolate* isolate, byte* sequence, Code::Age age,
     patcher.masm()->call(stub->instruction_start(), RelocInfo::NONE32);
   }
 }
+
 
 }  // namespace internal
 }  // namespace v8

@@ -5,11 +5,13 @@
 #include "BoymueApplication.h"
 #include "StringUtil.h"
 
-#if defined(ENABLE_BOYMUE_IOS) || defined(ANDROID)
+#define USE_QJS 0
+
+#if defined(USE_QJS) && USE_QJS == 1
 #include "qjs/include/cutils.h"
 #include "qjs/include/quickjs.h"
 #include "qjs/include/quickjs-libc.h"
-#elif defined(_WINDOWS)
+#else 
 #include "v8.h"
 #include "libplatform/libplatform.h"
 #endif
@@ -18,7 +20,7 @@
 #define MB (1024*1024)
 
 namespace boymue {
-#if defined(ENABLE_BOYMUE_IOS) || defined(ANDROID)
+#if defined(USE_QJS) && USE_QJS == 1
 
 // JsApi回调实现
 class JsApiCallbackImpl : public JsApiCallback {
@@ -217,7 +219,7 @@ JsEngine::~JsEngine() {}
 
 JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
 
-#elif defined(_WINDOWS)
+#else
   
 using namespace v8;
 
@@ -243,9 +245,9 @@ static void JsGlobalObjectAccessor(Local<v8::String> property,
 class JsRuntimeImpl : public JsRuntime {
 public:
     JsRuntimeImpl() {
-        m_arrayBufferAllocator = new ArrayBufferAllocator;
+        m_arrayBufferAllocator = make_unique<ArrayBufferAllocator>();
         Isolate::CreateParams create_params;
-        create_params.array_buffer_allocator = m_arrayBufferAllocator;
+        create_params.array_buffer_allocator = m_arrayBufferAllocator.get();
         m_isolate = Isolate::New(create_params);
         m_isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kExplicit);
 
@@ -255,7 +257,6 @@ public:
     ~JsRuntimeImpl() {
         m_context.Reset();
         m_isolate->Dispose();
-        delete m_arrayBufferAllocator;
     }
 
     v8::Isolate* getIsolate() { return m_isolate; }
@@ -326,6 +327,10 @@ public:
         }
     }
 
+    void gc() override {
+        m_isolate->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
+    }
+
 private:
     void initRuntime() {
         Isolate::Scope isolateScope(m_isolate);
@@ -354,7 +359,7 @@ private:
     Isolate* m_isolate;
     Persistent<Context> m_context;
     Persistent<Object> m_global;
-    ArrayBufferAllocator* m_arrayBufferAllocator;
+    OwnerPtr<ArrayBufferAllocator> m_arrayBufferAllocator;
     BoymueApplication* m_app;
 };
 
@@ -456,6 +461,8 @@ class JsInitor {
     m_platform = V8::InitializeDefaultPlatform();
     // V8::InitializePlatform(m_platform);
     V8::Initialize();
+
+    m_runtime = make_unique<JsRuntimeImpl>();
   }
 
   ~JsInitor() {
@@ -466,6 +473,9 @@ class JsInitor {
 
  private:
   Platform* m_platform;
+  OwnerPtr<JsRuntimeImpl> m_runtime;
+
+  friend class JsEngine;
 };
 
 // unique_ptr can be return for right reference by compiler
@@ -473,7 +483,9 @@ JsEngine::JsEngine() : m_initor(make_unique<JsInitor>()) {}
 
 JsEngine::~JsEngine() {}
 
-JsRuntime* JsEngine::createRuntime() { return new JsRuntimeImpl(); }
+JsRuntime* JsEngine::getJSRuntime() {
+    return m_initor->m_runtime.get();
+}
 #endif
 
 }  // namespace boymue

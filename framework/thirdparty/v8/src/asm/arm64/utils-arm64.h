@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-#include "src/asm/arm64/constants-arm64.h"
+#include "src/arm64/constants-arm64.h"
 
 namespace v8 {
 namespace internal {
@@ -23,11 +23,13 @@ static inline uint32_t float_to_rawbits(float value) {
   return bits;
 }
 
+
 static inline uint64_t double_to_rawbits(double value) {
   uint64_t bits = 0;
   memcpy(&bits, &value, 8);
   return bits;
 }
+
 
 static inline float rawbits_to_float(uint32_t bits) {
   float value = 0.0;
@@ -35,11 +37,13 @@ static inline float rawbits_to_float(uint32_t bits) {
   return value;
 }
 
+
 static inline double rawbits_to_double(uint64_t bits) {
   double value = 0.0;
   memcpy(&value, &bits, 8);
   return value;
 }
+
 
 // Bit counting.
 int CountLeadingZeros(uint64_t value, int width);
@@ -48,6 +52,7 @@ int CountTrailingZeros(uint64_t value, int width);
 int CountSetBits(uint64_t value, int width);
 uint64_t LargestPowerOf2Divisor(uint64_t value);
 int MaskToBit(uint64_t mask);
+
 
 template <typename T>
 T ReverseBytes(T value, int block_bytes_log2) {
@@ -78,6 +83,7 @@ T ReverseBytes(T value, int block_bytes_log2) {
   return result;
 }
 
+
 // NaN tests.
 inline bool IsSignallingNaN(double num) {
   uint64_t raw = double_to_rawbits(num);
@@ -87,6 +93,7 @@ inline bool IsSignallingNaN(double num) {
   return false;
 }
 
+
 inline bool IsSignallingNaN(float num) {
   uint32_t raw = float_to_rawbits(num);
   if (std::isnan(num) && ((raw & kSQuietNanMask) == 0)) {
@@ -95,10 +102,12 @@ inline bool IsSignallingNaN(float num) {
   return false;
 }
 
+
 template <typename T>
 inline bool IsQuietNaN(T num) {
   return std::isnan(num) && !IsSignallingNaN(num);
 }
+
 
 // Convert the NaN in 'num' to a quiet NaN.
 inline double ToQuietNaN(double num) {
@@ -106,15 +115,18 @@ inline double ToQuietNaN(double num) {
   return rawbits_to_double(double_to_rawbits(num) | kDQuietNanMask);
 }
 
+
 inline float ToQuietNaN(float num) {
   DCHECK(std::isnan(num));
   return rawbits_to_float(float_to_rawbits(num) | kSQuietNanMask);
 }
 
+
 // Fused multiply-add.
 inline double FusedMultiplyAdd(double op1, double op2, double a) {
   return fma(op1, op2, a);
 }
+
 
 inline float FusedMultiplyAdd(float op1, float op2, float a) {
   return fmaf(op1, op2, a);

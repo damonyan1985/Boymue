@@ -228,6 +228,9 @@
     <ClInclude Include="..\..\..\framework\boymue\core\paint\BoxPainter.h">
       <Filter>core\paint</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\apis\JsSystemGcApi.h">
+      <Filter>apis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -370,6 +373,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\paint\BoxPainter.cpp">
       <Filter>core\paint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\apis\JsSystemGcApi.cpp">
+      <Filter>apis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -83,4 +83,6 @@ testParseXml()
 
 boymue.log(testimport());
 
+boymue.gc();
+
 //boymue.log("test get=" + (new P().get()))

@@ -9,6 +9,7 @@
 #include "JsXmlToJsonApi.h"
 #include "JsRequireModuleApi.h"
 #include "JsRequestApi.h"
+#include "JsSystemGcApi.h"
 
 namespace boymue {
 
@@ -29,14 +30,14 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
       [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
 
   getJSTaskRunner().postTask([self = this] {
-    self->m_mainRuntime =
-        OwnerPtr<JsRuntime>(self->m_jsEngine->createRuntime());
+    self->m_mainRuntime = self->m_jsEngine->getJSRuntime();
     self->m_mainRuntime->registerApi(new JsLogApi(self));
     self->m_mainRuntime->registerApi(new JsTestApi(self));
     self->m_mainRuntime->registerApi(new JsUIOperationApi(self));
     self->m_mainRuntime->registerApi(new JsXmlToJsonApi(self));
     self->m_mainRuntime->registerApi(new JsRequireModuleApi(self));
     self->m_mainRuntime->registerApi(new JsRequestApi(self));
+    self->m_mainRuntime->registerApi(new JsSystemGcApi(self));
     self->m_mainRuntime->setContext(self);
   });
 }
@@ -56,7 +57,7 @@ void BoymueApplication::doRuntimeAction(RuntimeClosure& action) {
 }
 
 JsRuntime* BoymueApplication::runtime() const {
-    return m_mainRuntime.get();
+    return m_mainRuntime;
 }
 
 // 结束当前应用的线程
