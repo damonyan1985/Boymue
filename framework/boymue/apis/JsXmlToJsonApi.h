@@ -19,7 +19,7 @@ public:
     void execute(const String& params,
                  JsApiCallback* callback) override;
 
-    ThreadExecutor* executor();
+    ThreadExecutor* executor() override;
 };
 }
 

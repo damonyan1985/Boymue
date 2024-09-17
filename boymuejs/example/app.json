@@ -1,4 +1,10 @@
 {
   "entry": "test.js",
-  "pages": [{"ui": "test.xml", "code": "test.js"}]
+    "pages": [
+        {
+            "ui": "test.xml",
+            "style": "style.css",
+            "code": "test.js"
+        }
+    ]
 }

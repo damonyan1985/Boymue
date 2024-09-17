@@ -30,7 +30,10 @@ public:
     DocumentElement* createElement(int tag, const char** atts,
                                  DocumentElement* parent);
     
+    // 创建元素，tag标签名，uid js创建的唯一id，pid是parent_id
     void createElement(int tag, int uid, int pid);
+
+    // 删除元素，pid是parent_id，uid js创建的唯一id
     void removeElement(int pid, int uid);
     
     void addUniqueElement(DocumentElement* elem);

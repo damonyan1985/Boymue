@@ -1,8 +1,8 @@
 var require = boymue.require;
 
-require('/example/import.js');
-require('/example/import.js');
-require('/example/import.js');
+// require('/example/import.js');
+// require('/example/import.js');
+// require('/example/import.js');
 
 function testFunc(a, b) {
   let arr = [0, 1, 2];
@@ -81,7 +81,10 @@ class P {
 // test()
 testParseXml()
 
-boymue.log(testimport());
+require('/example/vdom.js')
+
+
+//boymue.log(testimport());
 
 boymue.gc();
 

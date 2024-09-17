@@ -394,6 +394,9 @@
     <None Include="..\..\..\boymuejs\example\vdom.js">
       <Filter>example</Filter>
     </None>
+    <None Include="..\..\..\boymuejs\example\style.css">
+      <Filter>example</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\..\boymuejs\example\test.xml">

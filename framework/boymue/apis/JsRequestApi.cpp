@@ -64,4 +64,8 @@ void JsRequestApi::execute(const String& params,
                                  new JsRequestClient(callback, context()));
     }
 }
+
+ThreadExecutor* JsRequestApi::executor() {
+    return context()->ioExecutor();
+}
 }

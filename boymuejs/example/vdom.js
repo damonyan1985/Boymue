@@ -18,10 +18,24 @@
    }
 */
 
-require('/example/util.js');
+//require('/example/util.js');
+
+var TagType = 0;
+
+const HtmlTags = {
+    kView: TagType++,
+    kButton: TagType++,
+    kImage: TagType++,
+    kText: TagType++,
+    kTextField: TagType++,
+};
 
 const VNodeTagMap = {
-
+    "view": HtmlTags.kView,
+    "button": HtmlTags.kButton,
+    "image": HtmlTags.kImage,
+    "#text": HtmlTags.kText,
+    "textfield": HtmlTags.kTextField
 }
 
 const VCmdType = {
@@ -88,21 +102,23 @@ function diff(parant, newNode, oldNode) {
         for (let i = 0; i < newLength || i < oldLength; ++i) {
             cmds.concat(diff(oldNode,
                 newNode.children[i],
-                oldNode.children[i],
+                oldNode.children[i]
             ));
         }
-    }
 
-    return cmds;
+        return cmds;
+    }
 }
 
+var idGen = 0;
+
 class VNode {
-    static idGen = 0;
+    
 
     constructor(tag, props, children, key) {
         this.tag = tag
-        this.props = props ?? {}
-        this.children = children ?? []
+        //this.props = props ?? {}
+        //this.children = children ?? []
         this.key = key
         // 对应C++端的uid
         this.id = ++idGen;
@@ -131,7 +147,7 @@ class VDom {
 
     }
 
-    _createNodeView = (node) => {
+    _createNodeView(node) {
         // 如果有迭代
         if (node.props.for) {
             let view = Util.deepCopy(node);
@@ -142,19 +158,19 @@ class VDom {
         }
     }
 
-    _createNodeImage = (node) => {
+    _createNodeImage(node) {
 
     }
 
-    _createNodeText = (node) => {
+    _createNodeText(node) {
 
     }
 
-    _createNodeButton = (node) => {
+    _createNodeButton(node) {
 
     }
 
-    _createNodeTextField = (node) => {
+    _createNodeTextField(node) {
 
     }
 
