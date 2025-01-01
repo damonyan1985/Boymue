@@ -39870,6 +39870,15 @@ static JSValue js_number_isSafeInteger(JSContext *ctx, JSValueConst this_val,
     return JS_NewBool(ctx, is_safe_integer(d));
 }
 
+#ifdef _WINDOWS
+#define QJS_HUGE_ENUF  1e+300
+#define QJS_INFINITY   ((float)(QJS_HUGE_ENUF * QJS_HUGE_ENUF))
+#define QJS_NAN        (-(float)(QJS_INFINITY * 0.0F))
+#else
+#define QJS_INFINITY   INFINITY
+#define QJS_NAN        NAN
+#endif // _WINDOWS
+
 static const JSCFunctionListEntry js_number_funcs[] = {
     /* global ParseInt and parseFloat should be defined already or delayed */
     JS_ALIAS_BASE_DEF("parseInt", "parseInt", 0 ),
@@ -39880,9 +39889,9 @@ static const JSCFunctionListEntry js_number_funcs[] = {
     JS_CFUNC_DEF("isSafeInteger", 1, js_number_isSafeInteger ),
     JS_PROP_DOUBLE_DEF("MAX_VALUE", 1.7976931348623157e+308, 0 ),
     JS_PROP_DOUBLE_DEF("MIN_VALUE", 5e-324, 0 ),
-    JS_PROP_DOUBLE_DEF("NaN", NAN, 0 ),
-    JS_PROP_DOUBLE_DEF("NEGATIVE_INFINITY", -INFINITY, 0 ),
-    JS_PROP_DOUBLE_DEF("POSITIVE_INFINITY", INFINITY, 0 ),
+    JS_PROP_DOUBLE_DEF("NaN", QJS_NAN, 0 ),
+    JS_PROP_DOUBLE_DEF("NEGATIVE_INFINITY", -QJS_INFINITY, 0 ),
+    JS_PROP_DOUBLE_DEF("POSITIVE_INFINITY", QJS_INFINITY, 0 ),
     JS_PROP_DOUBLE_DEF("EPSILON", 2.220446049250313e-16, 0 ), /* ES6 */
     JS_PROP_DOUBLE_DEF("MAX_SAFE_INTEGER", 9007199254740991.0, 0 ), /* ES6 */
     JS_PROP_DOUBLE_DEF("MIN_SAFE_INTEGER", -9007199254740991.0, 0 ), /* ES6 */
@@ -47919,7 +47928,7 @@ static const JSCFunctionListEntry js_global_funcs[] = {
     JS_CFUNC_DEF("escape", 1, js_global_escape ),
     JS_CFUNC_DEF("unescape", 1, js_global_unescape ),
     JS_PROP_DOUBLE_DEF("Infinity", INFINITE_MAX, 0 ),
-    JS_PROP_DOUBLE_DEF("NaN", NAN, 0 ),
+    JS_PROP_DOUBLE_DEF("NaN", QJS_NAN, 0 ),
     JS_PROP_UNDEFINED_DEF("undefined", 0 ),
 
     /* for the 'Date' implementation */
