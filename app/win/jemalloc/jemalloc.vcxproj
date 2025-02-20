@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{570e220a-7e50-48ac-a2b2-8b329d78d1c5}</ProjectGuid>
+    <RootNamespace>jemalloc</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;JEMALLOC_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>jemalloc.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;JEMALLOC_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>jemalloc.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;JEMALLOC_EXPORTS;_WINDOWS;_USRDLL;JEMALLOC_NO_PRIVATE_NAMESPACE;_REENTRANT;_WINDLL;DLLEXPORT;JEMALLOC_DEBUG;JEMALLOC_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(BOYMUE_ROOT)\framework\thirdparty\jemalloc\include\msvc_compat;$(BOYMUE_ROOT)\framework\thirdparty\jemalloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>jemalloc.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;JEMALLOC_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>jemalloc.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\C99\stdbool.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\C99\stdint.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\strings.h" />
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\windows_extra.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\arena.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\background_thread.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\base.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\batcher.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bin.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bin_info.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bitmap.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\buf_writer.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\cache_bin.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ckh.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\counter.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ctl.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\decay.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\div.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ecache.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\edata.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\edata_cache.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ehooks.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\emap.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\eset.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\exp_grow.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent_dss.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent_mmap.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\fxp.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hook.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpa.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpa_hooks.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpdata.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\inspect.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\jemalloc.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\large.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\log.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\malloc_io.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\mutex.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\nstime.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pa.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pac.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pages.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pai.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pa_extra.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\peak_event.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_data.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_log.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_recent.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_stack_range.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_stats.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_sys.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_threshold.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\psset.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\rtree.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\safety_check.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\san.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\san_bump.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sc.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sec.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\stats.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sz.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\tcache.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\test_hooks.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\thread_event.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ticker.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\tsd.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\util.c" />
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\witness.c" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\framework\thirdparty\jemalloc\src\ticker.py" />
+    <None Include="jemalloc.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

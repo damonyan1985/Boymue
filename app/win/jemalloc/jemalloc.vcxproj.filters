@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{e09b89d8-55aa-4200-8ea2-27e0df38e98e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{8ab9534b-8aa7-4b3c-a750-ec5309ec6825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\jemalloc">
+      <UniqueIdentifier>{f5ae2d53-7f59-4ff9-b0bd-650909e5f340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\jemalloc\internal">
+      <UniqueIdentifier>{ceea8794-c6a7-4f5c-862d-c0e36ae1e694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\msvc_compat">
+      <UniqueIdentifier>{7418dae9-e3b9-409c-976f-bc88a2a69324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\msvc_compat\C99">
+      <UniqueIdentifier>{64167eae-8793-44a9-8730-ead816ffc720}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\strings.h">
+      <Filter>include\msvc_compat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\windows_extra.h">
+      <Filter>include\msvc_compat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\C99\stdbool.h">
+      <Filter>include\msvc_compat\C99</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\framework\thirdparty\jemalloc\include\msvc_compat\C99\stdint.h">
+      <Filter>include\msvc_compat\C99</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\arena.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\background_thread.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\base.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\batcher.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bin.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bin_info.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\bitmap.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\buf_writer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\cache_bin.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ckh.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\counter.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ctl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\decay.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\div.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ecache.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\edata.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\edata_cache.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ehooks.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\emap.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\eset.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\exp_grow.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent_dss.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\extent_mmap.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\fxp.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hook.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpa.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpa_hooks.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\hpdata.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\inspect.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\jemalloc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\large.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\log.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\malloc_io.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\mutex.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\nstime.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pa.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pa_extra.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pac.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pages.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\pai.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\peak_event.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_data.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_log.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_recent.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_stack_range.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_stats.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_sys.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\prof_threshold.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\psset.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\rtree.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\safety_check.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\san.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\san_bump.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sc.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sec.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\stats.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\sz.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\tcache.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\test_hooks.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\thread_event.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\ticker.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\tsd.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\util.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\thirdparty\jemalloc\src\witness.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="jemalloc.def">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="..\..\..\framework\thirdparty\jemalloc\src\ticker.py">
+      <Filter>src</Filter>
+    </None>
+  </ItemGroup>
+</Project>

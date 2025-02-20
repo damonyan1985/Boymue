@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qjs", "..\qjs\qjs.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "v8", "..\v8\v8.vcxproj", "{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jemalloc", "..\jemalloc\jemalloc.vcxproj", "{570E220A-7E50-48AC-A2B2-8B329D78D1C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -131,6 +133,14 @@ Global
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x64.Build.0 = Release|x64
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x86.ActiveCfg = Release|Win32
 		{5AD5F119-9437-4BA5-B2A5-8FF94B1B9A83}.Release|x86.Build.0 = Release|Win32
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Debug|x64.ActiveCfg = Debug|x64
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Debug|x64.Build.0 = Debug|x64
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Debug|x86.ActiveCfg = Debug|Win32
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Debug|x86.Build.0 = Debug|Win32
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Release|x64.ActiveCfg = Release|x64
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Release|x64.Build.0 = Release|x64
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Release|x86.ActiveCfg = Release|Win32
+		{570E220A-7E50-48AC-A2B2-8B329D78D1C5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

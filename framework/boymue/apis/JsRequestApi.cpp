@@ -53,15 +53,17 @@ void JsRequestApi::execute(const String& params,
     headersValue.Accept(writer);
 
     const char* method = json["method"].GetString();
+    const char* url = json["url"].GetString();
     if (::strcmp(method, "GET") == 0) {
-        context()->loader().get(json["url"].GetString(),
-                                headers.GetString(),
-                                new JsRequestClient(callback, context()));
+        context()->loader().get(url,
+            headers.GetString(),
+            new JsRequestClient(callback, context()));
     } else if (::strcmp(method, "POST") == 0) {
-        context()->loader().post(json["url"].GetString(),
-                                 headers.GetString(),
-                                 json["params"].GetString(),
-                                 new JsRequestClient(callback, context()));
+        const char* body = json["params"].GetString();
+        context()->loader().post(url,
+            headers.GetString(),
+            body,
+            new JsRequestClient(callback, context()));
     }
 }
 
