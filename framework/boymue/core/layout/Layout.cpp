@@ -5,7 +5,13 @@
 
 namespace boymue {
 namespace layout {
+Layout::Layout() 
+    : m_painter(painter::Painter::createPainter(this)) {}
+
+Layout::~Layout() {}
+
 void Layout::layout() {}
+
 Layout::LayoutType Layout::type() const {
     return kLayoutBlock;
 }
@@ -25,6 +31,10 @@ LayoutUnit Layout::width() const {
 }
 LayoutUnit Layout::height() const {
     return m_height;
+}
+
+void Layout::paint(PaintInfo& info) {
+    m_painter->paint(info);
 }
 }
 }  // namespace boymue

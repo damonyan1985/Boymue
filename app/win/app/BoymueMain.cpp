@@ -2,6 +2,8 @@
 #include "BoymueOnLoadWin.h"
 #include "BoyiaConsole.h"
 
+BoymueOnLoadWin sBoymue;
+
 LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 int WINAPI wWinMain(
     HINSTANCE hInstance,
@@ -44,7 +46,7 @@ LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
     case WM_CREATE: {
         RECT rect;
         ::GetClientRect(hWnd, &rect);
-        BoymueOnLoadWin::initWindow(hWnd, 
+        sBoymue.initWindow(hWnd,
             rect.right - rect.left,
             rect.bottom - rect.top);
         break;
@@ -52,7 +54,7 @@ LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
-        BoymueOnLoadWin::repaint();
+        sBoymue.repaint();
         EndPaint(hWnd, &ps);
     }
         break;

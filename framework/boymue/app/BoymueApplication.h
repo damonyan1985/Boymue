@@ -32,7 +32,6 @@ class BoymueApplication {
   ThreadExecutor* ioExecutor() const;
 
  private:
-  
   // BoymueView can only used in ui thread
   OwnerPtr<BoymueView> m_mainView;
   

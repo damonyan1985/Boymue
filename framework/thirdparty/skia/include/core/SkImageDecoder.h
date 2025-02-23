@@ -22,7 +22,7 @@ class SkStreamRewindable;
 
     Base class for decoding compressed images into a SkBitmap
 */
-class SkImageDecoder : SkNoncopyable {
+class SK_API SkImageDecoder : SkNoncopyable {
 public:
     virtual ~SkImageDecoder();
 
@@ -287,8 +287,8 @@ public:
                        of the decoded buffer. On failure it is ignored.
      */
     static bool DecodeMemory(const void* buffer, size_t size, SkBitmap* bitmap, SkColorType pref,
-                             Mode, Format* format = NULL);
-    static bool DecodeMemory(const void* buffer, size_t size, SkBitmap* bitmap){
+                             Mode mode, Format* format = NULL);
+    static bool DecodeMemory(const void* buffer, size_t size, SkBitmap* bitmap) {
         return DecodeMemory(buffer, size, bitmap, kUnknown_SkColorType, kDecodePixels_Mode, NULL);
     }
 

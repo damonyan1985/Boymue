@@ -1,5 +1,5 @@
 /*
- * Author damonyan
+ * Copyright Boymue Authors.
  * All Copyright reserved
  */
 
@@ -14,12 +14,13 @@
 #define BOYMUE_PORTING_API __declspec(dllimport)
 #endif
 
-// Copyright Boymue Authors. All rights reserved.
-// Author yanbo on 2020.07.05
 class BOYMUE_PORTING_API BoymueOnLoadWin {
  public:
-  static void initWindow(HWND hwnd, int width, int height);
-  static void repaint();
+  void initWindow(HWND hwnd, int width, int height);
+  void repaint();
+
+private:
+  void* m_app;
 };
 
 #endif  // !BoymueOnLoadWin_h

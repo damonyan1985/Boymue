@@ -19,10 +19,12 @@ public:
         kLayoutInput,
         kLayoutText
     };
+    Layout();
+    virtual ~Layout();
 
     virtual LayoutType type() const;
     virtual void layout();
-    virtual void paint(PaintInfo& info){};
+    virtual void paint(PaintInfo& info);
 
     const css::Style& style() const;
     LayoutUnit left() const;

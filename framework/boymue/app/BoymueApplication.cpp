@@ -10,6 +10,7 @@
 #include "JsRequireModuleApi.h"
 #include "JsRequestApi.h"
 #include "JsSystemGcApi.h"
+#include <jemalloc/jemalloc.h>
 
 namespace boymue {
 

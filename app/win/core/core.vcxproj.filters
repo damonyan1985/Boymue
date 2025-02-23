@@ -73,6 +73,9 @@
     <Filter Include="loader">
       <UniqueIdentifier>{15e2c79f-c4bc-4250-9b0f-7219d261426e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core\gdi">
+      <UniqueIdentifier>{5b6d6948-a213-4cb5-8cf7-37e47b854dc2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -231,6 +234,9 @@
     <ClInclude Include="..\..\..\framework\boymue\apis\JsSystemGcApi.h">
       <Filter>apis</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\framework\boymue\core\gdi\Image.h">
+      <Filter>core\gdi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -376,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\apis\JsSystemGcApi.cpp">
       <Filter>apis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\framework\boymue\core\gdi\Image.cpp">
+      <Filter>core\gdi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -92,8 +92,10 @@ handleOOM(std::size_t size, bool nothrow) {
 		ptr = je_malloc(size);
 	}
 
+#if !defined(JEMALLOC_WINDOWS)
 	if (ptr == nullptr && !nothrow)
 		std::__throw_bad_alloc();
+#endif
 	return ptr;
 }
 

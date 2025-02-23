@@ -14,6 +14,7 @@
 #else 
 #include "v8.h"
 #include "libplatform/libplatform.h"
+#include <jemalloc/jemalloc.h>
 #endif
 
 #define KB (1024)
@@ -227,7 +228,7 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
     void* data = AllocateUninitialized(length);
     return data == nullptr ? data : memset(data, 0, length);
   }
-  virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
+  virtual void* AllocateUninitialized(size_t length) { return je_malloc(length); }
   virtual void Free(void* data, size_t) { free(data); }
 };
 
@@ -324,6 +325,13 @@ public:
 
     void gc() override {
         m_isolate->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
+    }
+
+    void* createArrayBuffer(size_t length) {
+        Local<ArrayBuffer> arrayBuffer = ArrayBuffer::New(m_isolate, length);
+        Persistent<Object>* persistent = new Persistent<Object>();
+        persistent->Reset(m_isolate, arrayBuffer);
+        return persistent;
     }
 
 private:

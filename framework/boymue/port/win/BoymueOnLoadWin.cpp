@@ -1,3 +1,6 @@
+// Copyright Boymue Authors. All rights reserved.
+// Author yanbo on 2020.07.05
+
 #include "BoymueOnLoadWin.h"
 
 #include <stdio.h>
@@ -19,9 +22,27 @@
 #include "Thread.h"
 #include "BoymueBridge.h"
 #include "FileUtil.h"
+#include <jemalloc/jemalloc.h>
 
-// Copyright Boymue Authors. All rights reserved.
-// Author yanbo on 2020.07.05
+//#define USE_JEMALLOC
+
+void* operator new(std::size_t sz) {
+#ifdef USE_JEMALLOC
+    return je_malloc(sz);
+#else
+    return malloc(sz);
+#endif
+
+}
+
+void operator delete(void* p) {
+#ifdef USE_JEMALLOC
+    return je_free(p);
+#else
+    return free(p);
+#endif
+}
+
 class UIRuntime {
  public:
   UIRuntime(boymue::PaintContextWin* painter, int width, int height)
@@ -81,32 +102,38 @@ class UIRuntime {
   int m_height;
 };
 
-static std::string s_projectPath = getenv("BOYMUE_ROOT");
+//static std::string s_projectPath = getenv("BOYMUE_ROOT"); 
 static UIRuntime* s_uiRuntime;
-static boymue::BoymueApplication* s_app;
 static boymue::JsEngine* s_engine;
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
+  
   boymue::PaintContextWin* painter = new boymue::PaintContextWin();
   painter->initContext(hwnd, width, height);
-  s_uiRuntime = new UIRuntime(painter, width, height);
+  UIRuntime* uiRuntime = new UIRuntime(painter, width, height);
   boymue::BoymueAppInfo* info = new boymue::BoymueAppInfo();
   info->appName = "example";
-  s_app = new boymue::BoymueApplication(info);
-
-  s_app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
-
-  // s_engine = new boymue::JsEngine();
-  // boymue::JsRuntime* runtime = s_engine->createRuntime();
-  // runtime->registerApi(new boymue::JsLogApi());
-  //std::string testPath = s_projectPath + "\\boymuejs\\example\\test.js";
+  boymue::BoymueApplication* app = new boymue::BoymueApplication(info);
+  s_uiRuntime = uiRuntime;
+  app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
   
   boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("\\example\\test.js"));
   boymue::String source = std::move(boymue::FileUtil::readFile(path));
 
-  s_app->evaluateJs(source.c_str(), path);
+  char* str = (char*)je_malloc(32);
+  const char* src = "hello world";
+  memset(str, 0, 32);
+  memcpy(str, src, strlen(src));
+  int i = 1000;
+  while (i--) { je_malloc(4096); }
+
+
+  app->evaluateJs(source.c_str(), path);
+  m_app = app;
+  
 }
 
 void BoymueOnLoadWin::repaint() {
-  s_app->getUITaskRunner().postTask([=] { s_uiRuntime->repaint(); });
+  boymue::BoymueApplication* app = static_cast<boymue::BoymueApplication*>(m_app);
+  app->getUITaskRunner().postTask([=] { s_uiRuntime->repaint(); });
 }
