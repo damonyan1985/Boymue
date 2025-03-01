@@ -4049,6 +4049,7 @@ FunctionLiteral* Parser::ParseFunctionLiteral(
     int start_position = scanner()->location().beg_pos;
     this->scope()->set_start_position(start_position);
     ParserFormalParameters formals(scope);
+    // 解析函数参数
     ParseFormalParameterList(&formals, &formals_classifier, CHECK_OK);
     arity = formals.Arity();
     Expect(Token::RPAREN, CHECK_OK);
@@ -4068,6 +4069,7 @@ FunctionLiteral* Parser::ParseFunctionLiteral(
     // parsing if it suspect that wasn't a good idea. If so, or if we didn't
     // try to lazy parse in the first place, we'll have to parse eagerly.
     Scanner::BookmarkScope bookmark(scanner());
+    // 如果是懒解析，则使用PreParser去解析JS源码，只检查语法问题，不生成语法树和字节码
     if (is_lazily_parsed) {
       Scanner::BookmarkScope* maybe_bookmark =
           bookmark.Set() ? &bookmark : nullptr;
@@ -4089,6 +4091,8 @@ FunctionLiteral* Parser::ParseFunctionLiteral(
         should_be_used_once_hint = true;
       }
     }
+
+    // 非懒解析模式下，整个函数体都将被编译
     if (!is_lazily_parsed) {
       body = ParseEagerFunctionBody(function_name, pos, formals, kind,
                                     function_type, CHECK_OK);
@@ -4213,6 +4217,7 @@ void Parser::SkipLazyFunctionBody(int* materialized_literal_count,
   // With no cached data, we partially parse the function, without building an
   // AST. This gathers the data needed to build a lazy function.
   SingletonLogger logger;
+  // 懒解析模式下，创建PreParser来解析函数体
   PreParser::PreParseResult result =
       ParseLazyFunctionBodyWithPreParser(&logger, bookmark);
   if (bookmark && bookmark->HasBeenReset()) {

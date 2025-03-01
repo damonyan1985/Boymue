@@ -9,13 +9,13 @@ namespace layout {
 
 class ImageLayout : public Layout {
 public:
-	ImageLayout();
-	virtual void layout();
+    ImageLayout();
+    virtual void layout();
 
-	Image* image();
+    Image* image();
 
 private:
-	OwnerPtr<Image> m_image;
+    OwnerPtr<Image> m_image;
 };
 }
 }  // namespace boymue

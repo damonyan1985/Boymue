@@ -34,7 +34,9 @@ LayoutUnit Layout::height() const {
 }
 
 void Layout::paint(PaintInfo& info) {
-    m_painter->paint(info);
+    if (m_painter) {
+        m_painter->paint(info);
+    }
 }
 }
 }  // namespace boymue

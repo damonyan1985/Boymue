@@ -1200,6 +1200,7 @@ Handle<SharedFunctionInfo> NewSharedFunctionInfoForLiteral(
   return result;
 }
 
+// 编译JS顶层代码
 Handle<SharedFunctionInfo> CompileToplevel(CompilationInfo* info) {
   Isolate* isolate = info->isolate();
   TimerEventScope<TimerEventCompileCode> timer(isolate);
@@ -1259,6 +1260,7 @@ Handle<SharedFunctionInfo> CompileToplevel(CompilationInfo* info) {
         parse_info->set_compile_options(ScriptCompiler::kNoCompileOptions);
       }
 
+      // Parser开始解析代码
       if (!Parser::ParseStatic(parse_info)) {
         return Handle<SharedFunctionInfo>::null();
       }
@@ -1266,6 +1268,7 @@ Handle<SharedFunctionInfo> CompileToplevel(CompilationInfo* info) {
 
     DCHECK(!info->is_debug() || !parse_info->allow_lazy_parsing());
 
+    // Parser解析的结果是一个FunctionLiteral对象
     FunctionLiteral* lit = parse_info->literal();
 
     // Measure how long it takes to do the compilation; only take the
@@ -1752,11 +1755,14 @@ Handle<SharedFunctionInfo> Compiler::GetSharedFunctionInfoForScript(
   // Do a lookup in the compilation cache but not for extensions.
   MaybeHandle<SharedFunctionInfo> maybe_result;
   Handle<SharedFunctionInfo> result;
+  // 从compile cache中获取编译后的内容
   if (extension == NULL) {
     // First check per-isolate compilation cache.
     maybe_result = compilation_cache->LookupScript(
         source, script_name, line_offset, column_offset, resource_options,
         context, language_mode);
+
+    // 如果result是空，判断是否开启了序列化字节码的功能，compile_options是否标记为消费字节码缓存
     if (maybe_result.is_null() && FLAG_serialize_toplevel &&
         compile_options == ScriptCompiler::kConsumeCodeCache &&
         !isolate->debug()->is_loaded()) {
@@ -1770,6 +1776,9 @@ Handle<SharedFunctionInfo> Compiler::GetSharedFunctionInfoForScript(
       if (CodeSerializer::Deserialize(isolate, *cached_data, source)
               .ToHandle(&result)) {
         // Promote to per-isolate compilation cache.
+        // 如果存在CachedData，通常情况下这个CachedData是字节码，
+        // CodeSerializer::Deserialize解析出来的是SharedFunctionInfo对象
+        // SharedFunctionInfo中存储了字节码和字节码链接的入口InterpreterEntryTrampoline
         compilation_cache->PutScript(source, context, language_mode, result);
         return result;
       }
@@ -1783,6 +1792,7 @@ Handle<SharedFunctionInfo> Compiler::GetSharedFunctionInfoForScript(
     timer.Start();
   }
 
+  // 如果以上获取的result是空，则开始编译js代码
   if (!maybe_result.ToHandle(&result) ||
       (FLAG_serialize_toplevel &&
        compile_options == ScriptCompiler::kProduceCodeCache)) {
@@ -1829,6 +1839,8 @@ Handle<SharedFunctionInfo> Compiler::GetSharedFunctionInfoForScript(
 
     parse_info.set_language_mode(
         static_cast<LanguageMode>(parse_info.language_mode() | language_mode));
+    
+    // 默认只编译顶层代码    
     result = CompileToplevel(&info);
     if (extension == NULL && !result.is_null()) {
       compilation_cache->PutScript(source, context, language_mode, result);

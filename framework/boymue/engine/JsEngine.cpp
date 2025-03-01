@@ -348,6 +348,7 @@ private:
 
         Handle<Context> context = Context::New(m_isolate, nullptr, global);
 
+
         m_global.Reset(m_isolate,
             context->Global()->GetPrototype()->ToObject(m_isolate));
         m_context.Reset(m_isolate, context);

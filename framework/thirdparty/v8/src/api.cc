@@ -1914,6 +1914,8 @@ MaybeLocal<UnboundScript> ScriptCompiler::CompileUnboundInternal(
     if (!source->source_map_url.IsEmpty()) {
       source_map_url = Utils::OpenHandle(*(source->source_map_url));
     }
+    
+    // 开始编译，最后返回的结果是SharedFunctionInfo
     result = i::Compiler::GetSharedFunctionInfoForScript(
         str, name_obj, line_offset, column_offset, source->resource_options,
         source_map_url, isolate->native_context(), NULL, &script_data, options,

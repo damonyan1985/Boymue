@@ -6,12 +6,12 @@
 namespace boymue {
 class Image {
 public:
-	Image();
-	void createImage(const void* buffer, size_t size);
-	const SkBitmap& bitmap() const;
+    Image();
+    void createImage(const void* buffer, size_t size);
+    const SkBitmap& bitmap() const;
 
 private:
-	SkBitmap m_bitmap;
+    SkBitmap m_bitmap;
 };
 }
 
