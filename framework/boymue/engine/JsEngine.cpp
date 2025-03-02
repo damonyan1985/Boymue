@@ -14,6 +14,7 @@
 #else 
 #include "v8.h"
 #include "libplatform/libplatform.h"
+#include "FileUtil.h"
 #include <jemalloc/jemalloc.h>
 #endif
 
@@ -332,6 +333,37 @@ public:
         Persistent<Object>* persistent = new Persistent<Object>();
         persistent->Reset(m_isolate, arrayBuffer);
         return persistent;
+    }
+
+    void createBytecode(const String& filename, size_t size) {
+        Local<ArrayBuffer> arrayBuffer = ArrayBuffer::New(m_isolate, size);
+        
+        Local<ArrayBufferView> arrayBufferView = arrayBuffer.As<ArrayBufferView>();
+        uint8_t* data = static_cast<uint8_t*>(arrayBuffer->GetContents().Data());
+        ScriptCompiler::CachedData* cacheData = new ScriptCompiler::CachedData(
+            data + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength()
+        );
+        
+        String jsCode = std::move(FileUtil::readFile(filename));
+        Local<v8::String> code =
+            v8::String::NewFromUtf8(m_isolate, jsCode.c_str(), NewStringType::kNormal)
+            .ToLocalChecked();
+        
+        Local<v8::String> filenameValue =
+            v8::String::NewFromUtf8(m_isolate, filename.c_str(), NewStringType::kNormal)
+            .ToLocalChecked();
+        //ScriptOrigin orign1(filenameValue);
+        ScriptOrigin origin(filenameValue,
+            Local<Integer>(),
+            Local<Integer>(),
+            Local<Boolean>(),
+            Local<Integer>(),
+            Local<Boolean>(),
+            Local<Value>(),
+            Local<Boolean>());
+        ScriptCompiler::Source source(code, origin, cacheData);
+        MaybeLocal<UnboundScript> unboundScript = ScriptCompiler::CompileUnboundScript(m_isolate, &source, ScriptCompiler::kConsumeCodeCache);
+    
     }
 
 private:

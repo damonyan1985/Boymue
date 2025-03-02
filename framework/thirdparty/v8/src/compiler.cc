@@ -303,6 +303,9 @@ CompilationJob::Status CompilationJob::ExecuteJob() {
   // Delegate to the underlying implementation.
   DCHECK(state() == State::kReadyToExecute);
   ScopedTimer t(&time_taken_to_execute_);
+  // 实际执行任务的地方
+  // 如果开启了字节码功能，会执行InterpreterCompilationJob::ExecuteJobImpl
+  // 如果没有开启字节码功能，则会执行FullCodegenCompilationJob::ExecuteJobImpl
   return UpdateState(ExecuteJobImpl(), State::kReadyToFinalize);
 }
 
@@ -524,6 +527,8 @@ CompilationJob* GetUnoptimizedCompilationJob(CompilationInfo* info) {
   DCHECK_NOT_NULL(info->scope());
 
   EnsureFeedbackMetadata(info);
+  // 如果开启了ignition解释器，则使用解释
+  // 否则利用FullCodeGenerator来编译生成二进制
   if (ShouldUseIgnition(info)) {
     return interpreter::Interpreter::NewCompilationJob(info);
   } else {
@@ -544,9 +549,13 @@ bool GenerateUnoptimizedCode(CompilationInfo* info) {
     }
   }
 
+  // 如果不是wasm，创建一个编译任务
   std::unique_ptr<CompilationJob> job(GetUnoptimizedCompilationJob(info));
+  // 任务准备
   if (job->PrepareJob() != CompilationJob::SUCCEEDED) return false;
+  // 执行任务
   if (job->ExecuteJob() != CompilationJob::SUCCEEDED) return false;
+  // 任务完成
   if (job->FinalizeJob() != CompilationJob::SUCCEEDED) return false;
   job->RecordUnoptimizedCompilationStats();
   return true;
@@ -554,6 +563,7 @@ bool GenerateUnoptimizedCode(CompilationInfo* info) {
 
 bool CompileUnoptimizedCode(CompilationInfo* info) {
   DCHECK(AllowCompilation::IsAllowed(info->isolate()));
+  // 编译器分析解析结果，开始生成未优化的代码
   if (!Compiler::Analyze(info->parse_info()) ||
       !GenerateUnoptimizedCode(info)) {
     Isolate* isolate = info->isolate();
@@ -1296,6 +1306,7 @@ Handle<SharedFunctionInfo> CompileToplevel(CompilationInfo* info) {
     }
     parse_info->set_shared_info(result);
 
+    // 编译出未优化的代码，这个过程产生字节码或者是二进制
     // Compile the code.
     if (!CompileUnoptimizedCode(info)) {
       return Handle<SharedFunctionInfo>::null();
