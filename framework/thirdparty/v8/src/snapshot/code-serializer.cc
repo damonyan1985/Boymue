@@ -164,6 +164,7 @@ MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize(
 
   SerializedCodeData::SanityCheckResult sanity_check_result =
       SerializedCodeData::CHECK_SUCCESS;
+  // 检查魔数是否一致    
   const SerializedCodeData scd = SerializedCodeData::FromCachedData(
       isolate, cached_data, SerializedCodeData::SourceHash(source),
       &sanity_check_result);

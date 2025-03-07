@@ -1,6 +1,6 @@
-#include <Windows.h>
 #include "BoymueOnLoadWin.h"
 #include "BoyiaConsole.h"
+#include <stdio.h>
 
 BoymueOnLoadWin sBoymue;
 
@@ -13,6 +13,7 @@ int WINAPI wWinMain(
 )
 {
     yanbo::BoyiaConsole console;
+    printf("BoymueWndProc start\n");
     DWORD dwStyle = WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME;
     
     WNDCLASS wndClass;
@@ -67,3 +68,32 @@ LRESULT CALLBACK BoymueWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
     return 0;
 }
+
+#ifdef _WIN64
+#pragma comment(linker, "/INCLUDE:_tls_used")
+#else
+#pragma comment(linker, "/INCLUDE:__tls_used")
+#endif // _WIN64
+
+void print_console(const char* szMsg) {
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    WriteConsoleA(out, szMsg, strlen(szMsg), NULL, NULL);
+}
+
+void NTAPI TLS_CALLBACK(PVOID handle, DWORD reason, PVOID reserved) {
+    char szMsg[80] = { 0 };
+    wsprintfA(szMsg, "TLS_CALLBACK() handle=%x, reason=%d\n", handle, reason);
+    print_console(szMsg);
+}
+
+extern "C"
+#ifdef _WIN64
+#pragma const_seg(".CRT$XLX")
+const
+#else
+#pragma data_seg(".CRT$XLX")
+#endif
+
+PIMAGE_TLS_CALLBACK pTLS_CALLBACKs[] = { TLS_CALLBACK, 0 };
+
+#pragma data_seg()

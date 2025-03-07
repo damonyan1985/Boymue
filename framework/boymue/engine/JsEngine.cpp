@@ -220,6 +220,11 @@ class JsInitor {
   
 using namespace v8;
 
+void V8StringToStdString(v8::Isolate* isolate, v8::Local<v8::String> v8Str, boymue::String& str) {
+    v8::String::Utf8Value value(v8Str);
+    str.copy(*value, value.length());
+}
+
 // JsApiHandler模板函数实现
 void JsApiHandlerImpl(const FunctionCallbackInfo<v8::Value>& args);
 
@@ -334,15 +339,16 @@ public:
         persistent->Reset(m_isolate, arrayBuffer);
         return persistent;
     }
-
-    void createBytecode(const String& filename, size_t size) {
-        Local<ArrayBuffer> arrayBuffer = ArrayBuffer::New(m_isolate, size);
-        
-        Local<ArrayBufferView> arrayBufferView = arrayBuffer.As<ArrayBufferView>();
-        uint8_t* data = static_cast<uint8_t*>(arrayBuffer->GetContents().Data());
-        ScriptCompiler::CachedData* cacheData = new ScriptCompiler::CachedData(
-            data + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength()
-        );
+    
+    // 生成字节码
+    Vector<uint8_t>* generateBytecode(const String& filename) {
+        //Local<ArrayBuffer> arrayBuffer = ArrayBuffer::New(m_isolate, size);
+        //
+        //Local<ArrayBufferView> arrayBufferView = arrayBuffer.As<ArrayBufferView>();
+        //uint8_t* data = static_cast<uint8_t*>(arrayBuffer->GetContents().Data());
+        //ScriptCompiler::CachedData* cacheData = new ScriptCompiler::CachedData(
+        //    data + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength()
+        //);
         
         String jsCode = std::move(FileUtil::readFile(filename));
         Local<v8::String> code =
@@ -361,9 +367,20 @@ public:
             Local<Boolean>(),
             Local<Value>(),
             Local<Boolean>());
-        ScriptCompiler::Source source(code, origin, cacheData);
-        MaybeLocal<UnboundScript> unboundScript = ScriptCompiler::CompileUnboundScript(m_isolate, &source, ScriptCompiler::kConsumeCodeCache);
-    
+        ScriptCompiler::Source source(code, origin, nullptr);
+        MaybeLocal<UnboundScript> unboundScript = ScriptCompiler::CompileUnboundScript(m_isolate, &source, ScriptCompiler::kProduceCodeCache);
+        Local<UnboundScript> result;
+        if (!unboundScript.ToLocal(&result)) {
+            return nullptr;
+        }
+
+        OwnerPtr<ScriptCompiler::CachedData> cacheData{
+            ScriptCompiler::CreateCacheData(unboundScript.ToLocalChecked())
+        };
+
+        Vector<uint8_t>* buffer = new Vector<uint8_t>(cacheData->length);
+        memcpy(buffer->data(), cacheData->data, cacheData->length);
+        return buffer;
     }
 
 private:
@@ -378,9 +395,10 @@ private:
         // 设置global对象的名字为boymue
         global->SetAccessor(globalName, JsGlobalObjectAccessor);
 
-        Handle<Context> context = Context::New(m_isolate, nullptr, global);
+        Local<Context> context = Context::New(m_isolate, nullptr, global);
 
-
+        
+        
         m_global.Reset(m_isolate,
             context->Global()->GetPrototype()->ToObject(m_isolate));
         m_context.Reset(m_isolate, context);

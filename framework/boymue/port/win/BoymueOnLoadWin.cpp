@@ -22,6 +22,7 @@
 #include "Thread.h"
 #include "BoymueBridge.h"
 #include "FileUtil.h"
+#include "StringUtil.h"
 #include <jemalloc/jemalloc.h>
 
 //#define USE_JEMALLOC
@@ -131,6 +132,12 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   app->evaluateJs(source.c_str(), path);
   m_app = app;
   
+  boymue::Vector<char> buffer = {0x64, 0x66};
+
+  boymue::HashMap<boymue::String, boymue::Vector<char>*> map;
+  map["hello"] = &buffer;
+
+  printf("test %ld", (intptr_t)map["world"]);
 }
 
 void BoymueOnLoadWin::repaint() {

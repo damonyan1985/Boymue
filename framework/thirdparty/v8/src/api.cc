@@ -2032,6 +2032,17 @@ class IsIdentifierHelper {
   DISALLOW_COPY_AND_ASSIGN(IsIdentifierHelper);
 };
 
+ScriptCompiler::CachedData* ScriptCompiler::CreateCacheData(Local<UnboundScript> unbound_script) {
+  i::Handle<i::SharedFunctionInfo> shared =
+    i::Handle<i::SharedFunctionInfo>::cast(Utils::OpenHandle(*unbound_script));
+  i::Handle<i::String> source(i::String::cast(i::Script::cast(shared->script())->source()));
+  i::ScriptData* scriptData = i::CodeSerializer::Serialize(shared->GetIsolate(), shared, source);
+  ScriptCompiler::CachedData* cacheData = new ScriptCompiler::CachedData(scriptData->data(), scriptData->length(), ScriptCompiler::CachedData::BufferOwned);
+  scriptData->ReleaseDataOwnership();
+  delete scriptData;
+  return cacheData;
+}
+
 
 MaybeLocal<Function> ScriptCompiler::CompileFunctionInContext(
     Local<Context> v8_context, Source* source, size_t arguments_count,

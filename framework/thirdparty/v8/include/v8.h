@@ -1406,6 +1406,8 @@ class V8_EXPORT ScriptCompiler {
       Local<String> arguments[], size_t context_extension_count,
       Local<Object> context_extensions[]);
 
+  static CachedData* CreateCacheData(Local<UnboundScript> unbound_script);
+
  private:
   static V8_WARN_UNUSED_RESULT MaybeLocal<UnboundScript> CompileUnboundInternal(
       Isolate* isolate, Source* source, CompileOptions options, bool is_module);
