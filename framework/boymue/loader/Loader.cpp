@@ -9,17 +9,18 @@
 #include "bmnet_main.h"
 
 namespace boymue {
-Loader::Loader()
-    : m_executor(ThreadExecutor::createDefault("loader")) {}
-
-Loader::~Loader() { delete m_executor; }
-
-void Loader::bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
+// 接受bmnet回调数据
+static void bmCallback(const uint8_t *data, size_t len, uintptr_t ext) {
     LoaderClient* client = reinterpret_cast<LoaderClient*>(ext);
     if (client) {
         client->onResultCallback(data, len);
     }
 }
+
+Loader::Loader()
+    : m_executor(ThreadExecutor::createDefault("loader")) {}
+
+Loader::~Loader() { delete m_executor; }
 
 // get请求
 void Loader::get(const String& url, const String& headers, LoaderClient* client) const {

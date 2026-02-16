@@ -3,6 +3,11 @@
 // Copyright Boymue Authors. All rights reserved.
 // Author yanbo on 2020.07.05
 namespace boymue {
+static void StartThread(void* ptr)
+{
+    static_cast<Thread*>(ptr)->run();
+}
+
 Thread::Thread(const String& name)
     : m_name(name)
 {
@@ -17,11 +22,7 @@ void Thread::join() {
 
 void Thread::start() 
 {
-    m_thread = std::make_unique<std::thread>(&Thread::startThread, this);
+    m_thread = std::make_unique<std::thread>(&StartThread, this);
 }
 
-void Thread::startThread(void* ptr)
-{
-    static_cast<Thread*>(ptr)->run();
-}
 }

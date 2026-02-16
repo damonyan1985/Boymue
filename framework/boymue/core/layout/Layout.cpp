@@ -5,8 +5,9 @@
 
 namespace boymue {
 namespace layout {
-Layout::Layout() 
-    : m_painter(painter::Painter::createPainter(this)) {}
+Layout::Layout(dom::DocumentElement* element) 
+    : m_painter(painter::Painter::createPainter(this))
+    , m_element(element) {}
 
 Layout::~Layout() {}
 
@@ -37,6 +38,10 @@ void Layout::paint(PaintInfo& info) {
     if (m_painter) {
         m_painter->paint(info);
     }
+}
+
+dom::DocumentElement* Layout::element() const {
+    return nullptr;
 }
 }
 }  // namespace boymue

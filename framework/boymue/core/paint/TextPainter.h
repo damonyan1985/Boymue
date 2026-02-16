@@ -9,7 +9,9 @@
 namespace boymue {
 namespace painter {
 class TextPainter : public Painter {
- protected:
+public:
+    TextPainter(layout::Layout* layout);
+protected:
   virtual void paintImpl(SkCanvas* canvas, PaintInfo& info) override;
 };
 }

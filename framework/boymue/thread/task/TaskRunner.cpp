@@ -6,7 +6,7 @@
 namespace boymue {
 TaskRunner::TaskRunner()
     : m_order(0)
-    , m_status(true)
+    , m_status(TaskRunner::kWaiting)
 {
 }
 
@@ -36,7 +36,11 @@ void TaskRunner::loop()
     while (m_status) {
         closure invocation = getInvocation();
         if (invocation) {
+            m_status = kRunning;
             invocation();
+            if (m_status) {
+                m_status = kWaiting;
+            }
         } else {
             m_event.wait();
         }
@@ -44,6 +48,11 @@ void TaskRunner::loop()
 }
 
 void TaskRunner::terminate() {
-    postTask([self = this] { self->m_status = false; });
+    // 只允许在线程中修改status
+    postTask([self = this] { self->m_status = TaskRunner::kExit; });
+}
+
+TaskRunner::TaskStatus TaskRunner::status() {
+    return m_status;
 }
 }

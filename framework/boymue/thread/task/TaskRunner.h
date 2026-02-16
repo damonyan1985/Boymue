@@ -15,9 +15,16 @@ using TaskQueue = std::priority_queue<Task,
 
 class TaskRunner {
 public:
+    enum TaskStatus {
+        kExit = 0,
+        kWaiting,
+        kRunning,
+    };
+
     TaskRunner();
     void postTask(const closure& task);
     void terminate();
+    TaskStatus status();
 
 private:
     // Thread loop
@@ -30,7 +37,7 @@ private:
     WaitEvent m_event;
     TaskQueue m_queue;
     size_t m_order;
-    bool m_status;
+    TaskStatus m_status;
 
     friend class TaskThread;
 };

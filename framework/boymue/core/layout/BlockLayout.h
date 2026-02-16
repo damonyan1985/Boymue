@@ -6,8 +6,9 @@
 namespace boymue {
 namespace layout {
 class BlockLayout : public Layout {
-public:
-    virtual void paint(PaintInfo& info);
+ public:
+  BlockLayout(dom::DocumentElement* element);
+  void paint(PaintInfo& info) override;
 };
 }
 }  // namespace boymue

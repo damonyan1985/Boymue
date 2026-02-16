@@ -6,7 +6,12 @@
 namespace boymue {
 namespace dom {
 TextElement::TextElement(Document* dom, const String& text)
-    : DocumentElement(dom)
-    , m_text(text) {}
+    : DocumentElement(dom), 
+      m_text(text) {}
+
+const String& TextElement::text() const {
+  return m_text;
+}
+
 }
 }  // namespace boymue

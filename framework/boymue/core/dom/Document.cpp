@@ -7,6 +7,7 @@
 #include "ImageElement.h"
 #include "ViewElement.h"
 #include "ButtonElement.h"
+#include "TextFieldElement.h"
 #include "StringUtil.h"
 #include "expat.h"
 
@@ -78,6 +79,9 @@ DocumentElement* Document::createElement(int tag, const char** atts,
     case DomTags::kButton:
       element = new ButtonElement(this);
       break;
+    case DomTags::kTextField:
+      element = new TextFieldElement(this);
+      break;
     default:
       break;
   }
@@ -104,6 +108,9 @@ void Document::createElement(int tag, int uid, int pid) {
         break;
       case DomTags::kButton:
         element = new ButtonElement(this);
+        break;
+      case DomTags::kTextField:
+        element = new TextFieldElement(this);
         break;
       default:
         break;

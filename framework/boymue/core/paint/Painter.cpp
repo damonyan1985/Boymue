@@ -3,6 +3,7 @@
 
 #include "Painter.h"
 #include "BoxPainter.h"
+#include "TextPainter.h"
 #include "Layout.h"
 #include "ImageLayout.h"
 #include "SkPictureRecorder.h"
@@ -31,8 +32,10 @@ Painter* Painter::createPainter(layout::Layout* layout) {
 		return new BoxPainter(layout);
 	case layout::Layout::kLayoutImage:
 		return new ImagePainter(layout);
+	case layout::Layout::kLayoutText:
+		return new TextPainter(layout);
 	default:
-		nullptr;
+		return nullptr;
 	}
 }
 

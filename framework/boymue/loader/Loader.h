@@ -19,10 +19,7 @@ public:
 };
 
 class Loader {
-public:
-    // 接受bmnet回调数据
-    static void bmCallback(const uint8_t *data, size_t len, uintptr_t ext);
-    
+public:    
     Loader();
     
     ~Loader();

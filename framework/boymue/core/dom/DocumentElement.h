@@ -5,9 +5,11 @@
 #define DocumentElement_h
 
 #include "StringUtil.h"
-#include "Layout.h"
 
 namespace boymue {
+namespace layout {
+class Layout;    
+}    
 namespace dom {
 class Document;
 class DocumentElement {
@@ -36,7 +38,7 @@ private:
     // 属性
     HashMap<String, String> m_properties;
     // Layout属性
-    OwnerPtr<layout::Layout> m_layout;
+    layout::Layout* m_layout{nullptr};
 };
 }
 }  // namespace boymue

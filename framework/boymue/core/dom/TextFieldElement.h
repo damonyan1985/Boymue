@@ -12,7 +12,7 @@
 
 namespace boymue {
 namespace dom {
-class TextFieldElement : DocumentElement {
+class TextFieldElement : public DocumentElement {
 public:
     TextFieldElement(Document* dom);
 };

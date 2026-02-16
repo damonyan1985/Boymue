@@ -7,6 +7,7 @@
 #include "PaintInfo.h"
 #include "Style.h"
 #include "Painter.h"
+#include "DocumentElement.h"
 
 namespace boymue {
 namespace layout {
@@ -19,7 +20,7 @@ public:
         kLayoutInput,
         kLayoutText
     };
-    Layout();
+    Layout(dom::DocumentElement* element);
     virtual ~Layout();
 
     virtual LayoutType type() const;
@@ -33,13 +34,17 @@ public:
     LayoutUnit height() const;
 
 protected:
+    virtual dom::DocumentElement* element() const;
+
     LayoutUnit m_left;
     LayoutUnit m_top;
     LayoutUnit m_width;
     LayoutUnit m_height;
 
     css::Style m_style;
+    
     OwnerPtr<painter::Painter> m_painter;
+    dom::DocumentElement* m_element;
 };
 }
 }  // namespace boymue

@@ -18,9 +18,8 @@ public:
     virtual void terminate() = 0;    
 
 private:
-    static void startThread(void* ptr);
-    OwnerPtr<std::thread> m_thread;
     String m_name;
+    OwnerPtr<std::thread> m_thread;
 };
 }
 #endif // !Thread_h

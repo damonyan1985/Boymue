@@ -5,7 +5,10 @@
 
 namespace boymue {
 namespace layout {
-class InputLayout : public Layout {};
+class InputLayout : public Layout {
+ public:
+  InputLayout(dom::DocumentElement* element);  
+};
 }
 }  // namespace boymue
 #endif  // !InputLayout_h
