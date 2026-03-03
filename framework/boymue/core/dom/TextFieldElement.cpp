@@ -11,5 +11,9 @@ namespace boymue {
 namespace dom {
 TextFieldElement::TextFieldElement(Document* dom)
     : DocumentElement(dom) {}
+
+bool TextFieldElement::isTextField() const {
+  return true;
+}   
 }
 }

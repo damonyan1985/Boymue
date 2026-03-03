@@ -383,6 +383,7 @@ enum class Bytecode : uint8_t {
 
 class Bytecodes final {
  public:
+  // 每个字节码最大只有4个操作数
   //  The maximum number of operands a bytecode may have.
   static const int kMaxOperands = 4;
 

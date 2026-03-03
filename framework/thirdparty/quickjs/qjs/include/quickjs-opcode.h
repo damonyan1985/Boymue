@@ -59,6 +59,7 @@ FMT(label_u16)
 #ifdef DEF
 
 #ifndef def
+/* 字节码定义第一个是字节码操作符，第二个是字节码的长度 */
 #define def(id, size, n_pop, n_push, f) DEF(id, size, n_pop, n_push, f)
 #endif
 

@@ -15,6 +15,7 @@ namespace dom {
 class ButtonElement : public DocumentElement {
 public:
     ButtonElement(Document* dom);
+    bool isButton() const override;
 };
 }
 }

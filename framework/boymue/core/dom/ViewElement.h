@@ -10,14 +10,16 @@
 namespace boymue {
 namespace dom {
 class ViewElement : public DocumentElement {
-public:
-    ViewElement(Document* dom);
-    virtual void parseAttribute(const char** atts);
-    virtual void addChild(DocumentElement* element);
-    virtual void removeChild(DocumentElement* element);
+ public:
+  ViewElement(Document* dom);
+  virtual void parseAttribute(const char** atts);
+  virtual void addChild(DocumentElement* element);
+  virtual void removeChild(DocumentElement* element);
+
+  bool isView() const override;
     
-private:
-    List<SharedPtr<DocumentElement>> m_children;
+ private:
+  List<SharedPtr<DocumentElement>> m_children;
 };
 }
 }  // namespace boymue

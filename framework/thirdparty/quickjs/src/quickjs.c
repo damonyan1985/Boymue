@@ -18944,6 +18944,7 @@ static __exception int async_func_init(JSContext *ctx, JSAsyncFunctionState *s,
     sf->cur_pc = b->byte_code_buf;
     arg_buf_len = max_int(b->arg_count, argc);
     local_count = arg_buf_len + b->var_count + b->stack_size;
+    // 在堆上创建异步函数的栈空间
     sf->arg_buf = js_malloc(ctx, sizeof(JSValue) * max_int(local_count, 1));
     if (!sf->arg_buf)
         return -1;
@@ -19358,10 +19359,12 @@ static JSValue js_async_function_call(JSContext *ctx, JSValueConst func_obj,
     s->resolving_funcs[0] = JS_UNDEFINED;
     s->resolving_funcs[1] = JS_UNDEFINED;
 
+    // 异步函数返回值必然是一个promise
     promise = JS_NewPromiseCapability(ctx, s->resolving_funcs);
     if (JS_IsException(promise))
         goto fail;
 
+    // 初始化异步函数
     if (async_func_init(ctx, &s->func_state, func_obj, this_obj, argc, argv)) {
     fail:
         JS_FreeValue(ctx, promise);

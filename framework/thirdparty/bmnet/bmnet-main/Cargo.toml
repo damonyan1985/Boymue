@@ -16,6 +16,10 @@ async-stream = { version = "0.3" }
 path = "../bmnet-timer"
 version = "0.1.0"
 
+[dependencies.bmnet-macros]
+path = "./bmnet-macros"
+version = "0.1.0"
+
 [lib]
 name = "bmnet_main"
 path = "src/lib.rs"

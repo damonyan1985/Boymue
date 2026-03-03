@@ -1818,6 +1818,7 @@ Statement* Parser::ParseNativeDeclaration(bool* ok) {
       pos);
 }
 
+// 解析函数
 Statement* Parser::ParseHoistableDeclaration(
     ZoneList<const AstRawString*>* names, bool default_export, bool* ok) {
   Expect(Token::FUNCTION, CHECK_OK);
@@ -4630,6 +4631,8 @@ PreParser::PreParseResult Parser::ParseLazyFunctionBodyWithPreParser(
     SET_ALLOW(harmony_trailing_commas);
 #undef SET_ALLOW
   }
+
+  // 在懒解析下使用PreParser去解析函数
   PreParser::PreParseResult result = reusable_preparser_->PreParseLazyFunction(
       language_mode(), function_state_->kind(),
       scope()->AsDeclarationScope()->has_simple_parameters(), parsing_module_,

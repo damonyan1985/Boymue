@@ -129,6 +129,7 @@ enum FreeListCategoryType {
 
 enum FreeMode { kLinkCategory, kDoNotLinkCategory };
 
+// 根据内存块的大小不同，分为不同的FreeListCategory
 // A free list category maintains a linked list of free memory blocks.
 class FreeListCategory {
  public:
@@ -211,9 +212,11 @@ class FreeListCategory {
   // category.
   int available_;
 
+  // FreeSpace链表中的第一个FreeSpace
   // |top_|: Points to the top FreeSpace* in the free list category.
   FreeSpace* top_;
 
+  // prev_与next_用来连接不同MemoryChunk中相同的FreeListCategory
   FreeListCategory* prev_;
   FreeListCategory* next_;
 
@@ -221,6 +224,7 @@ class FreeListCategory {
   friend class PagedSpace;
 };
 
+// V8以Page为分配单元，其中Page是从MemoryChunk继承
 // MemoryChunk represents a memory region owned by a specific space.
 // It is divided into the header and the body. Chunk start is always
 // 1MB aligned. Start of the body is aligned so it can accommodate
@@ -640,7 +644,9 @@ class MemoryChunk {
   intptr_t flags_;
 
   // Start and end of allocatable memory on this chunk.
+  // 内存起始位置
   Address area_start_;
+  // 内存结束位置
   Address area_end_;
 
   // If the chunk needs to remember its memory reservation, it is stored here.
@@ -1682,6 +1688,8 @@ class AllocationStats BASE_EMBEDDED {
   size_t size_;
 };
 
+// 维护一个内存释放后的列表，这个列表可能包含多个不同类型的释放列表，每个种类的列表使用
+// FreeListCategory来维护，FreeListCategoryType是每个FreeListCategory的类型，通过一定的算法可以定位到具体使用的FreeListCategory
 // A free list maintaining free blocks of memory. The free list is organized in
 // a way to encourage objects allocated around the same time to be near each
 // other. The normal way to allocate is intended to be by bumping a 'top'

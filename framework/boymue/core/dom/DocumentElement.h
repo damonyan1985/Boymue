@@ -21,6 +21,8 @@ public:
     virtual void removeChild(DocumentElement* element) {};
     // layout与element一一对应
     layout::Layout* layout();
+    // 创建对应的Layout对象
+    layout::Layout* createLayout();
     
     int uid() const;
     const String& styleId() const;
@@ -28,6 +30,12 @@ public:
     void setUid(int uid);
     void setStyleId(const String& styleId);
     void setProperty(const String& key, const String& value);
+
+    virtual bool isText() const;
+    virtual bool isImage() const;
+    virtual bool isTextField() const;
+    virtual bool isView() const;
+    virtual bool isButton() const;
     
 private:
     Document* m_dom;

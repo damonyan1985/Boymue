@@ -7,5 +7,9 @@ namespace boymue {
 namespace dom {
 ImageElement::ImageElement(Document* dom)
     : DocumentElement(dom) {}
+
+bool ImageElement::isImage() const {
+  return true;
+}
 }
 }  // namespace boymue

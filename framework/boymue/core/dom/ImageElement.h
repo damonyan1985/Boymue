@@ -4,7 +4,7 @@
 #ifndef ImageElement_h
 #define ImageElement_h
 
-#include <string>
+#include "StringUtil.h"
 
 #include "DocumentElement.h"
 
@@ -14,8 +14,10 @@ class ImageElement : public DocumentElement {
  public:
   ImageElement(Document* dom);
 
+  bool isImage() const override;
+
  private:
-  std::string m_url;
+  String m_url;
 };
 }
 }  // namespace boymue

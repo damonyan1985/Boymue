@@ -1,9 +1,12 @@
 mod web;
+mod args;
+pub mod example;
 
 use web::client::{get_url, post_url};
 
 use std::ffi::{CString, CStr, c_int};
 use std::os::raw::{c_char};
+use args::{ArgumemntList, Argumemnt, ArgumemntValue, FnCallback};
 // extern crate rustc_serialize;
 // use rustc_serialize::json;
 use std::collections::HashMap;
@@ -78,23 +81,6 @@ fn get_bmnet_string(nc_str: *const c_char) -> String {
 // http/https get请求
 #[no_mangle]
 pub extern "C" fn bmnet_get(url: *const c_char, headers: *const c_char, cb: Option<Callback>, ext: usize) {
-    // c传入的指针需要判空
-    // if url.is_null() {
-    //     return;
-    // }
-
-    // let c_url = unsafe { CStr::from_ptr(url) };
-
-    // let str_url = match c_url.to_str() {
-    //     Ok(text) => text,
-    //     Err(e) => "",
-    // };
-
-    // // url为空，返回
-    // if str_url.is_empty() {
-    //     return;
-    // }
-
     let str_url = get_bmnet_string(url);
 
     // 获取header map
@@ -141,4 +127,26 @@ pub extern "C" fn bmnet_post(url: *const c_char,
 #[no_mangle]
 pub extern "C" fn bmnet_timeout(time: u64) {    
     Timer::timeout(time);
+}
+
+// 提供释放函数
+#[no_mangle]
+pub extern "C" fn bmnet_free_arg_list(args: ArgumemntList) {
+    unsafe {
+        if !args.arg_list.is_null() {
+            // 释放每个 Argumemnt
+            for i in 0..args.arg_count {
+                let arg = &*args.arg_list.add(i as usize);
+                if arg.arg_type == 2 && !arg.arg_value.str_value.is_null() {
+                    // 释放 CString
+                    let _ = Box::from_raw(arg.arg_value.str_value as *mut CString);
+                }
+            }
+            // 释放 Argumemnt 数组
+            let _ = Box::from_raw(std::slice::from_raw_parts_mut(
+                args.arg_list,
+                args.arg_count as usize
+            ));
+        }
+    }
 }

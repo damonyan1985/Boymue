@@ -16,12 +16,16 @@ void ViewElement::parseAttribute(const char **atts) {
 //    }
 }
 
+bool ViewElement::isView() const {
+  return true;
+}
+
 void ViewElement::addChild(DocumentElement* element) {
-    m_children.push_back(SharedPtr<DocumentElement>(element));
+  m_children.push_back(SharedPtr<DocumentElement>(element));
 }
 
 void ViewElement::removeChild(DocumentElement* element) {
-    m_children.remove(SharedPtr<DocumentElement>(element));
+  m_children.remove(SharedPtr<DocumentElement>(element));
 }
 }
 }

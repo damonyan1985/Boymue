@@ -9,6 +9,10 @@ TextElement::TextElement(Document* dom, const String& text)
     : DocumentElement(dom), 
       m_text(text) {}
 
+bool TextElement::isText() const {
+  return true;
+}      
+
 const String& TextElement::text() const {
   return m_text;
 }

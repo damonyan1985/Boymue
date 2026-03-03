@@ -13,8 +13,9 @@
 namespace boymue {
 namespace dom {
 class TextFieldElement : public DocumentElement {
-public:
-    TextFieldElement(Document* dom);
+ public:
+  TextFieldElement(Document* dom);
+  bool isTextField() const override;
 };
 }
 }

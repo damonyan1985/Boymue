@@ -36,10 +36,10 @@ function parseDom(xml) {
     })
 }
 
-function request(obj) {
+function httpRequest(obj) {
     return new Promise((resolve, reject) => {
         boymue.request(JSON.stringify(obj), (res) => {
-            boymue.log('request function result: ' + res + ', resolve:' + resolve)
+            boymue.log('request function result: ' + res)
             resolve(res)
         })
     })
@@ -53,17 +53,17 @@ function request(obj) {
 //    boymue.log('boymue.request result: ' + res)
 //})
 
-// async function test() {
-//     let data = await request({
-//         'method': 'GET',
-//         'url': 'https://127.0.0.1:8443/user/v1/testlogin',
-//         'headers': {'token': 'none'}
-//     });
+async function testHttp() {
+    let data = await httpRequest({
+        'method': 'GET',
+        'url': 'https://httpbin.org/get',
+        'headers': {'token': 'none'}
+    });
 
-//     boymue.log('test async request: ' + data);
+    boymue.log('test async request: ' + data);
 
-//     return data;
-// }
+    return data;
+}
 
 
 
@@ -78,7 +78,7 @@ class P {
     //get = () => "123"
 }
 
-// test()
+testHttp()
 testParseXml()
 
 require('/example/vdom.js')

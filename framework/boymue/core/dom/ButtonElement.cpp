@@ -11,5 +11,9 @@ namespace boymue {
 namespace dom {
 ButtonElement::ButtonElement(Document* dom)
     : DocumentElement(dom) {}
+
+bool ButtonElement::isButton() const {
+    return true;
+}
 }
 }

@@ -16,6 +16,7 @@ namespace dom {
 class TextElement : public DocumentElement {
  public:
   TextElement(Document* dom, const String& text);
+  bool isText() const override;
 
  private:
   const String& text() const; 
