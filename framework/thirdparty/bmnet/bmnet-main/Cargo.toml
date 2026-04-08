@@ -17,13 +17,13 @@ path = "../bmnet-timer"
 version = "0.1.0"
 
 [dependencies.bmnet-macros]
-path = "./bmnet-macros"
+path = "../bmnet-macros"
 version = "0.1.0"
 
 [lib]
 name = "bmnet_main"
 path = "src/lib.rs"
-crate_type = ["staticlib", "dylib"]
+crate-type = ["staticlib", "dylib"]
 
 [profile.release]
 opt-level = 'z'

@@ -6,7 +6,7 @@ use web::client::{get_url, post_url};
 
 use std::ffi::{CString, CStr, c_int};
 use std::os::raw::{c_char};
-use args::{ArgumemntList, Argumemnt, ArgumemntValue, FnCallback};
+use args::{ArgumentList, Argument, ArgumentValue, FnCallback};
 // extern crate rustc_serialize;
 // use rustc_serialize::json;
 use std::collections::HashMap;
@@ -131,18 +131,18 @@ pub extern "C" fn bmnet_timeout(time: u64) {
 
 // 提供释放函数
 #[no_mangle]
-pub extern "C" fn bmnet_free_arg_list(args: ArgumemntList) {
+pub extern "C" fn bmnet_free_arg_list(args: ArgumentList) {
     unsafe {
         if !args.arg_list.is_null() {
-            // 释放每个 Argumemnt
+            // 释放每个 Argument
             for i in 0..args.arg_count {
                 let arg = &*args.arg_list.add(i as usize);
-                if arg.arg_type == 2 && !arg.arg_value.str_value.is_null() {
-                    // 释放 CString
-                    let _ = Box::from_raw(arg.arg_value.str_value as *mut CString);
+                if arg.arg_type == 2 && !arg.arg_value.str.str_value.is_null() {
+                    // 释放 CString（须与分配方约定：此处假设 str_value 指向 Box<CString> 的 as_ptr）
+                    let _ = Box::from_raw(arg.arg_value.str.str_value as *mut std::ffi::CString);
                 }
             }
-            // 释放 Argumemnt 数组
+            // 释放 Argument 数组
             let _ = Box::from_raw(std::slice::from_raw_parts_mut(
                 args.arg_list,
                 args.arg_count as usize

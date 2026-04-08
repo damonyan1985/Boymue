@@ -4,8 +4,8 @@ mod example;
 
 // 测试程序
 use web::client::{get_url};
-use std::ffi::{CString, CStr, c_int};
-use args::{ArgumemntList, Argumemnt, ArgumemntValue, FnCallback};
+use std::ffi::{CString, c_int};
+use args::{ArgumentList, Argument, ArgumentValue, ArgumentString, FnCallback};
 use example::{test, example_function, add, greet, bmnet_get_ext_impl};
 //use tokio_core::reactor::Core; 
 
@@ -108,20 +108,27 @@ fn test_macro_convert_args() {
     let arg1_str = CString::new("Hello").unwrap();
     let arg1_ptr = arg1_str.as_ptr();
     
-    // 创建 Argumemnt 数组
+    // 创建 Argument 数组
     let mut args_vec = vec![
-        Argumemnt {
+        Argument {
             arg_type: 1, // i32 类型
-            arg_value: unsafe { ArgumemntValue { i32_value: arg0_value } },
+            arg_value: unsafe { ArgumentValue { i32_value: arg0_value } },
         },
-        Argumemnt {
+        Argument {
             arg_type: 2, // String 类型
-            arg_value: unsafe { ArgumemntValue { str_value: arg1_ptr } },
+            arg_value: unsafe {
+                ArgumentValue {
+                    str: ArgumentString {
+                        str_value: arg1_ptr,
+                        str_len: arg1_str.as_bytes().len(),
+                    },
+                }
+            },
         },
     ];
     
-    // 创建 ArgumemntList
-    let arg_list = ArgumemntList {
+    // 创建 ArgumentList
+    let arg_list = ArgumentList {
         arg_count: 2,
         arg_list: args_vec.as_mut_ptr(),
     };
@@ -132,17 +139,17 @@ fn test_macro_convert_args() {
     
     // 创建第二个测试：example_function(x: i32, y: i32)
     let mut args_vec2 = vec![
-        Argumemnt {
+        Argument {
             arg_type: 1, // i32 类型
-            arg_value: unsafe { ArgumemntValue { i32_value: 10 } },
+            arg_value: unsafe { ArgumentValue { i32_value: 10 } },
         },
-        Argumemnt {
+        Argument {
             arg_type: 1, // i32 类型
-            arg_value: unsafe { ArgumemntValue { i32_value: 20 } },
+            arg_value: unsafe { ArgumentValue { i32_value: 20 } },
         },
     ];
     
-    let arg_list2 = ArgumemntList {
+    let arg_list2 = ArgumentList {
         arg_count: 2,
         arg_list: args_vec2.as_mut_ptr(),
     };
@@ -163,7 +170,7 @@ fn test_bmnet_get_ext_impl() {
     use std::ffi::CString;
     
     // 定义 callback 函数来接收返回值
-    unsafe extern "C" fn get_result_callback(result_args: ArgumemntList) {
+    unsafe extern "C" fn get_result_callback(result_args: ArgumentList) {
         println!("bmnet_get_ext_impl Callback 收到返回值，参数数量: {}", result_args.arg_count);
         
         if result_args.arg_count >= 2 {
@@ -175,11 +182,11 @@ fn test_bmnet_get_ext_impl() {
                     match arg0.arg_type {
                         2 => {
                             // String 类型
-                            let c_str = arg0.arg_value.str_value;
-                            if !c_str.is_null() {
-                                let str_value = CStr::from_ptr(c_str)
-                                    .to_string_lossy()
-                                    .into_owned();
+                            let s = arg0.arg_value.str;
+                            let str_value = unsafe { s.to_string_lossy() };
+                            if str_value.is_empty() {
+                                println!("返回值[0] 类型: String, 值: (空)");
+                            } else {
                                 println!("返回值[0] 类型: String, 长度: {} 字符", str_value.len());
                                 // 只打印前300个字符，避免输出过长
                                 if str_value.len() > 300 {
@@ -187,8 +194,6 @@ fn test_bmnet_get_ext_impl() {
                                 } else {
                                     println!("返回值[0] 内容: {}", str_value);
                                 }
-                            } else {
-                                println!("返回值[0] 类型: String, 值: (空)");
                             }
                         }
                         _ => {
@@ -227,21 +232,35 @@ fn test_bmnet_get_ext_impl() {
     let ext_value: usize = 12345;
     
     let mut args_vec1 = vec![
-        Argumemnt {
+        Argument {
             arg_type: 2, // String 类型 - URL
-            arg_value: unsafe { ArgumemntValue { str_value: url_ptr } },
+            arg_value: unsafe {
+                ArgumentValue {
+                    str: ArgumentString {
+                        str_value: url_ptr,
+                        str_len: url_str.as_bytes().len(),
+                    },
+                }
+            },
         },
-        Argumemnt {
+        Argument {
             arg_type: 2, // String 类型 - Headers (空)
-            arg_value: unsafe { ArgumemntValue { str_value: empty_headers_ptr } },
+            arg_value: unsafe {
+                ArgumentValue {
+                    str: ArgumentString {
+                        str_value: empty_headers_ptr,
+                        str_len: empty_headers_str.as_bytes().len(),
+                    },
+                }
+            },
         },
-        Argumemnt {
+        Argument {
             arg_type: 3, // usize 类型 - ext
-            arg_value: unsafe { ArgumemntValue { usize_value: ext_value } },
+            arg_value: unsafe { ArgumentValue { usize_value: ext_value } },
         },
     ];
     
-    let arg_list1 = ArgumemntList {
+    let arg_list1 = ArgumentList {
         arg_count: 3,
         arg_list: args_vec1.as_mut_ptr(),
     };
@@ -270,21 +289,35 @@ fn test_bmnet_get_ext_impl() {
     let ext_value2: usize = 67890;
     
     let mut args_vec2 = vec![
-        Argumemnt {
+        Argument {
             arg_type: 2, // String 类型 - URL
-            arg_value: unsafe { ArgumemntValue { str_value: url_ptr2 } },
+            arg_value: unsafe {
+                ArgumentValue {
+                    str: ArgumentString {
+                        str_value: url_ptr2,
+                        str_len: url_str2.as_bytes().len(),
+                    },
+                }
+            },
         },
-        Argumemnt {
+        Argument {
             arg_type: 2, // String 类型 - Headers
-            arg_value: unsafe { ArgumemntValue { str_value: headers_ptr } },
+            arg_value: unsafe {
+                ArgumentValue {
+                    str: ArgumentString {
+                        str_value: headers_ptr,
+                        str_len: headers_str.as_bytes().len(),
+                    },
+                }
+            },
         },
-        Argumemnt {
+        Argument {
             arg_type: 3, // usize 类型 - ext
-            arg_value: unsafe { ArgumemntValue { usize_value: ext_value2 } },
+            arg_value: unsafe { ArgumentValue { usize_value: ext_value2 } },
         },
     ];
     
-    let arg_list2 = ArgumemntList {
+    let arg_list2 = ArgumentList {
         arg_count: 3,
         arg_list: args_vec2.as_mut_ptr(),
     };

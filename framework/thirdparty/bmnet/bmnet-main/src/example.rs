@@ -1,17 +1,17 @@
 // 示例：使用 convert_args 过程宏
 // 这个文件展示了如何使用过程宏将函数参数转换为 ArgumentList
 
-use crate::args::ArgumemntList;
+use crate::args::ArgumentList;
 use bmnet_macros::convert_args;
 
 // 使用宏前：fn test(arg0: i32, arg1: String) { ... }
-// 使用宏后：fn test(args: ArgumemntList) { ... }
+// 使用宏后：fn test(args: ArgumentList) { ... }
 // 
 // 注意：在函数定义时，你应该写原始的参数列表（如 arg0: i32, arg1: String）
-// 宏会自动将其转换为 args: ArgumemntList，并在函数体开始处提取参数
+// 宏会自动将其转换为 args: ArgumentList，并在函数体开始处提取参数
 #[convert_args]
 pub fn test(arg0: i32, arg1: String) {
-    // 函数体中可以直接使用 arg0 和 arg1，宏会自动从 ArgumemntList 中提取
+    // 函数体中可以直接使用 arg0 和 arg1，宏会自动从 ArgumentList 中提取
     println!("arg0: {}, arg1: {}", arg0, arg1);
 }
 
@@ -23,7 +23,7 @@ pub fn example_function(x: i32, y: i32) {
 
 // 有返回值的示例：返回值会通过 FnCallback 回调返回
 // 使用宏前：fn add(x: i32, y: i32) -> i32 { x + y }
-// 使用宏后：fn add(args: ArgumemntList, callback: FnCallback) { ... }
+// 使用宏后：fn add(args: ArgumentList, callback: FnCallback) { ... }
 #[convert_args]
 pub fn add(x: i32, y: i32) -> i32 {
     x + y

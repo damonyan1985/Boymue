@@ -1,6 +1,9 @@
+mod r#type;
+
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemFn, FnArg, Pat, Type, ReturnType, TypePath, TypeTuple};
+use syn::{parse_macro_input, ItemFn, FnArg, Pat, Type, ReturnType, TypePath};
+use r#type::{ARG_TYPE_I32, ARG_TYPE_STRING, ARG_TYPE_USIZE};
 
 /// 过程宏：将函数签名从多个参数转换为单个 ArgumentList 参数
 /// 如果函数有返回值，返回值将通过 FnCallback 回调返回
@@ -19,7 +22,7 @@ use syn::{parse_macro_input, ItemFn, FnArg, Pat, Type, ReturnType, TypePath, Typ
 /// 转换为：
 /// ```rust
 /// #[no_mangle]
-/// pub extern "C" fn test(args: ArgumemntList) {
+/// pub extern "C" fn test(args: ArgumentList) {
 ///     let arg0: i32 = /* 从 args 提取 */;
 ///     let arg1: String = /* 从 args 提取 */;
 ///     println!("arg0: {}, arg1: {}", arg0, arg1);
@@ -37,11 +40,11 @@ use syn::{parse_macro_input, ItemFn, FnArg, Pat, Type, ReturnType, TypePath, Typ
 /// 转换为：
 /// ```rust
 /// #[no_mangle]
-/// pub extern "C" fn add(args: ArgumemntList, callback: FnCallback) {
+/// pub extern "C" fn add(args: ArgumentList, callback: FnCallback) {
 ///     let x: i32 = /* 从 args 提取 */;
 ///     let y: i32 = /* 从 args 提取 */;
 ///     let result: i32 = x + y;
-///     // 将 result 包装成 ArgumemntList 并通过 callback 返回
+///     // 将 result 包装成 ArgumentList 并通过 callback 返回
 ///     callback(return_arg_list);
 /// }
 /// ```
@@ -100,9 +103,9 @@ pub fn convert_args(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // 生成新的函数签名参数
     // 如果有返回值，添加 callback: FnCallback 参数
     let new_params = if has_return {
-        quote! { args: ArgumemntList, callback: crate::args::FnCallback }
+        quote! { args: ArgumentList, callback: crate::args::FnCallback }
     } else {
-        quote! { args: ArgumemntList }
+        quote! { args: ArgumentList }
     };
     
     // 生成新的返回类型：转换后的函数总是返回 ()
@@ -133,7 +136,7 @@ pub fn convert_args(_attr: TokenStream, item: TokenStream) -> TokenStream {
                     #fn_block
                 };
                 
-                // 将返回值包装成 ArgumemntList 并通过 callback 返回
+                // 将返回值包装成 ArgumentList 并通过 callback 返回
                 #return_wrapper
             }
         } else {
@@ -197,22 +200,22 @@ fn get_type_ident(ty: &Type) -> Option<&syn::Ident> {
     }
 }
 
-/// 为单个类型生成 Argumemnt 包装代码
+/// 为单个类型生成 Argument 包装代码
 fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &Type) -> proc_macro2::TokenStream {
     match get_type_ident(type_ty) {
         Some(ident) if ident == "i32" => {
             quote! {
-                Argumemnt {
-                    arg_type: 1, // i32 类型
-                    arg_value: unsafe { ArgumemntValue { i32_value: #value_expr } },
+                Argument {
+                    arg_type: #ARG_TYPE_I32,
+                    arg_value: unsafe { ArgumentValue { i32_value: #value_expr } },
                 }
             }
         }
         Some(ident) if ident == "usize" => {
             quote! {
-                Argumemnt {
-                    arg_type: 3, // usize 类型
-                    arg_value: unsafe { ArgumemntValue { usize_value: #value_expr } },
+                Argument {
+                    arg_type: #ARG_TYPE_USIZE,
+                    arg_value: unsafe { ArgumentValue { usize_value: #value_expr } },
                 }
             }
         }
@@ -221,14 +224,22 @@ fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &T
                 {
                     // 将 String 转换为 CString，并分配到堆上
                     let c_string = Box::new(CString::new(#value_expr).unwrap_or_else(|_| CString::new("").unwrap()));
+                    let str_len = c_string.as_bytes().len();
                     let c_str_ptr = c_string.as_ptr();
-                    
+
                     // 防止 c_string 被提前释放（callback 可能异步使用）
                     std::mem::forget(c_string);
-                    
-                    Argumemnt {
-                        arg_type: 2, // String 类型
-                        arg_value: unsafe { ArgumemntValue { str_value: c_str_ptr } },
+
+                    Argument {
+                        arg_type: #ARG_TYPE_STRING,
+                        arg_value: unsafe {
+                            ArgumentValue {
+                                str: crate::args::ArgumentString {
+                                    str_value: c_str_ptr,
+                                    str_len,
+                                },
+                            }
+                        },
                     }
                 }
             }
@@ -244,7 +255,7 @@ fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &T
     }
 }
 
-/// 生成返回值包装代码，将返回值包装成 ArgumemntList 并通过 callback 返回
+/// 生成返回值包装代码，将返回值包装成 ArgumentList 并通过 callback 返回
 /// 支持单个类型和元组类型
 fn generate_return_wrapper(return_ty: &Type) -> proc_macro2::TokenStream {
     // 检查是否是元组类型
@@ -279,7 +290,7 @@ fn generate_return_wrapper(return_ty: &Type) -> proc_macro2::TokenStream {
             {
                 use std::os::raw::c_char;
                 use std::ffi::CString;
-                use crate::args::{ArgumemntList, Argumemnt, ArgumemntValue};
+                use crate::args::{ArgumentList, Argument, ArgumentValue};
                 
                 // 解构元组
                 let #tuple_pattern = result;
@@ -289,8 +300,8 @@ fn generate_return_wrapper(return_ty: &Type) -> proc_macro2::TokenStream {
                     #(#arg_wrappers),*
                 ];
                 
-                // 创建 ArgumemntList
-                let return_arg_list = ArgumemntList {
+                // 创建 ArgumentList
+                let return_arg_list = ArgumentList {
                     arg_count: #elem_count as i32,
                     arg_list: return_args_vec.as_mut_ptr(),
                 };
@@ -313,15 +324,15 @@ fn generate_return_wrapper(return_ty: &Type) -> proc_macro2::TokenStream {
         {
             use std::os::raw::c_char;
             use std::ffi::CString;
-            use crate::args::{ArgumemntList, Argumemnt, ArgumemntValue};
+            use crate::args::{ArgumentList, Argument, ArgumentValue};
             
-            // 将返回值包装成 Argumemnt
+            // 将返回值包装成 Argument
             let mut return_arg = Box::new(#arg_wrapper);
             
-            // 创建 ArgumemntList
-            let return_arg_list = ArgumemntList {
+            // 创建 ArgumentList
+            let return_arg_list = ArgumentList {
                 arg_count: 1,
-                arg_list: return_arg.as_mut() as *mut Argumemnt,
+                arg_list: return_arg.as_mut() as *mut Argument,
             };
             
             // 通过 callback 返回
@@ -356,10 +367,11 @@ fn generate_arg_extraction(idx: usize, type_ty: &Type) -> proc_macro2::TokenStre
             quote! {
                 unsafe {
                     #bounds_check
-                    if (*arg_ptr).arg_type != 1 {
+                    if (*arg_ptr).arg_type != #ARG_TYPE_I32 {
                         panic!(
-                            "Type mismatch at argument index {}: expected i32 (type 1), got type {}",
+                            "Type mismatch at argument index {}: expected i32 (arg_type {}), got type {}",
                             #idx,
+                            #ARG_TYPE_I32,
                             (*arg_ptr).arg_type
                         );
                     }
@@ -371,21 +383,16 @@ fn generate_arg_extraction(idx: usize, type_ty: &Type) -> proc_macro2::TokenStre
             quote! {
                 unsafe {
                     #bounds_check
-                    if (*arg_ptr).arg_type != 2 {
+                    if (*arg_ptr).arg_type != #ARG_TYPE_STRING {
                         panic!(
-                            "Type mismatch at argument index {}: expected String (type 2), got type {}",
+                            "Type mismatch at argument index {}: expected String (arg_type {}), got type {}",
                             #idx,
+                            #ARG_TYPE_STRING,
                             (*arg_ptr).arg_type
                         );
                     }
-                    let c_str = (*arg_ptr).arg_value.str_value;
-                    if c_str.is_null() {
-                        String::new()
-                    } else {
-                        std::ffi::CStr::from_ptr(c_str)
-                            .to_string_lossy()
-                            .into_owned()
-                    }
+                    let s = (*arg_ptr).arg_value.str;
+                    crate::args::ArgumentString::to_string_lossy(&s)
                 }
             }
         }
@@ -393,10 +400,11 @@ fn generate_arg_extraction(idx: usize, type_ty: &Type) -> proc_macro2::TokenStre
             quote! {
                 unsafe {
                     #bounds_check
-                    if (*arg_ptr).arg_type != 3 {
+                    if (*arg_ptr).arg_type != #ARG_TYPE_USIZE {
                         panic!(
-                            "Type mismatch at argument index {}: expected usize (type 3), got type {}",
+                            "Type mismatch at argument index {}: expected usize (arg_type {}), got type {}",
                             #idx,
+                            #ARG_TYPE_USIZE,
                             (*arg_ptr).arg_type
                         );
                     }
