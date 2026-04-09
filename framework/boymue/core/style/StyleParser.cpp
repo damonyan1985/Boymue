@@ -301,6 +301,13 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
 
     CSSDeclarations::CSSProperty prop;
     const String& val = kv[1];
+    String valTrim = val;
+    StringUtil::trim(valTrim);
+    if (toLowerAscii(valTrim) == "inherit") {
+        prop.strVal = "inherit";
+        rule->declarations.propertyMap[type] = prop;
+        return;
+    }
 
     switch (type) {
     case StyleEngine::kWidth:

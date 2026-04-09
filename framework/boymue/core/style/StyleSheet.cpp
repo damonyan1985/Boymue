@@ -181,7 +181,202 @@ FontStyleValue parseFontStyleKeyword(const String& s) {
     return FontStyleValue::Normal;
 }
 
-void applyPropertyToStyle(int propId, const CSSDeclarations::CSSProperty& prop, Style& st) {
+static bool inheritKeywordMatch(const String& s) {
+    String t = s;
+    StringUtil::trim(t);
+    for (char& c : t) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    return t == "inherit";
+}
+
+/// 向上查找最近已挂 layout 的祖先，取其 `Layout::style()` 作为父计算样式（中间无 layout 的节点跳过）。
+static const Style* nearestAncestorComputedStyle(dom::DocumentElement* el) {
+    if (!el) {
+        return nullptr;
+    }
+    for (dom::DocumentElement* p = el->parent(); p; p = p->parent()) {
+        layout::Layout* pl = p->layout();
+        if (pl) {
+            return &pl->style();
+        }
+    }
+    return nullptr;
+}
+
+/// `inherit` 关键字：显式使用父元素该属性的计算值（CSS 任意属性均可 `inherit`）。
+static void copyPropertyFromParentForInherit(int propId, Style& st, const Style& p) {
+    switch (propId) {
+    case StyleEngine::kWidth:
+        st.width = p.width;
+        break;
+    case StyleEngine::kHeight:
+        st.height = p.height;
+        break;
+    case StyleEngine::kColor:
+        st.color = p.color;
+        break;
+    case StyleEngine::kBackgroundColor:
+        st.bgColor = p.bgColor;
+        break;
+    case StyleEngine::kFontSize:
+        st.fontSizePx = p.fontSizePx;
+        break;
+    case StyleEngine::kFontFamily:
+        st.fontFamily = p.fontFamily;
+        break;
+    case StyleEngine::kMargin:
+        st.marginTop = p.marginTop;
+        st.marginRight = p.marginRight;
+        st.marginBottom = p.marginBottom;
+        st.marginLeft = p.marginLeft;
+        break;
+    case StyleEngine::kMarginTop:
+        st.marginTop = p.marginTop;
+        break;
+    case StyleEngine::kMarginRight:
+        st.marginRight = p.marginRight;
+        break;
+    case StyleEngine::kMarginBottom:
+        st.marginBottom = p.marginBottom;
+        break;
+    case StyleEngine::kMarginLeft:
+        st.marginLeft = p.marginLeft;
+        break;
+    case StyleEngine::kPadding:
+        st.paddingTop = p.paddingTop;
+        st.paddingRight = p.paddingRight;
+        st.paddingBottom = p.paddingBottom;
+        st.paddingLeft = p.paddingLeft;
+        break;
+    case StyleEngine::kPaddingTop:
+        st.paddingTop = p.paddingTop;
+        break;
+    case StyleEngine::kPaddingRight:
+        st.paddingRight = p.paddingRight;
+        break;
+    case StyleEngine::kPaddingBottom:
+        st.paddingBottom = p.paddingBottom;
+        break;
+    case StyleEngine::kPaddingLeft:
+        st.paddingLeft = p.paddingLeft;
+        break;
+    case StyleEngine::kFont:
+        st.fontSizePx = p.fontSizePx;
+        st.fontFamily = p.fontFamily;
+        st.fontWeight = p.fontWeight;
+        st.fontStyle = p.fontStyle;
+        break;
+    case StyleEngine::kLeft:
+        st.left = p.left;
+        break;
+    case StyleEngine::kTop:
+        st.top = p.top;
+        break;
+    case StyleEngine::kRight:
+        st.right = p.right;
+        break;
+    case StyleEngine::kBottom:
+        st.bottom = p.bottom;
+        break;
+    case StyleEngine::kPosition:
+        st.position = p.position;
+        break;
+    case StyleEngine::kZIndex:
+        st.zIndexAuto = p.zIndexAuto;
+        st.zIndex = p.zIndex;
+        break;
+    case StyleEngine::kMinWidth:
+        st.minWidth = p.minWidth;
+        break;
+    case StyleEngine::kMinHeight:
+        st.minHeight = p.minHeight;
+        break;
+    case StyleEngine::kMaxWidth:
+        st.maxWidth = p.maxWidth;
+        break;
+    case StyleEngine::kMaxHeight:
+        st.maxHeight = p.maxHeight;
+        break;
+    case StyleEngine::kOpacity:
+        st.opacity = p.opacity;
+        break;
+    case StyleEngine::kVisibility:
+        st.visibility = p.visibility;
+        break;
+    case StyleEngine::kDisplay:
+        st.display = p.display;
+        break;
+    case StyleEngine::kFontWeight:
+        st.fontWeight = p.fontWeight;
+        break;
+    case StyleEngine::kFontStyle:
+        st.fontStyle = p.fontStyle;
+        break;
+    case StyleEngine::kLineHeight:
+        st.lineHeightPx = p.lineHeightPx;
+        break;
+    case StyleEngine::kTextAlign:
+        st.textAlign = p.textAlign;
+        break;
+    case StyleEngine::kTextDecoration:
+        st.textUnderline = p.textUnderline;
+        st.textLineThrough = p.textLineThrough;
+        break;
+    case StyleEngine::kLetterSpacing:
+        st.letterSpacing = p.letterSpacing;
+        break;
+    case StyleEngine::kWordSpacing:
+        st.wordSpacing = p.wordSpacing;
+        break;
+    case StyleEngine::kBorderWidth:
+        st.borderTopWidth = p.borderTopWidth;
+        st.borderRightWidth = p.borderRightWidth;
+        st.borderBottomWidth = p.borderBottomWidth;
+        st.borderLeftWidth = p.borderLeftWidth;
+        break;
+    case StyleEngine::kBorderTopWidth:
+        st.borderTopWidth = p.borderTopWidth;
+        break;
+    case StyleEngine::kBorderRightWidth:
+        st.borderRightWidth = p.borderRightWidth;
+        break;
+    case StyleEngine::kBorderBottomWidth:
+        st.borderBottomWidth = p.borderBottomWidth;
+        break;
+    case StyleEngine::kBorderLeftWidth:
+        st.borderLeftWidth = p.borderLeftWidth;
+        break;
+    case StyleEngine::kBorderColor:
+        st.borderColor = p.borderColor;
+        break;
+    case StyleEngine::kBorderRadius:
+        st.borderRadius = p.borderRadius;
+        break;
+    case StyleEngine::kOverflow:
+        st.overflowX = p.overflowX;
+        st.overflowY = p.overflowY;
+        break;
+    case StyleEngine::kOverflowX:
+        st.overflowX = p.overflowX;
+        break;
+    case StyleEngine::kOverflowY:
+        st.overflowY = p.overflowY;
+        break;
+    case StyleEngine::kBackgroundImage:
+        st.backgroundImage = p.backgroundImage;
+        break;
+    default:
+        break;
+    }
+}
+
+void applyPropertyToStyle(int propId, const CSSDeclarations::CSSProperty& prop, Style& st,
+                          const Style* parentStyle) {
+    if (parentStyle && inheritKeywordMatch(prop.strVal)) {
+        copyPropertyFromParentForInherit(propId, st, *parentStyle);
+        return;
+    }
     switch (propId) {
     case StyleEngine::kWidth:
         if (prop.numVal > 0.f) {
@@ -552,13 +747,17 @@ void StyleResolver::applyToElement(dom::DocumentElement* el,
     if (!lay) {
         return;
     }
+    const Style* parentStyle = nearestAncestorComputedStyle(el);
     Style& st = lay->mutableStyle();
+    if (parentStyle) {
+        st.inheritFrom(*parentStyle);
+    }
     for (const auto& rr : ranked) {
         if (!rr.rule) {
             continue;
         }
         for (const auto& kv : rr.rule->declarations.propertyMap) {
-            applyPropertyToStyle(kv.first, kv.second, st);
+            applyPropertyToStyle(kv.first, kv.second, st, parentStyle);
         }
     }
     lay->syncMetricsFromStyle();

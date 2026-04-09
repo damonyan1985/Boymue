@@ -77,6 +77,9 @@ public:
     Style();
     ~Style();
 
+    /// 从父节点的计算样式复制 CSS 中「默认继承」的属性（对标 WebCore RenderStyle::inheritFrom 子集）。
+    void inheritFrom(const Style& parent);
+
     // css color
     Color color;
     // css background-color

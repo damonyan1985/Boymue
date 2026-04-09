@@ -104,5 +104,21 @@ ColorValue Color::value() const { return m_value;  }
 
 Style::Style() {}
 Style::~Style() {}
+
+void Style::inheritFrom(const Style& parent) {
+    color = parent.color;
+    fontSizePx = parent.fontSizePx;
+    fontFamily = parent.fontFamily;
+    fontWeight = parent.fontWeight;
+    fontStyle = parent.fontStyle;
+    lineHeightPx = parent.lineHeightPx;
+    textAlign = parent.textAlign;
+    visibility = parent.visibility;
+    letterSpacing = parent.letterSpacing;
+    wordSpacing = parent.wordSpacing;
+    textUnderline = parent.textUnderline;
+    textLineThrough = parent.textLineThrough;
+    opacity = parent.opacity;
+}
 }
 }
