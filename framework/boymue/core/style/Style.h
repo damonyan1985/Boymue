@@ -59,7 +59,7 @@ enum class FontStyleValue : uint8_t {
 class Color {
 public:
     Color(ColorValue value = 0);
-    Color(BMByte a, BMByte r, BMByte g, BMByte b);
+    Color(BMByte r, BMByte g, BMByte b, BMByte a = 0xFF);
     Color(const String& colorText);
     BMByte alpha() const;
     BMByte red() const;
