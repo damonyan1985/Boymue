@@ -12,7 +12,6 @@ public:
     ImageLayout(dom::DocumentElement* element);
     virtual LayoutType type() const override;
     virtual void layout();
-    virtual void paint(PaintInfo& info) override;
 
     Image* image();
 

@@ -5,8 +5,8 @@
 #define Layout_h
 
 #include "PaintInfo.h"
-#include "Style.h"
 #include "Painter.h"
+#include "Style.h"
 #include "DocumentElement.h"
 
 namespace boymue {
@@ -28,14 +28,26 @@ public:
     virtual void paint(PaintInfo& info);
 
     const css::Style& style() const;
+    css::Style& mutableStyle();
+    void syncMetricsFromStyle();
+
     LayoutUnit left() const;
     LayoutUnit top() const;
     LayoutUnit width() const;
     LayoutUnit height() const;
 
+    dom::DocumentElement* domElement() const { return m_element; }
+
 protected:
     virtual dom::DocumentElement* element() const;
+    void setParentLayout(Layout* p) { m_parentLayout = p; }
+    Layout* parentLayout() const { return m_parentLayout; }
+    LayoutUnit horizontalEdges() const;
+    LayoutUnit verticalEdges() const;
+    LayoutUnit contentWidth() const;
+    void ensurePainter();
 
+    Layout* m_parentLayout{nullptr};
     LayoutUnit m_left;
     LayoutUnit m_top;
     LayoutUnit m_width;
@@ -45,6 +57,11 @@ protected:
     
     OwnerPtr<painter::Painter> m_painter;
     dom::DocumentElement* m_element;
+
+    friend class BlockLayout;
+    friend class ImageLayout;
+    friend class TextLayout;
+    friend class InputLayout;
 };
 }
 }  // namespace boymue

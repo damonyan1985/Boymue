@@ -16,6 +16,7 @@ class ButtonElement : public DocumentElement {
 public:
     ButtonElement(Document* dom);
     bool isButton() const override;
+    String tagName() const override;
 };
 }
 }

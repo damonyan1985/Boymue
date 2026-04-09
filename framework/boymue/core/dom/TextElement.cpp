@@ -11,7 +11,11 @@ TextElement::TextElement(Document* dom, const String& text)
 
 bool TextElement::isText() const {
   return true;
-}      
+}
+
+String TextElement::tagName() const {
+  return "text";
+}
 
 const String& TextElement::text() const {
   return m_text;

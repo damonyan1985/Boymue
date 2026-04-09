@@ -15,5 +15,9 @@ ButtonElement::ButtonElement(Document* dom)
 bool ButtonElement::isButton() const {
     return true;
 }
+
+String ButtonElement::tagName() const {
+    return "button";
+}
 }
 }

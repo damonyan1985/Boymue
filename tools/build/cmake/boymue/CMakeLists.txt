@@ -33,6 +33,7 @@ file(
   ${BOYMUE_SRC}/core/paint/*.cpp
   ${BOYMUE_SRC}/core/view/*.cpp
   ${BOYMUE_SRC}/core/layout/*.cpp
+  ${BOYMUE_SRC}/core/gdi/*.cpp
   ${BOYMUE_SRC}/core/dom/*.cpp
   ${BOYMUE_SRC}/core/style/*.cpp
   ${BOYMUE_SRC}/thread/*.cpp
@@ -97,6 +98,7 @@ target_include_directories(
   ${BOYMUE_SRC}/core/view
   ${BOYMUE_SRC}/core/paint
   ${BOYMUE_SRC}/core/layout
+  ${BOYMUE_SRC}/core/gdi
   ${BOYMUE_SRC}/core/style
   ${BOYMUE_SRC}/core/dom
   ${BOYMUE_SRC}/thread

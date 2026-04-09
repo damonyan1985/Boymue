@@ -21,7 +21,12 @@
 #include "TaskThread.h"
 #include "Thread.h"
 #include "BoymueBridge.h"
+#include "Document.h"
 #include "FileUtil.h"
+#include "Layout.h"
+#include "PaintContext.h"
+#include "PaintInfo.h"
+#include "SkRect.h"
 #include "StringUtil.h"
 #include <jemalloc/jemalloc.h>
 
@@ -38,11 +43,59 @@ void* operator new(std::size_t sz) {
 
 void operator delete(void* p) {
 #ifdef USE_JEMALLOC
-    return je_free(p);
+  return je_free(p);
 #else
-    return free(p);
+  return free(p);
 #endif
 }
+
+namespace {
+
+/// 示例：内含 Boymue DOM 标签的 XML，经 Document 解析（含 &lt;style&gt; 内 CSS）、
+/// StyleEngine::apply、布局与绘制，输出到给定 SkCanvas（再由 UIRuntime 录制成图并 submit 到窗口）。
+void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
+  if (!canvas || width <= 0 || height <= 0) {
+    return;
+  }
+
+  boymue::dom::Document document;
+  document.frame().setViewport(static_cast<boymue::LayoutUnit>(width),
+                               static_cast<boymue::LayoutUnit>(height));
+
+  std::string xml;
+  xml.reserve(640);
+  xml += "<view><style>\n";
+  xml += "view { width: ";
+  xml += std::to_string(width);
+  xml += "px; height: ";
+  xml += std::to_string(height);
+  xml += "px; background-color: rgb(60,60,250); }\n";
+  xml += "button { width: 220px; height: 44px; margin-top: 24px; margin-left: 24px; ";
+  xml += "background-color: rgb(200,60,60); border-radius: 8px; }\n";
+  xml += "</style><button></button></view>";
+
+  document.parseFromXML(xml);
+
+  boymue::dom::DocumentElement* root = document.root();
+  if (!root) {
+    return;
+  }
+
+  boymue::layout::Layout* rootLayout = root->createLayout();
+  if (!rootLayout) {
+    return;
+  }
+  rootLayout->layout();
+
+  boymue::RecordingPaintContext paintCtx(canvas);
+  boymue::PaintInfo info;
+  info.context = &paintCtx;
+  info.paintRect = SkRect::MakeIWH(width, height);
+  info.clipRect = info.paintRect;
+  rootLayout->paint(info);
+}
+
+}  // namespace
 
 class UIRuntime {
  public:
@@ -66,33 +119,8 @@ class UIRuntime {
     m_painter->submit();
   }
 
-  void WcharToChar(const wchar_t* wp, std::string& text, size_t encode) {
-    // std::string str;
-    int len =
-        WideCharToMultiByte(encode, 0, wp, wcslen(wp), NULL, 0, NULL, NULL);
-    char* chs = new char[len + 1];
-    WideCharToMultiByte(encode, 0, wp, wcslen(wp), chs, len, NULL, NULL);
-    chs[len] = '\0';
-    text = chs;
-  }
-
   void Draw(SkCanvas* canvas) {
-    SkPaint paint;
-    paint.setStrokeWidth(1);
-    paint.setARGB(0xff, 0xff, 0, 0);
-    canvas->drawRect(SkRect::MakeXYWH(10, 10, 100, 100), paint);
-
-    SkPaint textpaint;
-    textpaint.setTextSize(16);
-    textpaint.setColor(SK_ColorRED);
-    textpaint.setAntiAlias(true);
-    // SkString string("Hello World");
-    const wchar_t* text = L"Hello World";
-    std::string str;
-    WcharToChar(text, str, CP_UTF8);
-    canvas->drawText(str.c_str(), str.size(), 20, 300, textpaint);
-    // canvas->restore();
-    // canvas->flush();
+    RenderDomXmlToWindow(canvas, m_width, m_height);
   }
 
   void repaint() { m_painter->submit(); }

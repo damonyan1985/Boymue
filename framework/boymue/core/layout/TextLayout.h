@@ -13,11 +13,8 @@ namespace layout {
 class TextLayout : public Layout {
  public:
   TextLayout(dom::DocumentElement* element);
-  virtual LayoutType type() const override;
-  virtual void paint(PaintInfo& info) override;
-
- private:
-  dom::TextElement* element() const override;
+  LayoutType type() const override;
+  void layout() override;
 };
 }
 }  // namespace boymue

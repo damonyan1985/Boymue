@@ -25,7 +25,7 @@ closure TaskRunner::getInvocation()
     }
 
     const Task& task = m_queue.top();
-    closure invocation = task.getTask();
+        closure invocation = task.getTask();
     m_queue.pop();
 
     return invocation;

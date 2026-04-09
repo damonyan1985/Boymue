@@ -5,11 +5,16 @@
 
 namespace boymue {
 namespace layout {
-Layout::Layout(dom::DocumentElement* element) 
-    : m_painter(painter::Painter::createPainter(this))
-    , m_element(element) {}
+Layout::Layout(dom::DocumentElement* element)
+    : m_element(element) {}
 
-Layout::~Layout() {}
+Layout::~Layout() = default;
+
+void Layout::ensurePainter() {
+    if (!m_painter) {
+        m_painter.reset(painter::Painter::createPainter(this));
+    }
+}
 
 void Layout::layout() {}
 
@@ -19,6 +24,34 @@ Layout::LayoutType Layout::type() const {
 
 const css::Style& Layout::style() const {
     return m_style;
+}
+
+css::Style& Layout::mutableStyle() {
+    return m_style;
+}
+
+void Layout::syncMetricsFromStyle() {
+    if (m_style.width > 0.f) {
+        m_width = m_style.width;
+    }
+    if (m_style.height > 0.f) {
+        m_height = m_style.height;
+    }
+}
+
+LayoutUnit Layout::horizontalEdges() const {
+    return m_style.borderLeftWidth + m_style.borderRightWidth + m_style.paddingLeft +
+           m_style.paddingRight;
+}
+
+LayoutUnit Layout::verticalEdges() const {
+    return m_style.borderTopWidth + m_style.borderBottomWidth + m_style.paddingTop +
+           m_style.paddingBottom;
+}
+
+LayoutUnit Layout::contentWidth() const {
+    LayoutUnit w = m_width - horizontalEdges();
+    return w > 0.f ? w : 0.f;
 }
 
 LayoutUnit Layout::left() const {
@@ -35,13 +68,23 @@ LayoutUnit Layout::height() const {
 }
 
 void Layout::paint(PaintInfo& info) {
+    if (m_style.display == css::DisplayValue::None) {
+        return;
+    }
+    if (m_style.visibility == css::VisibilityValue::Hidden) {
+        return;
+    }
+    if (!info.context || !info.context->canvas()) {
+        return;
+    }
+    ensurePainter();
     if (m_painter) {
         m_painter->paint(info);
     }
 }
 
 dom::DocumentElement* Layout::element() const {
-    return nullptr;
+    return m_element;
 }
 }
 }  // namespace boymue

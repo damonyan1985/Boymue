@@ -12,7 +12,7 @@ class TextPainter : public Painter {
 public:
     TextPainter(layout::Layout* layout);
 protected:
-  virtual void paintImpl(SkCanvas* canvas, PaintInfo& info) override;
+  void paintImpl(PaintInfo& info) override;
 };
 }
 }  // namespace boymue

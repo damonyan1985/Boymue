@@ -5,7 +5,6 @@
 #define ViewElement_h
 
 #include "DocumentElement.h"
-#include "StringUtil.h"
 
 namespace boymue {
 namespace dom {
@@ -13,13 +12,9 @@ class ViewElement : public DocumentElement {
  public:
   ViewElement(Document* dom);
   virtual void parseAttribute(const char** atts);
-  virtual void addChild(DocumentElement* element);
-  virtual void removeChild(DocumentElement* element);
+  String tagName() const override;
 
   bool isView() const override;
-    
- private:
-  List<SharedPtr<DocumentElement>> m_children;
 };
 }
 }  // namespace boymue

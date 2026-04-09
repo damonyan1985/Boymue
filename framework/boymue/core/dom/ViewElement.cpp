@@ -2,7 +2,6 @@
 // Author boymue on 2021.01.26
 
 #include "ViewElement.h"
-#include "StringUtil.h"
 
 namespace boymue {
 namespace dom {
@@ -20,12 +19,8 @@ bool ViewElement::isView() const {
   return true;
 }
 
-void ViewElement::addChild(DocumentElement* element) {
-  m_children.push_back(SharedPtr<DocumentElement>(element));
-}
-
-void ViewElement::removeChild(DocumentElement* element) {
-  m_children.remove(SharedPtr<DocumentElement>(element));
+String ViewElement::tagName() const {
+  return "view";
 }
 }
 }

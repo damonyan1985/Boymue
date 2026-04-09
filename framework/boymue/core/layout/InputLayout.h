@@ -7,8 +7,10 @@ namespace boymue {
 namespace layout {
 class InputLayout : public Layout {
  public:
-  InputLayout(dom::DocumentElement* element);  
+  explicit InputLayout(dom::DocumentElement* element);
+  LayoutType type() const override;
+  void layout() override;
 };
 }
 }  // namespace boymue
-#endif  // !InputLayout_h
+#endif

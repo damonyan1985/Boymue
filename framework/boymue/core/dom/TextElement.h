@@ -9,20 +9,16 @@
 #include "DocumentElement.h"
 
 namespace boymue {
-namespace layout {
-class TextLayout;  
-}  
 namespace dom {
 class TextElement : public DocumentElement {
  public:
   TextElement(Document* dom, const String& text);
   bool isText() const override;
+  String tagName() const override;
+  const String& text() const;
 
  private:
-  const String& text() const; 
-
   String m_text;
-  friend class layout::TextLayout;
 };
 }
 }  // namespace boymue

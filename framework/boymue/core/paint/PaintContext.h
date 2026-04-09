@@ -13,6 +13,19 @@ class PaintContext {
   virtual void reset() = 0;
   virtual SkCanvas* canvas() = 0;
   virtual void submit() = 0;
+  virtual ~PaintContext() = default;
+};
+
+/// 将 SkPictureRecorder 等产生的 SkCanvas 挂到 PaintInfo::context 上
+class RecordingPaintContext final : public PaintContext {
+ public:
+  explicit RecordingPaintContext(SkCanvas* canvas) : m_canvas(canvas) {}
+  void reset() override {}
+  SkCanvas* canvas() override { return m_canvas; }
+  void submit() override {}
+
+ private:
+  SkCanvas* m_canvas;
 };
 }  // namespace boymue
 

@@ -13,8 +13,11 @@ namespace dom {
 class ImageElement : public DocumentElement {
  public:
   ImageElement(Document* dom);
+  void parseAttribute(const char** atts) override;
 
   bool isImage() const override;
+  String tagName() const override;
+  const String& src() const { return m_url; }
 
  private:
   String m_url;

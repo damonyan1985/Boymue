@@ -8,5 +8,12 @@ void Image::createImage(const void* buffer, size_t size) {
     SkImageDecoder::DecodeMemory(buffer, size, &m_bitmap);
 }
 
+bool Image::loadFromFile(const char* path) {
+    if (!path || !*path) {
+        return false;
+    }
+    return SkImageDecoder::DecodeFile(path, &m_bitmap);
+}
+
 const SkBitmap& Image::bitmap() const { return m_bitmap; }
 }

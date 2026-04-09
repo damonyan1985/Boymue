@@ -17,6 +17,9 @@ public:
         kImage,
         kText,
         kTextField,
+        kForm,
+        kIframe,
+        kStyle,
     };
 
     static DomTags* instance();

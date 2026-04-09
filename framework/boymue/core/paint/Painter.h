@@ -5,25 +5,24 @@
 #define Painter_h
 
 #include "PaintInfo.h"
-//#include "Layout.h"
 
 namespace boymue {
 namespace layout {
 class Layout;
 }
 namespace painter {
+
 class Painter {
  public:
   static Painter* createPainter(layout::Layout* layout);
   Painter(layout::Layout* layout);
 
   virtual ~Painter();
-  virtual void paint(PaintInfo& info);
-  SkPicture* picture() const;
+  /// 绘制到 info.context->canvas()（内部调用 paintImpl）
+  void paint(PaintInfo& info);
 
  protected:
-  virtual void paintImpl(SkCanvas* canvas, PaintInfo& info) = 0;
-  // 存储渲染节点绘制指令
+  virtual void paintImpl(PaintInfo& info) = 0;
   SkPicture* m_picture;
   layout::Layout* m_layout;
 };

@@ -72,4 +72,17 @@ bool StringUtil::endWith(const String& str, const String& tail) {
 int StringUtil::stringToInt(const String& str, int base) {
     return std::stoi(str, 0, base);
 }
+
+float StringUtil::stringToFloat(const String& str) {
+    if (str.empty()) {
+        return 0.f;
+    }
+    try {
+        size_t idx = 0;
+        float v = std::stof(str, &idx);
+        return v;
+    } catch (...) {
+        return 0.f;
+    }
+}
 }

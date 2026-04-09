@@ -43,7 +43,7 @@ using OwnerPtr = std::unique_ptr<T>;
 template <typename T>
 using WeakPtr = std::weak_ptr<T>;
 
-using LayoutUnit = int;
+using LayoutUnit = float;
 
 class StringUtil {
 public:
@@ -66,6 +66,8 @@ public:
 
     // 字符串转整型
     static int stringToInt(const String& str, int base = 10);
+    // 字符串转浮点（用于 CSS 长度等）
+    static float stringToFloat(const String& str);
     
     // App后缀
     const static String kAppPrefix;

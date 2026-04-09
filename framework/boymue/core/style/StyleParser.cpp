@@ -1,104 +1,398 @@
 #include "StyleParser.h"
+
+#include <cctype>
+
 #include "StyleEngine.h"
+#include "StringUtil.h"
 
 namespace boymue {
 namespace css {
-StyleParser::StyleParser(StyleEngine* engine) : m_engine(engine) {}
-StyleParser::~StyleParser() {}  
+
+namespace {
+
+String stripCssComments(const String& css) {
+    String out;
+    size_t begin = 0;
+    while (true) {
+        size_t open = css.find("/*", begin);
+        if (open == String::npos) {
+            out.append(css.substr(begin));
+            break;
+        }
+        out.append(css.substr(begin, open - begin));
+        size_t close = css.find("*/", open + 2);
+        if (close == String::npos) {
+            begin = open + 2;
+            break;
+        }
+        begin = close + 2;
+    }
+    return out;
+}
+
+static float parseLengthPx(const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    if (v.empty()) {
+        return 0.f;
+    }
+    if (StringUtil::endWith(v, "px")) {
+        return StringUtil::stringToFloat(v.substr(0, v.size() - 2));
+    }
+    return StringUtil::stringToFloat(v);
+}
+
+static String toLowerAscii(String s) {
+    for (char& c : s) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    return s;
+}
+
+static void parseFontShorthand(const String& value, CSSDeclarations::CSSProperty& prop) {
+    Vector<String> tok = StringUtil::split(value, " ");
+    for (auto& t : tok) {
+        StringUtil::trim(t);
+        if (t.empty()) {
+            continue;
+        }
+        if (StringUtil::endWith(t, "px")) {
+            prop.numVal = StringUtil::stringToFloat(t.substr(0, t.size() - 2));
+        } else {
+            if (!prop.strVal.empty()) {
+                prop.strVal.push_back(' ');
+            }
+            prop.strVal += t;
+        }
+    }
+}
+
+static float parseOpacityValue(const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    float x = StringUtil::stringToFloat(v);
+    if (x < 0.f) {
+        x = 0.f;
+    }
+    if (x > 1.f) {
+        x = 1.f;
+    }
+    return x;
+}
+
+static void parseZIndex(const String& raw, CSSDeclarations::CSSProperty& prop) {
+    String v = raw;
+    StringUtil::trim(v);
+    v = toLowerAscii(v);
+    if (v == "auto") {
+        prop.strVal = "auto";
+        prop.numVal = 0.f;
+    } else {
+        prop.strVal.clear();
+        prop.numVal = static_cast<float>(StringUtil::stringToInt(v));
+    }
+}
+
+static float parseFontWeightToken(const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    v = toLowerAscii(v);
+    if (v == "normal") {
+        return 400.f;
+    }
+    if (v == "bold") {
+        return 700.f;
+    }
+    if (v == "lighter" || v == "bolder") {
+        return 400.f;
+    }
+    int w = StringUtil::stringToInt(v);
+    if (w < 1) {
+        return 400.f;
+    }
+    if (w > 1000) {
+        return 1000.f;
+    }
+    return static_cast<float>(w);
+}
+
+static String extractUrl(const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    String vl = toLowerAscii(v);
+    if (!StringUtil::startWith(vl, "url")) {
+        return v;
+    }
+    size_t l = v.find('(');
+    size_t r = v.rfind(')');
+    if (l == String::npos || r == String::npos || r <= l) {
+        return String();
+    }
+    String inner = v.substr(l + 1, r - l - 1);
+    StringUtil::trim(inner);
+    if (inner.size() >= 2 &&
+        ((inner.front() == '"' && inner.back() == '"') ||
+         (inner.front() == '\'' && inner.back() == '\''))) {
+        return inner.substr(1, inner.size() - 2);
+    }
+    return inner;
+}
+
+static float parseLengthOrNormalPx(const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    if (toLowerAscii(v) == "normal" || v.empty()) {
+        return 0.f;
+    }
+    return parseLengthPx(raw);
+}
+
+static void parseLineHeightDecl(const String& raw, CSSDeclarations::CSSProperty& prop) {
+    String v = raw;
+    StringUtil::trim(v);
+    if (toLowerAscii(v) == "normal" || v.empty()) {
+        prop.numVal = 0.f;
+        prop.strVal.clear();
+        return;
+    }
+    prop.numVal = parseLengthPx(raw);
+    prop.strVal = "px";
+}
+
+static void parseMaxDimension(const String& val, CSSDeclarations::CSSProperty& prop) {
+    String v = val;
+    StringUtil::trim(v);
+    if (toLowerAscii(v) == "none") {
+        prop.strVal = "none";
+        prop.numVal = 0.f;
+    } else {
+        prop.strVal.clear();
+        prop.numVal = parseLengthPx(val);
+    }
+}
+
+static void parseBorderWidthShorthand(const String& val, CSSDeclarations::CSSProperty& prop) {
+    String v = val;
+    StringUtil::trim(v);
+    Vector<String> parts = StringUtil::split(v, " ");
+    Vector<String> tok;
+    for (auto& p : parts) {
+        StringUtil::trim(p);
+        if (!p.empty()) {
+            tok.push_back(p);
+        }
+    }
+    if (tok.empty()) {
+        return;
+    }
+    if (tok.size() == 1) {
+        prop.numVal = parseLengthPx(tok[0]);
+        prop.strVal.clear();
+        return;
+    }
+    prop.strVal = String("bw:") + v;
+    prop.numVal = 0.f;
+}
+
+}  // namespace
+
+StyleParser::StyleParser(StyleEngine* engine)
+    : m_engine(engine) {}
+
+StyleParser::~StyleParser() = default;
 
 SharedPtr<StyleSheet> StyleParser::parse(const String& css) {
-    if (css.empty()) {
+    if (css.empty() || !m_engine) {
         return nullptr;
     }
 
-    // 去除注释
-    String::size_type begin = 0;
-    String::size_type open = 0;
-    String::size_type close = 0;
-    
-    Vector<String> stringBuffer;
-    while ((open = css.find("/*", begin)) != String::npos
-           && (close = css.find("*/", begin)) != String::npos) {
-        stringBuffer.push_back(std::move(css.substr(begin, open)));
-        open = close + 2;
-        begin = open;
-    }
-
-    // 提取出纯css样式文本，去除注释
-    String cssText;
-    StringUtil::join(stringBuffer, cssText, css);
-
+    String cssText = stripCssComments(css);
 
     SharedPtr<StyleSheet> sheet(new StyleSheet());
-    begin = 0;
-    // 解析css规则
-    while ((open = cssText.find("{", begin)) != String::npos
-           && (close = cssText.find("}", begin) != String::npos)) {
-        // 创建CSS规则
+    size_t begin = 0;
+    size_t ruleIndex = 0;
+
+    while (true) {
+        size_t open = cssText.find('{', begin);
+        if (open == String::npos) {
+            break;
+        }
+        size_t close = cssText.find('}', open);
+        if (close == String::npos) {
+            break;
+        }
+
         SharedPtr<CSSRule> rule(new CSSRule());
-        sheet->addRule(rule);
-        // 提取selector字符串
-        String selectorText = std::move(cssText.substr(begin, open));
-        // 提取declaration字符串
-        String declarationsText = std::move(cssText.substr(open + 1, close - 1));
+        rule->sourceOrder = ruleIndex++;
 
-        // 去除左右空白字符
-        //StringUtil::trim(selectorText);
-        //StringUtil::trim(declarationsText);
+        String selectorText = cssText.substr(begin, open - begin);
+        String declarationsText = cssText.substr(open + 1, close - open - 1);
 
-        // selector group类似 div .mycls, #p .mycls1
-        // 通过分割逗号解出selector列表
-        Vector<String> selectors =
-            std::move(StringUtil::split(selectorText, ","));
-        // 将selector拆分成simpleselector
-        if (selectors.size() > 0) {
-            SharedPtr<CSSSelector> selector(new CSSSelector());
-            for (int i = 0; i < selectors.size(); i++) {
-                Vector<String> filters = std::move(StringUtil::split(selectors[i], " "));
-                for (int f = 0; f < filters.size(); f++) {
-                    StringUtil::trim(filters[i]);
-                    selector->filters.push_back(SharedPtr<SimpleSelector>(new SimpleSelector(filters[i])));
-                }
-            } 
-            rule->selectors.push_back(selector);
-        }
-
-        // 每条delaration以分号结尾
-        Vector<String> declarationTexts =
-            std::move(StringUtil::split(declarationsText, ";"));
-        for (int i = 0; i < declarationTexts.size(); i++) {
-            Vector<String> kv =
-                std::move(StringUtil::split(declarationTexts[i], ":"));
-            // CSS语法错误，返回null
-            if (kv.size() != 2) {
-                return nullptr;
+        Vector<String> selectors = StringUtil::split(selectorText, ",");
+        for (auto& selText : selectors) {
+            StringUtil::trim(selText);
+            if (selText.empty()) {
+                continue;
             }
-
-            addDeclaration(rule.get(), kv);
+            SharedPtr<CSSSelector> selector(new CSSSelector());
+            Vector<String> filters = StringUtil::split(selText, " ");
+            for (auto& f : filters) {
+                StringUtil::trim(f);
+                if (f.empty()) {
+                    continue;
+                }
+                selector->filters.push_back(
+                    SharedPtr<SimpleSelector>(new SimpleSelector(f)));
+            }
+            if (!selector->filters.empty()) {
+                rule->selectors.push_back(selector);
+            }
         }
-         
 
+        if (rule->selectors.empty()) {
+            begin = close + 1;
+            continue;
+        }
+
+        Vector<String> declarationTexts = StringUtil::split(declarationsText, ";");
+        for (auto& decl : declarationTexts) {
+            StringUtil::trim(decl);
+            if (decl.empty()) {
+                continue;
+            }
+            Vector<String> kv = StringUtil::split(decl, ":");
+            if (kv.size() < 2) {
+                continue;
+            }
+            String propName = kv[0];
+            StringUtil::trim(propName);
+            propName = toLowerAscii(propName);
+
+            String propValue;
+            for (size_t i = 1; i < kv.size(); ++i) {
+                if (i > 1) {
+                    propValue.push_back(':');
+                }
+                propValue += kv[i];
+            }
+            StringUtil::trim(propValue);
+
+            Vector<String> pair;
+            pair.push_back(propName);
+            pair.push_back(propValue);
+            addDeclaration(rule.get(), pair);
+        }
+
+        sheet->addRule(rule);
         begin = close + 1;
     }
+
     return sheet->empty() ? nullptr : sheet;
 }
 
 void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
-    CSSDeclarations::CSSProperty prop;
-    int type = m_engine->getType(kv[0]);
-    switch (type)
-    {
-    case StyleEngine::kWidth: {
-        if (StringUtil::endWith(kv[1], "px")) {
-            prop.intVal = StringUtil::stringToInt(kv[1].substr(0, kv[1].size() - 2));
-        }
-    } break;
-    default:
+    if (kv.size() < 2 || !m_engine) {
         return;
+    }
+    int type = m_engine->getType(kv[0]);
+    if (type < 0) {
+        return;
+    }
+
+    CSSDeclarations::CSSProperty prop;
+    const String& val = kv[1];
+
+    switch (type) {
+    case StyleEngine::kWidth:
+    case StyleEngine::kHeight:
+    case StyleEngine::kMargin:
+    case StyleEngine::kMarginTop:
+    case StyleEngine::kMarginRight:
+    case StyleEngine::kMarginBottom:
+    case StyleEngine::kMarginLeft:
+    case StyleEngine::kPadding:
+    case StyleEngine::kPaddingTop:
+    case StyleEngine::kPaddingRight:
+    case StyleEngine::kPaddingBottom:
+    case StyleEngine::kPaddingLeft:
+    case StyleEngine::kFontSize:
+    case StyleEngine::kLeft:
+    case StyleEngine::kTop:
+    case StyleEngine::kRight:
+    case StyleEngine::kBottom:
+    case StyleEngine::kMinWidth:
+    case StyleEngine::kMinHeight:
+    case StyleEngine::kBorderTopWidth:
+    case StyleEngine::kBorderRightWidth:
+    case StyleEngine::kBorderBottomWidth:
+    case StyleEngine::kBorderLeftWidth:
+    case StyleEngine::kBorderRadius:
+        prop.numVal = parseLengthPx(val);
+        break;
+    case StyleEngine::kMaxWidth:
+    case StyleEngine::kMaxHeight:
+        parseMaxDimension(val, prop);
+        break;
+    case StyleEngine::kLetterSpacing:
+    case StyleEngine::kWordSpacing:
+        prop.numVal = parseLengthOrNormalPx(val);
+        break;
+    case StyleEngine::kLineHeight:
+        parseLineHeightDecl(val, prop);
+        break;
+    case StyleEngine::kOpacity:
+        prop.numVal = parseOpacityValue(val);
+        break;
+    case StyleEngine::kZIndex:
+        parseZIndex(val, prop);
+        break;
+    case StyleEngine::kFontWeight:
+        prop.numVal = parseFontWeightToken(val);
+        break;
+    case StyleEngine::kBorderWidth:
+        parseBorderWidthShorthand(val, prop);
+        break;
+    case StyleEngine::kColor:
+    case StyleEngine::kBackgroundColor:
+    case StyleEngine::kFontFamily:
+        prop.strVal = val;
+        break;
+    case StyleEngine::kPosition:
+    case StyleEngine::kVisibility:
+    case StyleEngine::kDisplay:
+    case StyleEngine::kFontStyle:
+    case StyleEngine::kTextAlign:
+    case StyleEngine::kTextDecoration:
+    case StyleEngine::kOverflow:
+    case StyleEngine::kOverflowX:
+    case StyleEngine::kOverflowY: {
+        String v = val;
+        StringUtil::trim(v);
+        prop.strVal = toLowerAscii(v);
+        break;
+    }
+    case StyleEngine::kBorderColor:
+        prop.strVal = val;
+        break;
+    case StyleEngine::kBackgroundImage: {
+        String v = val;
+        StringUtil::trim(v);
+        if (toLowerAscii(v) == "none") {
+            prop.strVal.clear();
+        } else {
+            prop.strVal = extractUrl(val);
+        }
+        break;
+    }
+    case StyleEngine::kFont:
+        parseFontShorthand(val, prop);
+        break;
+    default:
+        break;
     }
 
     rule->declarations.propertyMap[type] = prop;
 }
-} // css
 
-} // boymue
+}  // namespace css
+}  // namespace boymue
