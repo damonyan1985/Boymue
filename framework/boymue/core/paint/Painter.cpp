@@ -46,7 +46,38 @@ void Painter::paint(PaintInfo& info) {
     if (!info.context || !info.context->canvas()) {
         return;
     }
+    const SkRect& pr = info.paintRect;
+    if (pr.width() <= 0 || pr.height() <= 0) {
+        return;
+    }
+
+    PaintContext* destCtx = info.context;
+    SkCanvas* destCanvas = destCtx->canvas();
+
+    SkPictureRecorder recorder;
+    SkCanvas* recCanvas = recorder.beginRecording(pr.width(), pr.height());
+    if (!recCanvas) {
+        return;
+    }
+    // paintImpl 使用文档坐标下的 paintRect；录制成节点局部 (0,0)-(w,h) 便于回放时 translate
+    recCanvas->translate(-pr.x(), -pr.y());
+
+    RecordingPaintContext paintCtx(recCanvas);
+    info.context = &paintCtx;
     paintImpl(info);
+
+    if (m_picture) {
+        m_picture->unref();
+        m_picture = nullptr;
+    }
+    m_picture = recorder.endRecording();
+
+    destCanvas->save();
+    destCanvas->translate(pr.x(), pr.y());
+    destCanvas->drawPicture(m_picture);
+    destCanvas->restore();
+
+	info.context = destCtx;
 }
 }  // namespace painter
 

@@ -92,6 +92,7 @@ void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
   info.context = &paintCtx;
   info.paintRect = SkRect::MakeIWH(width, height);
   info.clipRect = info.paintRect;
+  // 各 Layout 的 Painter 先将内容录到 SkPicture，再在 Painter::paint 末尾回放到本 canvas
   rootLayout->paint(info);
 }
 
