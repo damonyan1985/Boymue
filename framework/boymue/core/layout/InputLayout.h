@@ -11,6 +11,14 @@ class InputLayout : public Layout {
   LayoutType type() const override;
   void layout() override;
 };
-}
+
+/// 对标 WebKit RenderButton：内容区默认内边距 + 标签居中（绘制见 BoxPainter::ButtonPainter）。
+class ButtonLayout : public Layout {
+ public:
+  explicit ButtonLayout(dom::DocumentElement* element);
+  LayoutType type() const override;
+  void layout() override;
+};
+}  // namespace layout
 }  // namespace boymue
 #endif

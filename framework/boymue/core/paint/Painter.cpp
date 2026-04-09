@@ -6,8 +6,6 @@
 #include "BoxPainter.h"
 #include "TextPainter.h"
 #include "Layout.h"
-#include "ImageLayout.h"
-#include "InputLayout.h"
 #include "PaintContext.h"
 #include "SkPictureRecorder.h"
 
@@ -27,6 +25,8 @@ Painter* Painter::createPainter(layout::Layout* layout) {
         return new TextPainter(layout);
     case layout::Layout::kLayoutInput:
         return new InputPainter(layout);
+    case layout::Layout::kLayoutButton:
+        return new ButtonPainter(layout);
     default:
         return nullptr;
     }

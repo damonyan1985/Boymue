@@ -156,9 +156,11 @@ layout::Layout* DocumentElement::createLayout() {
         m_layout = new layout::TextLayout(this);
     } else if (isTextField()) {
         m_layout = new layout::InputLayout(this);
+    } else if (isButton()) {
+        m_layout = new layout::ButtonLayout(this);
     } else if (isStyle()) {
         return nullptr;
-    } else if (isView() || isButton() || isForm() || isIframe()) {
+    } else if (isView() || isForm() || isIframe()) {
         m_layout = new layout::BlockLayout(this);
     } else {
         m_layout = new layout::BlockLayout(this);

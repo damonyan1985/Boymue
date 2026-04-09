@@ -70,9 +70,9 @@ void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
   xml += "px; height: ";
   xml += std::to_string(height);
   xml += "px; background-color: rgb(60,60,250); }\n";
-  xml += "button { width: 220px; height: 44px; margin-top: 24px; margin-left: 24px; ";
+  xml += "button { width: 220px; height: 44px; margin-top: 24px; margin-left: 24px; color: rgb(60,60,250); ";
   xml += "background-color: rgb(200,60,60); border-radius: 8px; }\n";
-  xml += "</style><button></button></view>";
+  xml += "</style><button>Test</button></view>";
 
   document.parseFromXML(xml);
 

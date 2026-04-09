@@ -18,6 +18,7 @@ public:
         kLayoutBlock,
         kLayoutImage,
         kLayoutInput,
+        kLayoutButton,
         kLayoutText
     };
     Layout(dom::DocumentElement* element);
@@ -62,6 +63,7 @@ protected:
     friend class ImageLayout;
     friend class TextLayout;
     friend class InputLayout;
+    friend class ButtonLayout;
 };
 }
 }  // namespace boymue

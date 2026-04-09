@@ -31,6 +31,14 @@ protected:
     void paintImpl(PaintInfo& info) override;
 };
 
+class ButtonPainter : public Painter {
+public:
+    explicit ButtonPainter(layout::Layout* layout);
+
+protected:
+    void paintImpl(PaintInfo& info) override;
+};
+
 }  // namespace painter
 }  // namespace boymue
 #endif
