@@ -214,10 +214,15 @@ static void copyPropertyFromParentForInherit(int propId, Style& st, const Style&
         st.height = p.height;
         break;
     case StyleEngine::kColor:
-        st.color = p.color;
-        break;
     case StyleEngine::kBackgroundColor:
-        st.bgColor = p.bgColor;
+    case StyleEngine::kBorderColor:
+        if (propId == StyleEngine::kColor) {
+            st.color = p.color;
+        } else if (propId == StyleEngine::kBackgroundColor) {
+            st.bgColor = p.bgColor;
+        } else {
+            st.borderColor = p.borderColor;
+        }
         break;
     case StyleEngine::kFontSize:
         st.fontSizePx = p.fontSizePx;
@@ -347,9 +352,6 @@ static void copyPropertyFromParentForInherit(int propId, Style& st, const Style&
     case StyleEngine::kBorderLeftWidth:
         st.borderLeftWidth = p.borderLeftWidth;
         break;
-    case StyleEngine::kBorderColor:
-        st.borderColor = p.borderColor;
-        break;
     case StyleEngine::kBorderRadius:
         st.borderRadius = p.borderRadius;
         break;
@@ -389,15 +391,18 @@ void applyPropertyToStyle(int propId, const CSSDeclarations::CSSProperty& prop, 
         }
         break;
     case StyleEngine::kColor:
-        if (!prop.strVal.empty()) {
-            st.color = Color(prop.strVal);
-        }
-        break;
     case StyleEngine::kBackgroundColor:
-        if (!prop.strVal.empty()) {
-            st.bgColor = Color(prop.strVal);
+    case StyleEngine::kBorderColor: {
+        Color c(prop.intVal);
+        if (propId == StyleEngine::kColor) {
+            st.color = c;
+        } else if (propId == StyleEngine::kBackgroundColor) {
+            st.bgColor = c;
+        } else {
+            st.borderColor = c;
         }
         break;
+    }
     case StyleEngine::kFontSize:
         if (prop.numVal > 0.f) {
             st.fontSizePx = static_cast<int>(prop.numVal);
@@ -546,14 +551,6 @@ void applyPropertyToStyle(int propId, const CSSDeclarations::CSSProperty& prop, 
     case StyleEngine::kBorderLeftWidth:
         st.borderLeftWidth = prop.numVal;
         break;
-    case StyleEngine::kBorderColor: {
-        String c = prop.strVal;
-        StringUtil::trim(c);
-        if (!c.empty()) {
-            st.borderColor = Color(c);
-        }
-        break;
-    }
     case StyleEngine::kBorderRadius:
         st.borderRadius = prop.numVal;
         break;

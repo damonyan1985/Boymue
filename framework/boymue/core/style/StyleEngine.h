@@ -30,7 +30,7 @@ public:
         kPaddingLeft = 15,
         kFontSize = 16,
         kFontFamily = 17,
-        /// 与 WebCore CSSPropertyNames 常见属性对齐的扩展
+        ///  WebCore CSSPropertyNames
         kLeft = 18,
         kTop = 19,
         kRight = 20,
@@ -56,6 +56,7 @@ public:
         kBorderRightWidth = 40,
         kBorderBottomWidth = 41,
         kBorderLeftWidth = 42,
+        /// ?? kColor??kBackgroundColor ???????/??��??
         kBorderColor = 43,
         kBorderRadius = 44,
         kOverflow = 45,

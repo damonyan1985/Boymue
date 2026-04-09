@@ -3,6 +3,7 @@
 #include <cctype>
 
 #include "StyleEngine.h"
+#include "Style.h"
 #include "StringUtil.h"
 
 namespace boymue {
@@ -361,6 +362,16 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
         break;
     case StyleEngine::kColor:
     case StyleEngine::kBackgroundColor:
+    case StyleEngine::kBorderColor: {
+        String v = val;
+        StringUtil::trim(v);
+        if (v.empty()) {
+            return;
+        }
+        Color parsed(v);
+        prop.intVal = parsed.value();
+        break;
+    }
     case StyleEngine::kFontFamily:
         prop.strVal = val;
         break;
@@ -378,9 +389,6 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
         prop.strVal = toLowerAscii(v);
         break;
     }
-    case StyleEngine::kBorderColor:
-        prop.strVal = val;
-        break;
     case StyleEngine::kBackgroundImage: {
         String v = val;
         StringUtil::trim(v);

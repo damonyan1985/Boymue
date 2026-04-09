@@ -56,9 +56,14 @@ public:
     ~CSSDeclarations() = default;
 
     struct CSSProperty {
-        /// 数值型声明（长度、字号等），与 LayoutUnit 一致为 float
-        float numVal{0};
+        /// 长度/透明度等用 `numVal`；颜色预解析用 `intVal`（`Color::value()` ARGB）。二者互斥，共享 4 字节。
+        union {
+            float numVal;
+            ColorValue intVal;
+        };
         String strVal;
+
+        CSSProperty() { numVal = 0.f; }
     };
 
     HashMap<int, CSSProperty> propertyMap;
