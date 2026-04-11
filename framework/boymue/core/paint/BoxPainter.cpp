@@ -7,7 +7,7 @@
 #include "Image.h"
 #include "ImageLayout.h"
 #include "TextElement.h"
-#include "TextFieldElement.h"
+#include "InputElement.h"
 #include "SkCanvas.h"
 #include "SkPaint.h"
 #include "SkRRect.h"
@@ -135,7 +135,7 @@ void InputPainter::paintImpl(PaintInfo& info) {
     if (!canvas || !m_layout || !m_layout->domElement() || !m_layout->domElement()->isTextField()) {
         return;
     }
-    auto* field = static_cast<dom::TextFieldElement*>(m_layout->domElement());
+    auto* field = static_cast<dom::InputElement*>(m_layout->domElement());
     const css::Style& st = m_layout->style();
 
     SkRect box = info.paintRect;

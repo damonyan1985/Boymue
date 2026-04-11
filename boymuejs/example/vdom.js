@@ -27,7 +27,7 @@ const HtmlTags = {
     kButton: TagType++,
     kImage: TagType++,
     kText: TagType++,
-    kTextField: TagType++,
+    kInput: TagType++,
 };
 
 const VNodeTagMap = {
@@ -35,7 +35,7 @@ const VNodeTagMap = {
     "button": HtmlTags.kButton,
     "image": HtmlTags.kImage,
     "#text": HtmlTags.kText,
-    "textfield": HtmlTags.kTextField
+    "input": HtmlTags.kInput
 }
 
 const VCmdType = {
@@ -139,7 +139,7 @@ class VDom {
             'image': this._createNodeImage,
             '#text': this._createNodeText,
             'button': this._createNodeButton,
-            'textfield': this._createNodeTextField
+            'input': this._createNodeInput
         }
     }
 
@@ -170,7 +170,7 @@ class VDom {
 
     }
 
-    _createNodeTextField(node) {
+    _createNodeInput(node) {
 
     }
 

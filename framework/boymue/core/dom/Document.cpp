@@ -10,7 +10,7 @@
 #include "ViewElement.h"
 #include "TextElement.h"
 #include "ButtonElement.h"
-#include "TextFieldElement.h"
+#include "InputElement.h"
 #include "StringUtil.h"
 #include "expat.h"
 
@@ -113,8 +113,8 @@ DocumentElement* Document::createElement(int tag, const char** atts,
     case DomTags::kButton:
       element = new ButtonElement(this);
       break;
-    case DomTags::kTextField:
-      element = new TextFieldElement(this);
+    case DomTags::kInput:
+      element = new InputElement(this);
       break;
     case DomTags::kForm:
       element = new FormElement(this);
@@ -152,8 +152,8 @@ void Document::createElement(int tag, int uid, int pid) {
       case DomTags::kButton:
         element = new ButtonElement(this);
         break;
-      case DomTags::kTextField:
-        element = new TextFieldElement(this);
+      case DomTags::kInput:
+        element = new InputElement(this);
         break;
       case DomTags::kForm:
         element = new FormElement(this);
@@ -206,7 +206,7 @@ void Document::setElementProperty(int uid, const String& key, const String& valu
     if (elem) {
         elem->setProperty(key, value);
         if (elem->isTextField()) {
-            static_cast<TextFieldElement*>(elem)->relinkFormOwner();
+            static_cast<InputElement*>(elem)->relinkFormOwner();
         }
     }
 }
@@ -246,7 +246,7 @@ void Document::relinkFormControls() {
             return;
         }
         if (el->isTextField()) {
-            static_cast<TextFieldElement*>(el)->relinkFormOwner();
+            static_cast<InputElement*>(el)->relinkFormOwner();
         }
         el->visitChildren([&](DocumentElement* c) { walk(c); });
     };

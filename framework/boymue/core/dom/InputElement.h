@@ -1,19 +1,19 @@
 //
-//  TextFieldElement.h
+//  InputElement.h
 //  core
 //
 //  Created by yanbo on 2022/9/16.
 //
 
-#ifndef TextFieldElement_h
-#define TextFieldElement_h
+#ifndef InputElement_h
+#define InputElement_h
 
 #include "ViewElement.h"
 
 namespace boymue {
 namespace dom {
 
-/// 对标 HTMLFormElement，与 TextField 同属表单相关，声明于本头文件
+/// 对标 HTMLFormElement，与表单控件同属表单相关，声明于本头文件
 class FormElement : public ViewElement {
 public:
     explicit FormElement(Document* dom);
@@ -44,9 +44,9 @@ private:
 };
 
 /// 表单控件字段对标 HTMLInputElement / 文本类输入（name、value、type、form 关联等）
-class TextFieldElement : public DocumentElement {
+class InputElement : public DocumentElement {
 public:
-    TextFieldElement(Document* dom);
+    InputElement(Document* dom);
     void parseAttribute(const char** atts) override;
     void setProperty(const String& key, const String& value) override;
     String getProperty(const String& key) const override;
@@ -92,4 +92,4 @@ private:
 }
 }
 
-#endif /* TextFieldElement_h */
+#endif /* InputElement_h */

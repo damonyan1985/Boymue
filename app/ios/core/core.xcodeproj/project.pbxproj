@@ -106,8 +106,8 @@
 		4CB0171428B5DD490039F675 /* StringUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CB0171228B5DD490039F675 /* StringUtil.cpp */; };
 		4CB0175628BF8A640039F675 /* example in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175528BF8A640039F675 /* example */; };
 		4CB0175728BF8AD30039F675 /* assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0175028BF89070039F675 /* assets.bundle */; };
-		4CBFBA8428D4790700C1CDA0 /* TextFieldElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */; };
-		4CBFBA8528D4790700C1CDA0 /* TextFieldElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */; };
+		4CBFBA8428D4790700C1CDA0 /* InputElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CBFBA8228D4790700C1CDA0 /* InputElement.cpp */; };
+		4CBFBA8528D4790700C1CDA0 /* InputElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CBFBA8328D4790700C1CDA0 /* InputElement.h */; };
 		4CCD171D28B320B800B4D4FB /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CCD171C28B320B800B4D4FB /* core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -224,8 +224,8 @@
 		4CB0171228B5DD490039F675 /* StringUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StringUtil.cpp; path = ../../../framework/boymue/util/StringUtil.cpp; sourceTree = "<group>"; };
 		4CB0175028BF89070039F675 /* assets.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = assets.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB0175528BF8A640039F675 /* example */ = {isa = PBXFileReference; lastKnownFileType = folder; name = example; path = ../../../../boymuejs/example; sourceTree = "<group>"; };
-		4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextFieldElement.cpp; path = ../../../framework/boymue/core/dom/TextFieldElement.cpp; sourceTree = "<group>"; };
-		4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextFieldElement.h; path = ../../../framework/boymue/core/dom/TextFieldElement.h; sourceTree = "<group>"; };
+		4CBFBA8228D4790700C1CDA0 /* InputElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InputElement.cpp; path = ../../../framework/boymue/core/dom/InputElement.cpp; sourceTree = "<group>"; };
+		4CBFBA8328D4790700C1CDA0 /* InputElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InputElement.h; path = ../../../framework/boymue/core/dom/InputElement.h; sourceTree = "<group>"; };
 		4CCD171928B320B800B4D4FB /* core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CCD171C28B320B800B4D4FB /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -269,8 +269,8 @@
 				4C2C062C28C1A77C005EE37F /* ViewElement.h */,
 				4C2C064F28C738B0005EE37F /* ButtonElement.cpp */,
 				4C2C065028C738B0005EE37F /* ButtonElement.h */,
-				4CBFBA8228D4790700C1CDA0 /* TextFieldElement.cpp */,
-				4CBFBA8328D4790700C1CDA0 /* TextFieldElement.h */,
+				4CBFBA8228D4790700C1CDA0 /* InputElement.cpp */,
+				4CBFBA8328D4790700C1CDA0 /* InputElement.h */,
 			);
 			name = dom;
 			sourceTree = "<group>";
@@ -549,7 +549,7 @@
 				4C2C064228C5A374005EE37F /* FileUtil.h in Headers */,
 				4CB016AB28B3242A0039F675 /* PaintContextIOS.h in Headers */,
 				4CB016A428B323F80039F675 /* BoymueViewController.h in Headers */,
-				4CBFBA8528D4790700C1CDA0 /* TextFieldElement.h in Headers */,
+				4CBFBA8528D4790700C1CDA0 /* InputElement.h in Headers */,
 				4CB016F928B4D16F0039F675 /* BoymueApplication.h in Headers */,
 				4CB016D028B4CF660039F675 /* JsApiInterface.h in Headers */,
 				4CB0170328B4D1A30039F675 /* TextLayout.h in Headers */,
@@ -724,7 +724,7 @@
 				4C489D3F28DB3F49003E11E1 /* xml2json.cpp in Sources */,
 				4C2C065828C747EB005EE37F /* TextPainter.cpp in Sources */,
 				4CB016F128B4D0A70039F675 /* TaskThread.cpp in Sources */,
-				4CBFBA8428D4790700C1CDA0 /* TextFieldElement.cpp in Sources */,
+				4CBFBA8428D4790700C1CDA0 /* InputElement.cpp in Sources */,
 				4CB016DC28B4D05D0039F675 /* ThreadExecutor.cpp in Sources */,
 				4CB016FE28B4D18E0039F675 /* BoymueView.cpp in Sources */,
 				4C2C064528C5D406005EE37F /* UITaskRunnerIOS.mm in Sources */,

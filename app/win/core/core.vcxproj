@@ -181,7 +181,7 @@
     <ClInclude Include="..\..\..\framework\boymue\core\dom\DomTags.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\dom\ImageElement.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\dom\TextElement.h" />
-    <ClInclude Include="..\..\..\framework\boymue\core\dom\TextFieldElement.h" />
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\InputElement.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\dom\ViewElement.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\gdi\Image.h" />
     <ClInclude Include="..\..\..\framework\boymue\core\layout\BlockLayout.h" />
@@ -236,7 +236,7 @@
     <ClCompile Include="..\..\..\framework\boymue\core\dom\DomTags.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\dom\ImageElement.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\dom\TextElement.cpp" />
-    <ClCompile Include="..\..\..\framework\boymue\core\dom\TextFieldElement.cpp" />
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\InputElement.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\dom\ViewElement.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\gdi\Image.cpp" />
     <ClCompile Include="..\..\..\framework\boymue\core\layout\BlockLayout.cpp" />

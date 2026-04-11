@@ -16,7 +16,7 @@ public:
         kButton,
         kImage,
         kText,
-        kTextField,
+        kInput,
         kForm,
         kIframe,
         kStyle,

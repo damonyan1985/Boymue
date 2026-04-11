@@ -204,7 +204,7 @@
     <ClInclude Include="..\..\..\framework\boymue\core\dom\ButtonElement.h">
       <Filter>core\dom</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\framework\boymue\core\dom\TextFieldElement.h">
+    <ClInclude Include="..\..\..\framework\boymue\core\dom\InputElement.h">
       <Filter>core\dom</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\framework\boymue\core\style\Style.h">
@@ -347,7 +347,7 @@
     <ClCompile Include="..\..\..\framework\boymue\core\dom\ButtonElement.cpp">
       <Filter>core\dom</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\framework\boymue\core\dom\TextFieldElement.cpp">
+    <ClCompile Include="..\..\..\framework\boymue\core\dom\InputElement.cpp">
       <Filter>core\dom</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\framework\boymue\core\style\StyleEngine.cpp">

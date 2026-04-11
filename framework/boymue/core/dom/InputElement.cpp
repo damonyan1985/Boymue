@@ -1,11 +1,11 @@
 //
-//  TextFieldElement.cpp
+//  InputElement.cpp
 //  core
 //
 //  Created by yanbo on 2022/9/16.
 //
 
-#include "TextFieldElement.h"
+#include "InputElement.h"
 
 #include <cctype>
 
@@ -118,15 +118,15 @@ String FormElement::tagName() const {
     return "form";
 }
 
-// --- TextFieldElement ---
+// --- InputElement ---
 
-String TextFieldElement::normalizeKey(const String& key) {
+String InputElement::normalizeKey(const String& key) {
     String k = key;
     toLowerAsciiInPlace(k);
     return k;
 }
 
-void TextFieldElement::applyFormAttribute(const String& keyLower, const String& value) {
+void InputElement::applyFormAttribute(const String& keyLower, const String& value) {
     if (keyLower == "name") {
         m_name = value;
     } else if (keyLower == "value") {
@@ -161,7 +161,7 @@ void TextFieldElement::applyFormAttribute(const String& keyLower, const String& 
     }
 }
 
-void TextFieldElement::refreshFormElement() {
+void InputElement::refreshFormElement() {
     m_formElement = nullptr;
     if (m_form.empty()) {
         return;
@@ -176,10 +176,10 @@ void TextFieldElement::refreshFormElement() {
     }
 }
 
-TextFieldElement::TextFieldElement(Document* dom)
+InputElement::InputElement(Document* dom)
     : DocumentElement(dom) {}
 
-void TextFieldElement::parseAttribute(const char** atts) {
+void InputElement::parseAttribute(const char** atts) {
     if (!atts) {
         return;
     }
@@ -192,7 +192,7 @@ void TextFieldElement::parseAttribute(const char** atts) {
     refreshFormElement();
 }
 
-void TextFieldElement::setProperty(const String& key, const String& value) {
+void InputElement::setProperty(const String& key, const String& value) {
     String kl = normalizeKey(key);
     applyFormAttribute(kl, value);
     DocumentElement::setProperty(key, value);
@@ -201,11 +201,11 @@ void TextFieldElement::setProperty(const String& key, const String& value) {
     }
 }
 
-void TextFieldElement::relinkFormOwner() {
+void InputElement::relinkFormOwner() {
     refreshFormElement();
 }
 
-String TextFieldElement::getProperty(const String& key) const {
+String InputElement::getProperty(const String& key) const {
     String kl = normalizeKey(key);
     if (kl == "name") {
         return m_name;
@@ -243,22 +243,22 @@ String TextFieldElement::getProperty(const String& key) const {
     return DocumentElement::getProperty(key);
 }
 
-void TextFieldElement::setValue(const String& v) {
+void InputElement::setValue(const String& v) {
     m_value = v;
     DocumentElement::setProperty(String("value"), v);
 }
 
-void TextFieldElement::setChecked(bool c) {
+void InputElement::setChecked(bool c) {
     m_checked = c;
     DocumentElement::setProperty(String("checked"), c ? String("true") : String("false"));
 }
 
-bool TextFieldElement::isTextField() const {
+bool InputElement::isTextField() const {
     return true;
 }
 
-String TextFieldElement::tagName() const {
-    return "textfield";
+String InputElement::tagName() const {
+    return "input";
 }
 
 }  // namespace dom

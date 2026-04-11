@@ -3,7 +3,7 @@ mod r#type;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, ItemFn, FnArg, Pat, Type, ReturnType, TypePath};
-use r#type::{ARG_TYPE_I32, ARG_TYPE_STRING, ARG_TYPE_USIZE};
+use r#type::args_type::{ARG_TYPE_I32, ARG_TYPE_STRING, ARG_TYPE_USIZE};
 
 /// 过程宏：将函数签名从多个参数转换为单个 ArgumentList 参数
 /// 如果函数有返回值，返回值将通过 FnCallback 回调返回
