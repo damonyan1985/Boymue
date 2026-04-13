@@ -10,6 +10,19 @@ Layout::Layout(dom::DocumentElement* element)
 
 Layout::~Layout() = default;
 
+bool Layout::needsRepaint(const SkRect& paintRect) const {
+    return m_needsRepaint || paintRect != m_lastPaintedRect;
+}
+
+void Layout::didRepaint(const SkRect& paintRect) {
+    m_needsRepaint = false;
+    m_lastPaintedRect = paintRect;
+}
+
+void Layout::invalidatePainter() {
+    m_needsRepaint = true;
+}
+
 void Layout::ensurePainter() {
     if (!m_painter) {
         m_painter.reset(painter::Painter::createPainter(this));

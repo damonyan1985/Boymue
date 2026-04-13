@@ -39,6 +39,12 @@ public:
 
     dom::DocumentElement* domElement() const { return m_element; }
 
+    /// 当前 paintRect 下是否需要重新录制 SkPicture（样式/DOM 失效或绘制区域变化）。
+    bool needsRepaint(const SkRect& paintRect) const;
+    /// Painter 完成一次录制后调用，清除重绘需求并记录本次 paintRect。
+    void didRepaint(const SkRect& paintRect);
+    void invalidatePainter();
+
 protected:
     virtual dom::DocumentElement* element() const;
     void setParentLayout(Layout* p) { m_parentLayout = p; }
@@ -58,6 +64,8 @@ protected:
     
     OwnerPtr<painter::Painter> m_painter;
     dom::DocumentElement* m_element;
+    bool m_needsRepaint{true};
+    SkRect m_lastPaintedRect{SkRect::MakeEmpty()};
 
     friend class BlockLayout;
     friend class ImageLayout;

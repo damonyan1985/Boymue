@@ -54,30 +54,36 @@ void Painter::paint(PaintInfo& info) {
     PaintContext* destCtx = info.context;
     SkCanvas* destCanvas = destCtx->canvas();
 
-    SkPictureRecorder recorder;
-    SkCanvas* recCanvas = recorder.beginRecording(pr.width(), pr.height());
-    if (!recCanvas) {
-        return;
-    }
-    // paintImpl 使用文档坐标下的 paintRect；录制成节点局部 (0,0)-(w,h) 便于回放时 translate
-    recCanvas->translate(-pr.x(), -pr.y());
+    const bool needsRepaint = m_layout && m_layout->needsRepaint(pr);
 
-    RecordingPaintContext paintCtx(recCanvas);
-    info.context = &paintCtx;
-    paintImpl(info);
+    if (needsRepaint) {
+        SkPictureRecorder recorder;
+        SkCanvas* recCanvas = recorder.beginRecording(pr.width(), pr.height());
+        if (!recCanvas) {
+            return;
+        }
+        // paintImpl 使用文档坐标下的 paintRect；录制成节点局部 (0,0)-(w,h) 便于回放时 translate
+        recCanvas->translate(-pr.x(), -pr.y());
 
-    if (m_picture) {
-        m_picture->unref();
-        m_picture = nullptr;
+        RecordingPaintContext paintCtx(recCanvas);
+        info.context = &paintCtx;
+        paintImpl(info);
+		info.context = destCtx;
+
+        if (m_picture) {
+            m_picture->unref();
+            m_picture = nullptr;
+        }
+        m_picture = recorder.endRecording();
+        if (m_layout) {
+            m_layout->didRepaint(pr);
+        }
     }
-    m_picture = recorder.endRecording();
 
     destCanvas->save();
     destCanvas->translate(pr.x(), pr.y());
     destCanvas->drawPicture(m_picture);
     destCanvas->restore();
-
-	info.context = destCtx;
 }
 }  // namespace painter
 

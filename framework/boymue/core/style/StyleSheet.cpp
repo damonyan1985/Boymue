@@ -758,6 +758,7 @@ void StyleResolver::applyToElement(dom::DocumentElement* el,
         }
     }
     lay->syncMetricsFromStyle();
+    lay->invalidatePainter();
 }
 
 void StyleResolver::walk(dom::DocumentElement* el,

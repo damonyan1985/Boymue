@@ -99,6 +99,11 @@ void DocumentElement::setProperty(const String& key, const String& value) {
         }
     }
     m_properties[key] = value;
+    for (DocumentElement* e = this; e; e = e->parent()) {
+        if (layout::Layout* lay = e->layout()) {
+            lay->invalidatePainter();
+        }
+    }
 }
 
 String DocumentElement::getProperty(const String& key) const {

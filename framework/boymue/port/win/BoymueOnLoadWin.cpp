@@ -115,7 +115,6 @@ class UIRuntime {
     SkPicture* picture = recorder.endRecording();
     canvas->drawPicture(picture);
     picture->unref();
-    canvas->unref();
 
     m_painter->submit();
   }
@@ -124,7 +123,10 @@ class UIRuntime {
     RenderDomXmlToWindow(canvas, m_width, m_height);
   }
 
-  void repaint() { m_painter->submit(); }
+  void repaint() { 
+    //m_painter->submit();
+    run(); 
+  }
 
  private:
   boymue::PaintContextWin* m_painter;
@@ -133,7 +135,7 @@ class UIRuntime {
 };
 
 //static std::string s_projectPath = getenv("BOYMUE_ROOT"); 
-static UIRuntime* s_uiRuntime;
+static UIRuntime* s_uiRuntime = NULL;
 static boymue::JsEngine* s_engine;
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
@@ -171,5 +173,7 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
 
 void BoymueOnLoadWin::repaint() {
   boymue::BoymueApplication* app = static_cast<boymue::BoymueApplication*>(m_app);
-  app->getUITaskRunner().postTask([=] { s_uiRuntime->repaint(); });
+  app->getUITaskRunner().postTask([=] {
+      s_uiRuntime->repaint(); 
+  });
 }
