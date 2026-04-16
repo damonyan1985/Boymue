@@ -17,6 +17,8 @@ public:
 
 private:
     OwnerPtr<Image> m_image;
+    /// 避免 layout 重复触发同一路径的加载
+    String m_issuedSrc;
 };
 }
 }  // namespace boymue

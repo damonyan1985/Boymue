@@ -79,6 +79,16 @@ Document::Document()
     : m_frame(this)
     , m_root(nullptr) {}
 
+void Document::setRepaintCallback(std::function<void()> cb) {
+    m_repaintCb = std::move(cb);
+}
+
+void Document::requestRepaint() {
+    if (m_repaintCb) {
+        m_repaintCb();
+    }
+}
+
 void Document::parseFromXML(const String& content) {
   XML_Parser parser = XML_ParserCreate(NULL);
   // OnStartElement与OnEndElement都是XML_Parser中的属性

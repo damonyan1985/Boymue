@@ -21,22 +21,23 @@ static mut HAS_TOKIO_RUNTIME: bool = false;
 // ext扩展信息，如传递c++指针回调回去
 type Callback = unsafe extern "C" fn(data: *const u8, len: usize, ext: usize);
 
-fn exec_string_callback(cb: Option<Callback>, text: String, ext: usize) {
-    if text.is_empty() {
-        return
+fn exec_bytes_callback(cb: Option<Callback>, data: &[u8], ext: usize) {
+    if data.is_empty() {
+        return;
     }
 
     match cb {
-        Some(callback) => { // 从option中解出callback指针
-            // 转为[u8]数组切片
-            let bytes = (&text).as_bytes();
-            // 获取指针地址
-            unsafe { callback(bytes.as_ptr(), bytes.len(), ext); }  
+        Some(callback) => unsafe {
+            callback(data.as_ptr(), data.len(), ext);
         },
         None => {
             println!("callback is null")
         }
     }
+}
+
+fn exec_string_callback(cb: Option<Callback>, text: String, ext: usize) {
+    exec_bytes_callback(cb, text.as_bytes(), ext);
 }
 
 // json字符串转键值对
@@ -88,10 +89,10 @@ pub extern "C" fn bmnet_get(url: *const c_char, headers: *const c_char, cb: Opti
     
     let result = get_url(str_url, header_map);
     match result {
-        Ok(text) => {
-            println!("http get: {:?}", text);
-            exec_string_callback(cb, text, ext);
-        },
+        Ok(bytes) => {
+            println!("http get: {} bytes", bytes.len());
+            exec_bytes_callback(cb, &bytes, ext);
+        }
         Err(e) => println!("http error: {:?}", e),
     }
 

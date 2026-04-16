@@ -33,7 +33,7 @@ bool ImageElement::isImage() const {
 }
 
 String ImageElement::tagName() const {
-  return "image";
+  return "img";
 }
 }
 }  // namespace boymue

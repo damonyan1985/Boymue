@@ -28,6 +28,8 @@
 #include "PaintInfo.h"
 #include "SkRect.h"
 #include "StringUtil.h"
+#include "DocumentElement.h"
+#include <functional>
 #include <jemalloc/jemalloc.h>
 
 //#define USE_JEMALLOC
@@ -49,21 +51,17 @@ void operator delete(void* p) {
 #endif
 }
 
-namespace {
+class UIRuntime;
 
-/// 示例：内含 Boymue DOM 标签的 XML，经 Document 解析（含 &lt;style&gt; 内 CSS）、
-/// StyleEngine::apply、布局与绘制，输出到给定 SkCanvas（再由 UIRuntime 录制成图并 submit 到窗口）。
-void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
-  if (!canvas || width <= 0 || height <= 0) {
-    return;
-  }
+static UIRuntime* s_uiRuntime = nullptr;
+static boymue::BoymueApplication* s_domRepaintApp = nullptr;
 
-  boymue::dom::Document document;
-  document.frame().setViewport(static_cast<boymue::LayoutUnit>(width),
-                               static_cast<boymue::LayoutUnit>(height));
+static void PostDomXmlRepaint();
 
-  std::string xml;
-  xml.reserve(640);
+/// 示例 XML：view + style + button + 在线图片（picsum）
+static boymue::String BuildDemoDomXml(int width, int height) {
+  boymue::String xml;
+  xml.reserve(1200);
   xml += "<view><style>\n";
   xml += "view { width: ";
   xml += std::to_string(width);
@@ -72,9 +70,23 @@ void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
   xml += "px; background-color: rgb(60,60,250); color: rgb(60,60,250); }\n";
   xml += "button { width: 220px; height: 44px; margin-top: 24px; margin-left: 24px; ";
   xml += "background-color: rgb(200,60,60); border-radius: 8px; }\n";
-  xml += "</style><button>Test</button></view>";
+  xml += "img { width: 280px; height: 180px; margin-top: 20px; margin-left: 24px; ";
+  xml += "border-radius: 8px; }\n";
+  xml += "</style><button>Test</button>";
+  xml += "<img src=\"https://fastly.picsum.photos/id/805/280/180.jpg?hmac=Mk6FV2pjw4wjaHLGtrtYET7H2qevT0N7-Zx0ayyQWdQ\" />";
+  xml += "</view>";
+  return xml;
+}
 
-  document.parseFromXML(xml);
+/// 对已解析的 Document 做视口、布局与绘制（Document 须由宿主保持存活至异步图片完成）
+static void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height,
+                                 boymue::dom::Document& document) {
+  if (!canvas || width <= 0 || height <= 0) {
+    return;
+  }
+
+  document.frame().setViewport(static_cast<boymue::LayoutUnit>(width),
+                               static_cast<boymue::LayoutUnit>(height));
 
   boymue::dom::DocumentElement* root = document.root();
   if (!root) {
@@ -95,8 +107,6 @@ void RenderDomXmlToWindow(SkCanvas* canvas, int width, int height) {
   // 各 Layout 的 Painter 先将内容录到 SkPicture，再在 Painter::paint 末尾回放到本 canvas
   rootLayout->paint(info);
 }
-
-}  // namespace
 
 class UIRuntime {
  public:
@@ -120,7 +130,10 @@ class UIRuntime {
   }
 
   void Draw(SkCanvas* canvas) {
-    RenderDomXmlToWindow(canvas, m_width, m_height);
+    ensureDomParsed();
+    if (m_document) {
+      RenderDomXmlToWindow(canvas, m_width, m_height, *m_document);
+    }
   }
 
   void repaint() { 
@@ -128,14 +141,61 @@ class UIRuntime {
     run(); 
   }
 
+  /// 使整棵布局树的 Painter 缓存失效（异步资源如网络图到位后须在 UI 线程调用）
+  void invalidateDomPainters();
+
  private:
+  void ensureDomParsed();
+
   boymue::PaintContextWin* m_painter;
   int m_width;
   int m_height;
+  boymue::OwnerPtr<boymue::dom::Document> m_document;
+  bool m_domParsed = false;
 };
 
+static void PostDomXmlRepaint() {
+  if (!s_domRepaintApp || !s_uiRuntime) {
+    return;
+  }
+  s_domRepaintApp->getUITaskRunner().postTask([] {
+    if (s_uiRuntime) {
+      s_uiRuntime->invalidateDomPainters();
+      s_uiRuntime->repaint();
+    }
+  });
+}
+
+void UIRuntime::invalidateDomPainters() {
+  if (!m_document || !m_document->root()) {
+    return;
+  }
+  std::function<void(boymue::dom::DocumentElement*)> visit;
+  visit = [&](boymue::dom::DocumentElement* el) {
+    if (!el) {
+      return;
+    }
+    if (boymue::layout::Layout* lay = el->layout()) {
+      lay->invalidatePainter();
+    }
+    el->visitChildren([&](boymue::dom::DocumentElement* c) { visit(c); });
+  };
+  visit(m_document->root());
+}
+
+void UIRuntime::ensureDomParsed() {
+  if (m_domParsed) {
+    return;
+  }
+  m_document.reset(new boymue::dom::Document());
+  m_document->frame().setViewport(static_cast<boymue::LayoutUnit>(m_width),
+                                   static_cast<boymue::LayoutUnit>(m_height));
+  m_document->setRepaintCallback(PostDomXmlRepaint);
+  m_document->parseFromXML(BuildDemoDomXml(m_width, m_height));
+  m_domParsed = true;
+}
+
 //static std::string s_projectPath = getenv("BOYMUE_ROOT"); 
-static UIRuntime* s_uiRuntime = NULL;
 static boymue::JsEngine* s_engine;
 
 void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
@@ -147,6 +207,7 @@ void BoymueOnLoadWin::initWindow(HWND hwnd, int width, int height) {
   info->appName = "example";
   boymue::BoymueApplication* app = new boymue::BoymueApplication(info);
   s_uiRuntime = uiRuntime;
+  s_domRepaintApp = app;
   app->getUITaskRunner().postTask([=] { s_uiRuntime->run(); });
   
   boymue::String path = std::move(boymue::BoymueBridge::getSourcePath("\\example\\test.js"));

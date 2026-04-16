@@ -37,10 +37,10 @@ pub fn greet(name: String) -> String {
 
 // 使用 convert_args 宏实现 HTTP GET 请求
 // 参数：url (String, 必需), headers (String, 可选，JSON 格式字符串), ext (usize, 扩展参数)
-// 返回值：(String, usize) 元组 (通过 FnCallback 返回)
+// 返回值：(Vec<u8>, usize) 元组 (通过 FnCallback 返回，原始字节便于图片等二进制)
 // 宏会自动添加 #[no_mangle] 和 extern "C"，使其可以被 C 语言调用
 #[convert_args]
-pub fn bmnet_get_ext_impl(url: String, headers: String, ext: usize) -> (String, usize) {
+pub fn bmnet_get_ext_impl(url: String, headers: String, ext: usize) -> (Vec<u8>, usize) {
     use crate::web::client::get_url;
     use serde_json::{Map, Value};
     
@@ -69,13 +69,13 @@ pub fn bmnet_get_ext_impl(url: String, headers: String, ext: usize) -> (String, 
     
     // 执行 GET 请求
     match get_url(url, header_map) {
-        Ok(text) => {
-            println!("http get_ext: {:?}", text);
-            (text, ext)
+        Ok(bytes) => {
+            println!("http get_ext: {} bytes", bytes.len());
+            (bytes, ext)
         }
         Err(e) => {
             println!("http get_ext error: {:?}", e);
-            (format!("Error: {}", e), ext)
+            (format!("Error: {}", e).into_bytes(), ext)
         }
     }
 }

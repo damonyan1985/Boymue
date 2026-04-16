@@ -1,9 +1,24 @@
 #include "ImageLayout.h"
 
+#include "Document.h"
 #include "ImageElement.h"
+#include "StringUtil.h"
 
 namespace boymue {
 namespace layout {
+
+namespace {
+
+void onImageResourceLoaded(bool success, const SkBitmap&, void* userData) {
+    auto* self = static_cast<ImageLayout*>(userData);
+    dom::DocumentElement* el = self ? self->domElement() : nullptr;
+    if (el && el->document()) {
+        el->document()->requestRepaint();
+    }
+}
+
+}  // namespace
+
 ImageLayout::ImageLayout(dom::DocumentElement* element)
     : Layout(element)
     , m_image(std::make_unique<Image>()) {}
@@ -24,8 +39,15 @@ void ImageLayout::layout() {
     if (m_element && m_element->isImage()) {
         auto* imgEl = static_cast<dom::ImageElement*>(m_element);
         const String& src = imgEl->src();
-        if (m_image && !src.empty()) {
-            m_image->loadFromFile(src.c_str());
+        if (m_image && !src.empty() && src != m_issuedSrc) {
+            m_issuedSrc = src;
+            const bool network = StringUtil::startWith(src, "http://") ||
+                                 StringUtil::startWith(src, "https://");
+            if (network) {
+                m_image->load(src.c_str(), onImageResourceLoaded, this);
+            } else {
+                m_image->loadFromFile(src.c_str());
+            }
         }
     }
 

@@ -200,8 +200,47 @@ fn get_type_ident(ty: &Type) -> Option<&syn::Ident> {
     }
 }
 
+fn type_is_vec_u8(ty: &Type) -> bool {
+    if let Type::Path(tp) = ty {
+        if let Some(seg) = tp.path.segments.last() {
+            if seg.ident != "Vec" {
+                return false;
+            }
+            if let syn::PathArguments::AngleBracketed(ab) = &seg.arguments {
+                if ab.args.len() == 1 {
+                    if let syn::GenericArgument::Type(inner) = &ab.args[0] {
+                        return get_type_ident(inner).map_or(false, |id| id == "u8");
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
 /// 为单个类型生成 Argument 包装代码
 fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &Type) -> proc_macro2::TokenStream {
+    if type_is_vec_u8(type_ty) {
+        return quote! {
+            {
+                let mut bytes = #value_expr;
+                let str_len = bytes.len();
+                let str_value = bytes.as_mut_ptr() as *const ::std::os::raw::c_char;
+                std::mem::forget(bytes);
+                Argument {
+                    arg_type: #ARG_TYPE_STRING,
+                    arg_value: unsafe {
+                        ArgumentValue {
+                            str: crate::args::ArgumentString {
+                                str_value: str_value,
+                                str_len,
+                            },
+                        }
+                    },
+                }
+            }
+        };
+    }
     match get_type_ident(type_ty) {
         Some(ident) if ident == "i32" => {
             quote! {
@@ -222,20 +261,17 @@ fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &T
         Some(ident) if ident == "String" => {
             quote! {
                 {
-                    // 将 String 转换为 CString，并分配到堆上
-                    let c_string = Box::new(CString::new(#value_expr).unwrap_or_else(|_| CString::new("").unwrap()));
-                    let str_len = c_string.as_bytes().len();
-                    let c_str_ptr = c_string.as_ptr();
-
-                    // 防止 c_string 被提前释放（callback 可能异步使用）
-                    std::mem::forget(c_string);
-
+                    // UTF-8 或任意字节：按长度传递，避免 CString 拒绝内嵌 NUL，且与二进制响应兼容
+                    let mut bytes = #value_expr.into_bytes();
+                    let str_len = bytes.len();
+                    let str_value = bytes.as_mut_ptr() as *const ::std::os::raw::c_char;
+                    std::mem::forget(bytes);
                     Argument {
                         arg_type: #ARG_TYPE_STRING,
                         arg_value: unsafe {
                             ArgumentValue {
                                 str: crate::args::ArgumentString {
-                                    str_value: c_str_ptr,
+                                    str_value: str_value,
                                     str_len,
                                 },
                             }
@@ -247,7 +283,7 @@ fn generate_single_arg_wrapper(value_expr: proc_macro2::TokenStream, type_ty: &T
         _ => {
             quote! {
                 panic!(
-                    "Unsupported return type element: {}. Supported types are: i32, usize, String",
+                    "Unsupported return type element: {}. Supported types are: i32, usize, String, Vec<u8>",
                     stringify!(#type_ty)
                 )
             }

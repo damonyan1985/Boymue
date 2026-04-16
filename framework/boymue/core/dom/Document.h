@@ -4,6 +4,7 @@
 #ifndef Document_h
 #define Document_h
 
+#include <functional>
 #include <stack>
 #include <string>
 
@@ -47,6 +48,10 @@ public:
     const Frame& frame() const { return m_frame; }
     // 利用XML内容来初始化document
     void parseFromXML(const String& content);
+    /// 宿主设置异步完成后的 UI 刷新（如网络图片解码完毕）
+    void setRepaintCallback(std::function<void()> cb);
+    void requestRepaint();
+
     css::StyleEngine& styleEngine() { return m_styleEngine; }
     const css::StyleEngine& styleEngine() const { return m_styleEngine; }
     Stack<DocumentElement*>* getParseStack();
@@ -84,6 +89,7 @@ private:
     // 使用style id查找DocumentElement
     HashMap<String, DocumentElement*> m_styleElems;
     HashMap<String, DocumentElement*> m_idElems;
+    std::function<void()> m_repaintCb;
 };
 }
 }  // namespace boymue

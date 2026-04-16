@@ -27,7 +27,7 @@ fn get_header_map(headerMap: Option<Map<String, Value>>) -> HeaderMap {
 
 // http/https get请求
 #[tokio::main]
-pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     // let mut headers = HeaderMap::new();
     // match headerMap {
     //     Some(map) => {
@@ -53,10 +53,10 @@ pub async fn get_url(url: String, headerMap: Option<Map<String, Value>>) -> Resu
         .get(&url)
         .send()
         .await?
-        .text()
+        .bytes()
         .await?;
 
-    Ok(resp)
+    Ok(resp.to_vec())
 }
 
 // http/https post请求

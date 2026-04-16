@@ -68,7 +68,7 @@ void bmnet_timeout(uint64_t time);
 // 使用 convert_args 宏实现的 HTTP GET 请求
 // 参数：args[0] = url (String), args[1] = headers (String, 可选，JSON 格式字符串), args[2] = ext (usize)
 // 返回值通过 callback 返回，类型为 (String, usize) 元组
-//   result_args[0] = String (响应内容，ArgumentString: str_value + str_len 字节)
+//   result_args[0] = 响应体原始字节 (Vec<u8>，经 FFI 为 ArgumentString: str_value + str_len，可含任意字节/NUL)
 //   result_args[1] = usize (ext 参数，原样返回)
 BOYMUE_PORTING_API void bmnet_get_ext_impl(ArgumentList args, FnCallback callback);
 

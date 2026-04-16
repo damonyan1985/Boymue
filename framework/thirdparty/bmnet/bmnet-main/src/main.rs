@@ -80,7 +80,7 @@ fn main() {
 
     let result = get_url(String::from("https://127.0.0.1:8443/user/v1/testlogin"), None);
     match result {
-        Ok(text) => println!("http get: {:?}", text),
+        Ok(bytes) => println!("http get: {} bytes", bytes.len()),
         Err(e) => println!("http error: {:?}", e),
     }
 

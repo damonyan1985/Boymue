@@ -40,6 +40,7 @@ public:
     virtual String tagName() const;
     DocumentElement* parent() const { return m_parent; }
     void setParent(DocumentElement* p) { m_parent = p; }
+    Document* document() const { return m_dom; }
 
     virtual void visitChildren(const std::function<void(DocumentElement*)>& visitor) const;
 
