@@ -119,6 +119,10 @@ void Style::inheritFrom(const Style& parent) {
     textUnderline = parent.textUnderline;
     textLineThrough = parent.textLineThrough;
     opacity = parent.opacity;
+    borderTopLeftRadius = parent.borderTopLeftRadius;
+    borderTopRightRadius = parent.borderTopRightRadius;
+    borderBottomRightRadius = parent.borderBottomRightRadius;
+    borderBottomLeftRadius = parent.borderBottomLeftRadius;
 }
 }
 }

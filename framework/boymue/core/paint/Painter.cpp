@@ -47,7 +47,8 @@ void Painter::paint(PaintInfo& info) {
         return;
     }
     const SkRect& pr = info.paintRect;
-    if (pr.width() <= 0 || pr.height() <= 0) {
+    // 与 BoxPainter 一致：NaN/Inf 时 width()/height() 与 0 的比较不可靠，会误进 beginRecording。
+    if (!pr.isFinite() || pr.isEmpty()) {
         return;
     }
 

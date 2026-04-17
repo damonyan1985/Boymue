@@ -1,6 +1,7 @@
 #include "StyleParser.h"
 
 #include <cctype>
+#include <cstdio>
 
 #include "StyleEngine.h"
 #include "Style.h"
@@ -41,6 +42,157 @@ static float parseLengthPx(const String& raw) {
         return StringUtil::stringToFloat(v.substr(0, v.size() - 2));
     }
     return StringUtil::stringToFloat(v);
+}
+
+static Vector<float> parseSpaceSeparatedLengths(const String& s) {
+    Vector<float> out;
+    Vector<String> parts = StringUtil::split(s, " ");
+    for (String p : parts) {
+        StringUtil::trim(p);
+        if (!p.empty()) {
+            out.push_back(parseLengthPx(p));
+        }
+    }
+    return out;
+}
+
+static void expandToFourCorners(const Vector<float>& in, float o[4]) {
+    if (in.empty()) {
+        o[0] = o[1] = o[2] = o[3] = 0.f;
+        return;
+    }
+    if (in.size() >= 4) {
+        o[0] = in[0];
+        o[1] = in[1];
+        o[2] = in[2];
+        o[3] = in[3];
+    } else if (in.size() == 3) {
+        o[0] = in[0];
+        o[1] = in[1];
+        o[2] = in[2];
+        o[3] = in[1];
+    } else if (in.size() == 2) {
+        o[0] = o[2] = in[0];
+        o[1] = o[3] = in[1];
+    } else {
+        o[0] = o[1] = o[2] = o[3] = in[0];
+    }
+}
+
+/// 对标 WebKit CSSParser::parseBorderWidth + parse4Values：简写展开为四条 longhand，不存 bw: 内部串。
+static bool expandBorderWidthDeclaration(CSSRule* rule, const String& val) {
+    String v = val;
+    StringUtil::trim(v);
+    Vector<String> parts = StringUtil::split(v, " ");
+    Vector<String> tok;
+    for (auto& p : parts) {
+        StringUtil::trim(p);
+        if (!p.empty()) {
+            tok.push_back(p);
+        }
+    }
+    if (tok.empty()) {
+        return false;
+    }
+    auto& map = rule->declarations.propertyMap;
+    if (tok.size() == 1) {
+        CSSDeclarations::CSSProperty p;
+        p.numVal = parseLengthPx(tok[0]);
+        p.strVal.clear();
+        map[StyleEngine::kBorderWidth] = p;
+        return true;
+    }
+    map.erase(StyleEngine::kBorderWidth);
+    float top = 0.f;
+    float right = 0.f;
+    float bottom = 0.f;
+    float left = 0.f;
+    if (tok.size() == 2) {
+        top = bottom = parseLengthPx(tok[0]);
+        left = right = parseLengthPx(tok[1]);
+    } else if (tok.size() == 3) {
+        top = parseLengthPx(tok[0]);
+        left = right = parseLengthPx(tok[1]);
+        bottom = parseLengthPx(tok[2]);
+    } else {
+        top = parseLengthPx(tok[0]);
+        right = parseLengthPx(tok[1]);
+        bottom = parseLengthPx(tok[2]);
+        left = parseLengthPx(tok[3]);
+    }
+    auto putSide = [&](int id, float x) {
+        CSSDeclarations::CSSProperty p;
+        p.numVal = x;
+        p.strVal.clear();
+        map[id] = p;
+    };
+    putSide(StyleEngine::kBorderTopWidth, top);
+    putSide(StyleEngine::kBorderRightWidth, right);
+    putSide(StyleEngine::kBorderBottomWidth, bottom);
+    putSide(StyleEngine::kBorderLeftWidth, left);
+    return true;
+}
+
+static void assignCornerRadiusProp(CSSDeclarations::CSSProperty& prop, float h, float v, bool elliptical) {
+    prop.numVal = h;
+    prop.strVal.clear();
+    if (!elliptical) {
+        prop.radiusSecond = h;
+        return;
+    }
+    prop.radiusSecond = v;
+}
+
+/// 对标 WebKit CSSParser::parseBorderRadius：简写展开为四角 longhand，不存 br: 内部串。
+static bool expandBorderRadiusDeclaration(CSSRule* rule, const String& raw) {
+    String v = raw;
+    StringUtil::trim(v);
+    if (v.empty()) {
+        return false;
+    }
+    const size_t slash = v.find('/');
+    const String hPart = slash == String::npos ? v : v.substr(0, slash);
+    String vPart = slash == String::npos ? String() : v.substr(slash + 1);
+    StringUtil::trim(vPart);
+    Vector<float> hTok = parseSpaceSeparatedLengths(hPart);
+    float h4[4];
+    expandToFourCorners(hTok, h4);
+    const bool elliptical = !vPart.empty();
+    float v4[4] = {0.f, 0.f, 0.f, 0.f};
+    if (elliptical) {
+        Vector<float> vTok = parseSpaceSeparatedLengths(vPart);
+        expandToFourCorners(vTok, v4);
+    }
+    static const int kCornerIds[4] = {StyleEngine::kBorderTopLeftRadius, StyleEngine::kBorderTopRightRadius,
+                                        StyleEngine::kBorderBottomRightRadius,
+                                        StyleEngine::kBorderBottomLeftRadius};
+    auto& map = rule->declarations.propertyMap;
+    map.erase(StyleEngine::kBorderRadius);
+    for (int i = 0; i < 4; ++i) {
+        CSSDeclarations::CSSProperty corner;
+        assignCornerRadiusProp(corner, h4[i], v4[i], elliptical);
+        map[kCornerIds[i]] = corner;
+    }
+    return true;
+}
+
+static void parseCornerRadiusValue(const String& raw, CSSDeclarations::CSSProperty& prop) {
+    String v = raw;
+    StringUtil::trim(v);
+    if (v.empty()) {
+        return;
+    }
+    Vector<float> tok = parseSpaceSeparatedLengths(v);
+    if (tok.empty()) {
+        return;
+    }
+    prop.numVal = tok[0];
+    prop.strVal.clear();
+    if (tok.size() >= 2) {
+        prop.radiusSecond = tok[1];
+    } else {
+        prop.radiusSecond = tok[0];
+    }
 }
 
 static String toLowerAscii(String s) {
@@ -170,29 +322,6 @@ static void parseMaxDimension(const String& val, CSSDeclarations::CSSProperty& p
         prop.strVal.clear();
         prop.numVal = parseLengthPx(val);
     }
-}
-
-static void parseBorderWidthShorthand(const String& val, CSSDeclarations::CSSProperty& prop) {
-    String v = val;
-    StringUtil::trim(v);
-    Vector<String> parts = StringUtil::split(v, " ");
-    Vector<String> tok;
-    for (auto& p : parts) {
-        StringUtil::trim(p);
-        if (!p.empty()) {
-            tok.push_back(p);
-        }
-    }
-    if (tok.empty()) {
-        return;
-    }
-    if (tok.size() == 1) {
-        prop.numVal = parseLengthPx(tok[0]);
-        prop.strVal.clear();
-        return;
-    }
-    prop.strVal = String("bw:") + v;
-    prop.numVal = 0.f;
 }
 
 }  // namespace
@@ -334,8 +463,18 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
     case StyleEngine::kBorderRightWidth:
     case StyleEngine::kBorderBottomWidth:
     case StyleEngine::kBorderLeftWidth:
-    case StyleEngine::kBorderRadius:
         prop.numVal = parseLengthPx(val);
+        break;
+    case StyleEngine::kBorderRadius:
+        if (expandBorderRadiusDeclaration(rule, val)) {
+            return;
+        }
+        break;
+    case StyleEngine::kBorderTopLeftRadius:
+    case StyleEngine::kBorderTopRightRadius:
+    case StyleEngine::kBorderBottomRightRadius:
+    case StyleEngine::kBorderBottomLeftRadius:
+        parseCornerRadiusValue(val, prop);
         break;
     case StyleEngine::kMaxWidth:
     case StyleEngine::kMaxHeight:
@@ -358,7 +497,9 @@ void StyleParser::addDeclaration(CSSRule* rule, Vector<String>& kv) {
         prop.numVal = parseFontWeightToken(val);
         break;
     case StyleEngine::kBorderWidth:
-        parseBorderWidthShorthand(val, prop);
+        if (expandBorderWidthDeclaration(rule, val)) {
+            return;
+        }
         break;
     case StyleEngine::kColor:
     case StyleEngine::kBackgroundColor:

@@ -39,12 +39,24 @@ void ImageLayout::layout() {
         }
     }
 
-    if (m_image && !m_image->bitmap().empty()) {
+    bool hasDecoded = false;
+    int decodedW = 0;
+    int decodedH = 0;
+    if (m_image) {
+        m_image->withBitmap([&](const SkBitmap& b) {
+            if (!b.empty()) {
+                hasDecoded = true;
+                decodedW = b.width();
+                decodedH = b.height();
+            }
+        });
+    }
+    if (m_image && hasDecoded) {
         if (!specW) {
-            m_width = static_cast<LayoutUnit>(m_image->bitmap().width());
+            m_width = static_cast<LayoutUnit>(decodedW);
         }
         if (!specH) {
-            m_height = static_cast<LayoutUnit>(m_image->bitmap().height());
+            m_height = static_cast<LayoutUnit>(decodedH);
         }
     } else {
         if (!specW) {

@@ -69,7 +69,7 @@ static boymue::String BuildDemoDomXml(int width, int height) {
   xml += "button { width: 220px; height: 44px; margin-top: 24px; margin-left: 24px; ";
   xml += "background-color: rgb(200,60,60); border-radius: 8px; }\n";
   xml += "img { width: 280px; height: 180px; margin-top: 20px; margin-left: 24px; ";
-  xml += "border-radius: 8px; }\n";
+  xml += "border-top-left-radius: 8px; }\n";
   xml += "</style><button>Test</button>";
   xml += "<img src=\"https://fastly.picsum.photos/id/805/280/180.jpg?hmac=Mk6FV2pjw4wjaHLGtrtYET7H2qevT0N7-Zx0ayyQWdQ\" />";
   xml += "</view>";

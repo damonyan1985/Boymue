@@ -63,6 +63,10 @@ public:
         kOverflowX = 46,
         kOverflowY = 47,
         kBackgroundImage = 48,
+        kBorderTopLeftRadius = 49,
+        kBorderTopRightRadius = 50,
+        kBorderBottomRightRadius = 51,
+        kBorderBottomLeftRadius = 52,
     };
 
     StyleEngine();

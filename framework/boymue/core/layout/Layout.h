@@ -55,10 +55,11 @@ protected:
     void ensurePainter();
 
     Layout* m_parentLayout{nullptr};
-    LayoutUnit m_left;
-    LayoutUnit m_top;
-    LayoutUnit m_width;
-    LayoutUnit m_height;
+    /// 未跑 layout 前须为确定值，否则 paintRect 可能为垃圾坐标导致 SkPictureRecorder/Skia 崩溃。
+    LayoutUnit m_left{0};
+    LayoutUnit m_top{0};
+    LayoutUnit m_width{0};
+    LayoutUnit m_height{0};
 
     css::Style m_style;
     

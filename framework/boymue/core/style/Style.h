@@ -56,6 +56,13 @@ enum class FontStyleValue : uint8_t {
     Oblique,
 };
 
+/// 与 WebCore LengthSize / border-*-radius 对应：水平、垂直半径。
+/// 单长度声明在层叠后两轴可同为该值；垂直为 0 且水平大于 0 时，绘制仍按「垂直半径取水平」处理椭圆退化（见 BoxPainter::cornerRadiiForRect）。
+struct BorderRadiusSize {
+    LayoutUnit horizontal{0};
+    LayoutUnit vertical{0};
+};
+
 class Color {
 public:
     Color(ColorValue value = 0);
@@ -134,7 +141,17 @@ public:
     LayoutUnit borderBottomWidth{0};
     LayoutUnit borderLeftWidth{0};
     Color borderColor;
-    LayoutUnit borderRadius{0};
+    BorderRadiusSize borderTopLeftRadius;
+    BorderRadiusSize borderTopRightRadius;
+    BorderRadiusSize borderBottomRightRadius;
+    BorderRadiusSize borderBottomLeftRadius;
+
+    bool hasBorderRadius() const {
+        return borderTopLeftRadius.horizontal > 0.f || borderTopLeftRadius.vertical > 0.f ||
+               borderTopRightRadius.horizontal > 0.f || borderTopRightRadius.vertical > 0.f ||
+               borderBottomRightRadius.horizontal > 0.f || borderBottomRightRadius.vertical > 0.f ||
+               borderBottomLeftRadius.horizontal > 0.f || borderBottomLeftRadius.vertical > 0.f;
+    }
 
     OverflowValue overflowX{OverflowValue::Visible};
     OverflowValue overflowY{OverflowValue::Visible};

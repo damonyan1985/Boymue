@@ -53,6 +53,10 @@ void StyleEngine::initTags() {
     m_tags["border-left-width"] = kBorderLeftWidth;
     m_tags["border-color"] = kBorderColor;
     m_tags["border-radius"] = kBorderRadius;
+    m_tags["border-top-left-radius"] = kBorderTopLeftRadius;
+    m_tags["border-top-right-radius"] = kBorderTopRightRadius;
+    m_tags["border-bottom-right-radius"] = kBorderBottomRightRadius;
+    m_tags["border-bottom-left-radius"] = kBorderBottomLeftRadius;
     m_tags["overflow"] = kOverflow;
     m_tags["overflow-x"] = kOverflowX;
     m_tags["overflow-y"] = kOverflowY;

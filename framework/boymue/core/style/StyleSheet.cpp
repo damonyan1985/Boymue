@@ -37,41 +37,29 @@ float lengthPxFromToken(const String& tok) {
 }
 
 void applyBorderWidthShorthand(Style& st, const CSSDeclarations::CSSProperty& prop) {
-    if (!prop.strVal.empty() && StringUtil::startWith(prop.strVal, "bw:")) {
-        String inner = prop.strVal.substr(3);
-        Vector<String> parts = StringUtil::split(inner, " ");
-        Vector<String> tok;
-        for (auto& p : parts) {
-            StringUtil::trim(p);
-            if (!p.empty()) {
-                tok.push_back(p);
-            }
-        }
-        if (tok.empty()) {
-            return;
-        }
-        if (tok.size() == 1) {
-            LayoutUnit x = lengthPxFromToken(tok[0]);
-            st.borderTopWidth = st.borderRightWidth = st.borderBottomWidth = st.borderLeftWidth = x;
-        } else if (tok.size() == 2) {
-            LayoutUnit a = lengthPxFromToken(tok[0]);
-            LayoutUnit b = lengthPxFromToken(tok[1]);
-            st.borderTopWidth = st.borderBottomWidth = a;
-            st.borderLeftWidth = st.borderRightWidth = b;
-        } else if (tok.size() == 3) {
-            st.borderTopWidth = lengthPxFromToken(tok[0]);
-            st.borderLeftWidth = st.borderRightWidth = lengthPxFromToken(tok[1]);
-            st.borderBottomWidth = lengthPxFromToken(tok[2]);
-        } else {
-            st.borderTopWidth = lengthPxFromToken(tok[0]);
-            st.borderRightWidth = lengthPxFromToken(tok[1]);
-            st.borderBottomWidth = lengthPxFromToken(tok[2]);
-            st.borderLeftWidth = lengthPxFromToken(tok[3]);
-        }
-        return;
-    }
+    // 多边 border-width 已在 StyleParser 展开为四条 longhand（对标 WebKit parse4Values）。
     LayoutUnit x = prop.numVal;
     st.borderTopWidth = st.borderRightWidth = st.borderBottomWidth = st.borderLeftWidth = x;
+}
+
+static void setCornerRadius(css::BorderRadiusSize& dst, LayoutUnit hx, LayoutUnit vy) {
+    dst.horizontal = hx;
+    dst.vertical = vy;
+}
+
+static void applyCornerRadiusField(css::BorderRadiusSize& dst,
+                                   const CSSDeclarations::CSSProperty& prop) {
+    if (prop.numVal > 0.f || prop.radiusSecond > 0.f) {
+        dst.horizontal = prop.numVal;
+        dst.vertical = prop.radiusSecond;
+    }
+}
+
+static void setUniformBorderRadiusCorners(Style& st, LayoutUnit r) {
+    setCornerRadius(st.borderTopLeftRadius, r, r);
+    setCornerRadius(st.borderTopRightRadius, r, r);
+    setCornerRadius(st.borderBottomRightRadius, r, r);
+    setCornerRadius(st.borderBottomLeftRadius, r, r);
 }
 
 void applyTextDecoration(Style& st, const String& raw) {
@@ -353,7 +341,22 @@ static void copyPropertyFromParentForInherit(int propId, Style& st, const Style&
         st.borderLeftWidth = p.borderLeftWidth;
         break;
     case StyleEngine::kBorderRadius:
-        st.borderRadius = p.borderRadius;
+        st.borderTopLeftRadius = p.borderTopLeftRadius;
+        st.borderTopRightRadius = p.borderTopRightRadius;
+        st.borderBottomRightRadius = p.borderBottomRightRadius;
+        st.borderBottomLeftRadius = p.borderBottomLeftRadius;
+        break;
+    case StyleEngine::kBorderTopLeftRadius:
+        st.borderTopLeftRadius = p.borderTopLeftRadius;
+        break;
+    case StyleEngine::kBorderTopRightRadius:
+        st.borderTopRightRadius = p.borderTopRightRadius;
+        break;
+    case StyleEngine::kBorderBottomRightRadius:
+        st.borderBottomRightRadius = p.borderBottomRightRadius;
+        break;
+    case StyleEngine::kBorderBottomLeftRadius:
+        st.borderBottomLeftRadius = p.borderBottomLeftRadius;
         break;
     case StyleEngine::kOverflow:
         st.overflowX = p.overflowX;
@@ -552,7 +555,22 @@ void applyPropertyToStyle(int propId, const CSSDeclarations::CSSProperty& prop, 
         st.borderLeftWidth = prop.numVal;
         break;
     case StyleEngine::kBorderRadius:
-        st.borderRadius = prop.numVal;
+        // 简写在解析阶段已写入四角 longhand；此处仅保留单值回退（如未走解析器的路径）。
+        if (prop.numVal > 0.f) {
+            setUniformBorderRadiusCorners(st, prop.numVal);
+        }
+        break;
+    case StyleEngine::kBorderTopLeftRadius:
+        applyCornerRadiusField(st.borderTopLeftRadius, prop);
+        break;
+    case StyleEngine::kBorderTopRightRadius:
+        applyCornerRadiusField(st.borderTopRightRadius, prop);
+        break;
+    case StyleEngine::kBorderBottomRightRadius:
+        applyCornerRadiusField(st.borderBottomRightRadius, prop);
+        break;
+    case StyleEngine::kBorderBottomLeftRadius:
+        applyCornerRadiusField(st.borderBottomLeftRadius, prop);
         break;
     case StyleEngine::kOverflow: {
         OverflowValue o = parseOverflowKeyword(prop.strVal);

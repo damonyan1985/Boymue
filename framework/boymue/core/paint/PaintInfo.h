@@ -10,11 +10,11 @@
 namespace boymue {
 class PaintInfo {
  public:
-  PaintInfo() {};
- 
-  SkRect clipRect; // 裁剪区域
-  SkRect paintRect; // 绘制区域
-  PaintContext* context;
+  PaintInfo() = default;
+
+  SkRect clipRect = SkRect::MakeEmpty();
+  SkRect paintRect = SkRect::MakeEmpty();
+  PaintContext* context{nullptr};
 };
 }  // namespace boymue
 

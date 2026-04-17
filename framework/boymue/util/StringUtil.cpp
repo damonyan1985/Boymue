@@ -62,10 +62,22 @@ bool StringUtil::isspace(const char* str, int len) {
 }
 
 bool StringUtil::startWith(const String& str, const String& head) {
+    if (head.empty()) {
+        return true;
+    }
+    if (str.size() < head.size()) {
+        return false;
+    }
     return str.compare(0, head.size(), head) == 0;
 }
 
 bool StringUtil::endWith(const String& str, const String& tail) {
+    if (tail.empty()) {
+        return true;
+    }
+    if (str.size() < tail.size()) {
+        return false;
+    }
     return str.compare(str.size() - tail.size(), tail.size(), tail) == 0;
 }
 

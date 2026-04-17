@@ -61,9 +61,14 @@ public:
             float numVal;
             ColorValue intVal;
         };
+        /// `border-*-radius` 垂直轴（px）；与 `numVal` 组成一对长度。单长度解析时与 `numVal` 相同（圆角两轴一致，对标 Pair 两分量同值）。
+        float radiusSecond{0.f};
         String strVal;
 
-        CSSProperty() { numVal = 0.f; }
+        CSSProperty() {
+            numVal = 0.f;
+            radiusSecond = 0.f;
+        }
     };
 
     HashMap<int, CSSProperty> propertyMap;

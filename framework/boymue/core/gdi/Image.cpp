@@ -393,6 +393,7 @@ Image::~Image() {
 }
 
 void Image::createImage(const void* buffer, size_t size) {
+    std::lock_guard<std::mutex> lock(m_bitmapMutex);
     SkImageDecoder::DecodeMemory(buffer, size, &m_bitmap);
 }
 
@@ -409,7 +410,11 @@ bool Image::load(const String& pathOrUrl, ImageLoadClient* client) {
             loader.cancelPending(m_networkRequestId);
             m_networkRequestId = 0;
         }
-        const bool ok = loader.loadLocal(src, &m_bitmap);
+        bool ok = false;
+        {
+            std::lock_guard<std::mutex> lock(m_bitmapMutex);
+            ok = loader.loadLocal(src, &m_bitmap);
+        }
         if (client) {
             client->onImageLoadComplete();
         }
@@ -429,11 +434,13 @@ bool Image::load(const String& pathOrUrl, ImageLoadClient* client) {
         src, rid,
         [self, rid, client](bool success, const SkBitmap& bitmap) {
             if (success) {
+                std::lock_guard<std::mutex> lock(self->m_bitmapMutex);
                 SkBitmap copy;
                 if (bitmap.deepCopyTo(&copy)) {
                     self->m_bitmap = std::move(copy);
                 } else {
-                    self->m_bitmap = bitmap;
+                    // 禁止浅拷贝：bitmap 可能指向异步闭包内即将析构的 SkBitmap，或栈上临时对象。
+                    self->m_bitmap.reset();
                 }
             }
             if (self->m_networkRequestId == rid) {
@@ -445,7 +452,5 @@ bool Image::load(const String& pathOrUrl, ImageLoadClient* client) {
         });
     return true;
 }
-
-const SkBitmap& Image::bitmap() const { return m_bitmap; }
 
 }  // namespace boymue
