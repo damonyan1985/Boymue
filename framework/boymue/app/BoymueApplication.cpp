@@ -10,6 +10,7 @@
 #include "JsRequireModuleApi.h"
 #include "JsRequestApi.h"
 #include "JsSystemGcApi.h"
+#include "Image.h"
 #include <jemalloc/jemalloc.h>
 
 namespace boymue {
@@ -25,6 +26,8 @@ BoymueApplication::BoymueApplication(BoymueAppInfo* info)
   m_uiThread.start();
   m_ioThread.start();
   m_jsThread.start();
+
+  Image::setNetworkImageUiTaskRunner(&m_uiThread.getTaskRunner());
 
   getUITaskRunner().postTask(
       [self = this] { self->m_mainView = std::make_unique<BoymueView>(self); });
@@ -61,7 +64,9 @@ JsRuntime* BoymueApplication::runtime() const {
 }
 
 // 结束当前应用的线程
-BoymueApplication::~BoymueApplication() {}
+BoymueApplication::~BoymueApplication() {
+  Image::setNetworkImageUiTaskRunner(nullptr);
+}
 
 TaskRunner& BoymueApplication::getUITaskRunner() const {
   return m_uiThread.getTaskRunner();

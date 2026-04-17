@@ -5,6 +5,7 @@
 
 #include <functional>
 
+#include "Layout.h"
 #include "DomTags.h"
 #include "ImageElement.h"
 #include "ViewElement.h"
@@ -83,9 +84,26 @@ void Document::setRepaintCallback(std::function<void()> cb) {
     m_repaintCb = std::move(cb);
 }
 
-void Document::requestRepaint() {
+void Document::requestRepaint(layout::Layout* invalidatePainterFor) {
+    if (invalidatePainterFor) {
+        m_repaintInvalidateLayouts.push_back(invalidatePainterFor);
+    }
     if (m_repaintCb) {
         m_repaintCb();
+    }
+}
+
+void Document::flushRepaintInvalidations() {
+    Vector<layout::Layout*> batch;
+    batch.swap(m_repaintInvalidateLayouts);
+    for (layout::Layout* l : batch) {
+        if (!l) {
+            continue;
+        }
+        DocumentElement* el = l->domElement();
+        if (el && el->document() == this) {
+            l->invalidatePainter();
+        }
     }
 }
 

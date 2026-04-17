@@ -28,8 +28,6 @@
 #include "PaintInfo.h"
 #include "SkRect.h"
 #include "StringUtil.h"
-#include "DocumentElement.h"
-#include <functional>
 #include <jemalloc/jemalloc.h>
 
 //#define USE_JEMALLOC
@@ -141,8 +139,7 @@ class UIRuntime {
     run(); 
   }
 
-  /// 使整棵布局树的 Painter 缓存失效（异步资源如网络图到位后须在 UI 线程调用）
-  void invalidateDomPainters();
+  boymue::dom::Document* document() { return m_document.get(); }
 
  private:
   void ensureDomParsed();
@@ -159,28 +156,13 @@ static void PostDomXmlRepaint() {
     return;
   }
   s_domRepaintApp->getUITaskRunner().postTask([] {
+    if (s_uiRuntime && s_uiRuntime->document()) {
+      s_uiRuntime->document()->flushRepaintInvalidations();
+    }
     if (s_uiRuntime) {
-      s_uiRuntime->invalidateDomPainters();
       s_uiRuntime->repaint();
     }
   });
-}
-
-void UIRuntime::invalidateDomPainters() {
-  if (!m_document || !m_document->root()) {
-    return;
-  }
-  std::function<void(boymue::dom::DocumentElement*)> visit;
-  visit = [&](boymue::dom::DocumentElement* el) {
-    if (!el) {
-      return;
-    }
-    if (boymue::layout::Layout* lay = el->layout()) {
-      lay->invalidatePainter();
-    }
-    el->visitChildren([&](boymue::dom::DocumentElement* c) { visit(c); });
-  };
-  visit(m_document->root());
 }
 
 void UIRuntime::ensureDomParsed() {

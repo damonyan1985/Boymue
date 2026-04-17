@@ -14,6 +14,9 @@
 #include "StringUtil.h"
 
 namespace boymue {
+namespace layout {
+class Layout;
+}
 namespace dom {
 
 class Document;
@@ -50,7 +53,10 @@ public:
     void parseFromXML(const String& content);
     /// 宿主设置异步完成后的 UI 刷新（如网络图片解码完毕）
     void setRepaintCallback(std::function<void()> cb);
-    void requestRepaint();
+    /// invalidatePainterFor：登记待失效的 Layout；须与 flushRepaintInvalidations 在同一线程（一般为 UI）
+    void requestRepaint(layout::Layout* invalidatePainterFor = nullptr);
+    /// 取出并执行登记的 invalidatePainter；须与 requestRepaint 同线程调用
+    void flushRepaintInvalidations();
 
     css::StyleEngine& styleEngine() { return m_styleEngine; }
     const css::StyleEngine& styleEngine() const { return m_styleEngine; }
@@ -90,6 +96,7 @@ private:
     HashMap<String, DocumentElement*> m_styleElems;
     HashMap<String, DocumentElement*> m_idElems;
     std::function<void()> m_repaintCb;
+    Vector<layout::Layout*> m_repaintInvalidateLayouts;
 };
 }
 }  // namespace boymue

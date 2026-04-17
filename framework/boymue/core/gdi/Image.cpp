@@ -2,6 +2,7 @@
 #include "Loader.h"
 #include "SkImageDecoder.h"
 #include "StringUtil.h"
+#include "TaskRunner.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -63,6 +64,9 @@ public:
     void cancelPending(uint64_t requestId);
     void cancelAllForImage(const Image* image);
 
+    void setUiTaskRunner(TaskRunner* runner) { m_ui_task_runner = runner; }
+    TaskRunner* uiTaskRunner() const { return m_ui_task_runner; }
+
 private:
     ImageLoader();
     ImageLoader(const ImageLoader&) = delete;
@@ -74,6 +78,8 @@ private:
     std::mutex m_request_mutex;
     uint64_t m_next_request_id = 1;
     HashMap<uint64_t, Image*> m_requestToImage;
+    /// 非空时 bmnet 回调线程仅做解码，NetworkImageClient 将用户 callback 投递到该线程
+    TaskRunner* m_ui_task_runner = nullptr;
 };
 
 namespace {
@@ -251,8 +257,21 @@ public:
                 }
             }
         }
-        if (callback) {
-            callback(ok, bmp);
+        ImageLoader::NetworkCallback onDone = std::move(callback);
+        TaskRunner* ui = ImageLoader::instance().uiTaskRunner();
+        if (ui) {
+            NetworkImageClient* self = this;
+            ui->postTask([self, okCopy = ok, bmp = std::move(bmp),
+                          onDone = std::move(onDone)]() mutable {
+                if (onDone) {
+                    onDone(okCopy, bmp);
+                }
+                delete self;
+            });
+            return;
+        }
+        if (onDone) {
+            onDone(ok, bmp);
         }
         delete this;
     }
@@ -371,6 +390,10 @@ void ImageLoader::loadNetwork(const String& url, uint64_t requestId,
 }
 
 // --- Image ---
+
+void Image::setNetworkImageUiTaskRunner(TaskRunner* runner) {
+    ImageLoader::instance().setUiTaskRunner(runner);
+}
 
 Image::Image() {}
 

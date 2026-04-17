@@ -10,10 +10,11 @@ namespace layout {
 namespace {
 
 void onImageResourceLoaded(bool success, const SkBitmap&, void* userData) {
+    (void)success;
     auto* self = static_cast<ImageLayout*>(userData);
     dom::DocumentElement* el = self ? self->domElement() : nullptr;
     if (el && el->document()) {
-        el->document()->requestRepaint();
+        el->document()->requestRepaint(self);
     }
 }
 
