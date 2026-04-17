@@ -62,7 +62,6 @@ public:
     /// 若 id 仍在登记表中则移除并返回 true（表示可安全向对应 Image 交付结果）
     bool tryConsumeRequest(uint64_t requestId);
     void cancelPending(uint64_t requestId);
-    void cancelAllForImage(const Image* image);
 
     void setUiTaskRunner(TaskRunner* runner) { m_ui_task_runner = runner; }
     TaskRunner* uiTaskRunner() const { return m_ui_task_runner; }
@@ -306,17 +305,6 @@ void ImageLoader::cancelPending(uint64_t requestId) {
     m_requestToImage.erase(requestId);
 }
 
-void ImageLoader::cancelAllForImage(const Image* image) {
-    std::lock_guard<std::mutex> lock(m_request_mutex);
-    for (auto it = m_requestToImage.begin(); it != m_requestToImage.end();) {
-        if (it->second == image) {
-            it = m_requestToImage.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
-
 bool ImageLoader::loadLocal(const String& pathOrUri, SkBitmap* out) {
     if (!out) {
         return false;
@@ -398,36 +386,32 @@ void Image::setNetworkImageUiTaskRunner(TaskRunner* runner) {
 Image::Image() {}
 
 Image::~Image() {
-    ImageLoader::instance().cancelAllForImage(this);
+    if (m_networkRequestId != 0) {
+        ImageLoader::instance().cancelPending(m_networkRequestId);
+        m_networkRequestId = 0;
+    }
 }
 
 void Image::createImage(const void* buffer, size_t size) {
     SkImageDecoder::DecodeMemory(buffer, size, &m_bitmap);
 }
 
-bool Image::loadFromFile(const char* path) {
-    if (!path || !*path) {
-        return false;
-    }
-    return SkImageDecoder::DecodeFile(path, &m_bitmap);
-}
-
-bool Image::load(const char* pathOrUrl, LoadCallback callback, void* userData) {
-    if (!pathOrUrl || !*pathOrUrl) {
+bool Image::load(const String& pathOrUrl, ImageLoadClient* client) {
+    if (pathOrUrl.empty()) {
         return false;
     }
 
     ImageLoader& loader = ImageLoader::instance();
 
-    const String src(pathOrUrl);
+    const String& src = pathOrUrl;
     if (!isNetworkUrl(src)) {
         if (m_networkRequestId != 0) {
             loader.cancelPending(m_networkRequestId);
             m_networkRequestId = 0;
         }
-        const bool ok = loadFromFile(pathOrUrl);
-        if (callback) {
-            callback(ok, m_bitmap, userData);
+        const bool ok = loader.loadLocal(src, &m_bitmap);
+        if (client) {
+            client->onImageLoadComplete();
         }
         return ok;
     }
@@ -443,7 +427,7 @@ bool Image::load(const char* pathOrUrl, LoadCallback callback, void* userData) {
     Image* self = this;
     loader.loadNetwork(
         src, rid,
-        [self, rid, callback, userData](bool success, const SkBitmap& bitmap) {
+        [self, rid, client](bool success, const SkBitmap& bitmap) {
             if (success) {
                 SkBitmap copy;
                 if (bitmap.deepCopyTo(&copy)) {
@@ -455,8 +439,8 @@ bool Image::load(const char* pathOrUrl, LoadCallback callback, void* userData) {
             if (self->m_networkRequestId == rid) {
                 self->m_networkRequestId = 0;
             }
-            if (callback) {
-                callback(success, self->m_bitmap, userData);
+            if (client) {
+                client->onImageLoadComplete();
             }
         });
     return true;

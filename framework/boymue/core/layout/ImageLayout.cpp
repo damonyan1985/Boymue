@@ -2,23 +2,9 @@
 
 #include "Document.h"
 #include "ImageElement.h"
-#include "StringUtil.h"
 
 namespace boymue {
 namespace layout {
-
-namespace {
-
-void onImageResourceLoaded(bool success, const SkBitmap&, void* userData) {
-    (void)success;
-    auto* self = static_cast<ImageLayout*>(userData);
-    dom::DocumentElement* el = self ? self->domElement() : nullptr;
-    if (el && el->document()) {
-        el->document()->requestRepaint(self);
-    }
-}
-
-}  // namespace
 
 ImageLayout::ImageLayout(dom::DocumentElement* element)
     : Layout(element)
@@ -32,6 +18,13 @@ Layout::LayoutType ImageLayout::type() const {
     return kLayoutImage;
 }
 
+void ImageLayout::onImageLoadComplete() {
+    dom::DocumentElement* el = domElement();
+    if (el && el->document()) {
+        el->document()->requestRepaint(this);
+    }
+}
+
 void ImageLayout::layout() {
     const bool specW = m_style.width > 0.f;
     const bool specH = m_style.height > 0.f;
@@ -42,13 +35,7 @@ void ImageLayout::layout() {
         const String& src = imgEl->src();
         if (m_image && !src.empty() && src != m_issuedSrc) {
             m_issuedSrc = src;
-            const bool network = StringUtil::startWith(src, "http://") ||
-                                 StringUtil::startWith(src, "https://");
-            if (network) {
-                m_image->load(src.c_str(), onImageResourceLoaded, this);
-            } else {
-                m_image->loadFromFile(src.c_str());
-            }
+            m_image->load(src, this);
         }
     }
 

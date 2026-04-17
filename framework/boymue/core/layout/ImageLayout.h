@@ -7,13 +7,15 @@
 namespace boymue {
 namespace layout {
 
-class ImageLayout : public Layout {
+class ImageLayout : public Layout, public ImageLoadClient {
 public:
     ImageLayout(dom::DocumentElement* element);
     virtual LayoutType type() const override;
     virtual void layout();
 
     Image* image();
+
+    void onImageLoadComplete() override;
 
 private:
     OwnerPtr<Image> m_image;
